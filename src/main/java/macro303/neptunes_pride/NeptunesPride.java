@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.Charset;
 import java.util.TreeSet;
 
@@ -59,10 +56,16 @@ class NeptunesPride {
 		HttpURLConnection connection = null;
 		try {
 			URL url = new URL(apiAddress + gameNumber + "/players");
-			Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("bit.datacom.co.nz", 3128));
-			connection = (HttpURLConnection) url.openConnection(proxy);
-			connection.setRequestMethod("GET");
-			connection.connect();
+			try {
+				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress("bit.datacom.co.nz", 3128));
+				connection = (HttpURLConnection) url.openConnection(proxy);
+				connection.setRequestMethod("GET");
+				connection.connect();
+			}catch (UnknownHostException uhe){
+				connection = (HttpURLConnection) url.openConnection();
+				connection.setRequestMethod("GET");
+				connection.connect();
+			}
 			int responseCode = connection.getResponseCode();
 			if (responseCode == 200) {
 				String response = readAll(connection.getInputStream());
