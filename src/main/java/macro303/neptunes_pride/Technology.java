@@ -14,4 +14,33 @@ class Technology {
 	int getLevel() {
 		return level;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Technology)) return false;
+
+		Technology that = (Technology) o;
+
+		if (Double.compare(that.value, value) != 0) return false;
+		return level == that.level;
+	}
+
+	@Override
+	public int hashCode() {
+		int result;
+		long temp;
+		temp = Double.doubleToLongBits(value);
+		result = (int) (temp ^ (temp >>> 32));
+		result = 31 * result + level;
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "Technology{" +
+				"value=" + value +
+				", level=" + level +
+				'}';
+	}
 }
