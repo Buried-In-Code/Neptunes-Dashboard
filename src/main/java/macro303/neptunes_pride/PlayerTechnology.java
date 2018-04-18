@@ -2,6 +2,9 @@ package macro303.neptunes_pride;
 
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Created by Macro303 on 2018-04-17.
+ */
 class PlayerTechnology implements Comparable<PlayerTechnology> {
 	private Technology scanning = null;
 	private Technology propulsion = null;

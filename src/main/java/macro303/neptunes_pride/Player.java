@@ -3,6 +3,9 @@ package macro303.neptunes_pride;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Created by Macro303 on 2018-04-17.
+ */
 class Player implements Comparable<Player> {
 	@SerializedName("total_industry")
 	private int totalIndustry = 0;

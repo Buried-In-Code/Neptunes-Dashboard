@@ -11,6 +11,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Created by Macro303 on 2018-04-18.
+ */
 class Config {
 	private transient static final Gson gson = new GsonBuilder()
 			.serializeNulls()
