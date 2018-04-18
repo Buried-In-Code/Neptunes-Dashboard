@@ -40,7 +40,7 @@ class NeptunesPride {
 		config = Config.loadConfig();
 		if (config == null) {
 			Config.saveConfig(new Config(-1L));
-			config = Config.loadConfig();
+			Console.displayError("Config couldn't be loaded new config has been created. Please Reload");
 		}
 	}
 
