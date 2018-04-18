@@ -76,3 +76,4 @@ fabric.properties
 !/.idea/runConfigurations/
 !/.idea/codeStyles/
 *.iml
+bin/

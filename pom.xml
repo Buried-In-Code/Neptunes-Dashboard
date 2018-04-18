@@ -27,6 +27,11 @@
 			<artifactId>gson</artifactId>
 			<version>RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>nz.co.macro303</groupId>
+			<artifactId>console</artifactId>
+			<version>RELEASE</version>
+		</dependency>
 	</dependencies>
 
 	<build>
