@@ -10,11 +10,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
+import java.net.*;
 import java.nio.charset.Charset;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Macro303 on 2018-04-17.
@@ -38,14 +37,52 @@ class NeptunesPride {
 		config = Config.loadConfig();
 		if (config == null) {
 			Config.saveConfig(new Config(-1L));
-			Console.displayError("Config couldn't be loaded new config has been created. Please Reload");
+			Console.displayError("Config couldn't be loaded new config has been created. Please add your details and reload");
 		}
 	}
 
 	private void mainMenu() {
 		int option;
 		do {
-			option = Console.displayMenu(new String[]{"All Players", "Player By Alias", "Player By Name", "Game Settings", "Fleet Menu", "Star Menu", "Player Menu", "Refresh", "Exit"}, "Main Menu");
+			option = Console.displayMenu(new String[]{"Game Settings", "Fleet Menu", "Star Menu", "Player Menu", "Refresh", "Exit"}, "Main Menu");
+			switch (option) {
+				case 1:
+					Console.displayWarning("To Be Implemented");
+					break;
+				case 2:
+					Console.displayWarning("To Be Implemented");
+					break;
+				case 3:
+					Console.displayWarning("To Be Implemented");
+					break;
+				case 4:
+					playerMenu();
+					break;
+				case 5:
+					refreshGame();
+					break;
+			}
+		} while (option != 0);
+	}
+
+	private void fleetMenu(){
+		int option;
+		do {
+			option = Console.displayMenu(new String[]{"Back"}, "Fleet Menu");
+		} while (option != 0);
+	}
+
+	private void starMenu(){
+		int option;
+		do {
+			option = Console.displayMenu(new String[]{"Back"}, "Star Menu");
+		} while (option != 0);
+	}
+
+	private void playerMenu(){
+		int option;
+		do {
+			option = Console.displayMenu(new String[]{"All Players", "Player By Alias", "Player By Name", "Back"}, "Player Menu");
 			switch (option) {
 				case 1:
 					game.getPlayers().forEach(this::showPlayer);
@@ -58,41 +95,33 @@ class NeptunesPride {
 					Player namePlayer = getPlayerByName(Console.displayPrompt("Name"));
 					showPlayer(namePlayer);
 					break;
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-					Console.displayWarning("To Be Implemented");
-					break;
-				case 8:
-					refreshGame();
-					break;
 			}
 		} while (option != 0);
 	}
 
 	private void refreshGame() {
-		Console.displayMessage("Pulling Information from Server.....");
 		HttpURLConnection connection = null;
 		try {
 			connection = getConnection("full");
-			int responseCode = connection.getResponseCode();
-			if (responseCode == 200) {
-				String response = readAll(connection.getInputStream());
-				Gson gson = new GsonBuilder()
-						.serializeNulls()
-						.setPrettyPrinting()
-						.disableHtmlEscaping()
-						.create();
-				game = gson.fromJson(response, Game.class);
-				game.format();
+			if (connection != null) {
+				int responseCode = connection.getResponseCode();
+				if (responseCode == 200) {
+					Console.displayMessage("Pulling Information from Server.....");
+					String response = readAll(connection.getInputStream());
+					Gson gson = new GsonBuilder()
+							.serializeNulls()
+							.setPrettyPrinting()
+							.disableHtmlEscaping()
+							.create();
+					game = gson.fromJson(response, Game.class);
+					game.format();
+				}
 			}
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
 			if (connection != null)
 				connection.disconnect();
-			connection = null;
 		}
 	}
 
@@ -111,6 +140,8 @@ class NeptunesPride {
 			Console.displayWarning("No Player Found");
 		} else {
 			Console.displayHeading(player.getAlias());
+			Optional<Map.Entry<String, String>> name = config.getPlayers().entrySet().stream().filter(item -> item.getValue().equalsIgnoreCase(player.getAlias())).findFirst();
+			name.ifPresent(item -> Console.displayItemValue("Name", item.getKey()));
 			Console.displayItemValue("Strength", player.getTotalStrength());
 			Console.displayItemValue("Stars", player.getTotalStars());
 			Console.displayItemValue("Fleets", player.getTotalFleets());
@@ -140,7 +171,13 @@ class NeptunesPride {
 			connection = (HttpURLConnection) url.openConnection();
 		}
 		connection.setRequestMethod("GET");
-		connection.connect();
+		try {
+			Console.displayMessage("Connecting to Server.....");
+			connection.connect();
+		} catch (ConnectException ce) {
+			Console.displayError("Unable to Connect to API");
+			connection = null;
+		}
 		return connection;
 	}
 

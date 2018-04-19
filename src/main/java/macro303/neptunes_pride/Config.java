@@ -5,10 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 
 /**
@@ -39,6 +36,7 @@ class Config {
 		Config config = null;
 		try (FileReader fr = new FileReader(configFile)) {
 			config = gson.fromJson(fr, Config.class);
+		} catch (FileNotFoundException ignored) {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		} finally {
