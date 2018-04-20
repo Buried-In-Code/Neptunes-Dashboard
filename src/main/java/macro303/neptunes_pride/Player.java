@@ -4,11 +4,12 @@ import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Macro303 on 2018-04-17.
  */
-class Player implements Comparable<Player> {
+public class Player implements Comparable<Player> {
 	@SerializedName("total_industry")
 	private int totalIndustry;
 	private int regard;
@@ -39,80 +40,84 @@ class Player implements Comparable<Player> {
 	@SerializedName("karma_to_give")
 	private int karma;
 
-	int getTotalIndustry() {
+	public int getTotalIndustry() {
 		return totalIndustry;
 	}
 
-	int getRegard() {
+	public int getRegard() {
 		return regard;
 	}
 
-	int getTotalScience() {
+	public int getTotalScience() {
 		return totalScience;
 	}
 
-	int getPlayerID() {
+	public int getPlayerID() {
 		return playerID;
 	}
 
-	int getAI() {
+	public int getAI() {
 		return AI;
 	}
 
-	int getHUID() {
+	public int getHUID() {
 		return HUID;
 	}
 
-	int getTotalStars() {
+	public int getTotalStars() {
 		return totalStars;
 	}
 
-	int getTotalFleets() {
+	public int getTotalFleets() {
 		return totalFleets;
 	}
 
-	int getTotalStrength() {
+	public int getTotalStrength() {
 		return totalStrength;
 	}
 
-	String getAlias() {
+	public String getAlias() {
 		return alias;
 	}
 
-	HashMap<String, Technology> getTechnologyMap() {
+	public HashMap<String, Technology> getTechnologyMap() {
 		return technologyMap;
 	}
 
-	int getAvatar() {
+	public int getAvatar() {
 		return avatar;
 	}
 
-	int getConceded() {
+	public int getConceded() {
 		return conceded;
 	}
 
-	int getReady() {
+	public int getReady() {
 		return ready;
 	}
 
-	int getTotalEconomy() {
+	public int getTotalEconomy() {
 		return totalEconomy;
 	}
 
-	int getMissedTurns() {
+	public int getMissedTurns() {
 		return missedTurns;
 	}
 
-	int getKarma() {
+	public int getKarma() {
 		return karma;
 	}
 
-	int getTotalStats() {
+	public int getTotalStats() {
 		return totalEconomy + totalIndustry + totalScience;
 	}
 
 	private int countTechLevels() {
 		return technologyMap.values().stream().mapToInt(Technology::getLevel).sum();
+	}
+
+	public String getName() {
+		return Connection.configProperty.getValue().getPlayers().entrySet().stream().filter(entry -> entry.getValue().equalsIgnoreCase(alias)).findFirst().map(Map.Entry::getKey).orElse(null);
 	}
 
 	@Override

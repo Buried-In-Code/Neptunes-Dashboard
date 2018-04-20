@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by Macro303 on 2018-04-17.
  */
-class Star implements Comparable<Star> {
+public class Star implements Comparable<Star> {
 	@SerializedName("uid")
 	private int starID;
 	@SerializedName("n")
@@ -19,27 +19,27 @@ class Star implements Comparable<Star> {
 	@SerializedName("x")
 	private double xCoordinate;
 
-	int getStarID() {
+	public int getStarID() {
 		return starID;
 	}
 
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
-	int getPlayerID() {
+	public int getPlayerID() {
 		return playerID;
 	}
 
-	String getV() {
+	public String getV() {
 		return v;
 	}
 
-	double getyCoordinate() {
+	public double getyCoordinate() {
 		return yCoordinate;
 	}
 
-	double getxCoordinate() {
+	public double getxCoordinate() {
 		return xCoordinate;
 	}
 

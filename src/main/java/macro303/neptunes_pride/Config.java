@@ -11,7 +11,7 @@ import java.util.HashMap;
 /**
  * Created by Macro303 on 2018-04-18.
  */
-class Config {
+public class Config {
 	private transient static final Gson gson = new GsonBuilder()
 			.serializeNulls()
 			.setPrettyPrinting()
@@ -19,18 +19,18 @@ class Config {
 			.create();
 	private transient static final File configFile = new File("bin", "config.json");
 
-	private long gameID;
+	private final long gameID;
 	@NotNull
-	private HashMap<String, String> players = new HashMap<>();
+	private final HashMap<String, String> players = new HashMap<>();
 	@Nullable
 	private String proxyHostname = null;
 	private int proxyPort = -1;
 
-	Config(long gameID) {
+	public Config(long gameID) {
 		this.gameID = gameID;
 	}
 
-	static Config loadConfig() {
+	public static Config loadConfig() {
 		if (!configFile.getParentFile().exists())
 			configFile.getParentFile().mkdirs();
 		Config config = null;
@@ -48,7 +48,7 @@ class Config {
 		return config;
 	}
 
-	static void saveConfig(@NotNull Config config) {
+	public static void saveConfig(@NotNull Config config) {
 		try (FileWriter fw = new FileWriter(configFile)) {
 			gson.toJson(config, fw);
 		} catch (IOException ioe) {
@@ -56,38 +56,22 @@ class Config {
 		}
 	}
 
-	long getGameID() {
+	public long getGameID() {
 		return gameID;
 	}
 
-	void setGameID(long gameID) {
-		this.gameID = gameID;
-	}
-
 	@NotNull
-	HashMap<String, String> getPlayers() {
+	public HashMap<String, String> getPlayers() {
 		return players;
 	}
 
-	void setPlayers(@NotNull HashMap<String, String> players) {
-		this.players = players;
-	}
-
 	@Nullable
-	String getProxyHostname() {
+	public String getProxyHostname() {
 		return proxyHostname;
 	}
 
-	void setProxyHostname(@Nullable String proxyHostname) {
-		this.proxyHostname = proxyHostname;
-	}
-
-	int getProxyPort() {
+	public int getProxyPort() {
 		return proxyPort;
-	}
-
-	void setProxyPort(int proxyPort) {
-		this.proxyPort = proxyPort;
 	}
 
 	@Override

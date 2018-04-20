@@ -8,7 +8,7 @@ import java.util.TreeSet;
 /**
  * Created by Macro303 on 2018-04-17.
  */
-class Game {
+public class Game {
 	private Object fleets;
 	@SerializedName("fleet_speed")
 	private double fleetSpeed;
@@ -36,7 +36,8 @@ class Game {
 	private int productionCounter;
 	@SerializedName("trade_scanned")
 	private int tradeScanned;
-	private int tick;
+	@SerializedName("tick")
+	private int turn;
 	@SerializedName("trade_cost")
 	private int tradeCost;
 	private String name;
@@ -51,107 +52,107 @@ class Game {
 	@SerializedName("turn_based_time_out")
 	private int timeOut;
 
-	Object getFleets() {
+	public Object getFleets() {
 		return fleets;
 	}
 
-	double getFleetSpeed() {
+	public double getFleetSpeed() {
 		return fleetSpeed;
 	}
 
-	boolean isPaused() {
+	public boolean isPaused() {
 		return paused;
 	}
 
-	int getProductions() {
+	public int getProductions() {
 		return productions;
 	}
 
-	int getTickFragment() {
+	public int getTickFragment() {
 		return tickFragment;
 	}
 
-	long getNow() {
+	public long getNow() {
 		return now;
 	}
 
-	int getTickRate() {
+	public int getTickRate() {
 		return tickRate;
 	}
 
-	int getProductionRate() {
+	public int getProductionRate() {
 		return productionRate;
 	}
 
-	TreeSet<Star> getStars() {
+	public TreeSet<Star> getStars() {
 		return starSet;
 	}
 
-	int getStarVictory() {
+	public int getStarVictory() {
 		return starVictory;
 	}
 
-	int getGameOver() {
+	public int getGameOver() {
 		return gameOver;
 	}
 
-	boolean isStarted() {
+	public boolean isStarted() {
 		return started;
 	}
 
-	long getStartTime() {
+	public long getStartTime() {
 		return startTime;
 	}
 
-	int getTotalStars() {
+	public int getTotalStars() {
 		return totalStars;
 	}
 
-	int getProductionCounter() {
+	public int getProductionCounter() {
 		return productionCounter;
 	}
 
-	int getTradeScanned() {
+	public int getTradeScanned() {
 		return tradeScanned;
 	}
 
-	int getTick() {
-		return tick;
+	public int getTurn() {
+		return turn;
 	}
 
-	int getTradeCost() {
+	public int getTradeCost() {
 		return tradeCost;
 	}
 
-	String getName() {
+	public String getName() {
 		return name;
 	}
 
-	int getPlayerUID() {
+	public int getPlayerUID() {
 		return playerUID;
 	}
 
-	int getAdmin() {
+	public int getAdmin() {
 		return admin;
 	}
 
-	int getTurnBased() {
+	public int getTurnBased() {
 		return turnBased;
 	}
 
-	int getWar() {
+	public int getWar() {
 		return war;
 	}
 
-	TreeSet<Player> getPlayers() {
+	public TreeSet<Player> getPlayers() {
 		return playerSet;
 	}
 
-	int getTimeOut() {
+	public int getTimeOut() {
 		return timeOut;
 	}
 
-	void format(){
+	public void format(){
 		starSet = new TreeSet<>(stars.values());
 		playerSet = new TreeSet<>(players.values());
 	}
@@ -177,7 +178,7 @@ class Game {
 		if (totalStars != game.totalStars) return false;
 		if (productionCounter != game.productionCounter) return false;
 		if (tradeScanned != game.tradeScanned) return false;
-		if (tick != game.tick) return false;
+		if (turn != game.turn) return false;
 		if (tradeCost != game.tradeCost) return false;
 		if (playerUID != game.playerUID) return false;
 		if (admin != game.admin) return false;
@@ -211,7 +212,7 @@ class Game {
 		result = 31 * result + totalStars;
 		result = 31 * result + productionCounter;
 		result = 31 * result + tradeScanned;
-		result = 31 * result + tick;
+		result = 31 * result + turn;
 		result = 31 * result + tradeCost;
 		result = 31 * result + (name != null ? name.hashCode() : 0);
 		result = 31 * result + playerUID;
@@ -242,7 +243,7 @@ class Game {
 				", totalStars=" + totalStars +
 				", productionCounter=" + productionCounter +
 				", tradeScanned=" + tradeScanned +
-				", tick=" + tick +
+				", turn=" + turn +
 				", tradeCost=" + tradeCost +
 				", name='" + name + '\'' +
 				", playerUID=" + playerUID +
