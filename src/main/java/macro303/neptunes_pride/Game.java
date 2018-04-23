@@ -9,48 +9,48 @@ import java.util.TreeSet;
  * Created by Macro303 on 2018-04-17.
  */
 public class Game {
-	private Object fleets;
+	private Object fleets = null;
 	@SerializedName("fleet_speed")
-	private double fleetSpeed;
-	private boolean paused;
-	private int productions;
+	private double fleetSpeed = 0;
+	private boolean paused = true;
+	private int productions = 0;
 	@SerializedName("tick_fragment")
-	private int tickFragment;
-	private long now;
+	private int tickFragment = 0;
+	private long now = 0;
 	@SerializedName("tick_rate")
-	private int tickRate;
+	private int tickRate = 0;
 	@SerializedName("production_rate")
-	private int productionRate;
-	private HashMap<String, Star> stars;
-	private TreeSet<Star> starSet;
+	private int productionRate = 0;
+	private HashMap<String, Star> stars = new HashMap<>();
+	private TreeSet<Star> starSet = new TreeSet<>();
 	@SerializedName("stars_for_victory")
-	private int starVictory;
+	private int starVictory = 0;
 	@SerializedName("game_over")
-	private int gameOver;
-	private boolean started;
+	private int gameOver = 0;
+	private boolean started = false;
 	@SerializedName("start_time")
-	private long startTime;
+	private long startTime = 0;
 	@SerializedName("total_stars")
-	private int totalStars;
+	private int totalStars = 0;
 	@SerializedName("production_counter")
-	private int productionCounter;
+	private int productionCounter = 0;
 	@SerializedName("trade_scanned")
-	private int tradeScanned;
+	private int tradeScanned = 0;
 	@SerializedName("tick")
-	private int turn;
+	private int turn = 0;
 	@SerializedName("trade_cost")
-	private int tradeCost;
-	private String name;
+	private int tradeCost = 0;
+	private String name = "";
 	@SerializedName("player_uid")
-	private int playerUID;
-	private int admin;
+	private int playerUID = 0;
+	private int admin = 0;
 	@SerializedName("turn_based")
-	private int turnBased;
-	private int war;
-	private HashMap<String, Player> players;
-	private TreeSet<Player> playerSet;
+	private int turnBased = 0;
+	private int war = 0;
+	private HashMap<String, Player> players = new HashMap<>();
+	private TreeSet<Player> playerSet = new TreeSet<>();
 	@SerializedName("turn_based_time_out")
-	private long timeOut;
+	private long timeOut = 0;
 
 	public Object getFleets() {
 		return fleets;

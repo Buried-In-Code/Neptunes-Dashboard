@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class NeptunesModel {
 	public final SimpleObjectProperty<Game> gameProperty = new SimpleObjectProperty<>(null);
 	public final SimpleStringProperty nameProperty = new SimpleStringProperty(null);
+	public final SimpleBooleanProperty startedProperty = new SimpleBooleanProperty(false);
 	public final SimpleBooleanProperty pausedProperty = new SimpleBooleanProperty(true);
 	public final SimpleStringProperty victoryProperty = new SimpleStringProperty("0/0");
 	public final ObservableList<Player> playerProperty = FXCollections.observableList(new ArrayList<>());
@@ -48,6 +49,7 @@ public class NeptunesModel {
 		playerProperty.clear();
 		gameProperty.setValue(game);
 		nameProperty.setValue(game == null ? null : game.getName());
+		startedProperty.setValue(game == null ? null : game.isStarted());
 		pausedProperty.setValue(game == null ? null : game.isPaused());
 		victoryProperty.setValue(game == null ? "0/0" : game.getStarVictory() + "/" + game.getTotalStars());
 		if (game != null)

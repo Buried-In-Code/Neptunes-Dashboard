@@ -32,6 +32,7 @@ public class NeptunesFX extends Application {
 		Scene scene = new Scene(root, 600, 800);
 		primaryStage.setTitle("Neptunes Pride");
 		primaryStage.setScene(scene);
+		primaryStage.setMaximized(true);
 		primaryStage.show();
 	}
 
