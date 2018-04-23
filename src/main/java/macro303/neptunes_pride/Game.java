@@ -50,7 +50,7 @@ public class Game {
 	private HashMap<String, Player> players;
 	private TreeSet<Player> playerSet;
 	@SerializedName("turn_based_time_out")
-	private int timeOut;
+	private long timeOut;
 
 	public Object getFleets() {
 		return fleets;
@@ -148,7 +148,7 @@ public class Game {
 		return playerSet;
 	}
 
-	public int getTimeOut() {
+	public long getTimeOut() {
 		return timeOut;
 	}
 
@@ -187,8 +187,10 @@ public class Game {
 		if (timeOut != game.timeOut) return false;
 		if (fleets != null ? !fleets.equals(game.fleets) : game.fleets != null) return false;
 		if (stars != null ? !stars.equals(game.stars) : game.stars != null) return false;
+		if (starSet != null ? !starSet.equals(game.starSet) : game.starSet != null) return false;
 		if (name != null ? !name.equals(game.name) : game.name != null) return false;
-		return players != null ? players.equals(game.players) : game.players == null;
+		if (players != null ? !players.equals(game.players) : game.players != null) return false;
+		return playerSet != null ? playerSet.equals(game.playerSet) : game.playerSet == null;
 	}
 
 	@Override
@@ -205,6 +207,7 @@ public class Game {
 		result = 31 * result + tickRate;
 		result = 31 * result + productionRate;
 		result = 31 * result + (stars != null ? stars.hashCode() : 0);
+		result = 31 * result + (starSet != null ? starSet.hashCode() : 0);
 		result = 31 * result + starVictory;
 		result = 31 * result + gameOver;
 		result = 31 * result + (started ? 1 : 0);
@@ -220,7 +223,8 @@ public class Game {
 		result = 31 * result + turnBased;
 		result = 31 * result + war;
 		result = 31 * result + (players != null ? players.hashCode() : 0);
-		result = 31 * result + timeOut;
+		result = 31 * result + (playerSet != null ? playerSet.hashCode() : 0);
+		result = 31 * result + (int) (timeOut ^ (timeOut >>> 32));
 		return result;
 	}
 
@@ -236,6 +240,7 @@ public class Game {
 				", tickRate=" + tickRate +
 				", productionRate=" + productionRate +
 				", stars=" + stars +
+				", starSet=" + starSet +
 				", starVictory=" + starVictory +
 				", gameOver=" + gameOver +
 				", started=" + started +
@@ -251,6 +256,7 @@ public class Game {
 				", turnBased=" + turnBased +
 				", war=" + war +
 				", players=" + players +
+				", playerSet=" + playerSet +
 				", timeOut=" + timeOut +
 				'}';
 	}
