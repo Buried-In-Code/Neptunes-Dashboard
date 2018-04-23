@@ -6,7 +6,7 @@
 
 	<groupId>nz.co.macro303</groupId>
 	<artifactId>neptunes-pride</artifactId>
-	<version>0.2</version>
+	<version>0.3</version>
 	<packaging>jar</packaging>
 	<name>Neptunes Pride</name>
 
@@ -32,8 +32,8 @@
 			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
+			<groupId>com.github.salomonbrys.kotson</groupId>
+			<artifactId>kotson</artifactId>
 			<version>RELEASE</version>
 		</dependency>
 		<dependency>

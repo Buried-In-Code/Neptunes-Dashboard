@@ -1,11 +1,11 @@
-# Neptunes Pride _0.2_
-_TODO Description_
+# Neptunes Pride _0.3_
+Pulls from the Neptune Pride's API to gather simple game information and tries to display it in a simple UI
 
 ## Dependencies
 - JDK 1.8
 - [kotlin-stdlib-jdk: 1.2.40](https://kotlinlang.org)
 - [tornadofx: RELEASE {1.7.15}](https://github.com/edvin/tornadofx)
-- [gson: RELEASE {2.8.2}](https://github.com/google/gson)
+- [kotson: RELEASE {2.5.0}](https://github.com/SalomonBrys/Kotson)
 - [console: RELEASE {1.0}](https://github.com/Macro303/Console)
 
 ## Install

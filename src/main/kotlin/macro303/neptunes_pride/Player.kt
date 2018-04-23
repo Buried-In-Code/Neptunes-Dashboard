@@ -56,7 +56,7 @@ class Player : Comparable<Player> {
 	val name: String?
 		get() = Connection.configProperty.value.players.entries.firstOrNull {
 			it.value.equals(alias, ignoreCase = true)
-		}?.value
+		}?.key
 
 	private fun countTotalStats(): Int {
 		return totalEconomy + totalIndustry + totalScience
