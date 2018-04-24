@@ -6,15 +6,15 @@ import tornadofx.*
 
 internal class NeptunesStyles : Stylesheet() {
 	private val regularButtonFont = loadFont(
-		path = "/fonts/${Connection.configProperty?.value?.regularButtonFontName ?: "OverlockSC"}-Regular.ttf",
+		path = "/fonts/${Connection.configProperty.value?.regularButtonFontName ?: "OverlockSC"}-Regular.ttf",
 		size = 14
 	)!!
 	private val regularContentFont = loadFont(
-		path = "/fonts/${Connection.configProperty?.value?.regularContentFontName ?: "LifeSavers"}-Regular.ttf",
+		path = "/fonts/${Connection.configProperty.value?.regularContentFontName ?: "LifeSavers"}-Regular.ttf",
 		size = 14
 	)!!
 	private val boldContentFont = loadFont(
-		path = "/fonts/${Connection.configProperty?.value?.boldContentFontName ?: "LifeSavers"}-Bold.ttf",
+		path = "/fonts/${Connection.configProperty.value?.boldContentFontName ?: "LifeSavers"}-Bold.ttf",
 		size = 14
 	)!!
 

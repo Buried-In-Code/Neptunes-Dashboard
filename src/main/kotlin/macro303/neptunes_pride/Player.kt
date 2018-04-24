@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 /**
  * Created by Macro303 on 2018-04-17.
  */
-class Player : Comparable<Player> {
+internal class Player : Comparable<Player> {
 	@SerializedName("total_industry")
 	var totalIndustry: Int = 0
 		private set

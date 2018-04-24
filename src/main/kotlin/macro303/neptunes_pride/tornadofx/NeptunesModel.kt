@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import macro303.console.Console
 import macro303.neptunes_pride.Config
 import macro303.neptunes_pride.Connection
@@ -18,18 +19,18 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 internal class NeptunesModel : ViewModel() {
-	val gameProperty = SimpleObjectProperty<Game>(null)
-	val nameProperty = SimpleStringProperty(null)
-	val startedProperty = SimpleBooleanProperty(false)
-	val pausedProperty = SimpleBooleanProperty(true)
-	val victoryProperty = SimpleStringProperty("0/0")
-	val playerProperty = FXCollections.observableList(ArrayList<Player>())
-	val turnProperty = SimpleIntegerProperty(0)
-	val turnEveryProperty = SimpleStringProperty(null)
-	val nextTurnProperty = SimpleStringProperty(null)
-	val paydayEveryProperty = SimpleStringProperty(null)
-	val nextPaydayProperty = SimpleStringProperty(null)
-	val lastUpdatedProperty = SimpleStringProperty(null)
+	private val gameProperty: SimpleObjectProperty<Game> = SimpleObjectProperty<Game>(null)
+	val nameProperty: SimpleStringProperty = SimpleStringProperty(null)
+	val startedProperty: SimpleBooleanProperty = SimpleBooleanProperty(false)
+	val pausedProperty: SimpleBooleanProperty = SimpleBooleanProperty(true)
+	val victoryProperty: SimpleStringProperty = SimpleStringProperty("0/0")
+	val playerProperty: ObservableList<Player> = FXCollections.observableList(ArrayList<Player>())
+	val turnProperty: SimpleIntegerProperty = SimpleIntegerProperty(0)
+	val turnEveryProperty: SimpleStringProperty = SimpleStringProperty(null)
+	val nextTurnProperty: SimpleStringProperty = SimpleStringProperty(null)
+	val paydayEveryProperty: SimpleStringProperty = SimpleStringProperty(null)
+	val nextPaydayProperty: SimpleStringProperty = SimpleStringProperty(null)
+	val lastUpdatedProperty: SimpleStringProperty = SimpleStringProperty(null)
 
 	init {
 		loadCustomConfig()
@@ -55,25 +56,41 @@ internal class NeptunesModel : ViewModel() {
 	private fun setGame(game: Game?) {
 		playerProperty.clear()
 		gameProperty.value = game
-		nameProperty.value = game?.name
-		startedProperty.value = game?.isStarted
-		pausedProperty.value = game?.isPaused
-		victoryProperty.value = "${game?.starVictory ?: 0}/${game?.totalStars ?: 0}"
-		if (game != null)
-			playerProperty.addAll(game.players)
-		turnProperty.value = game?.turn?.div(12) ?: 0
-		turnEveryProperty.value = "${game?.productionRate?.div(2) ?: 0} hrs"
-		var noon = LocalTime.now().until(LocalTime.of(13, 0, 0, 0), ChronoUnit.MINUTES)
-		if (noon <= 0)
-			noon += (24 * 60)
-		var midnight = LocalTime.now().until(LocalTime.of(1, 0, 0, 0), ChronoUnit.MINUTES)
-		if (midnight <= 0)
-			midnight += (24 * 60)
-		nextTurnProperty.value =
-				if (midnight in 1..(noon - 1)) "${midnight / 60}:${midnight % 60}" else "${noon / 60}:${noon % 60}"
-		paydayEveryProperty.value = "${game?.productionRate ?: 0} hrs"
-		nextPaydayProperty.value = "${noon / 60}:${noon % 60}"
-		lastUpdatedProperty.value =
-				if (game == null) null else LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm"))
+		if(game != null){
+			nameProperty.value = game.name
+			startedProperty.value = game.isStarted
+			pausedProperty.value = game.isPaused
+			victoryProperty.value = "${game.starVictory}/${game.totalStars}"
+			playerProperty.addAll(game.getPlayers())
+			turnProperty.value = game.tick.div(game.payday.div(2))
+			if(game.isPaused) {
+				turnEveryProperty.value = "Paused"
+				nextTurnProperty.value = "Paused"
+				paydayEveryProperty.value = "Paused"
+				nextPaydayProperty.value = "Paused"
+			}else {
+				turnEveryProperty.value = "${game.payday.div(2)} hrs"
+				var noon = LocalTime.now().until(LocalTime.of(13, 0, 0, 0), ChronoUnit.MINUTES)
+				if (noon <= 0)
+					noon += (24 * 60)
+				var midnight = LocalTime.now().until(LocalTime.of(1, 0, 0, 0), ChronoUnit.MINUTES)
+				if (midnight <= 0)
+					midnight += (24 * 60)
+				nextTurnProperty.value = if (midnight in 1..(noon - 1)) "${midnight / 60}:${midnight % 60}" else "${noon / 60}:${noon % 60}"
+				paydayEveryProperty.value = "${game.payday} hrs"
+				nextPaydayProperty.value = "${noon / 60}:${noon % 60}"
+			}
+		}else{
+			nameProperty.value = null
+			startedProperty.value = null
+			pausedProperty.value = null
+			victoryProperty.value = null
+			turnProperty.value = null
+			turnEveryProperty.value = null
+			nextTurnProperty.value = null
+			paydayEveryProperty.value = null
+			nextPaydayProperty.value = null
+		}
+		lastUpdatedProperty.value = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy-MM-dd HH:mm"))
 	}
 }

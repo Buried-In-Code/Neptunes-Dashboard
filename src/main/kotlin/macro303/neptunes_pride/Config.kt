@@ -9,16 +9,26 @@ import java.util.*
  * Created by Macro303 on 2018-04-18.
  */
 internal data class Config(val gameID: Long) {
-	val players = HashMap<String, String>()
-	val proxyHostname: String? = null
-	val proxyPort: Int? = null
-	val headerSize = 40.px
-	val buttonSize = 22.px
-	val informationSize = 22.px
-	val contentSize = 16.px
-	val regularButtonFontName: String = "OverlockSC"
-	val regularContentFontName: String = "LifeSavers"
-	val boldContentFontName: String = "LifeSavers"
+	var players = HashMap<String, String>()
+		private set
+	var proxyHostname: String? = null
+		private set
+	var proxyPort: Int? = null
+		private set
+	var headerSize = 40.px
+		private set
+	var buttonSize = 22.px
+		private set
+	var informationSize = 22.px
+		private set
+	var contentSize = 16.px
+		private set
+	var regularButtonFontName: String = "OverlockSC"
+		private set
+	var regularContentFontName: String = "LifeSavers"
+		private set
+	var boldContentFontName: String = "LifeSavers"
+		private set
 
 	companion object {
 		private val gson = GsonBuilder()

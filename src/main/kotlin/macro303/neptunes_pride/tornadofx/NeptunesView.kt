@@ -7,7 +7,6 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.TabPane
 import javafx.scene.layout.GridPane
-import macro303.neptunes_pride.Connection
 import macro303.neptunes_pride.Player
 import tornadofx.*
 
@@ -237,9 +236,6 @@ internal class NeptunesView : View("Neptunes Pride") {
 				hbox(spacing = 5) {
 					alignment = Pos.CENTER
 					button(text = "Refresh") {
-						disableWhen {
-							Connection.connectionUnavailableProperty
-						}
 						setOnAction {
 							model.refreshGame()
 						}
