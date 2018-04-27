@@ -10,64 +10,66 @@ import java.time.Instant
 internal class Game {
 	var fleets: Any? = null
 		private set
-	@SerializedName("fleet_speed")
+	@SerializedName(value = "fleet_speed")
 	var fleetSpeed: Double = 0.0
 		private set
+	@SerializedName(value = "paused")
 	var isPaused: Boolean = true
 		private set
 	@SerializedName(value = "productions")
 	var turn: Int = 0
 		private set
-	@SerializedName("tick_fragment")
+	@SerializedName(value = "tick_fragment")
 	var tickFragment: Int = 0
 		private set
 	var now: Long = 0
 		private set
-	@SerializedName("tick_rate")
+	@SerializedName(value = "tick_rate")
 	var tickRate: Int = 0
 		private set
-	@SerializedName("production_rate")
+	@SerializedName(value = "production_rate")
 	var payday: Int = 0
 		private set
 	private val stars: HashMap<String, Star> = HashMap()
-	@SerializedName("stars_for_victory")
+	@SerializedName(value = "stars_for_victory")
 	var starVictory: Int = 0
 		private set
-	@SerializedName("game_over")
+	@SerializedName(value = "game_over")
 	var gameOver: Int = 0
 		private set
+	@SerializedName(value = "started")
 	var isStarted: Boolean = false
 		private set
-	@SerializedName("start_time")
+	@SerializedName(value = "start_time")
 	private var startTime: Long = 0
-	@SerializedName("total_stars")
+	@SerializedName(value = "total_stars")
 	var totalStars: Int = 0
 		private set
-	@SerializedName("production_counter")
+	@SerializedName(value = "production_counter")
 	var productionCounter: Int = 0
 		private set
-	@SerializedName("trade_scanned")
+	@SerializedName(value = "trade_scanned")
 	var tradeScanned: Int = 0
 		private set
 	var tick: Int = 0
 		private set
-	@SerializedName("trade_cost")
+	@SerializedName(value = "trade_cost")
 	var tradeCost: Int = 0
 		private set
 	var name: String = ""
 		private set
-	@SerializedName("player_uid")
+	@SerializedName(value = "player_uid")
 	var playerUID: Int = 0
 		private set
 	var admin: Int = 0
 		private set
-	@SerializedName("turn_based")
+	@SerializedName(value = "turn_based")
 	var turnBased: Int = 0
 		private set
 	var war: Int = 0
 		private set
 	private val players = HashMap<String, Player>()
-	@SerializedName("turn_based_time_out")
+	@SerializedName(value = "turn_based_time_out")
 	var timeOut: Long = 0
 		private set
 

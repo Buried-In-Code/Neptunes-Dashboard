@@ -1,4 +1,4 @@
-# Neptunes Pride _0.3_
+# Neptunes Pride _0.4.1_
 Pulls from the Neptune Pride's API to gather simple game information and tries to display it in a simple UI
 
 ## Dependencies
@@ -9,13 +9,12 @@ Pulls from the Neptune Pride's API to gather simple game information and tries t
 - [console: RELEASE {1.0}](https://github.com/Macro303/Console)
 
 ## Install
-1. Clone **Console**
-2. `mvn clean install` on the **Console** project
-3. Clone **Neptunes Pride**
-4. `mvn clean package` on the **Neptunes Pride** project
-5. Move the `neptunes-pride-{version}-jfx.jar` and `lib` folder to desired install location
-6. Create `bin` folder
-7. Run `neptunes-pride-{version}-jfx.jar`
+1. Make sure you have all the dependencies
+2. Clone **Neptunes Pride**
+3. `mvn clean package` on the **Neptunes Pride** project
+4. Move the `neptunes-pride-{version}-jfx.jar` and `lib` folder to desired install location
+5. Create `bin` folder
+6. Run `neptunes-pride-{version}-jfx.jar`
 
 ## Notes
 Console is not available from maven repo. Cloning from github is required.
