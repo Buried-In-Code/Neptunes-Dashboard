@@ -1,9 +1,9 @@
 package macro303.neptunes_pride
 
 import com.google.gson.GsonBuilder
-import javafx.beans.property.SimpleObjectProperty
 import javafx.concurrent.Task
 import macro303.console.Console
+import macro303.neptunes_pride.game.Game
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -56,7 +56,7 @@ internal class Connection : Task<Game>() {
 	}
 
 	private fun getApiAddress(): String {
-		return "$apiAddress${configProperty.value.gameID}/"
+		return "$apiAddress${config.gameID}/"
 	}
 
 	@Throws(IOException::class)
@@ -64,11 +64,8 @@ internal class Connection : Task<Game>() {
 		var connection: HttpURLConnection?
 		Console.displayMessage(message = "API Address: ${getApiAddress()}$address")
 		val url = URL(getApiAddress() + address)
-		connection = if (configProperty.value.proxyHostname != null && configProperty.value.proxyPort != -1) {
-			val proxy = Proxy(
-				Proxy.Type.HTTP,
-				InetSocketAddress(configProperty.value.proxyHostname!!, configProperty.value.proxyPort!!)
-			)
+		connection = if (config.proxyHostname != null && config.proxyPort != -1) {
+			val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(config.proxyHostname!!, config.proxyPort!!))
 			url.openConnection(proxy) as HttpURLConnection
 		} else {
 			url.openConnection() as HttpURLConnection
@@ -98,11 +95,11 @@ internal class Connection : Task<Game>() {
 	}
 
 	companion object {
-		val configProperty = SimpleObjectProperty<Config>(null)
+		lateinit var config: Config
 		private const val apiAddress = "http://nptriton.cqproject.net/game/"
 
-		fun refreshConfig() {
-			configProperty.set(Config.loadConfig())
+		private fun refreshConfig() {
+			config = Config.loadConfig()
 		}
 	}
 }

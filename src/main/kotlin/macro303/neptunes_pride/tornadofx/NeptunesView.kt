@@ -7,11 +7,13 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.TabPane
 import javafx.scene.layout.GridPane
-import macro303.neptunes_pride.Player
+import macro303.neptunes_pride.player.Player
+import macro303.neptunes_pride.player.PlayerViewModel
 import tornadofx.*
 
 internal class NeptunesView : View("Neptunes Pride") {
 	private val model: NeptunesModel by inject()
+	val playerModel = PlayerViewModel()
 
 	override val root = borderpane {
 		minHeight = 400.toDouble()
@@ -38,7 +40,15 @@ internal class NeptunesView : View("Neptunes Pride") {
 							label(text = "Started:") {
 								addClass(NeptunesStyles.subHeaderLabel)
 							}
-							label(observable = model.startedProperty) {
+							label(observable = model.hasStartedProperty) {
+								addClass(NeptunesStyles.informationLabel)
+							}
+						}
+						row {
+							label(text = "Started Time:") {
+								addClass(NeptunesStyles.subHeaderLabel)
+							}
+							label(observable = model.startTimeProperty) {
 								addClass(NeptunesStyles.informationLabel)
 							}
 						}
@@ -46,7 +56,7 @@ internal class NeptunesView : View("Neptunes Pride") {
 							label(text = "Paused:") {
 								addClass(NeptunesStyles.subHeaderLabel)
 							}
-							label(observable = model.pausedProperty) {
+							label(observable = model.isPausedProperty) {
 								addClass(NeptunesStyles.informationLabel)
 							}
 						}
@@ -59,18 +69,26 @@ internal class NeptunesView : View("Neptunes Pride") {
 							}
 						}
 						row {
-							label(text = "Total Turns:") {
+							label(text = "Game Over:") {
 								addClass(NeptunesStyles.subHeaderLabel)
 							}
-							label(observable = model.turnProperty) {
+							label(observable = model.finishedProperty) {
 								addClass(NeptunesStyles.informationLabel)
 							}
 						}
 						row {
-							label(text = "Turn Every:") {
+							label(text = "Current Turn:") {
 								addClass(NeptunesStyles.subHeaderLabel)
 							}
-							label(observable = model.turnEveryProperty) {
+							label(observable = model.currentTurnProperty) {
+								addClass(NeptunesStyles.informationLabel)
+							}
+						}
+						row {
+							label(text = "Turn Rate:") {
+								addClass(NeptunesStyles.subHeaderLabel)
+							}
+							label(observable = model.turnRateProperty) {
 								addClass(NeptunesStyles.informationLabel)
 							}
 						}
@@ -83,10 +101,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							}
 						}
 						row {
-							label(text = "Payday Every:") {
+							label(text = "Payday Rate:") {
 								addClass(NeptunesStyles.subHeaderLabel)
 							}
-							label(observable = model.paydayEveryProperty) {
+							label(observable = model.payRateProperty) {
 								addClass(NeptunesStyles.informationLabel)
 							}
 						}
@@ -101,38 +119,38 @@ internal class NeptunesView : View("Neptunes Pride") {
 					}
 				}
 				tab(text = "Players") {
-					tableview(items = model.playerProperty) {
+					tableview(items = model.playersProperty) {
 						smartResize()
 						column<Player, String>(title = "Alias") {
-							SimpleStringProperty(it.value.alias)
+							SimpleStringProperty(it.value?.alias ?: "INVALID")
 						}.remainingWidth()
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
 							}
 						column<Player, String>(title = "Name") {
-							SimpleStringProperty(it.value.name)
+							SimpleStringProperty(it.value?.name ?: "INVALID")
 						}.remainingWidth()
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
 							}
-						column<Player, Int>(title = "Strength") {
-							SimpleIntegerProperty(it.value.totalStrength).asObject()
+						column<Player, Int>(title = "Stars") {
+							SimpleIntegerProperty(it.value?.totalStars ?: -1).asObject()
 						}.contentWidth()
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
 							}
-						column<Player, Int>(title = "Stars") {
-							SimpleIntegerProperty(it.value.totalStars).asObject()
+						column<Player, Int>(title = "Ships") {
+							SimpleIntegerProperty(it.value?.totalShips ?: -1).asObject()
 						}.contentWidth()
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
 							}
 						column<Player, Int>(title = "Fleets") {
-							SimpleIntegerProperty(it.value.totalFleets).asObject()
+							SimpleIntegerProperty(it.value?.totalFleets ?: -1).asObject()
 						}.contentWidth()
 							.cellFormat {
 								alignment = Pos.CENTER
@@ -140,21 +158,21 @@ internal class NeptunesView : View("Neptunes Pride") {
 							}
 						nestedColumn(title = "Total Stats") {
 							column<Player, Int>(title = "Economy") {
-								SimpleIntegerProperty(it.value.totalEconomy).asObject()
+								SimpleIntegerProperty(it.value?.totalEconomy ?: -1).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Industry") {
-								SimpleIntegerProperty(it.value.totalIndustry).asObject()
+								SimpleIntegerProperty(it.value?.totalIndustry ?: -1).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Science") {
-								SimpleIntegerProperty(it.value.totalScience).asObject()
+								SimpleIntegerProperty(it.value?.totalScience ?: -1).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
@@ -163,55 +181,62 @@ internal class NeptunesView : View("Neptunes Pride") {
 						}
 						nestedColumn(title = "Technology Level") {
 							column<Player, Int>(title = "Banking") {
-								SimpleIntegerProperty(it.value.technologyMap["banking"]?.level ?: 0).asObject()
+								SimpleIntegerProperty(it.value?.technologyMap?.get("banking")?.level ?: -1).asObject()
+							}.contentWidth()
+								.cellFormat {
+									alignment = Pos.CENTER
+									text = it.toString()
+								}
+							column<Player, Int>(title = "Experimentation") {
+								SimpleIntegerProperty(it.value?.technologyMap?.get("research")?.level ?: -1).asObject()
+							}.contentWidth()
+								.cellFormat {
+									alignment = Pos.CENTER
+									text = it.toString()
+								}
+							column<Player, Int>(title = "Hyperspace Range") {
+								SimpleIntegerProperty(
+									it.value?.technologyMap?.get("propulsion")?.level ?: -1
+								).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Manufacturing") {
-								SimpleIntegerProperty(it.value.technologyMap["manufacturing"]?.level ?: 0).asObject()
-							}.contentWidth()
-								.cellFormat {
-									alignment = Pos.CENTER
-									text = it.toString()
-								}
-							column<Player, Int>(title = "Propulsion") {
-								SimpleIntegerProperty(it.value.technologyMap["propulsion"]?.level ?: 0).asObject()
-							}.contentWidth()
-								.cellFormat {
-									alignment = Pos.CENTER
-									text = it.toString()
-								}
-							column<Player, Int>(title = "Research") {
-								SimpleIntegerProperty(it.value.technologyMap["research"]?.level ?: 0).asObject()
+								SimpleIntegerProperty(
+									it.value?.technologyMap?.get("manufacturing")?.level ?: -1
+								).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Scanning") {
-								SimpleIntegerProperty(it.value.technologyMap["scanning"]?.level ?: 0).asObject()
+								SimpleIntegerProperty(it.value?.technologyMap?.get("scanning")?.level ?: -1).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Terraforming") {
-								SimpleIntegerProperty(it.value.technologyMap["terraforming"]?.level ?: 0).asObject()
+								SimpleIntegerProperty(
+									it.value?.technologyMap?.get("terraforming")?.level ?: -1
+								).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 							column<Player, Int>(title = "Weapons") {
-								SimpleIntegerProperty(it.value.technologyMap["weapons"]?.level ?: 0).asObject()
+								SimpleIntegerProperty(it.value?.technologyMap?.get("weapons")?.level ?: -1).asObject()
 							}.contentWidth()
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
 						}
+						bindSelected(playerModel)
 					}
 				}
 				tab(text = "Stars") {
