@@ -1,6 +1,7 @@
 package macro303.neptunes_pride
 
 import com.google.gson.GsonBuilder
+import macro303.console.Console
 import tornadofx.*
 import java.io.*
 import java.util.*
@@ -45,7 +46,7 @@ internal data class Config(val gameID: Long) {
 		private val configFile = File(DATA, "config.json")
 
 		@JvmStatic
-		fun loadConfig(): Config? {
+		fun loadConfig(): Config {
 			var config: Config? = null
 			try {
 				FileReader(configFile).use { fr -> config = gson.fromJson(fr, Config::class.java) }
@@ -54,11 +55,12 @@ internal data class Config(val gameID: Long) {
 				ioe.printStackTrace()
 			} finally {
 				if (config == null) {
+					Console.displayError("Config couldn't be loaded new config has been created. Please add your details and reload")
 					saveConfig(Config(1))
 					config = loadConfig()
 				}
 			}
-			return config
+			return config!!
 		}
 
 		@JvmStatic
