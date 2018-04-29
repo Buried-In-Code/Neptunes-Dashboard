@@ -8,7 +8,7 @@ import macro303.neptunes_pride.technology.Technology
  * Created by Macro303 on 2018-04-17.
  */
 internal data class Player(
-	@SerializedName(value = "ai") private val ai: Int,
+	private val ai: Int,
 	val alias: String,
 	val avatar: Int,
 	private val conceded: Int,

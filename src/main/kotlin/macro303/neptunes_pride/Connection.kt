@@ -61,16 +61,15 @@ internal class Connection : Task<Game>() {
 
 	@Throws(IOException::class)
 	private fun getConnection(address: String): HttpURLConnection? {
-		var connection: HttpURLConnection?
 		Console.displayMessage(message = "API Address: ${getApiAddress()}$address")
 		val url = URL(getApiAddress() + address)
-		connection = if (config.proxyHostname != null && config.proxyPort != -1) {
+		var connection: HttpURLConnection? = if (config.proxyHostname != null && config.proxyPort != null) {
 			val proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(config.proxyHostname!!, config.proxyPort!!))
 			url.openConnection(proxy) as HttpURLConnection
 		} else {
 			url.openConnection() as HttpURLConnection
 		}
-		connection.requestMethod = "GET"
+		connection!!.requestMethod = "GET"
 		try {
 			connection.connect()
 			Console.displayMessage("Connected Successfully")

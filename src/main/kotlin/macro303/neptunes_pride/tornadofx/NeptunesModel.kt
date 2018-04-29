@@ -50,11 +50,11 @@ internal class NeptunesModel : ViewModel() {
 		if (game != null) {
 			nameProperty.value = game.name
 			hasStartedProperty.value = game.hasStarted
-			startTimeProperty.value = game.startTime.format(dateTimeFormat)
+			startTimeProperty.value = game.startDateTime.format(dateTimeFormat)
 			isPausedProperty.value = game.isPaused
 			victoryProperty.value = "${game.starVictory}/${game.totalStars}"
 			finishedProperty.value = game.isGameOver
-			playersProperty.addAll(game.players)
+			playersProperty.addAll(game.playerSet)
 			currentTurnProperty.value = game.tick.div(game.payRate.div(2))
 			if (game.isPaused) {
 				turnRateProperty.value = "Paused"

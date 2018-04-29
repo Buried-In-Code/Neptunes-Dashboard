@@ -15,6 +15,9 @@ internal class StarViewModel : ItemViewModel<Star>() {
 	val starID: IntegerProperty = bind {
 		SimpleIntegerProperty(item?.starID ?: -1)
 	}
+	val visible: BooleanProperty = bind {
+		SimpleBooleanProperty(item?.visible ?: false)
+	}
 	val xCoordinate: DoubleProperty = bind {
 		SimpleDoubleProperty(item?.xCoordinate ?: -1.0)
 	}

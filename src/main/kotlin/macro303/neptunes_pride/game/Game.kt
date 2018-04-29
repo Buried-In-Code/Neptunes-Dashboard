@@ -12,17 +12,17 @@ internal data class Game(
 	val admin: Int,
 	val fleets: Any?,
 	@SerializedName(value = "fleet_speed") val fleetSpeed: Double,
+	private val game_over: Int,
 	@SerializedName(value = "started") val hasStarted: Boolean,
-	@SerializedName(value = "game_over") private val gameOver: Int,
 	@SerializedName(value = "paused") val isPaused: Boolean,
 	val name: String,
-	@SerializedName(value = "now") private val nowInstant: Long,
+	private val now: Long,
 	@SerializedName(value = "production_rate") val payRate: Int,
-	@SerializedName(value = "players") private val playerMap: HashMap<String, Player>,
+	private val players: HashMap<String, Player>,
 	@SerializedName(value = "player_uid") val playerUID: Int,
 	@SerializedName(value = "production_counter") val productionCounter: Int,
-	@SerializedName(value = "start_time") private val startTimeInstant: Long,
-	@SerializedName(value = "stars") private val starMap: HashMap<String, Star>,
+	private val stars: HashMap<String, Star>,
+	private val start_time: Long,
 	@SerializedName(value = "stars_for_victory") val starVictory: Int,
 	val tick: Int,
 	@SerializedName(value = "tick_fragment") val tickFragment: Int,
@@ -36,21 +36,21 @@ internal data class Game(
 	val war: Int
 ) {
 	val isGameOver: Boolean
-		get() = gameOver == 1
+		get() = game_over == 1
 
-	val now: LocalDateTime
-		get() = LocalDateTime.ofInstant(Instant.ofEpochMilli(nowInstant), ZoneId.systemDefault())
+	val nowDateTime: LocalDateTime
+		get() = LocalDateTime.ofInstant(Instant.ofEpochMilli(now), ZoneId.systemDefault())
 
-	val startTime: LocalDateTime
-		get() = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeInstant), ZoneId.systemDefault())
+	val playerSet: TreeSet<Player>
+		get() = TreeSet(players.values)
 
-	val stars: TreeSet<Star>
-		get() = TreeSet(starMap.values)
+	val starSet: TreeSet<Star>
+		get() = TreeSet(stars.values)
 
-	val players: TreeSet<Player>
-		get() = TreeSet(playerMap.values)
+	val startDateTime: LocalDateTime
+		get() = LocalDateTime.ofInstant(Instant.ofEpochMilli(start_time), ZoneId.systemDefault())
 
 	override fun toString(): String {
-		return "Game(admin=$admin, fleets=$fleets, fleetSpeed=$fleetSpeed, hasStarted=$hasStarted, gameOver=$gameOver, isPaused=$isPaused, name='$name', nowInstant=$nowInstant, payRate=$payRate, playerMap=$playerMap, playerUID=$playerUID, productionCounter=$productionCounter, startTimeInstant=$startTimeInstant, starMap=$starMap, starVictory=$starVictory, tick=$tick, tickFragment=$tickFragment, tickRate=$tickRate, timeOut=$timeOut, totalStars=$totalStars, tradeCost=$tradeCost, tradeScanned=$tradeScanned, turn=$turn, turnBased=$turnBased, war=$war)"
+		return "Game(admin=$admin, fleets=$fleets, fleetSpeed=$fleetSpeed, game_over=$game_over, hasStarted=$hasStarted, isPaused=$isPaused, name='$name', now=$now, payRate=$payRate, players=$players, playerUID=$playerUID, productionCounter=$productionCounter, stars=$stars, start_time=$start_time, starVictory=$starVictory, tick=$tick, tickFragment=$tickFragment, tickRate=$tickRate, timeOut=$timeOut, totalStars=$totalStars, tradeCost=$tradeCost, tradeScanned=$tradeScanned, turn=$turn, turnBased=$turnBased, war=$war)"
 	}
 }

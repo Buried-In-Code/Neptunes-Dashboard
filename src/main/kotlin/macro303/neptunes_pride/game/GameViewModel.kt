@@ -25,10 +25,10 @@ internal class GameViewModel : ItemViewModel<Game>() {
 		SimpleIntegerProperty(item?.payRate ?: -1)
 	}
 	val players: ObjectProperty<TreeSet<Player>> = bind {
-		SimpleObjectProperty<TreeSet<Player>>(item?.players ?: TreeSet())
+		SimpleObjectProperty<TreeSet<Player>>(item?.playerSet ?: TreeSet())
 	}
 	val startTime: ObjectProperty<LocalDateTime> = bind {
-		SimpleObjectProperty<LocalDateTime>(item?.startTime ?: LocalDateTime.now())
+		SimpleObjectProperty<LocalDateTime>(item?.startDateTime ?: LocalDateTime.now())
 	}
 	val starVictory: IntegerProperty = bind {
 		SimpleIntegerProperty(item?.starVictory ?: -1)
@@ -50,10 +50,10 @@ internal class GameViewModel : ItemViewModel<Game>() {
 		SimpleDoubleProperty(item?.fleetSpeed ?: -1.0)
 	}
 	val now: ObjectProperty<LocalDateTime> = bind {
-		SimpleObjectProperty<LocalDateTime>(item?.now ?: LocalDateTime.now())
+		SimpleObjectProperty<LocalDateTime>(item?.nowDateTime ?: LocalDateTime.now())
 	}
 	val stars: ObjectProperty<TreeSet<Star>> = bind {
-		SimpleObjectProperty<TreeSet<Star>>(item?.stars ?: TreeSet())
+		SimpleObjectProperty<TreeSet<Star>>(item?.starSet ?: TreeSet())
 	}
 	val tickFragment: IntegerProperty = bind {
 		SimpleIntegerProperty(item?.tickFragment ?: -1)

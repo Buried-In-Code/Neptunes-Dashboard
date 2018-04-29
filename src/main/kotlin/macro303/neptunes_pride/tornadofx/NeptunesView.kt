@@ -194,7 +194,7 @@ internal class NeptunesView : View("Neptunes Pride") {
 									alignment = Pos.CENTER
 									text = it.toString()
 								}
-							column<Player, Int>(title = "Hyperspace Range") {
+							column<Player, Int>(title = "Hyperspace") {
 								SimpleIntegerProperty(
 									it.value?.technologyMap?.get("propulsion")?.level ?: -1
 								).asObject()
