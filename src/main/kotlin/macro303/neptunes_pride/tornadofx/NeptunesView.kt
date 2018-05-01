@@ -127,6 +127,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
+								if (rowItem.isAI || rowItem.hasConceded)
+									addClass(NeptunesStyles.strikethroughCell)
 							}
 						column<Player, String>(title = "Name") {
 							SimpleStringProperty(it.value?.name ?: "INVALID")
@@ -134,6 +136,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
+								if (rowItem.isAI || rowItem.hasConceded)
+									addClass(NeptunesStyles.strikethroughCell)
 							}
 						column<Player, Int>(title = "Stars") {
 							SimpleIntegerProperty(it.value?.totalStars ?: -1).asObject()
@@ -141,6 +145,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
+								if (rowItem.isAI || rowItem.hasConceded)
+									addClass(NeptunesStyles.strikethroughCell)
 							}
 						column<Player, Int>(title = "Ships") {
 							SimpleIntegerProperty(it.value?.totalShips ?: -1).asObject()
@@ -148,6 +154,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
+								if (rowItem.isAI || rowItem.hasConceded)
+									addClass(NeptunesStyles.strikethroughCell)
 							}
 						column<Player, Int>(title = "Fleets") {
 							SimpleIntegerProperty(it.value?.totalFleets ?: -1).asObject()
@@ -155,6 +163,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
+								if (rowItem.isAI || rowItem.hasConceded)
+									addClass(NeptunesStyles.strikethroughCell)
 							}
 						nestedColumn(title = "Total Stats") {
 							column<Player, Int>(title = "Economy") {
@@ -163,6 +173,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Industry") {
 								SimpleIntegerProperty(it.value?.totalIndustry ?: -1).asObject()
@@ -170,6 +182,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Science") {
 								SimpleIntegerProperty(it.value?.totalScience ?: -1).asObject()
@@ -177,6 +191,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 						}
 						nestedColumn(title = "Technology Level") {
@@ -186,6 +202,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Experimentation") {
 								SimpleIntegerProperty(it.value?.technologyMap?.get("research")?.level ?: -1).asObject()
@@ -193,6 +211,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Hyperspace") {
 								SimpleIntegerProperty(
@@ -202,6 +222,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Manufacturing") {
 								SimpleIntegerProperty(
@@ -211,6 +233,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Scanning") {
 								SimpleIntegerProperty(it.value?.technologyMap?.get("scanning")?.level ?: -1).asObject()
@@ -218,6 +242,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Terraforming") {
 								SimpleIntegerProperty(
@@ -227,6 +253,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 							column<Player, Int>(title = "Weapons") {
 								SimpleIntegerProperty(it.value?.technologyMap?.get("weapons")?.level ?: -1).asObject()
@@ -234,6 +262,8 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
+									if (rowItem.isAI || rowItem.hasConceded)
+										addClass(NeptunesStyles.strikethroughCell)
 								}
 						}
 						bindSelected(playerModel)
