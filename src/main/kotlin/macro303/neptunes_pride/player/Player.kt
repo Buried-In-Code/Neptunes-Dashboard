@@ -26,16 +26,28 @@ internal data class Player(
 	@SerializedName(value = "total_strength") val totalShips: Int,
 	@SerializedName(value = "total_stars") val totalStars: Int
 ) : Comparable<Player> {
-	val name: String?
-		get() = Connection.config.players.entries.firstOrNull {
-			it.value.equals(alias, ignoreCase = true)
-		}?.key
+	val name: String
+		get() {
+			Connection.config.players.forEach {
+				if (it.value.containsKey(alias))
+					return it.value[alias]!!
+			}
+			return "Unknown"
+		}
 	val isAI: Boolean
 		get() = ai == 1
 	val hasConceded: Boolean
 		get() = conceded == 1
 	val isReady: Boolean
 		get() = ready == 1
+	val team: String
+		get() {
+			Connection.config.players.forEach {
+				if (it.value.containsKey(alias))
+					return it.key
+			}
+			return "Unknown"
+		}
 
 	private fun countTotalStats(): Int {
 		return totalEconomy + totalIndustry + totalScience
@@ -47,8 +59,6 @@ internal data class Player(
 
 	override fun compareTo(other: Player): Int {
 		return compareBy<Player>(
-			{ it.isAI },
-			{ it.hasConceded },
 			{ it.totalStars },
 			{ it.totalShips },
 			{ it.countTotalStats() },
@@ -61,5 +71,4 @@ internal data class Player(
 	override fun toString(): String {
 		return "Player(ai=$ai, alias='$alias', avatar=$avatar, conceded=$conceded, huid=$huid, karma=$karma, missedTurns=$missedTurns, playerID=$playerID, ready=$ready, regard=$regard, technologyMap=$technologyMap, totalEconomy=$totalEconomy, totalFleets=$totalFleets, totalIndustry=$totalIndustry, totalScience=$totalScience, totalShips=$totalShips, totalStars=$totalStars)"
 	}
-
 }

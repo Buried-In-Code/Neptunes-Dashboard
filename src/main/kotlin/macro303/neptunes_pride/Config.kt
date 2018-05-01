@@ -10,7 +10,7 @@ import java.util.*
  * Created by Macro303 on 2018-04-18.
  */
 internal data class Config(val gameID: Long) {
-	var players = HashMap<String, String>()
+	var players = HashMap<String, HashMap<String, String>>()
 		private set
 	var proxyHostname: String? = null
 		private set
@@ -77,4 +77,5 @@ internal data class Config(val gameID: Long) {
 	override fun toString(): String {
 		return "Config(gameID=$gameID, players=$players, proxyHostname=$proxyHostname, proxyPort=$proxyPort, headerSize=$headerSize, buttonSize=$buttonSize, informationSize=$informationSize, contentSize=$contentSize, regularButtonFontName='$regularButtonFontName', regularContentFontName='$regularContentFontName', boldContentFontName='$boldContentFontName')"
 	}
+
 }

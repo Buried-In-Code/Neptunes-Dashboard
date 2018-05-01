@@ -39,7 +39,7 @@ internal class NeptunesModel : ViewModel() {
 
 	internal fun refreshGame() {
 		val connection = Connection()
-		connection.setOnSucceeded { setGame(it.source.value as Game) }
+		connection.setOnSucceeded { setGame(it.source.value as Game?) }
 		connection.setOnFailed { setGame(null) }
 		connection.setOnCancelled { setGame(null) }
 		Thread(connection).start()
