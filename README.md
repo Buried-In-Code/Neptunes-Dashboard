@@ -1,4 +1,4 @@
-# Neptunes Pride _0.5_
+# Neptunes Pride _0.6_
 Pulls from the Neptune Pride's API to gather simple game information and tries to display it in a simple UI
 
 ## Dependencies
