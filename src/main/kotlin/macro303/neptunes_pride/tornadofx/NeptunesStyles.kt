@@ -61,20 +61,11 @@ internal class NeptunesStyles : Stylesheet() {
 			fontSize = Connection.config.contentSize
 			fontWeight = FontWeight.NORMAL
 		}
-		strikethroughCell {
-			font = regularContentFont
-			fontSize = Connection.config.contentSize
-			fontWeight = FontWeight.NORMAL
-			text{
-				strikethrough = true
-			}
-		}
 	}
 
 	companion object {
 		val headerLabel by cssclass()
 		val subHeaderLabel by cssclass()
 		val informationLabel by cssclass()
-		val strikethroughCell by cssclass()
 	}
 }

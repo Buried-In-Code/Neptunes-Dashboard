@@ -7,9 +7,12 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.TabPane
 import javafx.scene.layout.GridPane
+import javafx.scene.paint.Color
+import macro303.console.Console
 import macro303.neptunes_pride.player.Player
 import macro303.neptunes_pride.player.PlayerViewModel
 import tornadofx.*
+
 
 internal class NeptunesView : View("Neptunes Pride") {
 	private val model: NeptunesModel by inject()
@@ -127,8 +130,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						column<Player, String>(title = "Name") {
 							SimpleStringProperty(it.value.name)
@@ -136,8 +141,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						column<Player, String>(title = "Team") {
 							SimpleStringProperty(it.value.team)
@@ -145,8 +152,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER_LEFT
 								text = it
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						column<Player, Int>(title = "Stars") {
 							SimpleIntegerProperty(it.value.totalStars).asObject()
@@ -154,8 +163,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						column<Player, Int>(title = "Ships") {
 							SimpleIntegerProperty(it.value.totalShips).asObject()
@@ -163,8 +174,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						column<Player, Int>(title = "Fleets") {
 							SimpleIntegerProperty(it.value.totalFleets).asObject()
@@ -172,8 +185,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 							.cellFormat {
 								alignment = Pos.CENTER
 								text = it.toString()
-								if (rowItem.isAI || rowItem.hasConceded)
-									addClass(NeptunesStyles.strikethroughCell)
+								style {
+									if (rowItem.isAI || rowItem.hasConceded)
+										backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+								}
 							}
 						nestedColumn(title = "Total Stats") {
 							column<Player, Int>(title = "Economy") {
@@ -182,8 +197,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Industry") {
 								SimpleIntegerProperty(it.value.totalIndustry).asObject()
@@ -191,8 +208,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Science") {
 								SimpleIntegerProperty(it.value.totalScience).asObject()
@@ -200,8 +219,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 						}
 						nestedColumn(title = "Technology Level") {
@@ -211,8 +232,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Experimentation") {
 								SimpleIntegerProperty(it.value.technologyMap["research"]!!.level).asObject()
@@ -220,8 +243,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Hyperspace") {
 								SimpleIntegerProperty(it.value.technologyMap["propulsion"]!!.level).asObject()
@@ -229,8 +254,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Manufacturing") {
 								SimpleIntegerProperty(it.value.technologyMap["manufacturing"]!!.level).asObject()
@@ -238,8 +265,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Scanning") {
 								SimpleIntegerProperty(it.value.technologyMap["scanning"]!!.level).asObject()
@@ -247,8 +276,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Terraforming") {
 								SimpleIntegerProperty(it.value.technologyMap["terraforming"]!!.level).asObject()
@@ -256,8 +287,10 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 							column<Player, Int>(title = "Weapons") {
 								SimpleIntegerProperty(it.value.technologyMap["weapons"]!!.level).asObject()
@@ -265,11 +298,16 @@ internal class NeptunesView : View("Neptunes Pride") {
 								.cellFormat {
 									alignment = Pos.CENTER
 									text = it.toString()
-									if (rowItem.isAI || rowItem.hasConceded)
-										addClass(NeptunesStyles.strikethroughCell)
+									style {
+										if (rowItem.isAI || rowItem.hasConceded)
+											backgroundColor += Color.color(1.0, 0.0, 0.0, 0.25)
+									}
 								}
 						}
 						bindSelected(playerModel)
+						onUserSelect {
+							Console.displayMessage("Player: $it")
+						}
 					}
 				}
 			}

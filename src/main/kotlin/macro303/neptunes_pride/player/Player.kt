@@ -35,9 +35,9 @@ internal data class Player(
 			return "Unknown"
 		}
 	val isAI: Boolean
-		get() = ai == 1
+		get() = ai != 0
 	val hasConceded: Boolean
-		get() = conceded == 1
+		get() = conceded != 0
 	val isReady: Boolean
 		get() = ready == 1
 	val team: String
