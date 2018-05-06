@@ -1,7 +1,6 @@
 package macro303.neptunes_pride.tornadofx
 
 import javafx.scene.text.FontWeight
-import macro303.neptunes_pride.Connection
 import tornadofx.*
 
 internal class NeptunesStyles : Stylesheet() {

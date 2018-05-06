@@ -1,7 +1,6 @@
 package macro303.neptunes_pride.tornadofx
 
 import javafx.stage.Stage
-import macro303.neptunes_pride.Config
 import tornadofx.*
 import java.util.*
 

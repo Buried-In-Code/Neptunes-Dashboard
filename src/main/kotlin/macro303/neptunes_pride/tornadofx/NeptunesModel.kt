@@ -6,7 +6,6 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.ObservableList
-import macro303.neptunes_pride.Connection
 import macro303.neptunes_pride.game.Game
 import macro303.neptunes_pride.player.Player
 import tornadofx.*
