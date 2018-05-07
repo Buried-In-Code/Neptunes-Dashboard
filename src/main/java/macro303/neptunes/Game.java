@@ -1,8 +1,6 @@
 package macro303.neptunes;
 
 import com.google.gson.annotations.SerializedName;
-import macro303.neptunes_pride.player.Player;
-import macro303.neptunes_pride.star.Star;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

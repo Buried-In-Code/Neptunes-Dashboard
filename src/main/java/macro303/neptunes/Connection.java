@@ -38,8 +38,6 @@ public class Connection extends Task<Game> {
 			connection = getConnection("full");
 			if (connection != null && connection.getResponseCode() == 200)
 				return gson.fromJson(new InputStreamReader(connection.getInputStream()), Game.class);
-			else
-				cancel();
 		} finally {
 			if (connection != null)
 				connection.disconnect();
@@ -68,8 +66,8 @@ public class Connection extends Task<Game> {
 
 	@Nullable
 	private HttpURLConnection getConnection(@NotNull String address) throws IOException {
-		Console.displayMessage("API Address: " + API + address);
-		URL url = new URL(API + address);
+		Console.displayMessage("API Address: " + API + config.getGameID() + address);
+		URL url = new URL(API + config.getGameID() + address);
 		HttpURLConnection connection;
 		if (config.getProxy() == null)
 			connection = (HttpURLConnection) url.openConnection();

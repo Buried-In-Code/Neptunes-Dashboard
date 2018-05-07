@@ -1,12 +1,11 @@
 package macro303.neptunes;
 
 import com.google.gson.annotations.SerializedName;
-import macro303.neptunes_pride.technology.Technology;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeSet;
 
 public class Player implements Comparable<Player> {
 	@SerializedName("ai")
@@ -44,6 +43,10 @@ public class Player implements Comparable<Player> {
 	@SerializedName("total_stars")
 	private Integer totalStars;
 
+	public Player() {
+
+	}
+
 	public boolean isAi() {
 		return ai != 0;
 	}
@@ -61,14 +64,17 @@ public class Player implements Comparable<Player> {
 	}
 
 	public String getTeam() {
-		for (Map.Entry<String, ArrayList<String>> entry : Connection.getConfig().getTeams().entrySet())
-			if (entry.getValue().contains(getName()))
-				return entry.getKey();
-		return "Unknown";
+		return Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(getName())).findFirst().map(Map.Entry::getKey).orElse("Unknown");
 	}
 
-	public HashMap<String, Technology> getTech() {
-		return tech;
+	public TreeSet<Technology> getTech() {
+		TreeSet<Technology> technologies = new TreeSet<>();
+		tech.forEach((key, value) -> {
+			if (!value.getName().equals("Unknown"))
+				value.setName(key);
+			technologies.add(value);
+		});
+		return technologies;
 	}
 
 	public int getTotalEconomy() {

@@ -90,4 +90,8 @@ public class Config {
 	public HashMap<String, ArrayList<String>> getTeams() {
 		return teams;
 	}
+
+	public long getGameID() {
+		return gameID;
+	}
 }
