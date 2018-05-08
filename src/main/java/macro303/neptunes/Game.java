@@ -84,7 +84,7 @@ public class Game {
 		return starsForVictory;
 	}
 
-	public LocalDateTime getStart_time() {
+	public LocalDateTime getStartTime() {
 		return LocalDateTime.ofInstant(Instant.ofEpochMilli(start_time), ZoneId.systemDefault());
 	}
 
@@ -94,5 +94,9 @@ public class Game {
 
 	public int getTick() {
 		return tick;
+	}
+
+	public Integer getTotalStars() {
+		return totalStars;
 	}
 }

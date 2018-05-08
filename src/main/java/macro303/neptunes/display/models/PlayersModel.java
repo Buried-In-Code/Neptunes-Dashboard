@@ -10,14 +10,14 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 public class PlayersModel {
-	private ObservableList<Player> players = FXCollections.observableList(new ArrayList<>());
-
-	public ObservableList<Player> getPlayers() {
-		return players;
-	}
+	private final ObservableList<Player> players = FXCollections.observableList(new ArrayList<>());
 
 	public void updateModel(Game game) {
 		updatePlayers(game.getPlayers());
+	}
+
+	public ObservableList<Player> getPlayers() {
+		return players;
 	}
 
 	private void updatePlayers(TreeSet<Player> players) {

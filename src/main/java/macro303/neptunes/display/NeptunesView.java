@@ -45,6 +45,7 @@ public class NeptunesView {
 		var playersTab = new PlayersTab(playersModel);
 		teamsModel = new TeamsModel();
 		var teamsTab = new TeamsTab(teamsModel);
+		teamsTab.setDisable(true);
 		tabPane.getTabs().addAll(gameTab, playersTab, teamsTab);
 		return tabPane;
 	}
@@ -58,6 +59,7 @@ public class NeptunesView {
 			Connection connection = new Connection();
 			connection.setOnSucceeded(success -> {
 				var game = (Game) success.getSource().getValue();
+				gameModel.updateModel(game);
 				playersModel.updateModel(game);
 			});
 			new Thread(connection).start();

@@ -12,5 +12,9 @@ Pulls from the Neptune Pride's API to gather simple game information and tries t
 
 ## Install
 
+1. Clone repo and download dependencies
+2. Run `mvn clean package`
+3. Run `java -jar target/neptunes-pride-{version}-jar-with-dependencies.jar`
+
 ## Notes
 Console is not available from maven repo. Cloning from github is required.
