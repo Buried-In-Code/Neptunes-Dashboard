@@ -6,7 +6,10 @@ import macro303.console.Console;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -26,9 +29,9 @@ public class Config {
 	@NotNull
 	private final Long gameID;
 	@NotNull
-	private final HashMap<String, String> playerNames;
+	private final HashMap<String, String> playerNames = new HashMap<>();
 	@NotNull
-	private final HashMap<String, ArrayList<String>> teams;
+	private final HashMap<String, ArrayList<String>> teams = new HashMap<>();
 	@Nullable
 	private String proxyHostname = null;
 	@Nullable
@@ -36,8 +39,6 @@ public class Config {
 
 	public Config(@NotNull Long gameID) {
 		this.gameID = gameID;
-		this.playerNames = new HashMap<>();
-		this.teams = new HashMap<>();
 	}
 
 	@NotNull
@@ -50,11 +51,10 @@ public class Config {
 	@NotNull
 	public static Config loadConfig() {
 		Config config = null;
-		try {
-			FileReader reader = new FileReader(configFile);
+		try (var reader = new FileReader(configFile)) {
 			config = gson.fromJson(reader, Config.class);
-		} catch (FileNotFoundException fnfe) {
-			fnfe.printStackTrace();
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 		} finally {
 			if (config == null) {
 				Console.displayError("Config couldn't be loaded");
@@ -66,8 +66,7 @@ public class Config {
 	}
 
 	public static void saveConfig(@NotNull Config config) {
-		try {
-			FileWriter writer = new FileWriter(configFile);
+		try (var writer = new FileWriter(configFile)) {
 			gson.toJson(config, writer);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -76,9 +75,7 @@ public class Config {
 
 	@Nullable
 	public Proxy getProxy() {
-		if (proxyHostname == null || proxyPort == null)
-			return null;
-		return new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHostname, proxyPort));
+		return proxyHostname == null || proxyPort == null ? null : new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHostname, proxyPort));
 	}
 
 	@NotNull

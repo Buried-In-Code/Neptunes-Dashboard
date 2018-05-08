@@ -1,4 +1,4 @@
-package macro303.neptunes;
+package macro303.neptunes.display;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

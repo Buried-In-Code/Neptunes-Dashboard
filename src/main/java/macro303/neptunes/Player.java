@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeSet;
 
 public class Player implements Comparable<Player> {
 	@SerializedName("ai")
@@ -23,7 +22,7 @@ public class Player implements Comparable<Player> {
 	@SerializedName("missed_turns")
 	private Integer missedTurns;
 	@SerializedName("uid")
-	private Integer uid;
+	private Integer uid;                            //Player ID
 	@SerializedName("ready")
 	private Integer ready;
 	@SerializedName("regard")
@@ -39,13 +38,9 @@ public class Player implements Comparable<Player> {
 	@SerializedName("total_science")
 	private Integer totalScience;
 	@SerializedName("total_strength")
-	private Integer totalStrength;
+	private Integer totalStrength;                 //Total Ships
 	@SerializedName("total_stars")
 	private Integer totalStars;
-
-	public Player() {
-
-	}
 
 	public boolean isAi() {
 		return ai != 0;
@@ -67,14 +62,8 @@ public class Player implements Comparable<Player> {
 		return Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(getName())).findFirst().map(Map.Entry::getKey).orElse("Unknown");
 	}
 
-	public TreeSet<Technology> getTech() {
-		TreeSet<Technology> technologies = new TreeSet<>();
-		tech.forEach((key, value) -> {
-			if (!value.getName().equals("Unknown"))
-				value.setName(key);
-			technologies.add(value);
-		});
-		return technologies;
+	public HashMap<String, Technology> getTech() {
+		return tech;
 	}
 
 	public int getTotalEconomy() {
