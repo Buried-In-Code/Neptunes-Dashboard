@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.concurrent.Task;
 import macro303.console.Console;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +14,9 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * Created by Macro303 on 2018-05-07.
+ */
 public class Connection extends Task<Game> {
 	@NotNull
 	private static final Gson gson = new GsonBuilder()
@@ -25,12 +29,14 @@ public class Connection extends Task<Game> {
 	@NotNull
 	private static Config config = Config.loadConfig();
 
+	@Contract(pure = true)
 	@NotNull
 	public static Config getConfig() {
 		return config;
 	}
 
 	@Override
+	@Nullable
 	protected Game call() throws Exception {
 		config = Config.loadConfig();
 		HttpURLConnection connection = null;

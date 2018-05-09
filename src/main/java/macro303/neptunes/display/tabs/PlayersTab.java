@@ -9,18 +9,24 @@ import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import macro303.neptunes.Player;
-import macro303.neptunes.display.PlayerTableColumn;
+import macro303.neptunes.display.scene.PlayerTableColumn;
 import macro303.neptunes.display.models.PlayersModel;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Created by Macro303 on 2018-05-08.
+ */
 public class PlayersTab extends Tab {
+	@NotNull
 	private PlayersModel playersModel;
 
-	public PlayersTab(PlayersModel playersModel) {
+	public PlayersTab(@NotNull PlayersModel playersModel) {
 		super("Players");
 		this.playersModel = playersModel;
 		setContent(getTab());
 	}
 
+	@NotNull
 	private Node getTab() {
 		var table = new TableView<>(playersModel.getPlayers());
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);

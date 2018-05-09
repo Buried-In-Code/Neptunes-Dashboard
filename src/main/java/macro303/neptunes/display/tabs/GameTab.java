@@ -3,25 +3,29 @@ package macro303.neptunes.display.tabs;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
-import macro303.neptunes.display.BoundLabel;
-import macro303.neptunes.display.Clock;
-import macro303.neptunes.display.SubtitleText;
+import macro303.neptunes.display.scene.BoundLabel;
+import macro303.neptunes.display.scene.Clock;
+import macro303.neptunes.display.scene.SubtitleText;
 import macro303.neptunes.display.models.GameModel;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Created by Macro303 on 2018-05-08.
+ */
 public class GameTab extends Tab {
+	@NotNull
 	private GameModel gameModel;
 
-	public GameTab(GameModel gameModel) {
+	public GameTab(@NotNull GameModel gameModel) {
 		super("Game");
 		this.gameModel = gameModel;
 		setContent(getTab());
 	}
 
+	@NotNull
 	private Node getTab() {
 		var gridPane = new GridPane();
 		gridPane.setHgap(5.0);

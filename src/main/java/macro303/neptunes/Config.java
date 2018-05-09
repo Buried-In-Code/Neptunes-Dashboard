@@ -15,6 +15,9 @@ import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Created by Macro303 on 2018-05-07.
+ */
 public class Config {
 	@NotNull
 	private static final Gson gson = new GsonBuilder()
@@ -54,7 +57,7 @@ public class Config {
 		try (var reader = new FileReader(configFile)) {
 			config = gson.fromJson(reader, Config.class);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			Console.displayWarning("Unable to Load Config: " + ioe.getLocalizedMessage());
 		} finally {
 			if (config == null) {
 				Console.displayError("Config couldn't be loaded");
@@ -69,7 +72,7 @@ public class Config {
 		try (var writer = new FileWriter(configFile)) {
 			gson.toJson(config, writer);
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			Console.displayWarning("Unable to Save Config: " + ioe.getLocalizedMessage());
 		}
 	}
 
