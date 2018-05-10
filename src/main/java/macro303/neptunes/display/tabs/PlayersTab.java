@@ -45,7 +45,7 @@ public class PlayersTab extends Tab {
 		var teamColumn = new PlayerTableColumn<>("Team", new PropertyValueFactory<Player, String>("team"));
 		var starsColumn = new PlayerTableColumn<>("Stars", new PropertyValueFactory<Player, String>("totalStars"));
 		var shipsColumn = new PlayerTableColumn<>("Ships (Rate)");
-		shipsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTotalStars() + "(" + String.format("%.01f", param.getValue().getShipRate()) + ")"));
+		shipsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTotalShips() + "(" + String.format("%.01f", param.getValue().getShipRate()) + ")"));
 		var statsColumn = new TableColumn("Total Stats");
 		var economyColumn = new PlayerTableColumn<>("Economy", new PropertyValueFactory<Player, String>("totalEconomy"));
 		var industryColumn = new PlayerTableColumn<>("Industry", new PropertyValueFactory<Player, String>("totalIndustry"));

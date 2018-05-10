@@ -155,7 +155,7 @@ public class Player implements Comparable<Player> {
 	}
 
 	public double getShipRate() {
-		return (getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0)) / 12.0;
+		return (getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0)) / 24.0;
 	}
 
 	@Override
