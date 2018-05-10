@@ -49,7 +49,7 @@ public class NeptunesView {
 		var gameTab = new GameTab(gameModel);
 		var playersTab = new PlayersTab(playersModel);
 		var teamsTab = new TeamsTab(teamsModel);
-		teamsTab.setDisable(true);
+//		teamsTab.setDisable(true);
 		tabPane.getTabs().addAll(gameTab, playersTab, teamsTab);
 		return tabPane;
 	}

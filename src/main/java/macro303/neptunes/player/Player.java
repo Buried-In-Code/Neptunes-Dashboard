@@ -3,7 +3,6 @@ package macro303.neptunes.player;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import macro303.neptunes.Connection;
 import macro303.neptunes.technology.Technology;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +19,10 @@ public class Player implements Comparable<Player> {
 	@NotNull
 	private final BooleanProperty conceded;
 	@NotNull
+	private final StringProperty name;
+	@NotNull
+	private final StringProperty team;
+	@NotNull
 	private final ObservableMap<String, Technology> technologies;
 	@NotNull
 	private final IntegerProperty totalEconomy;
@@ -32,10 +35,12 @@ public class Player implements Comparable<Player> {
 	@NotNull
 	private final IntegerProperty totalStars;
 
-	public Player(boolean AI, @NotNull String alias, boolean conceded, @NotNull Map<String, Technology> technologies, int totalEconomy, int totalIndustry, int totalScience, int totalShips, int totalStars) {
+	public Player(boolean AI, @NotNull String alias, boolean conceded, @NotNull String name, @NotNull String team, @NotNull Map<String, Technology> technologies, int totalEconomy, int totalIndustry, int totalScience, int totalShips, int totalStars) {
 		this.AI = new SimpleBooleanProperty(AI);
 		this.alias = new SimpleStringProperty(alias);
 		this.conceded = new SimpleBooleanProperty(conceded);
+		this.name = new SimpleStringProperty(name);
+		this.team = new SimpleStringProperty(team);
 		this.technologies = FXCollections.observableMap(technologies);
 		this.totalEconomy = new SimpleIntegerProperty(totalEconomy);
 		this.totalIndustry = new SimpleIntegerProperty(totalIndustry);
@@ -78,6 +83,30 @@ public class Player implements Comparable<Player> {
 
 	public @NotNull BooleanProperty concededProperty() {
 		return conceded;
+	}
+
+	public String getName() {
+		return name.get();
+	}
+
+	public void setName(String name) {
+		this.name.set(name);
+	}
+
+	public @NotNull StringProperty nameProperty() {
+		return name;
+	}
+
+	public String getTeam() {
+		return team.get();
+	}
+
+	public void setTeam(String team) {
+		this.team.set(team);
+	}
+
+	public @NotNull StringProperty teamProperty() {
+		return team;
 	}
 
 	public ObservableMap<String, Technology> getTechnologies() {
@@ -144,18 +173,12 @@ public class Player implements Comparable<Player> {
 		return totalStars;
 	}
 
-	@NotNull
-	public String getName() {
-		return Connection.getConfig().getPlayerNames().getOrDefault(getAlias(), "Unknown");
+	public int getEconomyTurn() {
+		return (getTotalEconomy() * 10) + (getTechnologies().get("banking").getLevel() * 75);
 	}
 
-	@NotNull
-	public String getTeam() {
-		return Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(getName())).findFirst().map(Map.Entry::getKey).orElse("Unknown");
-	}
-
-	public double getShipRate() {
-		return (getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0)) / 24.0;
+	public double getIndustryTurn() {
+		return getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0) / 24;
 	}
 
 	@Override
@@ -181,6 +204,8 @@ public class Player implements Comparable<Player> {
 		if (!AI.equals(player.AI)) return false;
 		if (!alias.equals(player.alias)) return false;
 		if (!conceded.equals(player.conceded)) return false;
+		if (!name.equals(player.name)) return false;
+		if (!team.equals(player.team)) return false;
 		if (!technologies.equals(player.technologies)) return false;
 		if (!totalEconomy.equals(player.totalEconomy)) return false;
 		if (!totalIndustry.equals(player.totalIndustry)) return false;
@@ -194,6 +219,8 @@ public class Player implements Comparable<Player> {
 		int result = AI.hashCode();
 		result = 31 * result + alias.hashCode();
 		result = 31 * result + conceded.hashCode();
+		result = 31 * result + name.hashCode();
+		result = 31 * result + team.hashCode();
 		result = 31 * result + technologies.hashCode();
 		result = 31 * result + totalEconomy.hashCode();
 		result = 31 * result + totalIndustry.hashCode();
@@ -209,6 +236,8 @@ public class Player implements Comparable<Player> {
 				"AI=" + AI +
 				", alias=" + alias +
 				", conceded=" + conceded +
+				", name=" + name +
+				", team=" + team +
 				", technologies=" + technologies +
 				", totalEconomy=" + totalEconomy +
 				", totalIndustry=" + totalIndustry +

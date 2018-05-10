@@ -1,6 +1,7 @@
 package macro303.neptunes.player;
 
 import com.google.gson.*;
+import macro303.neptunes.Connection;
 import macro303.neptunes.technology.Technology;
 
 import java.lang.reflect.Type;
@@ -20,6 +21,8 @@ public class PlayerAdapter implements JsonSerializer<Player>, JsonDeserializer<P
 		var AI = obj.get("ai").getAsInt() != 0;
 		var alias = obj.get("alias").getAsString();
 		var conceded = obj.get("conceded").getAsInt() != 0;
+		var name = Connection.getConfig().getPlayerNames().getOrDefault(alias, "Unknown");
+		var team = Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(name)).findFirst().map(Map.Entry::getKey).orElse("Unknown");
 		var techMap = obj.get("tech").getAsJsonObject();
 		var technologies = new HashMap<String, Technology>();
 		for (Map.Entry<String, JsonElement> tech : techMap.entrySet()) {
@@ -31,7 +34,7 @@ public class PlayerAdapter implements JsonSerializer<Player>, JsonDeserializer<P
 		var totalShips = obj.get("total_strength").getAsInt();
 		var totalStars = obj.get("total_stars").getAsInt();
 
-		return new Player(AI, alias, conceded, technologies, totalEconomy, totalIndustry, totalScience, totalShips, totalStars);
+		return new Player(AI, alias, conceded, name, team, technologies, totalEconomy, totalIndustry, totalScience, totalShips, totalStars);
 	}
 
 	@Override
@@ -41,6 +44,8 @@ public class PlayerAdapter implements JsonSerializer<Player>, JsonDeserializer<P
 		obj.addProperty("AI", src.isAI());
 		obj.addProperty("alias", src.getAlias());
 		obj.addProperty("conceded", src.isConceded());
+		obj.addProperty("name", src.getName());
+		obj.addProperty("team", src.getTeam());
 		var technologies = context.serialize(src.getTechnologies());
 		obj.add("technologies", technologies);
 		obj.addProperty("totalEconomy", src.getTotalEconomy());

@@ -1,6 +1,7 @@
 package macro303.neptunes.game;
 
 import com.google.gson.*;
+import macro303.neptunes.Team;
 import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,12 +33,23 @@ public class GameAdapter implements JsonSerializer<Game>, JsonDeserializer<Game>
 		for (Map.Entry<String, JsonElement> player : playerMap.entrySet()) {
 			players.add(context.deserialize(player.getValue(), Player.class));
 		}
+		var teams = new ArrayList<Team>();
+		for (Player player : players) {
+			Team team = new Team();
+			for (Team temp : teams) {
+				if (temp.getName().equalsIgnoreCase(player.getTeam()))
+					team = temp;
+			}
+			team.addMember(player);
+			if (!teams.contains(team))
+				teams.add(team);
+		}
 		var started = obj.get("started").getAsBoolean();
 		var startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(obj.get("start_time").getAsLong()), ZoneId.systemDefault());
 		var victory = obj.get("stars_for_victory").getAsInt();
 		var totalStars = obj.get("total_stars").getAsInt();
 
-		return new Game(gameOver, name, paused, players, started, startTime, totalStars, victory);
+		return new Game(gameOver, name, paused, players, started, startTime, teams, totalStars, victory);
 	}
 
 	@Override
