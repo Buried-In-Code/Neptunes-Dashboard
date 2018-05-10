@@ -12,6 +12,8 @@ import macro303.neptunes.display.scene.PlayerTableColumn;
 import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by Macro303 on 2018-05-08.
  */
@@ -25,6 +27,7 @@ public class PlayersTab extends Tab {
 		setContent(getTab());
 	}
 
+	@SuppressWarnings("unchecked")
 	@NotNull
 	private Node getTab() {
 		var table = new TableView<>(playersModel.getPlayers());
@@ -43,18 +46,20 @@ public class PlayersTab extends Tab {
 		var aliasColumn = new PlayerTableColumn<>("Alias", new PropertyValueFactory<Player, String>("alias"));
 		var nameColumn = new PlayerTableColumn<>("Name", new PropertyValueFactory<Player, String>("name"));
 		var teamColumn = new PlayerTableColumn<>("Team", new PropertyValueFactory<Player, String>("team"));
-		var starsColumn = new PlayerTableColumn<>("Stars", new PropertyValueFactory<Player, String>("totalStars"));
-		var shipsColumn = new PlayerTableColumn<>("Ships (Rate)");
-		shipsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTotalStars() + "(" + String.format("%.01f", param.getValue().getShipRate()) + ")"));
+		var starsColumn = new PlayerTableColumn<>("Stars", new PropertyValueFactory<Player, Integer>("totalStars"));
+		var shipsColumn = new PlayerTableColumn<>("Ships", new PropertyValueFactory<Player, Integer>("totalShips"));
 		var statsColumn = new TableColumn("Total Stats");
-		var economyColumn = new PlayerTableColumn<>("Economy", new PropertyValueFactory<Player, String>("totalEconomy"));
-		var industryColumn = new PlayerTableColumn<>("Industry", new PropertyValueFactory<Player, String>("totalIndustry"));
-		var scienceColumn = new PlayerTableColumn<>("Science", new PropertyValueFactory<Player, String>("totalScience"));
-		statsColumn.getColumns().addAll(economyColumn, industryColumn, scienceColumn);
+		var economyColumn = new PlayerTableColumn<>("Economy", new PropertyValueFactory<Player, Integer>("totalEconomy"));
+		var economyTurnColumn = new PlayerTableColumn<>("$Per Turn", new PropertyValueFactory<Player, Integer>("economyTurn"));
+		var industryColumn = new PlayerTableColumn<>("Industry", new PropertyValueFactory<Player, Integer>("totalIndustry"));
+		var industryTurnColumn = new PlayerTableColumn<>("Per Turn");
+		industryTurnColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(new DecimalFormat("00").format(param.getValue().getIndustryTurn())));
+		var scienceColumn = new PlayerTableColumn<>("Science", new PropertyValueFactory<Player, Integer>("totalScience"));
+		statsColumn.getColumns().addAll(economyColumn, economyTurnColumn, industryColumn, industryTurnColumn, scienceColumn);
 		var technologyColumn = new TableColumn("Technology Level");
 		var bankingColumn = new PlayerTableColumn<Integer>("Banking");
 		bankingColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("banking").levelProperty().asObject());
-		var experimentationColumn = new PlayerTableColumn<Integer>("Experimentation");
+		var experimentationColumn = new PlayerTableColumn<Integer>("Research");
 		experimentationColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("research").levelProperty().asObject());
 		var hyperspaceColumn = new PlayerTableColumn<Integer>("Hyperspace");
 		hyperspaceColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("propulsion").levelProperty().asObject());

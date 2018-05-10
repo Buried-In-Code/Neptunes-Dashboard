@@ -3,6 +3,7 @@ package macro303.neptunes.game;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import macro303.neptunes.Team;
 import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,17 +27,20 @@ public class Game {
 	@NotNull
 	private final ObjectProperty<LocalDateTime> startTime;
 	@NotNull
+	private final ObservableList<Team> teams;
+	@NotNull
 	private final IntegerProperty totalStars;
 	@NotNull
 	private final IntegerProperty victory;
 
-	public Game(boolean gameOver, @NotNull String name, boolean paused, List<Player> players, boolean started, @NotNull LocalDateTime startTime, int totalStars, int victory) {
+	public Game(boolean gameOver, @NotNull String name, boolean paused, @NotNull List<Player> players, boolean started, @NotNull LocalDateTime startTime, @NotNull List<Team> teams, int totalStars, int victory) {
 		this.gameOver = new SimpleBooleanProperty(gameOver);
 		this.name = new SimpleStringProperty(name);
 		this.paused = new SimpleBooleanProperty(paused);
 		this.players = FXCollections.observableList(players);
 		this.started = new SimpleBooleanProperty(started);
 		this.startTime = new SimpleObjectProperty<>(startTime);
+		this.teams = FXCollections.observableList(teams);
 		this.totalStars = new SimpleIntegerProperty(totalStars);
 		this.victory = new SimpleIntegerProperty(victory);
 	}
@@ -105,6 +109,10 @@ public class Game {
 		return startTime;
 	}
 
+	public ObservableList<Team> getTeams() {
+		return teams;
+	}
+
 	public int getTotalStars() {
 		return totalStars.get();
 	}
@@ -142,6 +150,7 @@ public class Game {
 		if (!players.equals(game.players)) return false;
 		if (!started.equals(game.started)) return false;
 		if (!startTime.equals(game.startTime)) return false;
+		if (!teams.equals(game.teams)) return false;
 		if (!totalStars.equals(game.totalStars)) return false;
 		return victory.equals(game.victory);
 	}
@@ -154,6 +163,7 @@ public class Game {
 		result = 31 * result + players.hashCode();
 		result = 31 * result + started.hashCode();
 		result = 31 * result + startTime.hashCode();
+		result = 31 * result + teams.hashCode();
 		result = 31 * result + totalStars.hashCode();
 		result = 31 * result + victory.hashCode();
 		return result;
@@ -166,8 +176,9 @@ public class Game {
 				", name=" + name +
 				", paused=" + paused +
 				", players=" + players +
-				", startTime=" + startTime +
 				", started=" + started +
+				", startTime=" + startTime +
+				", teams=" + teams +
 				", totalStars=" + totalStars +
 				", victory=" + victory +
 				'}';
