@@ -5,7 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import macro303.neptunes.Player;
+import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerTableColumn<T> extends TableColumn<Player, T> {
 
-	public PlayerTableColumn(@NotNull String title, @NotNull Pos alignment, @NotNull Callback<CellDataFeatures<Player, T>, ObservableValue<T>> property) {
-		this(title, alignment);
+	public PlayerTableColumn(@NotNull String title, @NotNull Callback<CellDataFeatures<Player, T>, ObservableValue<T>> property) {
+		this(title);
 		setCellValueFactory(property);
 	}
 
-	public PlayerTableColumn(@NotNull String title, @NotNull Pos alignment) {
+	public PlayerTableColumn(@NotNull String title) {
 		super(title);
 		setEditable(false);
 		setCellFactory(param -> new TableCell<>() {
@@ -28,7 +28,7 @@ public class PlayerTableColumn<T> extends TableColumn<Player, T> {
 				if (!empty) {
 					if (item != null)
 						setText(item.toString());
-					setAlignment(alignment);
+					setAlignment(Pos.CENTER_LEFT);
 				}
 			}
 		});

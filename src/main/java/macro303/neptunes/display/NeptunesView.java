@@ -1,22 +1,21 @@
 package macro303.neptunes.display;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTabPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import macro303.neptunes.Connection;
-import macro303.neptunes.Game;
 import macro303.neptunes.display.models.GameModel;
 import macro303.neptunes.display.models.PlayersModel;
 import macro303.neptunes.display.models.TeamsModel;
 import macro303.neptunes.display.tabs.GameTab;
 import macro303.neptunes.display.tabs.PlayersTab;
 import macro303.neptunes.display.tabs.TeamsTab;
+import macro303.neptunes.game.Game;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,7 +43,7 @@ public class NeptunesView {
 
 	@NotNull
 	private Node getCenter() {
-		var tabPane = new JFXTabPane();
+		var tabPane = new TabPane();
 		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 		tabPane.setPadding(new Insets(5.0));
 		var gameTab = new GameTab(gameModel);
@@ -60,7 +59,8 @@ public class NeptunesView {
 		var hbox = new HBox();
 		hbox.setAlignment(Pos.CENTER);
 
-		var refresh = new JFXButton("Refresh");
+		var refresh = new Button("Refresh");
+		refresh.getStyleClass().add("button-raised");
 		refresh.setOnAction(event -> {
 			Connection connection = new Connection();
 			connection.setOnSucceeded(success -> {

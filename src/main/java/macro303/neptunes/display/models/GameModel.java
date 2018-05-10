@@ -4,10 +4,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import macro303.neptunes.Game;
+import macro303.neptunes.game.Game;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -32,92 +31,83 @@ public class GameModel implements Model {
 
 	@Override
 	public void updateModel(@NotNull Game game) {
-		setName(game.getName());
-		setStarted(game.isStarted());
-		setStartTime(game.getStartTime());
-		setPaused(game.isPaused());
-		setVictory(game.getStarsForVictory(), game.getTotalStars());
-		setGameOver(game.isGameOver());
+		name.bind(game.nameProperty());
+		started.bind(game.startedProperty());
+		startTime.bind(new SimpleStringProperty(game.getStartTime().format(formatter)));
+		paused.bind(game.pausedProperty());
+		victory.bind(new SimpleStringProperty(game.getVictory() + "/" + game.getTotalStars()));
+		gameOver.bind(game.gameOverProperty());
 	}
 
-	@NotNull
 	public String getName() {
 		return name.get();
 	}
 
-	private void setName(@NotNull String name) {
-		this.name.set(name);
+	public @NotNull StringProperty nameProperty() {
+		return name;
 	}
 
-	@NotNull
-	public StringProperty nameProperty() {
-		return name;
+	public void setName(String name) {
+		this.name.set(name);
 	}
 
 	public boolean isStarted() {
 		return started.get();
 	}
 
-	private void setStarted(boolean started) {
-		this.started.set(started);
-	}
-
-	@NotNull
-	public BooleanProperty startedProperty() {
+	public @NotNull BooleanProperty startedProperty() {
 		return started;
 	}
 
-	@NotNull
+	public void setStarted(boolean started) {
+		this.started.set(started);
+	}
+
 	public String getStartTime() {
 		return startTime.get();
 	}
 
-	private void setStartTime(@NotNull LocalDateTime startTime) {
-		this.startTime.set(startTime.format(formatter));
+	public @NotNull StringProperty startTimeProperty() {
+		return startTime;
 	}
 
-	@NotNull
-	public StringProperty startTimeProperty() {
-		return startTime;
+	public void setStartTime(String startTime) {
+		this.startTime.set(startTime);
 	}
 
 	public boolean isPaused() {
 		return paused.get();
 	}
 
-	private void setPaused(boolean paused) {
-		this.paused.set(paused);
-	}
-
-	@NotNull
-	public BooleanProperty pausedProperty() {
+	public @NotNull BooleanProperty pausedProperty() {
 		return paused;
 	}
 
-	@NotNull
+	public void setPaused(boolean paused) {
+		this.paused.set(paused);
+	}
+
 	public String getVictory() {
 		return victory.get();
 	}
 
-	@NotNull
-	public StringProperty victoryProperty() {
+	public @NotNull StringProperty victoryProperty() {
 		return victory;
 	}
 
-	private void setVictory(int victory, int total) {
-		this.victory.set(victory + "/" + total);
+	public void setVictory(String victory) {
+		this.victory.set(victory);
 	}
 
 	public boolean isGameOver() {
 		return gameOver.get();
 	}
 
-	private void setGameOver(boolean gameOver) {
-		this.gameOver.set(gameOver);
+	public @NotNull BooleanProperty gameOverProperty() {
+		return gameOver;
 	}
 
-	@NotNull
-	public BooleanProperty gameOverProperty() {
-		return gameOver;
+	public void setGameOver(boolean gameOver) {
+		this.gameOver.set(gameOver);
 	}
 }

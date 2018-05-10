@@ -1,6 +1,6 @@
 package macro303.neptunes.display.models;
 
-import macro303.neptunes.Game;
+import macro303.neptunes.game.Game;
 import org.jetbrains.annotations.NotNull;
 
 /**

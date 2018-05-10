@@ -4,6 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.concurrent.Task;
 import macro303.console.Console;
+import macro303.neptunes.game.Game;
+import macro303.neptunes.game.GameAdapter;
+import macro303.neptunes.player.Player;
+import macro303.neptunes.player.PlayerAdapter;
+import macro303.neptunes.technology.Technology;
+import macro303.neptunes.technology.TechnologyAdapter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,6 +26,9 @@ import java.net.URL;
 public class Connection extends Task<Game> {
 	@NotNull
 	private static final Gson gson = new GsonBuilder()
+			.registerTypeAdapter(Game.class, new GameAdapter())
+			.registerTypeAdapter(Player.class, new PlayerAdapter())
+			.registerTypeAdapter(Technology.class, new TechnologyAdapter())
 			.serializeNulls()
 			.setPrettyPrinting()
 			.disableHtmlEscaping()
@@ -42,8 +51,11 @@ public class Connection extends Task<Game> {
 		HttpURLConnection connection = null;
 		try {
 			connection = getConnection("/full");
-			if (connection != null && connection.getResponseCode() == 200)
-				return gson.fromJson(new InputStreamReader(connection.getInputStream()), Game.class);
+			if (connection != null) {
+				Console.displayMessage("Response Code: " + connection.getResponseCode());
+				if (connection.getResponseCode() == 200)
+					return gson.fromJson(new InputStreamReader(connection.getInputStream()), Game.class);
+			}
 		} finally {
 			if (connection != null)
 				connection.disconnect();
@@ -67,7 +79,7 @@ public class Connection extends Task<Game> {
 	@Override
 	protected void failed() {
 		super.failed();
-		Console.displayMessage("Exception while connecting to API: " + getException().getLocalizedMessage());
+		Console.displayMessage("Exception while connecting to API: " + getException().getMessage());
 	}
 
 	@Nullable
