@@ -24,8 +24,6 @@ public class Player implements Comparable<Player> {
 	@NotNull
 	private final IntegerProperty totalEconomy;
 	@NotNull
-	private final IntegerProperty totalFleets;
-	@NotNull
 	private final IntegerProperty totalIndustry;
 	@NotNull
 	private final IntegerProperty totalScience;
@@ -34,13 +32,12 @@ public class Player implements Comparable<Player> {
 	@NotNull
 	private final IntegerProperty totalStars;
 
-	public Player(boolean AI, @NotNull String alias, boolean conceded, @NotNull Map<String, Technology> technologies, int totalEconomy, int totalFleets, int totalIndustry, int totalScience, int totalShips, int totalStars) {
+	public Player(boolean AI, @NotNull String alias, boolean conceded, @NotNull Map<String, Technology> technologies, int totalEconomy, int totalIndustry, int totalScience, int totalShips, int totalStars) {
 		this.AI = new SimpleBooleanProperty(AI);
 		this.alias = new SimpleStringProperty(alias);
 		this.conceded = new SimpleBooleanProperty(conceded);
 		this.technologies = FXCollections.observableMap(technologies);
 		this.totalEconomy = new SimpleIntegerProperty(totalEconomy);
-		this.totalFleets = new SimpleIntegerProperty(totalFleets);
 		this.totalIndustry = new SimpleIntegerProperty(totalIndustry);
 		this.totalScience = new SimpleIntegerProperty(totalScience);
 		this.totalShips = new SimpleIntegerProperty(totalShips);
@@ -97,18 +94,6 @@ public class Player implements Comparable<Player> {
 
 	public @NotNull IntegerProperty totalEconomyProperty() {
 		return totalEconomy;
-	}
-
-	public int getTotalFleets() {
-		return totalFleets.get();
-	}
-
-	public void setTotalFleets(int totalFleets) {
-		this.totalFleets.set(totalFleets);
-	}
-
-	public @NotNull IntegerProperty totalFleetsProperty() {
-		return totalFleets;
 	}
 
 	public int getTotalIndustry() {
@@ -169,7 +154,7 @@ public class Player implements Comparable<Player> {
 		return Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(getName())).findFirst().map(Map.Entry::getKey).orElse("Unknown");
 	}
 
-	public double getShipRate(){
+	public double getShipRate() {
 		return (getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0)) / 12.0;
 	}
 
@@ -183,8 +168,6 @@ public class Player implements Comparable<Player> {
 			return (getTotalEconomy() + getTotalIndustry() + getTotalScience()) - (other.getTotalEconomy() + other.getTotalIndustry() + other.getTotalScience());
 		if (getTechnologies().values().stream().mapToInt(Technology::getLevel).sum() - other.getTechnologies().values().stream().mapToInt(Technology::getLevel).sum() != 0)
 			return getTechnologies().values().stream().mapToInt(Technology::getLevel).sum() - other.getTechnologies().values().stream().mapToInt(Technology::getLevel).sum();
-		if (getTotalFleets() - other.getTotalFleets() != 0)
-			return getTotalFleets() - other.getTotalFleets();
 		return getAlias().compareToIgnoreCase(other.getAlias());
 	}
 
@@ -200,7 +183,6 @@ public class Player implements Comparable<Player> {
 		if (!conceded.equals(player.conceded)) return false;
 		if (!technologies.equals(player.technologies)) return false;
 		if (!totalEconomy.equals(player.totalEconomy)) return false;
-		if (!totalFleets.equals(player.totalFleets)) return false;
 		if (!totalIndustry.equals(player.totalIndustry)) return false;
 		if (!totalScience.equals(player.totalScience)) return false;
 		if (!totalShips.equals(player.totalShips)) return false;
@@ -214,7 +196,6 @@ public class Player implements Comparable<Player> {
 		result = 31 * result + conceded.hashCode();
 		result = 31 * result + technologies.hashCode();
 		result = 31 * result + totalEconomy.hashCode();
-		result = 31 * result + totalFleets.hashCode();
 		result = 31 * result + totalIndustry.hashCode();
 		result = 31 * result + totalScience.hashCode();
 		result = 31 * result + totalShips.hashCode();
@@ -230,7 +211,6 @@ public class Player implements Comparable<Player> {
 				", conceded=" + conceded +
 				", technologies=" + technologies +
 				", totalEconomy=" + totalEconomy +
-				", totalFleets=" + totalFleets +
 				", totalIndustry=" + totalIndustry +
 				", totalScience=" + totalScience +
 				", totalShips=" + totalShips +

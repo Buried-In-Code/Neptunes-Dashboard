@@ -26,13 +26,12 @@ public class PlayerAdapter implements JsonSerializer<Player>, JsonDeserializer<P
 			technologies.put(tech.getKey(), context.deserialize(tech.getValue(), Technology.class));
 		}
 		var totalEconomy = obj.get("total_economy").getAsInt();
-		var totalFleets = obj.get("total_fleets").getAsInt();
 		var totalIndustry = obj.get("total_industry").getAsInt();
 		var totalScience = obj.get("total_science").getAsInt();
 		var totalShips = obj.get("total_strength").getAsInt();
 		var totalStars = obj.get("total_stars").getAsInt();
 
-		return new Player(AI, alias, conceded, technologies, totalEconomy, totalFleets, totalIndustry, totalScience, totalShips, totalStars);
+		return new Player(AI, alias, conceded, technologies, totalEconomy, totalIndustry, totalScience, totalShips, totalStars);
 	}
 
 	@Override
@@ -45,7 +44,6 @@ public class PlayerAdapter implements JsonSerializer<Player>, JsonDeserializer<P
 		var technologies = context.serialize(src.getTechnologies());
 		obj.add("technologies", technologies);
 		obj.addProperty("totalEconomy", src.getTotalEconomy());
-		obj.addProperty("totalFleets", src.getTotalFleets());
 		obj.addProperty("totalIndustry", src.getTotalIndustry());
 		obj.addProperty("totalScience", src.getTotalScience());
 		obj.addProperty("totalShips", src.getTotalShips());

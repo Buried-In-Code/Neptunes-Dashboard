@@ -46,8 +46,6 @@ public class PlayersTab extends Tab {
 		var starsColumn = new PlayerTableColumn<>("Stars", new PropertyValueFactory<Player, String>("totalStars"));
 		var shipsColumn = new PlayerTableColumn<>("Ships (Rate)");
 		shipsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTotalStars() + "(" + String.format("%.01f", param.getValue().getShipRate()) + ")"));
-//		var shipsColumn = new PlayerTableColumn<>("Ships", new PropertyValueFactory<Player, String>("totalShips"));
-		var fleetsColumn = new PlayerTableColumn<>("Fleets", new PropertyValueFactory<Player, String>("totalFleets"));
 		var statsColumn = new TableColumn("Total Stats");
 		var economyColumn = new PlayerTableColumn<>("Economy", new PropertyValueFactory<Player, String>("totalEconomy"));
 		var industryColumn = new PlayerTableColumn<>("Industry", new PropertyValueFactory<Player, String>("totalIndustry"));
@@ -69,7 +67,7 @@ public class PlayersTab extends Tab {
 		var weaponsColumn = new PlayerTableColumn<Integer>("Weapons");
 		weaponsColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("weapons").levelProperty().asObject());
 		technologyColumn.getColumns().addAll(bankingColumn, experimentationColumn, hyperspaceColumn, manufacturingColumn, scanningColumn, terraformingColumn, weaponsColumn);
-		table.getColumns().addAll(aliasColumn, nameColumn, teamColumn, starsColumn, shipsColumn, fleetsColumn, statsColumn, technologyColumn);
+		table.getColumns().addAll(aliasColumn, nameColumn, teamColumn, starsColumn, shipsColumn, statsColumn, technologyColumn);
 
 		return table;
 	}
