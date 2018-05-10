@@ -3,7 +3,7 @@ package macro303.neptunes.display.tabs;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableView;
-import macro303.neptunes.Player;
+import macro303.neptunes.player.Player;
 import macro303.neptunes.display.models.TeamsModel;
 import org.jetbrains.annotations.NotNull;
 

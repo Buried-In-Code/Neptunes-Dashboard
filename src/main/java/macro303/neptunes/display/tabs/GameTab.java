@@ -7,7 +7,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import macro303.neptunes.display.scene.BoundLabel;
-import macro303.neptunes.display.scene.Clock;
+import macro303.neptunes.display.scene.ClockLabel;
 import macro303.neptunes.display.scene.SubtitleText;
 import macro303.neptunes.display.models.GameModel;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class GameTab extends Tab {
 		gridPane.addRow(5, gameOverText, gameOverLabel);
 
 		var nextTurnText = new SubtitleText("Next Turn:");
-		var nextTurnLabel = new Clock();
+		var nextTurnLabel = new ClockLabel();
 		gridPane.addRow(6, nextTurnText, nextTurnLabel);
 
 		var column1 = new ColumnConstraints();

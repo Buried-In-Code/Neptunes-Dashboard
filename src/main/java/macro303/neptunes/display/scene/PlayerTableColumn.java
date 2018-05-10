@@ -5,7 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import macro303.neptunes.Player;
+import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
