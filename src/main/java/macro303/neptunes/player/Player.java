@@ -169,6 +169,10 @@ public class Player implements Comparable<Player> {
 		return Connection.getConfig().getTeams().entrySet().stream().filter(entry -> entry.getValue().contains(getName())).findFirst().map(Map.Entry::getKey).orElse("Unknown");
 	}
 
+	public double getShipRate(){
+		return (getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0)) / 12.0;
+	}
+
 	@Override
 	public int compareTo(@NotNull Player other) {
 		if (getTotalStars() - other.getTotalStars() != 0)

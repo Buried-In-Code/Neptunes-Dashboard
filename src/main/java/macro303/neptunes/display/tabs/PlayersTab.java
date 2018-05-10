@@ -1,6 +1,6 @@
 package macro303.neptunes.display.tabs;
 
-import javafx.geometry.Pos;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -40,31 +40,33 @@ public class PlayersTab extends Tab {
 			}
 		});
 
-		var aliasColumn = new PlayerTableColumn<>("Alias", Pos.CENTER_LEFT, new PropertyValueFactory<Player, String>("alias"));
-		var nameColumn = new PlayerTableColumn<>("Name", Pos.CENTER_LEFT, new PropertyValueFactory<Player, String>("name"));
-		var teamColumn = new PlayerTableColumn<>("Team", Pos.CENTER_LEFT, new PropertyValueFactory<Player, String>("team"));
-		var starsColumn = new PlayerTableColumn<>("Stars", Pos.CENTER, new PropertyValueFactory<Player, String>("totalStars"));
-		var shipsColumn = new PlayerTableColumn<>("Ships", Pos.CENTER, new PropertyValueFactory<Player, String>("totalShips"));
-		var fleetsColumn = new PlayerTableColumn<>("Fleets", Pos.CENTER, new PropertyValueFactory<Player, String>("totalFleets"));
+		var aliasColumn = new PlayerTableColumn<>("Alias", new PropertyValueFactory<Player, String>("alias"));
+		var nameColumn = new PlayerTableColumn<>("Name", new PropertyValueFactory<Player, String>("name"));
+		var teamColumn = new PlayerTableColumn<>("Team", new PropertyValueFactory<Player, String>("team"));
+		var starsColumn = new PlayerTableColumn<>("Stars", new PropertyValueFactory<Player, String>("totalStars"));
+		var shipsColumn = new PlayerTableColumn<>("Ships (Rate)");
+		shipsColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getTotalStars() + "(" + String.format("%.01f", param.getValue().getShipRate()) + ")"));
+//		var shipsColumn = new PlayerTableColumn<>("Ships", new PropertyValueFactory<Player, String>("totalShips"));
+		var fleetsColumn = new PlayerTableColumn<>("Fleets", new PropertyValueFactory<Player, String>("totalFleets"));
 		var statsColumn = new TableColumn("Total Stats");
-		var economyColumn = new PlayerTableColumn<>("Economy", Pos.CENTER, new PropertyValueFactory<Player, String>("totalEconomy"));
-		var industryColumn = new PlayerTableColumn<>("Industry", Pos.CENTER, new PropertyValueFactory<Player, String>("totalIndustry"));
-		var scienceColumn = new PlayerTableColumn<>("Science", Pos.CENTER, new PropertyValueFactory<Player, String>("totalScience"));
+		var economyColumn = new PlayerTableColumn<>("Economy", new PropertyValueFactory<Player, String>("totalEconomy"));
+		var industryColumn = new PlayerTableColumn<>("Industry", new PropertyValueFactory<Player, String>("totalIndustry"));
+		var scienceColumn = new PlayerTableColumn<>("Science", new PropertyValueFactory<Player, String>("totalScience"));
 		statsColumn.getColumns().addAll(economyColumn, industryColumn, scienceColumn);
 		var technologyColumn = new TableColumn("Technology Level");
-		var bankingColumn = new PlayerTableColumn<Integer>("Banking", Pos.CENTER);
+		var bankingColumn = new PlayerTableColumn<Integer>("Banking");
 		bankingColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("banking").levelProperty().asObject());
-		var experimentationColumn = new PlayerTableColumn<Integer>("Experimentation", Pos.CENTER);
+		var experimentationColumn = new PlayerTableColumn<Integer>("Experimentation");
 		experimentationColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("research").levelProperty().asObject());
-		var hyperspaceColumn = new PlayerTableColumn<Integer>("Hyperspace", Pos.CENTER);
+		var hyperspaceColumn = new PlayerTableColumn<Integer>("Hyperspace");
 		hyperspaceColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("propulsion").levelProperty().asObject());
-		var manufacturingColumn = new PlayerTableColumn<Integer>("Manufacturing", Pos.CENTER);
+		var manufacturingColumn = new PlayerTableColumn<Integer>("Manufacturing");
 		manufacturingColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("manufacturing").levelProperty().asObject());
-		var scanningColumn = new PlayerTableColumn<Integer>("Scanning", Pos.CENTER);
+		var scanningColumn = new PlayerTableColumn<Integer>("Scanning");
 		scanningColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("scanning").levelProperty().asObject());
-		var terraformingColumn = new PlayerTableColumn<Integer>("Terraforming", Pos.CENTER);
+		var terraformingColumn = new PlayerTableColumn<Integer>("Terraforming");
 		terraformingColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("terraforming").levelProperty().asObject());
-		var weaponsColumn = new PlayerTableColumn<Integer>("Weapons", Pos.CENTER);
+		var weaponsColumn = new PlayerTableColumn<Integer>("Weapons");
 		weaponsColumn.setCellValueFactory(param -> param.getValue().getTechnologies().get("weapons").levelProperty().asObject());
 		technologyColumn.getColumns().addAll(bankingColumn, experimentationColumn, hyperspaceColumn, manufacturingColumn, scanningColumn, terraformingColumn, weaponsColumn);
 		table.getColumns().addAll(aliasColumn, nameColumn, teamColumn, starsColumn, shipsColumn, fleetsColumn, statsColumn, technologyColumn);
