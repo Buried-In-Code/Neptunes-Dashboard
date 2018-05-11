@@ -1,6 +1,5 @@
 package macro303.neptunes.display.tabs;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -9,10 +8,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import macro303.neptunes.Team;
 import macro303.neptunes.display.models.TeamsModel;
-import macro303.neptunes.display.scene.TeamTableColumn;
+import macro303.neptunes.display.scene.IntegerTableColumn;
+import macro303.neptunes.display.scene.MoneyTableColumn;
+import macro303.neptunes.display.scene.StringTableColumn;
 import org.jetbrains.annotations.NotNull;
-
-import java.text.DecimalFormat;
 
 /**
  * Created by Macro303 on 2018-05-08.
@@ -43,16 +42,15 @@ public class TeamsTab extends Tab {
 			}
 		});
 
-		var nameColumn = new TeamTableColumn<>("Name", new PropertyValueFactory<Team, String>("name"));
-		var starsColumn = new TeamTableColumn<>("Stars", new PropertyValueFactory<Team, Integer>("totalStars"));
-		var shipsColumn = new TeamTableColumn<>("Ships", new PropertyValueFactory<Team, Integer>("totalShips"));
+		var nameColumn = new StringTableColumn<Team>("Name", new PropertyValueFactory<>("name"));
+		var starsColumn = new IntegerTableColumn<Team>("Stars", new PropertyValueFactory<>("totalStars"));
+		var shipsColumn = new IntegerTableColumn<Team>("Ships", new PropertyValueFactory<>("totalShips"));
 		var statsColumn = new TableColumn("Total Stats");
-		var economyColumn = new TeamTableColumn<>("Economy", new PropertyValueFactory<Team, Integer>("totalEconomy"));
-		var economyTurnColumn = new TeamTableColumn<>("$Per Turn", new PropertyValueFactory<Team, Integer>("economyTurn"));
-		var industryColumn = new TeamTableColumn<>("Industry", new PropertyValueFactory<Team, Integer>("totalIndustry"));
-		var industryTurnColumn = new TeamTableColumn<>("Per Turn");
-		industryTurnColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(new DecimalFormat("00").format(param.getValue().getIndustryTurn())));
-		var scienceColumn = new TeamTableColumn<>("Science", new PropertyValueFactory<Team, Integer>("totalScience"));
+		var economyColumn = new IntegerTableColumn<Team>("Economy", new PropertyValueFactory<>("totalEconomy"));
+		var economyTurnColumn = new MoneyTableColumn<Team>("Per Turn", new PropertyValueFactory<>("economyTurn"));
+		var industryColumn = new IntegerTableColumn<Team>("Industry", new PropertyValueFactory<>("totalIndustry"));
+		var industryTurnColumn = new IntegerTableColumn<Team>("Per Turn", new PropertyValueFactory<>("industryTurn"));
+		var scienceColumn = new IntegerTableColumn<Team>("Science", new PropertyValueFactory<>("totalScience"));
 		statsColumn.getColumns().addAll(economyColumn, economyTurnColumn, industryColumn, industryTurnColumn, scienceColumn);
 		table.getColumns().addAll(nameColumn, starsColumn, shipsColumn, statsColumn);
 

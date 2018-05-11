@@ -5,29 +5,28 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import macro303.neptunes.Team;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by Macro303 on 2018-05-08.
+ * Created by Macro303 on 2018-05-11.
  */
-public class TeamTableColumn<T> extends TableColumn<Team, T> {
+public class StringTableColumn<T> extends TableColumn<T, String> {
 
-	public TeamTableColumn(@NotNull String title, @NotNull Callback<CellDataFeatures<Team, T>, ObservableValue<T>> property) {
+	public StringTableColumn(@NotNull String title, @NotNull Callback<CellDataFeatures<T, String>, ObservableValue<String>> property) {
 		this(title);
 		setCellValueFactory(property);
 	}
 
-	public TeamTableColumn(@NotNull String title) {
+	public StringTableColumn(@NotNull String title) {
 		super(title);
 		setEditable(false);
 		setCellFactory(param -> new TableCell<>() {
 			@Override
-			protected void updateItem(T item, boolean empty) {
+			protected void updateItem(String item, boolean empty) {
 				super.updateItem(item, empty);
 				if (!empty) {
 					if (item != null)
-						setText(item.toString());
+						setText(item);
 					setAlignment(Pos.CENTER_LEFT);
 				}
 			}

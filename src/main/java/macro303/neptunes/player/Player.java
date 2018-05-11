@@ -177,8 +177,8 @@ public class Player implements Comparable<Player> {
 		return (getTotalEconomy() * 10) + (getTechnologies().get("banking").getLevel() * 75);
 	}
 
-	public double getIndustryTurn() {
-		return getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5.0) / 24;
+	public int getIndustryTurn() {
+		return getTotalIndustry() * (getTechnologies().get("manufacturing").getLevel() + 5) / 24;
 	}
 
 	@Override

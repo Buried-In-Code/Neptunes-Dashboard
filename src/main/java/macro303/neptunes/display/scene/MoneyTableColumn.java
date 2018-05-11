@@ -5,29 +5,28 @@ import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
-import macro303.neptunes.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by Macro303 on 2018-05-08.
+ * Created by Macro303 on 2018-05-11.
  */
-public class PlayerTableColumn<T> extends TableColumn<Player, T> {
+public class MoneyTableColumn<T> extends TableColumn<T, Integer> {
 
-	public PlayerTableColumn(@NotNull String title, @NotNull Callback<CellDataFeatures<Player, T>, ObservableValue<T>> property) {
+	public MoneyTableColumn(@NotNull String title, @NotNull Callback<CellDataFeatures<T, Integer>, ObservableValue<Integer>> property) {
 		this(title);
 		setCellValueFactory(property);
 	}
 
-	public PlayerTableColumn(@NotNull String title) {
+	public MoneyTableColumn(@NotNull String title) {
 		super(title);
 		setEditable(false);
 		setCellFactory(param -> new TableCell<>() {
 			@Override
-			protected void updateItem(T item, boolean empty) {
+			protected void updateItem(Integer item, boolean empty) {
 				super.updateItem(item, empty);
 				if (!empty) {
 					if (item != null)
-						setText(item.toString());
+						setText(String.format("$%,d", item));
 					setAlignment(Pos.CENTER_LEFT);
 				}
 			}

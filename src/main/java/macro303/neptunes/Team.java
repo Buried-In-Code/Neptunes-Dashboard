@@ -41,8 +41,8 @@ public class Team implements Comparable<Team> {
 		return members.stream().mapToInt(Player::getTotalIndustry).sum();
 	}
 
-	public double getIndustryTurn() {
-		return members.stream().mapToDouble(Player::getIndustryTurn).sum();
+	public int getIndustryTurn() {
+		return members.stream().mapToInt(Player::getIndustryTurn).sum();
 	}
 
 	public int getTotalScience() {
