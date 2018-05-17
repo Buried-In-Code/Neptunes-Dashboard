@@ -48,8 +48,9 @@ public class GameAdapter implements JsonSerializer<Game>, JsonDeserializer<Game>
 		var startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(obj.get("start_time").getAsLong()), ZoneId.systemDefault());
 		var victory = obj.get("stars_for_victory").getAsInt();
 		var totalStars = obj.get("total_stars").getAsInt();
+		var turnTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(obj.get("turn_based_time_out").getAsLong()), ZoneId.systemDefault());
 
-		return new Game(gameOver, name, paused, players, started, startTime, teams, totalStars, victory);
+		return new Game(gameOver, name, paused, players, started, startTime, teams, totalStars, turnTime, victory);
 	}
 
 	@Override

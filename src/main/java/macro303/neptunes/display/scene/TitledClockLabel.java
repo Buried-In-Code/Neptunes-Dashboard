@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -12,9 +13,13 @@ import java.time.temporal.ChronoUnit;
 /**
  * Created by Macro303 on 2018-05-09.
  */
-public class ClockLabel extends Label {
-	public ClockLabel() {
-		super();
+public class TitledClockLabel {
+	private Label titleLabel;
+	private Label clockLabel;
+
+	public TitledClockLabel(@NotNull String title) {
+		titleLabel = new Label(title);
+		clockLabel = new Label();
 		bindToTime();
 	}
 
@@ -25,9 +30,17 @@ public class ClockLabel extends Label {
 				noon += (12 * 60);
 			if (noon > (12 * 60))
 				noon -= (12 * 60);
-			setText(String.format("%02d", (noon / 60)) + ":" + String.format("%02d", (noon % 60)));
+			clockLabel.setText(String.format("%02d", (noon / 60)) + ":" + String.format("%02d", (noon % 60)));
 		}), new KeyFrame(Duration.minutes(1)));
 		clock.setCycleCount(Animation.INDEFINITE);
 		clock.play();
+	}
+
+	public Label getTitleLabel() {
+		return titleLabel;
+	}
+
+	public Label getClockLabel() {
+		return clockLabel;
 	}
 }

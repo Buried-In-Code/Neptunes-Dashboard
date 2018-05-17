@@ -31,9 +31,11 @@ public class Game {
 	@NotNull
 	private final IntegerProperty totalStars;
 	@NotNull
+	private final ObjectProperty<LocalDateTime> turnTime;
+	@NotNull
 	private final IntegerProperty victory;
 
-	public Game(boolean gameOver, @NotNull String name, boolean paused, @NotNull List<Player> players, boolean started, @NotNull LocalDateTime startTime, @NotNull List<Team> teams, int totalStars, int victory) {
+	public Game(boolean gameOver, @NotNull String name, boolean paused, @NotNull List<Player> players, boolean started, @NotNull LocalDateTime startTime, @NotNull List<Team> teams, int totalStars, @NotNull LocalDateTime turnTime, int victory) {
 		this.gameOver = new SimpleBooleanProperty(gameOver);
 		this.name = new SimpleStringProperty(name);
 		this.paused = new SimpleBooleanProperty(paused);
@@ -42,6 +44,7 @@ public class Game {
 		this.startTime = new SimpleObjectProperty<>(startTime);
 		this.teams = FXCollections.observableList(teams);
 		this.totalStars = new SimpleIntegerProperty(totalStars);
+		this.turnTime = new SimpleObjectProperty<>(turnTime);
 		this.victory = new SimpleIntegerProperty(victory);
 	}
 
@@ -53,19 +56,22 @@ public class Game {
 		this.gameOver.set(gameOver);
 	}
 
-	public @NotNull BooleanProperty gameOverProperty() {
+	@NotNull
+	public BooleanProperty gameOverProperty() {
 		return gameOver;
 	}
 
+	@NotNull
 	public String getName() {
 		return name.get();
 	}
 
-	public void setName(String name) {
+	public void setName(@NotNull String name) {
 		this.name.set(name);
 	}
 
-	public @NotNull StringProperty nameProperty() {
+	@NotNull
+	public StringProperty nameProperty() {
 		return name;
 	}
 
@@ -77,10 +83,12 @@ public class Game {
 		this.paused.set(paused);
 	}
 
-	public @NotNull BooleanProperty pausedProperty() {
+	@NotNull
+	public BooleanProperty pausedProperty() {
 		return paused;
 	}
 
+	@NotNull
 	public ObservableList<Player> getPlayers() {
 		return players;
 	}
@@ -93,22 +101,26 @@ public class Game {
 		this.started.set(started);
 	}
 
-	public @NotNull BooleanProperty startedProperty() {
+	@NotNull
+	public BooleanProperty startedProperty() {
 		return started;
 	}
 
+	@NotNull
 	public LocalDateTime getStartTime() {
 		return startTime.get();
 	}
 
-	public void setStartTime(LocalDateTime startTime) {
+	public void setStartTime(@NotNull LocalDateTime startTime) {
 		this.startTime.set(startTime);
 	}
 
-	public @NotNull ObjectProperty<LocalDateTime> startTimeProperty() {
+	@NotNull
+	public ObjectProperty<LocalDateTime> startTimeProperty() {
 		return startTime;
 	}
 
+	@NotNull
 	public ObservableList<Team> getTeams() {
 		return teams;
 	}
@@ -121,7 +133,8 @@ public class Game {
 		this.totalStars.set(totalStars);
 	}
 
-	public @NotNull IntegerProperty totalStarsProperty() {
+	@NotNull
+	public IntegerProperty totalStarsProperty() {
 		return totalStars;
 	}
 
@@ -133,8 +146,23 @@ public class Game {
 		this.victory.set(victory);
 	}
 
-	public @NotNull IntegerProperty victoryProperty() {
+	@NotNull
+	public IntegerProperty victoryProperty() {
 		return victory;
+	}
+
+	@NotNull
+	public LocalDateTime getTurnTime() {
+		return turnTime.get();
+	}
+
+	public void setTurnTime(@NotNull LocalDateTime turnTime) {
+		this.turnTime.set(turnTime);
+	}
+
+	@NotNull
+	public ObjectProperty<LocalDateTime> turnTimeProperty() {
+		return turnTime;
 	}
 
 	@Override
@@ -152,6 +180,7 @@ public class Game {
 		if (!startTime.equals(game.startTime)) return false;
 		if (!teams.equals(game.teams)) return false;
 		if (!totalStars.equals(game.totalStars)) return false;
+		if (!turnTime.equals(game.turnTime)) return false;
 		return victory.equals(game.victory);
 	}
 
@@ -165,11 +194,11 @@ public class Game {
 		result = 31 * result + startTime.hashCode();
 		result = 31 * result + teams.hashCode();
 		result = 31 * result + totalStars.hashCode();
+		result = 31 * result + turnTime.hashCode();
 		result = 31 * result + victory.hashCode();
 		return result;
 	}
 
-	@Override
 	public String toString() {
 		return "Game{" +
 				"gameOver=" + gameOver +
@@ -180,6 +209,7 @@ public class Game {
 				", startTime=" + startTime +
 				", teams=" + teams +
 				", totalStars=" + totalStars +
+				", turnTime=" + turnTime +
 				", victory=" + victory +
 				'}';
 	}

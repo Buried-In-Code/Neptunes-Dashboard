@@ -1,12 +1,11 @@
 package macro303.neptunes.display.models;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import macro303.neptunes.game.Game;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -28,86 +27,54 @@ public class GameModel implements Model {
 	private final StringProperty victory = new SimpleStringProperty("0/0");
 	@NotNull
 	private final BooleanProperty gameOver = new SimpleBooleanProperty(false);
+	@NotNull
+	private final ObjectProperty<LocalDateTime> turnTime = new SimpleObjectProperty<>(LocalDateTime.now());
+	@Nullable
+	private Game game;
 
 	@Override
 	public void updateModel(@NotNull Game game) {
+		this.game = game;
 		name.bind(game.nameProperty());
 		started.bind(game.startedProperty());
 		startTime.bind(new SimpleStringProperty(game.getStartTime().format(formatter)));
 		paused.bind(game.pausedProperty());
 		victory.bind(new SimpleStringProperty(game.getVictory() + "/" + game.getTotalStars()));
 		gameOver.bind(game.gameOverProperty());
+		turnTime.bind(game.turnTimeProperty());
 	}
 
-	public String getName() {
-		return name.get();
+	@Nullable
+	@Override
+	public Game getGame() {
+		return game;
 	}
 
 	public @NotNull StringProperty nameProperty() {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name.set(name);
-	}
-
-	public boolean isStarted() {
-		return started.get();
-	}
-
 	public @NotNull BooleanProperty startedProperty() {
 		return started;
-	}
-
-	public void setStarted(boolean started) {
-		this.started.set(started);
-	}
-
-	public String getStartTime() {
-		return startTime.get();
 	}
 
 	public @NotNull StringProperty startTimeProperty() {
 		return startTime;
 	}
 
-	public void setStartTime(String startTime) {
-		this.startTime.set(startTime);
-	}
-
-	public boolean isPaused() {
-		return paused.get();
-	}
-
 	public @NotNull BooleanProperty pausedProperty() {
 		return paused;
-	}
-
-	public void setPaused(boolean paused) {
-		this.paused.set(paused);
-	}
-
-	public String getVictory() {
-		return victory.get();
 	}
 
 	public @NotNull StringProperty victoryProperty() {
 		return victory;
 	}
 
-	public void setVictory(String victory) {
-		this.victory.set(victory);
-	}
-
-	public boolean isGameOver() {
-		return gameOver.get();
-	}
-
 	public @NotNull BooleanProperty gameOverProperty() {
 		return gameOver;
 	}
 
-	public void setGameOver(boolean gameOver) {
-		this.gameOver.set(gameOver);
+	public @NotNull ObjectProperty<LocalDateTime> turnTimeProperty() {
+		return turnTime;
 	}
 }

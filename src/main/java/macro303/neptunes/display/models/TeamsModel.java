@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import macro303.neptunes.Team;
 import macro303.neptunes.game.Game;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,9 +16,13 @@ import java.util.Comparator;
 public class TeamsModel implements Model {
 	@NotNull
 	private final ObservableList<Team> teams = FXCollections.observableList(new ArrayList<>());
+	@Nullable
+	private Game game;
 
 	@Override
 	public void updateModel(@NotNull Game game) {
+		this.game = game;
+		teams.clear();
 		teams.setAll(game.getTeams());
 		teams.sort(Comparator.reverseOrder());
 	}
@@ -25,5 +30,11 @@ public class TeamsModel implements Model {
 	@NotNull
 	public ObservableList<Team> getTeams() {
 		return teams;
+	}
+
+	@Nullable
+	@Override
+	public Game getGame() {
+		return game;
 	}
 }

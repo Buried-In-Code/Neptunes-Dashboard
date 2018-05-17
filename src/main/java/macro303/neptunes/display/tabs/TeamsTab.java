@@ -1,5 +1,6 @@
 package macro303.neptunes.display.tabs;
 
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -10,6 +11,7 @@ import macro303.neptunes.Team;
 import macro303.neptunes.display.models.TeamsModel;
 import macro303.neptunes.display.scene.IntegerTableColumn;
 import macro303.neptunes.display.scene.MoneyTableColumn;
+import macro303.neptunes.display.scene.PercentageTableColumn;
 import macro303.neptunes.display.scene.StringTableColumn;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +46,8 @@ public class TeamsTab extends Tab {
 
 		var nameColumn = new StringTableColumn<Team>("Name", new PropertyValueFactory<>("name"));
 		var starsColumn = new IntegerTableColumn<Team>("Stars", new PropertyValueFactory<>("totalStars"));
+		var percentageColumn = new PercentageTableColumn<Team>("Victory");
+		percentageColumn.setCellValueFactory(param -> new SimpleDoubleProperty(((param.getValue().getTotalStars() + 0.0) / ((teamsModel.getGame() == null ? 0 : teamsModel.getGame().getTotalStars()) + 0.0)) * 100.0).asObject());
 		var shipsColumn = new IntegerTableColumn<Team>("Ships", new PropertyValueFactory<>("totalShips"));
 		var statsColumn = new TableColumn("Total Stats");
 		var economyColumn = new IntegerTableColumn<Team>("Economy", new PropertyValueFactory<>("totalEconomy"));
@@ -52,7 +56,7 @@ public class TeamsTab extends Tab {
 		var industryTurnColumn = new IntegerTableColumn<Team>("Per Turn", new PropertyValueFactory<>("industryTurn"));
 		var scienceColumn = new IntegerTableColumn<Team>("Science", new PropertyValueFactory<>("totalScience"));
 		statsColumn.getColumns().addAll(economyColumn, economyTurnColumn, industryColumn, industryTurnColumn, scienceColumn);
-		table.getColumns().addAll(nameColumn, starsColumn, shipsColumn, statsColumn);
+		table.getColumns().addAll(nameColumn, starsColumn, percentageColumn, shipsColumn, statsColumn);
 
 		return table;
 	}

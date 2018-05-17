@@ -21,6 +21,9 @@ public class NeptunesApp extends Application {
 
 		var scene = new Scene(view.getRoot());
 		scene.getStylesheets().add("css/MaterialFX-v0.3.css");
+//		scene.getStylesheets().add("css/modena_dark.css");
+		scene.getStylesheets().add("css/bootstrap3.css");
+//		scene.getStylesheets().add("css/sdkfx.css");
 		primaryStage.setTitle("Neptune's Pride");
 		primaryStage.setScene(scene);
 		primaryStage.setMaximized(true);

@@ -33,7 +33,6 @@ public class NeptunesView {
 	public Parent getRoot() {
 		var root = new BorderPane();
 		root.setPadding(new Insets(10.0));
-		root.setStyle("-fx-background-color: #EAEAEA");
 
 		root.setCenter(getCenter());
 		root.setBottom(getBottom());
@@ -49,7 +48,6 @@ public class NeptunesView {
 		var gameTab = new GameTab(gameModel);
 		var playersTab = new PlayersTab(playersModel);
 		var teamsTab = new TeamsTab(teamsModel);
-//		teamsTab.setDisable(true);
 		tabPane.getTabs().addAll(gameTab, playersTab, teamsTab);
 		return tabPane;
 	}
@@ -60,7 +58,6 @@ public class NeptunesView {
 		hbox.setAlignment(Pos.CENTER);
 
 		var refresh = new Button("Refresh");
-		refresh.getStyleClass().add("button-raised");
 		refresh.setOnAction(event -> {
 			Connection connection = new Connection();
 			connection.setOnSucceeded(success -> {
