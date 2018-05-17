@@ -22,31 +22,32 @@ public class Team implements Comparable<Team> {
 	}
 
 	public int getTotalShips() {
-		return members.stream().mapToInt(Player::getTotalShips).sum();
+		int sum = members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getTotalShips).sum();
+		return sum;
 	}
 
 	public int getTotalStars() {
-		return members.stream().mapToInt(Player::getTotalStars).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getTotalStars).sum();
 	}
 
 	public int getTotalEconomy() {
-		return members.stream().mapToInt(Player::getTotalEconomy).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getTotalEconomy).sum();
 	}
 
 	public int getEconomyTurn() {
-		return members.stream().mapToInt(Player::getEconomyTurn).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getEconomyTurn).sum();
 	}
 
 	public int getTotalIndustry() {
-		return members.stream().mapToInt(Player::getTotalIndustry).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getTotalIndustry).sum();
 	}
 
 	public int getIndustryTurn() {
-		return members.stream().mapToInt(Player::getIndustryTurn).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getIndustryTurn).sum();
 	}
 
 	public int getTotalScience() {
-		return members.stream().mapToInt(Player::getTotalScience).sum();
+		return members.stream().filter(member -> !member.isAI() && !member.isConceded()).mapToInt(Player::getTotalScience).sum();
 	}
 
 	public void addMember(Player player) {
