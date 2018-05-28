@@ -6,21 +6,25 @@
 
 	<groupId>nz.co.macro303</groupId>
 	<artifactId>neptunes-pride</artifactId>
-	<version>0.9.1</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<name>Neptunes Pride</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>10</maven.compiler.source>
-		<maven.compiler.target>10</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<kotlin.version>1.2.41</kotlin.version>
+		<kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+		<kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
+		<kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 	</properties>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>RELEASE</version>
+			<groupId>org.jetbrains.kotlin</groupId>
+			<artifactId>kotlin-stdlib-jdk8</artifactId>
+			<version>${kotlin.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
@@ -34,23 +38,41 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>nz.co.macro303</groupId>
-			<artifactId>console</artifactId>
+			<groupId>com.github.salomonbrys.kotson</groupId>
+			<artifactId>kotson</artifactId>
 			<version>RELEASE</version>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
+			<groupId>no.tornado</groupId>
+			<artifactId>tornadofx</artifactId>
 			<version>RELEASE</version>
 		</dependency>
 	</dependencies>
 
 	<build>
+		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<artifactId>kotlin-maven-plugin</artifactId>
+				<groupId>org.jetbrains.kotlin</groupId>
+				<version>${kotlin.version}</version>
+
+				<executions>
+					<execution>
+						<id>compile</id>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>test-compile</id>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -66,7 +88,7 @@
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
-							<mainClass>macro303.neptunes.display.NeptunesApp</mainClass>
+							<mainClass>macro303.neptunes.NeptunesApp</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
