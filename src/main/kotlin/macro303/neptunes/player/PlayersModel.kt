@@ -46,6 +46,7 @@ class PlayersModel : ViewModel(), Model {
 			println("Unable to connect to Player API")
 			loading.value = false
 		}
+		loading.value = true
 		exec.execute(refreshTask)
 	}
 

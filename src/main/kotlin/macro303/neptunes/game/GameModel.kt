@@ -57,6 +57,7 @@ class GameModel : ViewModel(), Model {
 			println("Unable to connect to Game API")
 			loading.value = false
 		}
+		loading.value
 		exec.execute(refreshTask)
 	}
 

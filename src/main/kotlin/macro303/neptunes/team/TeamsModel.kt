@@ -49,6 +49,7 @@ class TeamsModel : ViewModel(), Model {
 			println("Unable to connect to Team API")
 			loading.value = false
 		}
+		loading.value = true
 		exec.execute(refreshTask)
 	}
 
