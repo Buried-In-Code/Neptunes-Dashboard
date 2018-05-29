@@ -1,4 +1,4 @@
-# Neptunes Pride _1.0_
+# Neptunes Pride _1.1_
 Pulls simple game information for Neptune's Pride and attempts to display it in a simple UI
 
 ## Dependencies
