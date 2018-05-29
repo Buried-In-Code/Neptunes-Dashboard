@@ -1,12 +1,13 @@
 package macro303.neptunes.team
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
-import javafx.util.Duration
 import macro303.neptunes.Model
 import macro303.neptunes.game.Game
 import tornadofx.*
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * Created by Macro303 on 2018-05-08.
@@ -15,31 +16,40 @@ class TeamsModel : ViewModel(), Model {
 	val teams = FXCollections.observableList(ArrayList<Team>())
 	var game: Game? = null
 		private set
+	override val loading = SimpleBooleanProperty(false)
+	private val exec: Executor
 
 	init {
-		val refreshService = TeamRefreshService(this)
-		refreshService.period = Duration.hours(1.0)
-		refreshService.setOnFailed {
-			println("Exception Loading API: ${it.source.exception.localizedMessage}")
+		exec = Executors.newCachedThreadPool { runnable ->
+			val t = Thread(runnable)
+			t.isDaemon = true
+			t
 		}
-		refreshService.setOnCancelled {
-			println("Unable to connect to API")
-		}
-		refreshService.setOnSucceeded {
-			val players = it.source.value
-			if (players != null)
-				updateModel(any = players)
-			println("Team Update At: ${LocalDateTime.now().format(timeFormat)}")
-		}
-		refreshService.start()
+		updateModel()
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	override fun updateModel(any: Any) {
-		val teams = any as ArrayList<Team>
-		this.teams.clear()
-		this.teams.setAll(teams)
-		this.teams.sortDescending()
+	override fun updateModel() {
+		val refreshTask = TeamRefreshTask(this)
+		refreshTask.setOnFailed {
+			println("Unable to connect to Team API: ${refreshTask.exception.message}")
+			loading.value = false
+		}
+		refreshTask.setOnSucceeded {
+			this.teams.clear()
+			val results = it.source.value as ArrayList<Team>?
+			if (results != null) {
+				this.teams.setAll(results)
+				this.teams.sortDescending()
+			}
+			println("Team API loaded")
+			loading.value = false
+		}
+		refreshTask.setOnCancelled {
+			println("Unable to connect to Team API")
+			loading.value = false
+		}
+		exec.execute(refreshTask)
 	}
 
 	override fun getAddress(): String {

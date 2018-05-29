@@ -1,4 +1,4 @@
-# Neptunes Pride _1.1_
+# Neptunes Pride _1.2_
 Pulls simple game information for Neptune's Pride and attempts to display it in a simple UI
 
 ## Dependencies
@@ -11,9 +11,6 @@ Pulls simple game information for Neptune's Pride and attempts to display it in 
 
 ## Install
 
-1. Clone repo and download dependencies
+1. Clone repo `git clone https://github.com/Macro303/Neptunes-Pride.git`
 2. Run `mvn clean package`
 3. Run `java -jar target/neptunes-pride-{version}-jar-with-dependencies.jar`
-
-## Notes
-Console is not available from maven repo. Cloning from github is required.

@@ -1,42 +1,52 @@
 package macro303.neptunes.player
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
-import javafx.util.Duration
 import macro303.neptunes.Model
 import tornadofx.*
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * Created by Macro303 on 2018-05-08.
  */
 class PlayersModel : ViewModel(), Model {
 	val players = FXCollections.observableList(ArrayList<Player>())
+	override val loading = SimpleBooleanProperty(false)
+	private val exec: Executor
 
 	init {
-		val refreshService = PlayerRefreshService(this)
-		refreshService.period = Duration.hours(1.0)
-		refreshService.setOnFailed {
-			println("Exception Loading API: ${it.source.exception.localizedMessage}")
+		exec = Executors.newCachedThreadPool { runnable ->
+			val t = Thread(runnable)
+			t.isDaemon = true
+			t
 		}
-		refreshService.setOnCancelled {
-			println("Unable to connect to API")
-		}
-		refreshService.setOnSucceeded {
-			val players = it.source.value
-			if (players != null)
-				updateModel(any = players)
-			println("Player Update At: ${LocalDateTime.now().format(timeFormat)}")
-		}
-		refreshService.start()
+		updateModel()
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	override fun updateModel(any: Any) {
-		val players = any as ArrayList<Player>
-		this.players.clear()
-		this.players.setAll(players)
-		this.players.sortDescending()
+	override fun updateModel() {
+		val refreshTask = PlayerRefreshTask(this)
+		refreshTask.setOnFailed {
+			println("Unable to connect to Player API: ${refreshTask.exception.message}")
+			loading.value = false
+		}
+		refreshTask.setOnSucceeded {
+			this.players.clear()
+			val results = it.source.value as ArrayList<Player>?
+			if (results != null) {
+				this.players.setAll(results)
+				this.players.sortDescending()
+			}
+			println("Player API loaded")
+			loading.value = false
+		}
+		refreshTask.setOnCancelled {
+			println("Unable to connect to Player API")
+			loading.value = false
+		}
+		exec.execute(refreshTask)
 	}
 
 	override fun getAddress(): String {

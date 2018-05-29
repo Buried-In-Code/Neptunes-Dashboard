@@ -7,7 +7,7 @@ import tornadofx.*
  * Created by Macro303 on 2018-05-29.
  */
 class NeptunesStylesheet : Stylesheet() {
-	private val headerFont = loadFont(path = "/fonts/Overlock-Bold.ttf", size = 14)!!
+	private val headerFont = loadFont(path = "/fonts/LifeSavers-Bold.ttf", size = 14)!!
 	private val buttonFont = loadFont(path = "/fonts/OverlockSC-Regular.ttf", size = 14)!!
 	private val myFont = loadFont(path = "/fonts/Overlock-Regular.ttf", size = 14)!!
 	private val headerFontSize = 18.px
@@ -22,6 +22,7 @@ class NeptunesStylesheet : Stylesheet() {
 		button {
 			font = buttonFont
 			fontSize = buttonFontSize
+			prefWidth = 150.px
 		}
 		headerLabel {
 			font = headerFont

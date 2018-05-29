@@ -1,11 +1,12 @@
 package macro303.neptunes.game
 
 import javafx.beans.property.*
-import javafx.util.Duration
 import macro303.neptunes.Model
 import tornadofx.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 /**
  * Created by Macro303 on 2018-05-08.
@@ -19,35 +20,44 @@ class GameModel : ViewModel(), Model {
 	private val totalStars: IntegerProperty = SimpleIntegerProperty(0)
 	private var gameOver: BooleanProperty = SimpleBooleanProperty(false)
 	private var turnTime: StringProperty = SimpleStringProperty(LocalDateTime.now().format(dateFormat))
+	override val loading = SimpleBooleanProperty(false)
+	private val exec: Executor
 
 	init {
-		val refreshService = GameRefreshService(this)
-		refreshService.period = Duration.hours(1.0)
-		refreshService.setOnFailed {
-			println("Exception Loading API: ${it.source.exception}")
+		exec = Executors.newCachedThreadPool { runnable ->
+			val t = Thread(runnable)
+			t.isDaemon = true
+			t
 		}
-		refreshService.setOnCancelled {
-			println("Unable to connect to API")
-		}
-		refreshService.setOnSucceeded {
-			val game = it.source.value
-			if (game != null)
-				updateModel(any = game)
-			println("Game Update At: ${LocalDateTime.now().format(timeFormat)}")
-		}
-		refreshService.start()
+		updateModel()
 	}
 
-	override fun updateModel(any: Any) {
-		val game = any as Game
-		this.name.bind(game.nameProperty)
-		this.started.bind(game.startedProperty)
-		this.startTime.bind(SimpleStringProperty(game.startTime.format(dateFormat)))
-		this.paused.bind(game.pausedProperty)
-		this.victory.bind(SimpleStringProperty("${game.victory}/${game.totalStars}"))
-		this.totalStars.bind(game.totalStarsProperty)
-		this.gameOver.bind(game.gameOverProperty)
-		this.turnTime.bind(SimpleStringProperty(game.turnTime.format(dateFormat)))
+	override fun updateModel() {
+		val refreshTask = GameRefreshTask(this)
+		refreshTask.setOnFailed {
+			println("Unable to connect to Game API: ${refreshTask.exception.message}")
+			loading.value = false
+		}
+		refreshTask.setOnSucceeded {
+			val result = it.source.value as Game?
+			if (result != null) {
+				this.name.bind(result.nameProperty)
+				this.started.bind(result.startedProperty)
+				this.startTime.bind(SimpleStringProperty(result.startTime.format(dateFormat)))
+				this.paused.bind(result.pausedProperty)
+				this.victory.bind(SimpleStringProperty("${result.victory}/${result.totalStars}"))
+				this.totalStars.bind(result.totalStarsProperty)
+				this.gameOver.bind(result.gameOverProperty)
+				this.turnTime.bind(SimpleStringProperty(result.turnTime.format(dateFormat)))
+			}
+			println("Game API loaded")
+			loading.value = false
+		}
+		refreshTask.setOnCancelled {
+			println("Unable to connect to Game API")
+			loading.value = false
+		}
+		exec.execute(refreshTask)
 	}
 
 	override fun getAddress(): String = "basic"
