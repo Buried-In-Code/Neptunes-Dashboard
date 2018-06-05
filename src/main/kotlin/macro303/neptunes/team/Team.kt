@@ -18,25 +18,25 @@ class Team : Comparable<Team> {
 		get() = if (members.size > 0) members[0].team else "Unknown"
 
 	val totalShips: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.totalShips }).sum()
+		get() = members.stream().mapToInt({ it.totalShips }).sum()
 
 	val totalStars: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.totalStars }).sum()
+		get() = members.stream().mapToInt({ it.totalStars }).sum()
 
 	val totalEconomy: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.totalEconomy }).sum()
+		get() = members.stream().mapToInt({ it.totalEconomy }).sum()
 
 	val economyTurn: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.economyTurn }).sum()
+		get() = members.stream().mapToInt({ it.economyTurn }).sum()
 
 	val totalIndustry: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.totalIndustry }).sum()
+		get() = members.stream().mapToInt({ it.totalIndustry }).sum()
 
 	val industryTurn: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.industryTurn }).sum()
+		get() = members.stream().mapToInt({ it.industryTurn }).sum()
 
 	val totalScience: Int
-		get() = members.stream().filter { member -> !member.ai || !member.conceded }.mapToInt({ it.totalScience }).sum()
+		get() = members.stream().mapToInt({ it.totalScience }).sum()
 
 	fun addMember(player: Player) {
 		members.add(player)
