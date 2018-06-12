@@ -1,4 +1,4 @@
-package macro303.neptunes
+package macro.neptunes
 
 import javafx.stage.Stage
 import tornadofx.*

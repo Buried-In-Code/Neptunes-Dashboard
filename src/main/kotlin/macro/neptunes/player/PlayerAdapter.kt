@@ -1,8 +1,8 @@
-package macro303.neptunes.player
+package macro.neptunes.player
 
 import com.google.gson.*
-import macro303.neptunes.Util
-import macro303.neptunes.technology.Technology
+import macro.neptunes.Util
+import macro.neptunes.technology.Technology
 import java.lang.reflect.Type
 import java.util.*
 

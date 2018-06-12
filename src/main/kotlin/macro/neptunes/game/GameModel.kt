@@ -1,7 +1,6 @@
-package macro303.neptunes.game
+package macro.neptunes.game
 
 import javafx.beans.property.*
-import macro303.neptunes.Model
 import tornadofx.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -11,7 +10,7 @@ import java.util.concurrent.Executors
 /**
  * Created by Macro303 on 2018-05-08.
  */
-class GameModel : ViewModel(), Model {
+class GameModel : ViewModel(), macro.neptunes.Model {
 	private var name: StringProperty = SimpleStringProperty("Unknown")
 	private var started: BooleanProperty = SimpleBooleanProperty(false)
 	private val startTime: StringProperty = SimpleStringProperty(LocalDateTime.now().format(dateFormat))

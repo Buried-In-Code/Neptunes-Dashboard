@@ -1,4 +1,4 @@
-package macro303.neptunes.game
+package macro.neptunes.game
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty

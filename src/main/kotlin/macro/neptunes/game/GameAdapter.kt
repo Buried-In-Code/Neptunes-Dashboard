@@ -1,4 +1,4 @@
-package macro303.neptunes.game
+package macro.neptunes.game
 
 import com.google.gson.*
 import java.lang.reflect.Type

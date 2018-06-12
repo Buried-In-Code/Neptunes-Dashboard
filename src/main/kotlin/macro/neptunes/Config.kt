@@ -1,4 +1,4 @@
-package macro303.neptunes
+package macro.neptunes
 
 import com.google.gson.GsonBuilder
 import java.io.File

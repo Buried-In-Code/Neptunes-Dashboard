@@ -1,8 +1,7 @@
-package macro303.neptunes.player
+package macro.neptunes.player
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
-import macro303.neptunes.Model
 import tornadofx.*
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executor
@@ -11,7 +10,7 @@ import java.util.concurrent.Executors
 /**
  * Created by Macro303 on 2018-05-08.
  */
-class PlayersModel : ViewModel(), Model {
+class PlayersModel : ViewModel(), macro.neptunes.Model {
 	val players = FXCollections.observableList(ArrayList<Player>())
 	override val loading = SimpleBooleanProperty(false)
 	private val exec: Executor

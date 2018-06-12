@@ -1,4 +1,4 @@
-package macro303.neptunes
+package macro.neptunes
 
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.HPos
@@ -8,11 +8,11 @@ import javafx.scene.control.TabPane
 import javafx.scene.control.TableRow
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.Priority
-import macro303.neptunes.game.GameModel
-import macro303.neptunes.player.Player
-import macro303.neptunes.player.PlayersModel
-import macro303.neptunes.team.Team
-import macro303.neptunes.team.TeamsModel
+import macro.neptunes.game.GameModel
+import macro.neptunes.player.Player
+import macro.neptunes.player.PlayersModel
+import macro.neptunes.team.Team
+import macro.neptunes.team.TeamsModel
 import tornadofx.*
 
 /**

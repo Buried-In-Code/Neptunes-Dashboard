@@ -1,13 +1,12 @@
-package macro303.neptunes.player
+package macro.neptunes.player
 
-import macro303.neptunes.Model
-import macro303.neptunes.RefreshTask
+import macro.neptunes.RefreshTask
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PlayerRefreshTask(model: Model) : RefreshTask<ArrayList<Player>?>(model = model) {
+class PlayerRefreshTask(model: macro.neptunes.Model) : RefreshTask<ArrayList<Player>?>(model = model) {
 
 	override fun call(): ArrayList<Player>? {
 		var connection: HttpURLConnection? = null

@@ -1,4 +1,4 @@
-package macro303.neptunes.technology
+package macro.neptunes.technology
 
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleIntegerProperty

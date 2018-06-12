@@ -1,10 +1,10 @@
-package macro303.neptunes.player
+package macro.neptunes.player
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import macro303.neptunes.technology.Technology
+import macro.neptunes.technology.Technology
 import tornadofx.*
 
 /**

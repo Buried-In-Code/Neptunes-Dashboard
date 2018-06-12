@@ -1,11 +1,10 @@
-package macro303.neptunes.game
+package macro.neptunes.game
 
-import macro303.neptunes.Model
-import macro303.neptunes.RefreshTask
+import macro.neptunes.RefreshTask
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 
-class GameRefreshTask(model: Model) : RefreshTask<Game?>(model = model) {
+class GameRefreshTask(model: macro.neptunes.Model) : RefreshTask<Game?>(model = model) {
 
 	override fun call(): Game? {
 		var connection: HttpURLConnection? = null

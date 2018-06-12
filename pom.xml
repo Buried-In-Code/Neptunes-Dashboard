@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>nz.co.macro303</groupId>
+	<groupId>macro303</groupId>
 	<artifactId>neptunes-pride</artifactId>
-	<version>1.2.2</version>
+	<version>2.0</version>
 	<packaging>jar</packaging>
-	<name>Neptunes Pride</name>
+	<name>Neptune's Pride</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,12 +29,12 @@
 		<dependency>
 			<groupId>com.github.salomonbrys.kotson</groupId>
 			<artifactId>kotson</artifactId>
-			<version>RELEASE</version>
+			<version>2.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>no.tornado</groupId>
 			<artifactId>tornadofx</artifactId>
-			<version>RELEASE</version>
+			<version>1.7.16</version>
 		</dependency>
 	</dependencies>
 
@@ -46,7 +46,6 @@
 				<artifactId>kotlin-maven-plugin</artifactId>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<version>${kotlin.version}</version>
-
 				<executions>
 					<execution>
 						<id>compile</id>
@@ -84,6 +83,11 @@
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.5</version>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,21 +1,21 @@
-package macro303.neptunes
+package macro.neptunes
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import javafx.concurrent.Task
-import macro303.neptunes.game.Game
-import macro303.neptunes.game.GameAdapter
-import macro303.neptunes.player.Player
-import macro303.neptunes.player.PlayerAdapter
-import macro303.neptunes.technology.Technology
-import macro303.neptunes.technology.TechnologyAdapter
+import macro.neptunes.game.Game
+import macro.neptunes.game.GameAdapter
+import macro.neptunes.player.Player
+import macro.neptunes.player.PlayerAdapter
+import macro.neptunes.technology.Technology
+import macro.neptunes.technology.TechnologyAdapter
 import java.io.InputStreamReader
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.net.URL
 
-abstract class RefreshTask<V>(private val model: Model) : Task<V>() {
+abstract class RefreshTask<V>(private val model: macro.neptunes.Model) : Task<V>() {
 	protected val gson = GsonBuilder()
 		.registerTypeAdapter(Game::class.java, GameAdapter())
 		.registerTypeAdapter(Player::class.java, PlayerAdapter())

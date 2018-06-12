@@ -1,4 +1,4 @@
-package macro303.neptunes
+package macro.neptunes
 
 import javafx.scene.text.FontWeight
 import tornadofx.*
@@ -34,7 +34,7 @@ class NeptunesStylesheet : Stylesheet() {
 			fontWeight = FontWeight.BOLD
 			fontSize = myFontSize
 		}
-		columnHeader{
+		columnHeader {
 			font = buttonFont
 			fontSize = buttonFontSize
 		}

@@ -1,9 +1,8 @@
-package macro303.neptunes.team
+package macro.neptunes.team
 
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.collections.FXCollections
-import macro303.neptunes.Model
-import macro303.neptunes.game.Game
+import macro.neptunes.game.Game
 import tornadofx.*
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.Executor
@@ -12,7 +11,7 @@ import java.util.concurrent.Executors
 /**
  * Created by Macro303 on 2018-05-08.
  */
-class TeamsModel : ViewModel(), Model {
+class TeamsModel : ViewModel(), macro.neptunes.Model {
 	val teams = FXCollections.observableList(ArrayList<Team>())
 	var game: Game? = null
 		private set

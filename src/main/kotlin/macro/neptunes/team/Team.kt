@@ -1,6 +1,6 @@
-package macro303.neptunes.team
+package macro.neptunes.team
 
-import macro303.neptunes.player.Player
+import macro.neptunes.player.Player
 import java.util.*
 
 /**
