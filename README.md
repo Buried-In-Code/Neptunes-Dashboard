@@ -1,14 +1,14 @@
-# Neptunes Pride _2.0_
+# Neptune's Pride
+![Version](https://img.shields.io/github/tag/Macro303/Neptunes-Pride.svg?label=version)
+![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Pride.svg?label=issues)
+![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Pride.svg?label=contributors)
+
 Pulls simple game information for Neptune's Pride and attempts to display it in a simple UI
 
 ## Dependencies
-- JDK 1.8
-- [kotlin-stdlib-jdk8: 1.2.41](https://kotlinlang.org/)
-- [kotson: 2.5.0](https://github.com/SalomonBrys/Kotson/)
-- [tornadofx: 1.7.16](https://github.com/edvin/tornadofx/)
-
-## Install
-
-1. Clone repo `git clone https://github.com/Macro303/Neptunes-Pride.git`
-2. Run `mvn clean package`
-3. Run `java -jar target/neptunes-pride-{version}-jar-with-dependencies.jar`
+ - JDK 1.8
+ - [kotlin-stdlib-jdk8: 1.3.0](https://kotlinlang.org/)
+ - [kotson: 2.5.0](https://github.com/SalomonBrys/Kotson)
+ - [snakeyaml: 1.23](https://bitbucket.org/asomov/snakeyaml)
+ - [log4j-api: 2.11.1](https://logging.apache.org/log4j/2.x/)
+ - [log4j-core: 2.11.1 (runtime)](https://logging.apache.org/log4j/2.x/)
