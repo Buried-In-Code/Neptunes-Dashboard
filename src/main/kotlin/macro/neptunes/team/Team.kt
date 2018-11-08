@@ -1,71 +1,29 @@
 package macro.neptunes.team
 
+import macro.neptunes.game.Game
 import macro.neptunes.player.Player
-import java.util.*
+import kotlin.math.roundToInt
 
 /**
- * Created by Macro303 on 2018-05-10.
+ * Created by Macro303 on 2018-Nov-08.
  */
-class Team : Comparable<Team> {
-	private val members = ArrayList<Player>()
-
-	val isLost: Boolean
-		get() {
-			return members.stream().allMatch({ it.ai || it.conceded })
-		}
-
-	val name: String
-		get() = if (members.size > 0) members[0].team else "Unknown"
-
-	val totalShips: Int
-		get() = members.stream().mapToInt({ it.totalShips }).sum()
-
-	val totalStars: Int
-		get() = members.stream().mapToInt({ it.totalStars }).sum()
-
-	val totalEconomy: Int
-		get() = members.stream().mapToInt({ it.totalEconomy }).sum()
-
-	val economyTurn: Int
-		get() = members.stream().mapToInt({ it.economyTurn }).sum()
-
+data class Team(val name: String) {
+	val members = ArrayList<Player>()
 	val totalIndustry: Int
-		get() = members.stream().mapToInt({ it.totalIndustry }).sum()
-
-	val industryTurn: Int
-		get() = members.stream().mapToInt({ it.industryTurn }).sum()
-
+		get() = members.stream().mapToInt { it.industry }.sum()
 	val totalScience: Int
-		get() = members.stream().mapToInt({ it.totalScience }).sum()
+		get() = members.stream().mapToInt { it.science }.sum()
+	val totalEconomy: Int
+		get() = members.stream().mapToInt { it.economy }.sum()
+	val totalStars: Int
+		get() = members.stream().mapToInt { it.stars }.sum()
+	val totalFleet: Int
+		get() = members.stream().mapToInt { it.fleet }.sum()
+	val totalStrength: Int
+		get() = members.stream().mapToInt { it.strength }.sum()
 
-	fun addMember(player: Player) {
-		members.add(player)
-	}
-
-	override fun compareTo(other: Team): Int {
-		if (totalStars.compareTo(other.totalStars) != 0)
-			return totalStars.compareTo(other.totalStars)
-		if (totalShips.compareTo(other.totalShips) != 0)
-			return totalShips.compareTo(other.totalShips)
-		if ((totalEconomy + totalIndustry + totalScience).compareTo(other.totalEconomy + totalIndustry + totalScience) != 0)
-			return (totalEconomy + totalIndustry + totalScience).compareTo(other.totalEconomy + totalIndustry + totalScience)
-		return name.compareTo(other.name, ignoreCase = true)
-	}
-
-	override fun equals(other: Any?): Boolean {
-		if (this === other) return true
-		if (other !is Team) return false
-
-		if (members != other.members) return false
-
-		return true
-	}
-
-	override fun hashCode(): Int {
-		return members.hashCode()
-	}
-
-	override fun toString(): String {
-		return "Team(members=$members)"
+	fun calculateComplete(game: Game): Double {
+		val total = game.totalStars.toDouble()
+		return (totalStars.div(total).times(10000)).roundToInt().div(100.0)
 	}
 }
