@@ -1,4 +1,4 @@
-package macro.neptunes
+package macro.neptunes.core
 
 import org.apache.logging.log4j.LogManager
 import org.yaml.snakeyaml.DumperOptions
@@ -24,16 +24,19 @@ object Config {
 			null
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname!!, proxyPort!!))
-	var players: Map<String, Map<String, String>> = mapOf(
-			Pair("Team 1", mapOf(
-					Pair("Player 1 Alias", "Name"),
-					Pair("Player 2 Alias", "Name")
-			)),
-			Pair("Team 2", mapOf(
-					Pair("Player 3 Alias", "Name")
-			))
+	var players: Map<String, String> = mapOf(
+			Pair("Name 1", "Alias"),
+			Pair("Name 2", "Alias"),
+			Pair("Name 3", "Alias")
 	)
 	var gameID: Long? = null
+	var refreshRate: Int = 1
+	var winPercentage: Double = 50.0
+	var enableTeams: Boolean = false
+	var teams: Map<String, List<String>> = mapOf(
+			Pair("Team 1", listOf("Name 1", "Name 2")),
+			Pair("Team 2", listOf("Name 3"))
+	)
 
 	init {
 		val options = DumperOptions()
@@ -65,16 +68,29 @@ object Config {
 			if (proxySettings.containsKey("Port"))
 				proxyPort = proxySettings["Port"] as Int?
 		}
-		if (data.containsKey("Players"))
-			players = data["Players"] as Map<String, Map<String, String>>
-		if (data.containsKey("Game ID"))
-			gameID = data["Game ID"] as Long?
+		if (data.containsKey("Players")) players = data["Players"] as Map<String, String>
+		if (data.containsKey("Game ID")) gameID = data["Game ID"] as Long?
+		if (data.containsKey("Refresh Rate")) refreshRate = data["Refresh Rate"] as Int
+		if (data.containsKey("Win Percentage")) winPercentage = data["Win Percentage"] as Double
+		if (data.containsKey("Enable Teams")) enableTeams = data["Enable Teams"] as Boolean
+		if (data.containsKey("Teams") && enableTeams) teams = data["Teams"] as Map<String, List<String>>
 	}
 
 	private fun configToMap(): Map<String, Any?> {
-		val dataMap: Map<String, Any?>
-		val proxyMap: Map<String, Any?> = mapOf(Pair("Host Name", proxyHostname), Pair("Port", proxyPort))
-		dataMap = mapOf(Pair("Proxy", proxyMap), Pair("Players", players), Pair("Game ID", gameID))
+		val proxyMap: Map<String, Any?> = mapOf(
+				Pair("Host Name", proxyHostname),
+				Pair("Port", proxyPort)
+		)
+		var dataMap: Map<String, Any?> = mapOf(
+				Pair("Proxy", proxyMap),
+				Pair("Players", players),
+				Pair("Game ID", gameID),
+				Pair("Refresh Rate", refreshRate),
+				Pair("Win Percentage", winPercentage),
+				Pair("Enable Teams", enableTeams)
+		)
+		if (enableTeams)
+			dataMap = dataMap.plus(Pair("Teams", teams))
 		return dataMap.toSortedMap()
 	}
 

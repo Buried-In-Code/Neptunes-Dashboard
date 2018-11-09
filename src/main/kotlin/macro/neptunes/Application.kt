@@ -1,8 +1,13 @@
 package macro.neptunes
 
-import macro.neptunes.game.Game
-import macro.neptunes.player.Player
-import macro.neptunes.team.Team
+import macro.neptunes.console.Console
+import macro.neptunes.core.Config
+import macro.neptunes.core.Util
+import macro.neptunes.core.game.Game
+import macro.neptunes.core.player.Player
+import macro.neptunes.core.team.Team
+import macro.neptunes.data.Parser
+import macro.neptunes.data.RestClient
 import org.apache.logging.log4j.LogManager
 import kotlin.system.exitProcess
 
@@ -24,47 +29,59 @@ object Application {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		LOGGER.info("Welcome To Neptune's Pride: ${game.name}")
+		Console.displayHeading(text = "Welcome To Neptune's Pride: ${game.name}")
 		do {
 			var players = getPlayerData()
-			var teams = createTeams(players = players)
-			displayTeamLeaderboard(teams.sortedWith(compareBy({ -it.calculateComplete(game = game) }, { it.name })))
-			displayPlayerLeaderboard(players.sortedWith(compareBy({ -it.calculateComplete(game = game) }, { it.alias })))
-			teams = teams.sortedWith(compareBy({ -it.calculateComplete(game = game) }, { it.name }))
-			if (teams.first().calculateComplete(game = game) > 50.0) {
-				LOGGER.info("Winner is: ${teams.first().name} with ${"%.2f".format(teams.first().calculateComplete(game = game))}%")
-				players = players.sortedWith(compareBy({ -it.calculateComplete(game = game) }, { it.alias }))
-				players.stream().filter { it.calculateComplete(game = game) > 12.5 }.forEach {
-					LOGGER.info("${it.alias} was instrumental in the victory with ${"%.2f".format(it.calculateComplete(game = game))}%")
+			var teams = emptyList<Team>()
+			if (Config.enableTeams)
+				teams = createTeams(players = players)
+			displayPlayerLeaderboard(players = players, game = game)
+			if (Config.enableTeams) {
+				displayTeamLeaderboard(teams = teams, game = game)
+				teams = Util.sortTeamList(teams = teams, game = game)
+				if (teams.firstOrNull()?.hasWon(game = game) == true) {
+					Console.display("${Console.HEADING}${teams.first().name} ${Console.STANDARD}wins with ${Util.PERCENT_FORMAT.format(teams.first().calcComplete(game = game))}%")
+					var teamMembers: List<Player> = players.filter { it.team == teams.first().name }
+					teamMembers = teamMembers.filter { it.calcComplete(game = game) > Config.winPercentage.div(teamMembers.size) }
+					Util.sortPlayerList(players = teamMembers, game = game).forEach {
+						Console.display(text = "${Console.HEADING}${it.playerName()} ${Console.STANDARD}was instrumental in the team victory with ${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%")
+					}
+					break
 				}
-				break
+			} else {
+				players = Util.sortPlayerList(players = players, game = game)
+				if (players.firstOrNull()?.hasWon(game = game) == true) {
+					Console.display("${Console.HEADING}${players.first().playerName()} ${Console.STANDARD}wins with ${Util.PERCENT_FORMAT.format(players.first().calcComplete(game = game))}%")
+					break
+				}
 			}
-			Thread.sleep(1000)
-		}while (true)
+			Thread.sleep((Config.refreshRate * 1000).toLong())
+		} while (true)
 	}
 
 	@Suppress("UNCHECKED_CAST")
 	private fun getGameData(): Game {
 		val response = RestClient.getRequest(endpoint = "/basic")
-		val game = Game.parse(response["Data"] as Map<String, Any?>)
+		val game = Parser.parseGame(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {
 			LOGGER.fatal("Unable to find game")
-			exitProcess(0)
+			exitProcess(status = 0)
 		}
 		return game
 	}
 
 	private fun createTeams(players: List<Player>): List<Team> {
 		val teams = ArrayList<Team>()
-		Config.players.forEach { teamName, value ->
-			val team = Team(teamName)
-			teams.add(team)
-			value.forEach { alias, _ ->
-				players.forEach {
-					if (it.alias == alias)
-						team.members.add(it)
+		Config.teams.forEach { key, value ->
+			val team = Team(name = key)
+			players.forEach { player ->
+				if (value.contains(player.name)) {
+					player.team = key
+					team.members.add(player)
 				}
 			}
+			LOGGER.info("Loaded Team: ${team.name}")
+			teams.add(team)
 		}
 		return teams
 	}
@@ -74,33 +91,39 @@ object Application {
 		val players = ArrayList<Player>()
 		val response = RestClient.getRequest(endpoint = "/players")
 		(response["Data"] as Map<String, Any?>).values.forEach {
-			val player = Player.parse(it as Map<String, Any?>)
+			val player = Parser.parsePlayer(data = it as Map<String, Any?>)
 			player ?: return@forEach
-			LOGGER.debug("Loaded Player: ${player.alias}")
+			LOGGER.info("Loaded Player: ${player.alias}")
 			players.add(player)
 		}
 		return players
 	}
 
-	private fun displayTeamLeaderboard(teams: List<Team>) {
-		val format = "| %-9s | %9s | %5s | %5s |%n"
-		println("+-----------+-----------+-------+-------+")
-		println("| Team Name | Victory % | Stars | Fleet |")
-		println("+-----------+-----------+-------+-------+")
-		teams.forEach {
-			System.out.printf(format, it.name, "%.2f".format(it.calculateComplete(game = game)) + "%", it.totalStars, it.totalFleet)
+	private fun displayTeamLeaderboard(teams: List<Team>, game: Game) {
+		val headers = listOf("Team", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Active")
+		val data = ArrayList<List<Any>>()
+		val teamData = Util.sortTeamList(teams = teams, game = game)
+		teamData.forEach {
+			data.add(listOf(it.name, "${it.totalStars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.totalStrength, it.totalEconomy, it.calcMoney(), it.totalIndustry, it.calcShips(), it.totalScience, it.isActive))
 		}
-		println("+-----------+-----------+-------+-------+")
+		Console.displayLeaderboard(headers = headers, data = data)
 	}
 
-	private fun displayPlayerLeaderboard(players: List<Player>) {
-		val format = "| %-20s | %9s | %5s | %5s |%n"
-		println("+----------------------+-----------+-------+-------+")
-		println("| Alias                | Victory % | Stars | Fleet |")
-		println("+----------------------+-----------+-------+-------+")
-		players.forEach {
-			System.out.printf(format, it.alias, "%.2f".format(it.calculateComplete(game = game)) + "%", it.stars, it.fleet)
-		}
-		println("+----------------------+-----------+-------+-------+")
+	private fun displayPlayerLeaderboard(players: List<Player>, game: Game) {
+		val headers: List<String> = if (Config.enableTeams)
+			listOf("Player", "Team", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Banking", "Experimentation", "Hyperspace", "Manufacturing", "Scanning", "Terraforming", "Weapons", "Active")
+		else
+			listOf("Player", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Banking", "Experimentation", "Hyperspace", "Manufacturing", "Scanning", "Terraforming", "Weapons", "Active")
+		val data = ArrayList<List<Any>>()
+		val playerData = Util.sortPlayerList(players = players, game = game)
+		if (Config.enableTeams)
+			playerData.forEach {
+				data.add(listOf(it.playerName(), it.team, "${it.stars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.strength, it.economy, it.calcMoney(), it.industry, it.calcShips(), it.science, it.banking, it.experimentation, it.hyperspace, it.manufacturing, it.scanning, it.terraforming, it.weapons, it.isActive))
+			}
+		else
+			playerData.forEach {
+				data.add(listOf(it.playerName(), "${it.stars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.strength, it.economy, it.calcMoney(), it.industry, it.calcShips(), it.science, it.banking, it.experimentation, it.hyperspace, it.manufacturing, it.scanning, it.terraforming, it.weapons, it.isActive))
+			}
+		Console.displayLeaderboard(headers = headers, data = data)
 	}
 }

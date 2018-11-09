@@ -1,13 +1,11 @@
-package macro.neptunes
+package macro.neptunes.data
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import macro.neptunes.core.Config
 import org.apache.logging.log4j.LogManager
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
-import java.io.Reader
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
@@ -18,6 +16,7 @@ import java.util.*
  */
 internal object RestClient {
 	private val LOGGER = LogManager.getLogger(RestClient::class.java)
+	private const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	private val GSON = GsonBuilder()
 			.serializeNulls()
 			.disableHtmlEscaping()
@@ -45,24 +44,39 @@ internal object RestClient {
 	}
 
 	internal fun getRequest(endpoint: String, headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")), parameters: Map<String, Any>? = null): Map<String, Any> {
-		var temp = endpoint
 		if (!pingURL())
 			throw RuntimeException("Server is Unavailable")
-		if (parameters != null) {
-			val endpointBuilder = StringBuilder(temp)
-			parameters.forEach { key, value -> endpointBuilder.append(",").append(key).append("=").append(value) }
-			temp = endpointBuilder.toString().replaceFirst(",".toRegex(), "?")
-		}
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
-			connection = setupConnection(endpoint = temp, requestMethod = "GET", headers = headers)
+			connection = setupConnection(endpoint = endpoint, requestMethod = "GET", headers = headers, parameters = parameters)
 			connection.connect()
 			response = getResponse(connection)
 		} catch (ignored: IOException) {
 		} finally {
 			connection?.disconnect()
 			LOGGER.debug("GET << $response")
+		}
+		return response
+	}
+
+	internal fun postRequest(endpoint: String, headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")), parameters: Map<String, Any>? = null, body: Map<String, Any>): Map<String, Any> {
+		if (!pingURL())
+			throw RuntimeException("Server is Unavailable")
+		var response: Map<String, Any> = HashMap()
+		var connection: HttpURLConnection? = null
+		try {
+			connection = setupConnection(endpoint = endpoint, requestMethod = "POST", headers = headers, parameters = parameters)
+			LOGGER.debug("POST >> Body: " + toJson(body))
+			val wr = OutputStreamWriter(connection.outputStream)
+			wr.write(toJson(body))
+			wr.flush()
+			connection.connect()
+			response = getResponse(connection)
+		} catch (ignored: IOException) {
+		} finally {
+			connection?.disconnect()
+			LOGGER.debug("POST << $response")
 		}
 		return response
 	}
@@ -78,6 +92,10 @@ internal object RestClient {
 		return sb.toString()
 	}
 
+	private fun toJson(data: Map<String, Any>): String {
+		return GSON.toJson(data)
+	}
+
 	@Throws(JsonSyntaxException::class)
 	private fun fromJson(json: String): Map<String, Any> {
 		if (json.isBlank()) return emptyMap()
@@ -87,8 +105,10 @@ internal object RestClient {
 	}
 
 	@Throws(IOException::class)
-	private fun setupConnection(endpoint: String, requestMethod: String, headers: Map<String, String>): HttpURLConnection {
-		val urlString = Util.ENDPOINT + Config.gameID + endpoint
+	private fun setupConnection(endpoint: String, requestMethod: String, headers: Map<String, String>, parameters: Map<String, Any>? = null): HttpURLConnection {
+		var urlString = ENDPOINT + Config.gameID + endpoint
+		if (parameters != null)
+			urlString = addParameters(endpoint = urlString, parameters = parameters)
 		LOGGER.debug("$requestMethod >> URL: $urlString, Headers: $headers")
 		val url = URL(urlString)
 		val connection = when {
@@ -104,6 +124,12 @@ internal object RestClient {
 			connection.doOutput = true
 		}
 		return connection
+	}
+
+	private fun addParameters(endpoint: String, parameters: Map<String, Any>): String {
+		val endpointBuilder = StringBuilder(endpoint)
+		parameters.forEach { key, value -> endpointBuilder.append(",").append(key).append("=").append(value) }
+		return endpointBuilder.toString().replaceFirst(",".toRegex(), "?")
 	}
 
 	@Throws(IOException::class)
