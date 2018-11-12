@@ -1,0 +1,54 @@
+buildscript {
+	ext.kotlin_version = '1.3.0'
+	ext.versions_version = '0.20.0'
+
+	repositories {
+		mavenCentral()
+		mavenLocal()
+		jcenter()
+	}
+
+	dependencies {
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+		classpath "com.github.ben-manes:gradle-versions-plugin:$versions_version"
+	}
+}
+
+apply plugin: 'application'
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'com.github.ben-manes.versions'
+
+version = '0.0.0'
+group = 'macro'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+mainClassName = 'macro.neptunes.Application'
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+	jcenter()
+}
+
+dependencies {
+	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "$kotlin_version"
+	implementation group: 'com.github.salomonbrys.kotson', name: 'kotson', version: '2.5.0'
+	implementation group: 'org.yaml', name: 'snakeyaml', version: '1.23'
+	implementation group: 'com.sparkjava', name: 'spark-kotlin', version: '1.0.0-alpha'
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
+	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
+}
+
+jar {
+	manifest.attributes provider: 'gradle'
+}
+
+run {
+	standardInput = System.in
+}
+
+clean {
+}
