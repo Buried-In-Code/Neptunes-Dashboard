@@ -21,19 +21,17 @@ internal object TextEndpoints {
 		internal fun get(request: Request, response: Response) {
 			val name = request.queryMap("name").value()
 			val alias = request.queryMap("alias").value()
-			var result = ""
-			when {
-				name == null -> Config.players.filter { it.value.equals(alias, ignoreCase = true) }.forEach { result += "${it.key}=${it.value}\n" }
-				alias == null -> Config.players.filter { it.key.equals(name, ignoreCase = true) }.forEach { result += "${it.key}=${it.value}\n" }
-				else -> Config.players.filter { it.key.equals(name, ignoreCase = true) }.filter { it.value.equals(alias, ignoreCase = true) }.forEach { result += "${it.key}=${it.value}\n" }
+			val details = when {
+				name == null -> Config.players.filter { it.value.equals(alias, ignoreCase = true) }.map { "${it.key}=${it.value}" }
+				alias == null -> Config.players.filter { it.key.equals(name, ignoreCase = true) }.map { "${it.key}=${it.value}" }
+				else -> Config.players.filter { it.key.equals(name, ignoreCase = true) }.filter { it.value.equals(alias, ignoreCase = true) }.map { "${it.key}=${it.value}" }
 			}
-			response.body(result.dropLast(1))
+			response.body(details.joinToString("\n"))
 		}
 
 		internal fun getAll(request: Request, response: Response) {
-			var details = ""
-			Config.players.forEach { details += "${it.key}=${it.value}\n" }
-			response.body(details.dropLast(1))
+			val details = Config.players.map { "${it.key}=${it.value}" }
+			response.body(details.joinToString("\n"))
 		}
 
 		internal fun add(request: Request, response: Response) {
