@@ -74,9 +74,9 @@ object Application {
 		}
 		app.before {
 			when (it.method()) {
-				"HEAD" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}")
-				"GET" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}")
-				"POST" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Body: ${it.body()}")
+				"HEAD" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}")
+				"GET" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}")
+				"POST" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}, Body: ${it.body()}")
 			}
 			val now: LocalDateTime = LocalDateTime.now()
 			val difference: Duration = Duration.between(Util.lastUpdate, now)
@@ -147,9 +147,8 @@ object Application {
 						Exceptions.notYetAvailable(context = it)
 				}, roles(ADMIN))
 				get("/help", {
-					if (it.status() < 400)
-						APIEndpoints.Help.get(context = it)
-				}, roles(DEVELOPER, ADMIN))
+					it.redirect("/web/help", 307)
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
 			}
 		}
 	}
