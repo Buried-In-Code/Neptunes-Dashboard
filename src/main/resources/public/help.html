@@ -1,5 +1,6 @@
-<html>
+<html lang="en">
 <head>
+	<meta charset="UTF-8">
 	<title>BIT 269 Neptune's Pride API</title>
 	<style>
 		.get {
@@ -27,8 +28,8 @@
 </head>
 <body>
 <h1>BIT 269 Neptune's Pride API</h1>
-<p>Web API for interfacing with Javelin server</p>
-<h2>Table of Contents </h2>
+<p>Thingy to help with API thing</p>
+<h2>Table of Contents</h2>
 <ul>
 	<li>
 		<h3>Web Endpoints</h3>
@@ -56,359 +57,278 @@
 		</ul>
 	</li>
 </ul>
-<div id="GETWelcome">
-	<h2 class="GET">GET /api</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl></dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>200</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-{
-	"Message": "Welcome to BIT 269's Neptune's Pride API"
-}
-		</code>
-	</pre>
+<div id="WebEndpoints">
 </div>
-<div id="GETGame">
-	<h2 class="GET">GET /api/game</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl></dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>200</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-{
-	"name": "269 Team Tournament",
-	"started": true,
-	"paused": true,
-	"totalStars": 692
-}
-		</code>
-	</pre>
-</div>
-<div id="GETPlayers">
-	<h2 class="GET">GET /api/players</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl>
-		<dt>Sort</dt>
-		<dd>
-			<ul>
-				<li>Name (default)</li>
-				<li>Alias</li>
-				<li>Teams</li>
-				<li>Stars</li>
-				<li>Ships</li>
-			</ul>
-		</dd>
-	</dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>200</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-[
-    {
-        "team":"Team E",
-        "name":"Abdul",
-        "alias":"gladiator",
-        "industry":370,
-        "science":71,
-        "economy":308,
-        "stars":50,
-        "fleet":50,
-        "strength":58865,
-        "isActive":true,
-        "scanning":10,
-        "hyperspace":15,
-        "terraforming":25,
-        "experimentation":7,
-        "weapons":41,
-        "banking":10,
-        "manufacturing":34
-    }
-]
-		</code>
-	</pre>
-</div>
-<div id="GETPlayer">
-	<h2 class="GET">GET /api/player</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl>
-		<dt>Sort</dt>
-		<dd>
-			<ul>
-				<li>Name (default)</li>
-				<li>Alias</li>
-				<li>Teams</li>
-				<li>Stars</li>
-				<li>Ships</li>
-			</ul>
-		</dd>
-		<dt>Name</dt>
-		<dd><em>Filters by name</em></dd>
-		<dt>Alias</dt>
-		<dd><em>Filters by alias</em></dd>
-	</dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>200</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-[
-    {
-        "team":"Team E",
-        "name":"Jothi",
-        "alias":"Jothi",
-        "industry":647,
-        "science":71,
-        "economy":339,
-        "stars":86,
-        "fleet":94,
-        "strength":94064,
-        "isActive":true,
-        "scanning":16,
-        "hyperspace":18,
-        "terraforming":24,
-        "experimentation":6,
-        "weapons":41,
-        "banking":18,
-        "manufacturing":34
-    }
-]
-		</code>
-	</pre>
-</div>
-<div id="POSTPlayer">
-	<h2 class="POST">POST /api/player</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl></dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-{
-	"David": "Dr. Dave"
-}
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>204</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>text/plain</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-</div>
-<div id="GETLeaderboard">
-	<h2 class="GET">GET /api/leaderboard</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl>
-		<dt>Sort</dt>
-		<dd>
-			<ul>
-				<li>Name (default)</li>
-				<li>Alias</li>
-				<li>Teams</li>
-				<li>Stars</li>
-				<li>Ships</li>
-			</ul>
-		</dd>
-	</dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>418</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-{
-    "Error": "'/api/leaderboard' is not yet available, watch this space"
-}
-		</code>
-	</pre>
-</div>
-<div id="GETRefresh">
-	<h2 class="GET">GET /api/refresh</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl></dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Dev</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>204</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>text/plain</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-</div>
-<div id="POSTConfig">
-	<h2 class="POST">POST /api/config</h2>
-	<h3>Request</h3>
-	<h4>Parameters</h4>
-	<dl></dl>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-		<dt>Access</dt>
-		<dd>Admin</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-None
-		</code>
-	</pre>
-	<h3>Response</h3>
-	<h4>Code</h4>
-	<code>418</code>
-	<h4>Headers</h4>
-	<dl>
-		<dt>Content-Type</dt>
-		<dd>application/json</dd>
-	</dl>
-	<h4>Body</h4>
-	<pre class="example">
-		<code>
-{
-    "Error": "'/api/config' is not yet available, watch this space"
-}
-		</code>
-	</pre>
+<div id="APIEndpoints">
+	<div id="GETWelcome">
+		<h2 class="GET">GET /api</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl></dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>200</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="GETGame">
+		<h2 class="GET">GET /api/game</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl></dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>200</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="GETPlayers">
+		<h2 class="GET">GET /api/players</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl>
+			<dt>Sort</dt>
+			<dd>
+				<ul>
+					<li>Name (default)</li>
+					<li>Alias</li>
+					<li>Teams</li>
+					<li>Stars</li>
+					<li>Ships</li>
+				</ul>
+			</dd>
+		</dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>200</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="GETPlayer">
+		<h2 class="GET">GET /api/player</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl>
+			<dt>Sort</dt>
+			<dd>
+				<ul>
+					<li>Name (default)</li>
+					<li>Alias</li>
+					<li>Teams</li>
+					<li>Stars</li>
+					<li>Ships</li>
+				</ul>
+			</dd>
+			<dt>Name</dt>
+			<dd><em>Filters by name</em></dd>
+			<dt>Alias</dt>
+			<dd><em>Filters by alias</em></dd>
+		</dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>200</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="POSTPlayer">
+		<h2 class="POST">POST /api/player</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl></dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>204</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>text/plain</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="GETLeaderboard">
+		<h2 class="GET">GET /api/leaderboard</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl>
+			<dt>Sort</dt>
+			<dd>
+				<ul>
+					<li>Name (default)</li>
+					<li>Alias</li>
+					<li>Teams</li>
+					<li>Stars</li>
+					<li>Ships</li>
+				</ul>
+			</dd>
+		</dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>418</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="GETRefresh">
+		<h2 class="GET">GET /api/refresh</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl></dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Dev</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>204</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>text/plain</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
+	<div id="POSTConfig">
+		<h2 class="POST">POST /api/config</h2>
+		<h3>Request</h3>
+		<h4>Parameters</h4>
+		<dl></dl>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+			<dt>Access</dt>
+			<dd>Admin</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+		<h3>Response</h3>
+		<h4>Code</h4>
+		<code>418</code>
+		<h4>Headers</h4>
+		<dl>
+			<dt>Content-Type</dt>
+			<dd>application/json</dd>
+		</dl>
+		<h4>Body</h4>
+		<p class="example">
+			<b>WIP</b>
+		</p>
+	</div>
 </div>
 </body>
 </html>
