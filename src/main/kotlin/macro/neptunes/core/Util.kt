@@ -8,8 +8,11 @@ import macro.neptunes.core.player.Player
 import macro.neptunes.core.team.Team
 import org.apache.logging.log4j.LogManager
 import java.io.File
-import java.text.DecimalFormat
+import java.time.LocalDateTime
 
+/**
+ * Created by Macro303 on 2018-Nov-12.
+ */
 object Util {
 	private val LOGGER = LogManager.getLogger(Util::class.java)
 	private val GSON = GsonBuilder()
@@ -17,8 +20,10 @@ object Util {
 			.disableHtmlEscaping()
 			.create()
 	internal const val ENDPOINT = "http://nptriton.cqproject.net/game/"
-	internal val PERCENT_FORMAT = DecimalFormat("00.0")
 	lateinit var game: Game
+	lateinit var players: List<Player>
+	lateinit var lastUpdate: LocalDateTime
+	var teams: List<Team>? = null
 
 	val BIN: File by lazy {
 		val temp = File("bin")
@@ -29,12 +34,32 @@ object Util {
 		temp
 	}
 
-	internal fun sortPlayerList(players: List<Player>, game: Game): List<Player> {
-		return players.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete(game = game) }, { -it.stars }, { -it.strength }, { it.alias }))
+	internal fun sortPlayersByStars(players: List<Player>): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete() }, { -it.stars }, { it.name }, { it.alias }))
 	}
 
-	internal fun sortTeamList(teams: List<Team>, game: Game): List<Team> {
-		return teams.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete(game = game) }, { -it.totalStars }, { -it.totalStrength }, { it.name }))
+	internal fun sortPlayersByName(players: List<Player>): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { it.name }, { it.alias }))
+	}
+
+	internal fun sortPlayersByAlias(players: List<Player>): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { it.alias }, { it.name }))
+	}
+
+	internal fun sortPlayersByTeam(players: List<Player>): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { it.team }, { it.name }, { it.alias }))
+	}
+
+	internal fun sortPlayersByShips(players: List<Player>): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { it.strength }, { it.name }, { it.alias }))
+	}
+
+	internal fun sortTeamsByWin(teams: List<Team>): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete() }, { -it.totalStars }, { -it.totalStrength }, { it.name }))
+	}
+
+	internal fun sortTeamsByName(teams: List<Team>): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { it.name }))
 	}
 
 	@Throws(JsonSyntaxException::class)
@@ -46,4 +71,8 @@ object Util {
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
+
+	internal fun htmlToString(location: String): String{
+		return Util::class.java.getResource("/public/$location.html").readText()
+	}
 }

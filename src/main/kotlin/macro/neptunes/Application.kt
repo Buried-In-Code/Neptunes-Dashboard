@@ -1,15 +1,28 @@
 package macro.neptunes
 
-import com.google.gson.JsonSyntaxException
+import com.google.gson.GsonBuilder
+import io.javalin.Context
+import io.javalin.Javalin
+import io.javalin.apibuilder.ApiBuilder.*
+import io.javalin.json.FromJsonMapper
+import io.javalin.json.JavalinJson
+import io.javalin.json.ToJsonMapper
+import io.javalin.security.Role
+import io.javalin.security.SecurityUtil.roles
 import macro.neptunes.core.Config
 import macro.neptunes.core.Util
-import macro.neptunes.core.Util.fromJSON
-import macro.neptunes.core.Util.toJSON
-import macro.neptunes.data.*
+import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.player.PlayerHandler
+import macro.neptunes.core.team.TeamHandler
+import macro.neptunes.data.APIEndpoints
+import macro.neptunes.data.APIRoles.*
 import macro.neptunes.data.ContentType.JSON
-import macro.neptunes.data.ContentType.TEXT
+import macro.neptunes.data.ContentType.HTML
+import macro.neptunes.data.Exceptions
+import macro.neptunes.data.WebEndpoints
 import org.apache.logging.log4j.LogManager
-import spark.kotlin.*
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
 /**
@@ -17,6 +30,10 @@ import kotlin.system.exitProcess
  */
 object Application {
 	private val LOGGER = LogManager.getLogger(Application::class.java)
+	private val GSON = GsonBuilder()
+			.serializeNulls()
+			.disableHtmlEscaping()
+			.create()
 
 	init {
 		if (Config.gameID == null) {
@@ -28,128 +45,130 @@ object Application {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val maxThreads = 8
-		val minThreads = 2
-		val timeOutMillis = 30000
-		threadPool(maxThreads, minThreads, timeOutMillis)
-
-		port(Config.port)
-
-		before {
-			when (request.requestMethod()) {
-				"HEAD" -> LOGGER.info("${request.protocol()} ${request.requestMethod()} >> Endpoint: ${request.pathInfo()}, Content-Type: ${request.contentType()}, Agent: ${request.userAgent()}")
-				"GET" -> LOGGER.info("${request.protocol()} ${request.requestMethod()} >> Endpoint: ${request.pathInfo()}, Content-Type: ${request.contentType()}, Agent: ${request.userAgent()}")
-				"POST" -> LOGGER.info("${request.protocol()} ${request.requestMethod()} >> Endpoint: ${request.pathInfo()}, Content-Type: ${request.contentType()}, Body: ${request.body().toJSON()}, Agent: ${request.userAgent()}")
+		JavalinJson.fromJsonMapper = object : FromJsonMapper {
+			override fun <T> map(json: String, targetClass: Class<T>): T {
+				return GSON.fromJson(json, targetClass)
 			}
 		}
-		finally {
-			LOGGER.info("${request.protocol()} ${response.status()} << Content-Type: ${response.type()}, Body: ${response.body()}")
-		}
-
-		get("/") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null -> "Welcome to BIT 269's Neptune's Pride"
-				request.contentType() == JSON.value -> mapOf(Pair("Message", "Welcome to BIT 269's Neptune's Pride")).toJSON()
-				else -> Exceptions.contentType(request = request, response = response)
+		JavalinJson.toJsonMapper = object : ToJsonMapper {
+			override fun map(obj: Any): String {
+				return GSON.toJson(obj)
 			}
 		}
+		val app = Javalin.create().apply {
+			port(Config.port)
+			accessManager { handler, context, permittedRoles ->
+				val userRole = getUserRole(context = context)
+				if (permittedRoles.contains(userRole))
+					handler.handle(context)
+				else
+					context.status(401).json(mapOf(Pair("Error", "'${context.path()}' isn't for you")))
+				LOGGER.warn("User access level: $userRole")
+			}
+		}.start()
 
-		get("/game") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null -> TextEndpoints.Game.get(request = request, response = response)
-				request.contentType() == JSON.value -> JSONEndpoints.Game.get(request = request, response = response)
-				else -> Exceptions.contentType(request = request, response = response)
+		app.before("/api*") {
+			if (it.header("Content-Type") != JSON.value) {
+				Exceptions.contentType(context = it)
 			}
 		}
-
-		get("/players") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null -> TextEndpoints.Player.getAll(request = request, response = response)
-				request.contentType() == JSON.value -> JSONEndpoints.Player.getAll(request = request, response = response)
-				else -> Exceptions.contentType(request = request, response = response)
+		app.before {
+			when (it.method()) {
+				"HEAD" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}")
+				"GET" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}")
+				"POST" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Body: ${it.body()}")
 			}
-		}
-
-		post("/player") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null -> TextEndpoints.Player.add(request = request, response = response)
-				request.contentType() == JSON.value -> JSONEndpoints.Player.add(request = request, response = response)
-				else -> Exceptions.contentType(request = request, response = response)
-			}
-			if(response.status() != 400) {
-				Config.saveConfig()
+			val now: LocalDateTime = LocalDateTime.now()
+			val difference: Duration = Duration.between(Util.lastUpdate, now)
+			if (difference.toMinutes() > Config.refreshRate)
 				refreshData()
-				response.status(204)
+		}
+		app.after {
+			LOGGER.info("${it.protocol()} ${it.status()} << Content-Type: ${it.header("Content-Type")}")
+		}
+
+		app.routes {
+			path("/web") {
+				get("/", {
+					it.html("<html><h1>Welcome to BIT 269's Neptune's Pride</h1></html>")
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get("/game", {
+					WebEndpoints.Game.get(context = it)
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get("/players", {
+					WebEndpoints.Player.getAll(context = it)
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get("/player", {
+					WebEndpoints.Player.get(context = it)
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get("/leaderboard", {
+					WebEndpoints.Leaderboard.get(context = it)
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get("/help", {
+					it.html(Util.htmlToString(location = "help"))
+				}, roles(EVERYONE, DEVELOPER, ADMIN))
 			}
 		}
 
-		get("/player") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null -> TextEndpoints.Player.get(request = request, response = response)
-				request.contentType() == JSON.value -> JSONEndpoints.Player.get(request = request, response = response)
-				else -> Exceptions.contentType(request = request, response = response)
-			}
-		}
-
-		get("/refresh") {
-			response.type(request.contentType())
-			when {
-				request.contentType() == TEXT.value || request.contentType() == null || request.contentType() == JSON.value -> {
-					refreshData()
-					response.status(204)
-				}
-				else -> Exceptions.contentType(request = request, response = response)
-			}
-		}
-
-		post("/config") {
-			if (request.contentType() != JSON.value || !validAuth(handler = this))
-				Exceptions.forbidden(request = request, response = response)
-			try {
-				val temp: Map<String, Any> = request.body().fromJSON()
-				if (temp.containsKey("Game ID"))
-					Config.gameID = temp["Game ID"] as Long
-				if (temp.containsKey("Refresh Rate"))
-					Config.refreshRate = temp["Refresh Rate"] as Int
-				Config.saveConfig()
-				refreshData()
-			} catch (jse: JsonSyntaxException) {
-				Exceptions.forbidden(request = request, response = response)
-			}
-		}
-
-		notFound {
-			val message = "Unable to find the endpoint you are looking for: '${request.pathInfo()}'"
-			when {
-				request.contentType() == "text/plain" || request.contentType() == null -> {
-					type(contentType = request.contentType())
-					message
-				}
-				else -> {
-					type(contentType = "application/json")
-					mapOf(Pair("Error", message)).toJSON()
-				}
+		app.routes {
+			path("/api") {
+				get("/", {
+					if (it.status() < 400)
+						it.json(mapOf(Pair("Message", "Welcome to BIT 269's Neptune's Pride API")))
+				}, roles(DEVELOPER, ADMIN))
+				get("/game", {
+					if (it.status() < 400)
+						APIEndpoints.Game.get(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				get("/players", {
+					if (it.status() < 400)
+						APIEndpoints.Player.getAll(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				get("/player", {
+					if (it.status() < 400)
+						APIEndpoints.Player.get(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				post("/player", {
+					if (it.status() < 400)
+						APIEndpoints.Player.add(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				get("/leaderboard", {
+					if (it.status() < 400)
+						APIEndpoints.Leaderboard.get(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				get("/refresh", {
+					if (it.status() < 400) {
+						refreshData()
+						it.status(204)
+					}
+				}, roles(DEVELOPER, ADMIN))
+				post("/config", {
+					if (it.status() < 400)
+						Exceptions.notYetAvailable(context = it)
+				}, roles(ADMIN))
+				get("/help", {
+					if (it.status() < 400)
+						APIEndpoints.Help.get(context = it)
+				}, roles(DEVELOPER, ADMIN))
 			}
 		}
 	}
 
-	@Suppress("UNCHECKED_CAST")
 	private fun refreshData() {
-		val response = RESTClient.getRequest(endpoint = "/basic")
-		val game = Parser.parseGame(data = response["Data"] as Map<String, Any?>)
-		if (game == null) {
-			LOGGER.fatal("Unable to find game")
-			exitProcess(status = 0)
-		}
-		Util.game = game
+		Util.game = GameHandler.getData()
+		Util.players = PlayerHandler.getData()
+		if (Config.enableTeams)
+			Util.teams = TeamHandler.getData(players = Util.players)
+		else
+			Util.teams = null
+		Util.lastUpdate = LocalDateTime.now()
 	}
 
-	private fun validAuth(handler: RouteHandler): Boolean {
-		return false
+	private fun getUserRole(context: Context): Role {
+		return when (context.header("Access")?.toLowerCase()) {
+			"admin" -> ADMIN
+			"dev" -> DEVELOPER
+			else -> EVERYONE
+		}
 	}
 }

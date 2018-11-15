@@ -1,7 +1,7 @@
 package macro.neptunes.core.team
 
 import macro.neptunes.core.Config
-import macro.neptunes.core.game.Game
+import macro.neptunes.core.Util
 import macro.neptunes.core.player.Player
 import kotlin.math.roundToInt
 
@@ -39,13 +39,13 @@ data class Team(val name: String) {
 	val weapons: Int
 		get() = members.stream().mapToInt { it.weapons }.sum().div(members.size)
 
-	fun calcComplete(game: Game): Double {
-		val total = game.totalStars.toDouble()
-		return (totalStars.div(total).times(10000)).roundToInt().div(100.0)
+	fun calcComplete(): Int {
+		val total = Util.game.totalStars.toDouble()
+		return (totalStars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
 	}
-	
-	fun hasWon(game: Game): Boolean {
-		return calcComplete(game = game) > Config.winPercentage
+
+	fun hasWon(): Boolean {
+		return calcComplete() > Config.winPercentage
 	}
 
 	fun calcMoney(): Int {

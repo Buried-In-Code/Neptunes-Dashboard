@@ -5,7 +5,8 @@ package macro.neptunes.data
  */
 enum class ContentType(val value: String) {
 	TEXT(value = "text/plain"),
-	JSON(value = "application/json");
+	JSON(value = "application/json"),
+	HTML(value = "text/HTML");
 
 	override fun toString(): String {
 		return value

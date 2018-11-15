@@ -1,7 +1,7 @@
 package macro.neptunes.core.player
 
 import macro.neptunes.core.Config
-import macro.neptunes.core.game.Game
+import macro.neptunes.core.Util
 import kotlin.math.roundToInt
 
 /**
@@ -12,13 +12,13 @@ data class Player(val name: String, val alias: String, val industry: Int, val sc
 
 	fun playerName() = "$alias ($name)"
 
-	fun calcComplete(game: Game): Double {
-		val total = game.totalStars.toDouble()
-		return (stars.div(total).times(10000)).roundToInt().div(100.0)
+	fun calcComplete(): Int {
+		val total = Util.game.totalStars.toDouble()
+		return (stars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
 	}
 
-	fun hasWon(game: Game): Boolean {
-		return calcComplete(game = game) > Config.winPercentage
+	fun hasWon(): Boolean {
+		return calcComplete() > Config.winPercentage
 	}
 
 	fun calcMoney(): Int {

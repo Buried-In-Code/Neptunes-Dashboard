@@ -1,53 +1,58 @@
 package macro.neptunes.data
 
-import macro.neptunes.core.Util.toJSON
+import io.javalin.Context
 import macro.neptunes.data.ContentType.JSON
-import macro.neptunes.data.ContentType.TEXT
-import spark.Request
-import spark.Response
 
 /**
  * Created by Macro303 on 2018-Nov-14.
  */
 internal object Exceptions {
-	internal fun contentType(request: Request, response: Response) {
-		response.type(JSON.value)
-		val details = mapOf(Pair("Error", "'${request.pathInfo()}' doesn't support '${request.contentType()}' Content-Type")).toJSON()
-		response.body(details)
-		response.status(400)
-	}
-
-	internal fun forbidden(request: Request, response: Response) {
-		response.type(JSON.value)
-		val details = mapOf(Pair("Error", "'${request.pathInfo()}' isn't for you")).toJSON()
-		response.body(details)
-		response.status(403)
-	}
-
-	internal fun missingParam(request: Request, response: Response, param: String) {
-		var message = "You are missing '$param' from your request"
-		when {
-			request.contentType() == TEXT.value || request.contentType() == null -> response.type(request.contentType())
-			else -> {
-				response.type(JSON.value)
-				message = mapOf(Pair("Error", message)).toJSON()
-			}
+	internal fun contentType(context: Context) {
+		val message = "'${context.path()}' doesn't support '${context.header("Content-Type")}' Content-Type"
+		if (context.path().startsWith("/api")) {
+			val details = mapOf(Pair("Error", message))
+			context.json(details)
+		} else {
+			val details = "<html><p>$message</p></html>"
+			context.html(details)
 		}
-		response.body(message)
-		response.status(400)
+		context.status(400)
 	}
 
-	internal fun missingParams(vararg param: String, request: Request, response: Response, isOr: Boolean = true) {
+	internal fun missingParams(vararg param: String, context: Context, isOr: Boolean = true) {
 		val missing = if (isOr) param.joinToString(" or ") { "'$it'" } else param.joinToString(" and ") { "'$it'" }
-		var message = "$missing is required in your request"
-		when {
-			request.contentType() == TEXT.value || request.contentType() == null -> response.type(request.contentType())
-			else -> {
-				response.type(JSON.value)
-				message = mapOf(Pair("Error", message)).toJSON()
-			}
+		val message = "$missing is required in your request"
+		if (context.header("Content-Type") == JSON.value || context.path().startsWith("/api")) {
+			val details = mapOf(Pair("Error", message))
+			context.json(details)
+		} else {
+			val details = "<html><p>$message</p></html>"
+			context.html(details)
 		}
-		response.body(message)
-		response.status(400)
+		context.status(400)
+	}
+
+	internal fun notYetAvailable(context: Context) {
+		val message = "'${context.path()}' is not yet available, watch this space"
+		if (context.header("Content-Type") == JSON.value || context.path().startsWith("/api")) {
+			val details = mapOf(Pair("Error", message))
+			context.json(details)
+		} else {
+			val details = "<html><p>$message</p></html>"
+			context.html(details)
+		}
+		context.status(418)
+	}
+
+	internal fun invalidParam(context: Context, param: String) {
+		val message = "'$param' is not a valid parameter for '${context.path()}'"
+		if (context.header("Content-Type") == JSON.value || context.path().startsWith("/api")) {
+			val details = mapOf(Pair("Error", message))
+			context.json(details)
+		} else {
+			val details = "<html><p>$message</p></html>"
+			context.html(details)
+		}
+		context.status(400)
 	}
 }

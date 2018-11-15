@@ -26,9 +26,9 @@ object Config {
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname!!, proxyPort!!))
 	var players: Map<String, String> = mapOf(
-			Pair("Name 1", "Alias"),
-			Pair("Name 2", "Alias"),
-			Pair("Name 3", "Alias")
+			Pair("Alias 1", "Name"),
+			Pair("Alias 2", "Name"),
+			Pair("Alias 3", "Name")
 	)
 	var gameID: Long? = null
 	var refreshRate: Int = 1

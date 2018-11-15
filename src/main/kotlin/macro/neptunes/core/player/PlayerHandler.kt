@@ -1,32 +1,21 @@
-package macro.neptunes.data
+package macro.neptunes.core.player
 
 import macro.neptunes.core.Config
-import macro.neptunes.core.game.Game
-import macro.neptunes.core.player.Player
+import macro.neptunes.data.RESTClient
+import org.apache.logging.log4j.LogManager
 import kotlin.math.roundToInt
 
 /**
- * Created by Macro303 on 2018-Nov-09.
+ * Created by Macro303 on 2018-Nov-15.
  */
-object Parser {
-
-	internal fun parseGame(data: Map<String, Any?>): Game? {
-		val name = data.getOrDefault("name", null)?.toString()
-				?: return null
-		val started = data.getOrDefault("started", null)?.toString()?.toBoolean()
-				?: return null
-		val paused = data.getOrDefault("paused", null)?.toString()?.toBoolean()
-				?: return null
-		val totalStars = data.getOrDefault("total_stars", null)?.toString()?.toDoubleOrNull()?.roundToInt()
-				?: return null
-		return Game(name = name, started = started, paused = paused, totalStars = totalStars)
-	}
+object PlayerHandler {
+	private val LOGGER = LogManager.getLogger(PlayerHandler::class.java)
 
 	@Suppress("UNCHECKED_CAST")
-	internal fun parsePlayer(data: Map<String, Any?>): Player? {
+	private fun parse(data: Map<String, Any?>): Player? {
 		val alias = data.getOrDefault("alias", null)?.toString()
 				?: return null
-		val name = Config.players.filter { it.value == alias }.keys.firstOrNull()
+		val name = Config.players.filter { it.key == alias }.values.firstOrNull()
 				?: "Unknown"
 		val industry = data.getOrDefault("total_industry", null)?.toString()?.toDoubleOrNull()?.roundToInt()
 				?: return null
@@ -57,5 +46,18 @@ object Parser {
 		val weapons = ((data.getOrDefault("tech", null) as Map<String, Any?>?)?.getOrDefault("weapons", null) as Map<String, Any?>?)?.getOrDefault("level", null)?.toString()?.toDoubleOrNull()?.roundToInt()
 				?: return null
 		return Player(name = name, alias = alias, industry = industry, science = science, economy = economy, stars = stars, fleet = fleet, strength = strength, isActive = isActive, banking = banking, experimentation = experimentation, hyperspace = hyperspace, manufacturing = manufacturing, scanning = scanning, terraforming = terraforming, weapons = weapons)
+	}
+
+	@Suppress("UNCHECKED_CAST")
+	fun getData(): List<Player> {
+		val players = ArrayList<Player>()
+		val response = RESTClient.getRequest(endpoint = "/players")
+		(response["Data"] as Map<String, Any?>).values.forEach {
+			val player = parse(data = it as Map<String, Any?>)
+			player ?: return@forEach
+			LOGGER.info("Loaded Player: ${player.playerName()}")
+			players.add(player)
+		}
+		return players
 	}
 }
