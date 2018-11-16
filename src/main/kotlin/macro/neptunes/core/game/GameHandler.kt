@@ -10,27 +10,28 @@ import kotlin.system.exitProcess
  */
 object GameHandler {
 	private val LOGGER = LogManager.getLogger(GameHandler::class.java)
+	lateinit var game: Game
 
 	private fun parse(data: Map<String, Any?>): Game? {
 		val name = data.getOrDefault("name", null)?.toString()
-				?: return null
+			?: return null
 		val started = data.getOrDefault("started", null)?.toString()?.toBoolean()
-				?: return null
+			?: return null
 		val paused = data.getOrDefault("paused", null)?.toString()?.toBoolean()
-				?: return null
+			?: return null
 		val totalStars = data.getOrDefault("total_stars", null)?.toString()?.toDoubleOrNull()?.roundToInt()
-				?: return null
+			?: return null
 		return Game(name = name, started = started, paused = paused, totalStars = totalStars)
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	fun getData(): Game {
+	fun refreshData() {
 		val response = RESTClient.getRequest(endpoint = "/basic")
 		val game = parse(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {
 			LOGGER.fatal("Unable to find game")
 			exitProcess(status = 0)
 		}
-		return game
+		this.game = game
 	}
 }

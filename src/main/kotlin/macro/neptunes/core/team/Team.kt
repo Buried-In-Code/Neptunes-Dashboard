@@ -1,7 +1,7 @@
 package macro.neptunes.core.team
 
 import macro.neptunes.core.Config
-import macro.neptunes.core.Util
+import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import kotlin.math.roundToInt
 
@@ -40,7 +40,7 @@ data class Team(val name: String) {
 		get() = members.stream().mapToInt { it.weapons }.sum().div(members.size)
 
 	fun calcComplete(): Int {
-		val total = Util.game.totalStars.toDouble()
+		val total = GameHandler.game.totalStars.toDouble()
 		return (totalStars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
 	}
 
@@ -54,5 +54,40 @@ data class Team(val name: String) {
 
 	fun calcShips(): Int {
 		return totalIndustry * (manufacturing + 5) / 24
+	}
+
+	fun shortHTML(): String {
+		return shortJSON().values.joinToString(" = ")
+	}
+
+	fun shortJSON(): Map<String, Any> {
+		val data = mapOf(
+			Pair("Name", name),
+			Pair("Win Percentage", calcComplete())
+		)
+		return data
+	}
+
+	fun longHTML(): String {
+		var output = "<b>$name</b><ul>"
+		longJSON().forEach { key, value ->
+			output += "<li><b>$key:</b> $value</li>"
+		}
+		output += "</ul>"
+		return output
+	}
+
+	fun longJSON(): Map<String, Any> {
+		val data = mapOf(
+			Pair("Name", name),
+			Pair("Stars", totalStars),
+			Pair("Win Percentage", calcComplete()),
+			Pair("Fleet", totalFleet),
+			Pair("Industry", totalIndustry),
+			Pair("Science", totalScience),
+			Pair("Economy", totalEconomy),
+			Pair("Ships", totalStrength)
+		)
+		return data
 	}
 }

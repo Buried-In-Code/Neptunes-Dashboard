@@ -9,17 +9,16 @@ import io.javalin.json.JavalinJson
 import io.javalin.json.ToJsonMapper
 import io.javalin.security.Role
 import io.javalin.security.SecurityUtil.roles
+import macro.neptunes.Application.SecurityRoles.*
 import macro.neptunes.core.Config
 import macro.neptunes.core.Util
+import macro.neptunes.core.game.GameController
 import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.player.PlayerController
 import macro.neptunes.core.player.PlayerHandler
+import macro.neptunes.core.team.TeamController
 import macro.neptunes.core.team.TeamHandler
-import macro.neptunes.data.APIEndpoints
-import macro.neptunes.data.APIRoles.*
-import macro.neptunes.data.ContentType.JSON
-import macro.neptunes.data.ContentType.HTML
-import macro.neptunes.data.Exceptions
-import macro.neptunes.data.WebEndpoints
+import macro.neptunes.data.*
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
@@ -31,9 +30,11 @@ import kotlin.system.exitProcess
 object Application {
 	private val LOGGER = LogManager.getLogger(Application::class.java)
 	private val GSON = GsonBuilder()
-			.serializeNulls()
-			.disableHtmlEscaping()
-			.create()
+		.serializeNulls()
+		.disableHtmlEscaping()
+		.create()
+	const val JSON = "application/json"
+	const val HTML = "text/HTML"
 
 	init {
 		if (Config.gameID == null) {
@@ -59,24 +60,35 @@ object Application {
 			port(Config.port)
 			accessManager { handler, context, permittedRoles ->
 				val userRole = getUserRole(context = context)
+				LOGGER.warn("User access level: $userRole")
 				if (permittedRoles.contains(userRole))
 					handler.handle(context)
 				else
-					context.status(401).json(mapOf(Pair("Error", "'${context.path()}' isn't for you")))
-				LOGGER.warn("User access level: $userRole")
+					Exceptions.illegalAccess(context = context)
 			}
 		}.start()
 
 		app.before("/api*") {
-			if (it.header("Content-Type") != JSON.value) {
+			if (it.header("Content-Type") != JSON)
 				Exceptions.contentType(context = it)
-			}
 		}
 		app.before {
 			when (it.method()) {
-				"HEAD" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}")
-				"GET" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}")
-				"POST" -> LOGGER.info("${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header("Content-Type")}, Access: ${it.header("Access")}, Body: ${it.body()}")
+				"HEAD" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						"Content-Type"
+					)}, Access: ${it.header("Access")}"
+				)
+				"GET" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						"Content-Type"
+					)}, Access: ${it.header("Access")}"
+				)
+				"POST" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						"Content-Type"
+					)}, Access: ${it.header("Access")}, Body: ${it.body()}"
+				)
 			}
 			val now: LocalDateTime = LocalDateTime.now()
 			val difference: Duration = Duration.between(Util.lastUpdate, now)
@@ -88,78 +100,61 @@ object Application {
 		}
 
 		app.routes {
-			path("/web") {
-				get("/", {
-					it.html("<html><h1>Welcome to BIT 269's Neptune's Pride</h1></html>")
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
-				get("/game", {
-					WebEndpoints.Game.get(context = it)
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
-				get("/players", {
-					WebEndpoints.Player.getAll(context = it)
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
-				get("/player", {
-					WebEndpoints.Player.get(context = it)
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
-				get("/leaderboard", {
-					WebEndpoints.Leaderboard.get(context = it)
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
-				get("/help", {
-					it.html(Util.htmlToString(location = "help"))
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
+			path(Endpoints.WEB) {
+				get(Endpoints.WELCOME, WelcomeController::webGet, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.GAME, GameController::webGet, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(
+					Endpoints.PLAYER_LEADERBOARD,
+					PlayerController.Leaderboard::webGet,
+					roles(EVERYONE, DEVELOPER, ADMIN)
+				)
+				get(Endpoints.PLAYERS, PlayerController::webGetAll, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.PLAYER, PlayerController::webGet, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.TEAM_LEADERBOARD, TeamController.Leaderboard::webGet, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.TEAMS, TeamController::webGetAll, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.TEAM, TeamController::webGet, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.HELP, HelpController::get, roles(EVERYONE, DEVELOPER, ADMIN))
 			}
 		}
 
 		app.routes {
-			path("/api") {
-				get("/", {
-					if (it.status() < 400)
-						it.json(mapOf(Pair("Message", "Welcome to BIT 269's Neptune's Pride API")))
-				}, roles(DEVELOPER, ADMIN))
-				get("/game", {
-					if (it.status() < 400)
-						APIEndpoints.Game.get(context = it)
-				}, roles(DEVELOPER, ADMIN))
-				get("/players", {
-					if (it.status() < 400)
-						APIEndpoints.Player.getAll(context = it)
-				}, roles(DEVELOPER, ADMIN))
-				get("/player", {
-					if (it.status() < 400)
-						APIEndpoints.Player.get(context = it)
-				}, roles(DEVELOPER, ADMIN))
-				post("/player", {
-					if (it.status() < 400)
-						APIEndpoints.Player.add(context = it)
-				}, roles(DEVELOPER, ADMIN))
-				get("/leaderboard", {
-					if (it.status() < 400)
-						APIEndpoints.Leaderboard.get(context = it)
-				}, roles(DEVELOPER, ADMIN))
-				get("/refresh", {
+			path(Endpoints.API) {
+				get(Endpoints.WELCOME, WelcomeController::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.GAME, GameController::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.PLAYER_LEADERBOARD, PlayerController.Leaderboard::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.PLAYERS, PlayerController::apiGetAll, roles(DEVELOPER, ADMIN))
+				post(Endpoints.PLAYERS, PlayerController::apiPost, roles(DEVELOPER, ADMIN))
+				get(Endpoints.PLAYER, PlayerController::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.TEAM_LEADERBOARD, TeamController.Leaderboard::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.TEAMS, TeamController::apiGetAll, roles(DEVELOPER, ADMIN))
+				post(Endpoints.TEAMS, TeamController::apiPost, roles(DEVELOPER, ADMIN))
+				get(Endpoints.TEAM, TeamController::apiGet, roles(DEVELOPER, ADMIN))
+				get(Endpoints.REFRESH, {
 					if (it.status() < 400) {
 						refreshData()
 						it.status(204)
 					}
 				}, roles(DEVELOPER, ADMIN))
-				post("/config", {
+				get(Endpoints.CONFIG, {
+					if (it.status() < 400)
+						Exceptions.notYetAvailable(context = it)
+				}, roles(DEVELOPER, ADMIN))
+				patch(Endpoints.CONFIG, {
 					if (it.status() < 400)
 						Exceptions.notYetAvailable(context = it)
 				}, roles(ADMIN))
-				get("/help", {
-					it.redirect("/web/help", 307)
-				}, roles(EVERYONE, DEVELOPER, ADMIN))
+				get(Endpoints.HELP, HelpController::get, roles(EVERYONE, DEVELOPER, ADMIN))
 			}
 		}
 	}
 
-	private fun refreshData() {
-		Util.game = GameHandler.getData()
-		Util.players = PlayerHandler.getData()
+	fun refreshData() {
+		GameHandler.refreshData()
+		PlayerHandler.refreshData()
 		if (Config.enableTeams)
-			Util.teams = TeamHandler.getData(players = Util.players)
+			TeamHandler.refreshData()
 		else
-			Util.teams = null
+			TeamHandler.teams = null
 		Util.lastUpdate = LocalDateTime.now()
 	}
 
@@ -169,5 +164,11 @@ object Application {
 			"dev" -> DEVELOPER
 			else -> EVERYONE
 		}
+	}
+
+	private enum class SecurityRoles : Role {
+		EVERYONE,
+		DEVELOPER,
+		ADMIN
 	}
 }

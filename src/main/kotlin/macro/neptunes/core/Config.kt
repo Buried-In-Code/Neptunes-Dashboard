@@ -26,17 +26,17 @@ object Config {
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname!!, proxyPort!!))
 	var players: Map<String, String> = mapOf(
-			Pair("Alias 1", "Name"),
-			Pair("Alias 2", "Name"),
-			Pair("Alias 3", "Name")
+		Pair("Alias 1", "Name"),
+		Pair("Alias 2", "Name"),
+		Pair("Alias 3", "Name")
 	)
 	var gameID: Long? = null
 	var refreshRate: Int = 1
 	var winPercentage: Double = 50.0
 	var enableTeams: Boolean = false
 	var teams: Map<String, List<String>> = mapOf(
-			Pair("Team 1", listOf("Name 1", "Name 2")),
-			Pair("Team 2", listOf("Name 3"))
+		Pair("Team 1", listOf("Name 1", "Name 2")),
+		Pair("Team 2", listOf("Name 3"))
 	)
 
 	init {
@@ -81,17 +81,17 @@ object Config {
 
 	private fun configToMap(): Map<String, Any?> {
 		val proxyMap: Map<String, Any?> = mapOf(
-				Pair("Host Name", proxyHostname),
-				Pair("Port", proxyPort)
+			Pair("Host Name", proxyHostname),
+			Pair("Port", proxyPort)
 		)
 		var dataMap: Map<String, Any?> = mapOf(
-				Pair("Proxy", proxyMap),
-				Pair("Port", port),
-				Pair("Players", players),
-				Pair("Game ID", gameID),
-				Pair("Refresh Rate", refreshRate),
-				Pair("Win Percentage", winPercentage),
-				Pair("Enable Teams", enableTeams)
+			Pair("Proxy", proxyMap),
+			Pair("Port", port),
+			Pair("Players", players),
+			Pair("Game ID", gameID),
+			Pair("Refresh Rate", refreshRate),
+			Pair("Win Percentage", winPercentage),
+			Pair("Enable Teams", enableTeams)
 		)
 		if (enableTeams)
 			dataMap = dataMap.plus(Pair("Teams", teams))

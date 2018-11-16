@@ -22,7 +22,10 @@ internal object RESTClient {
 		return responseCode == 200 || responseCode == 201 || responseCode == 204
 	}
 
-	private fun headRequest(endpoint: String = "/", headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json"))): Int {
+	private fun headRequest(
+		endpoint: String = "/",
+		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json"))
+	): Int {
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
@@ -38,13 +41,22 @@ internal object RESTClient {
 		return response.getOrDefault("Code", 500) as Int
 	}
 
-	internal fun getRequest(endpoint: String, headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")), parameters: Map<String, Any>? = null): Map<String, Any> {
+	internal fun getRequest(
+		endpoint: String,
+		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")),
+		parameters: Map<String, Any>? = null
+	): Map<String, Any> {
 		if (!pingURL())
 			throw RuntimeException("Server is Unavailable")
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
-			connection = setupConnection(endpoint = endpoint, requestMethod = "GET", headers = headers, parameters = parameters)
+			connection = setupConnection(
+				endpoint = endpoint,
+				requestMethod = "GET",
+				headers = headers,
+				parameters = parameters
+			)
 			connection.connect()
 			response = getResponse(connection)
 		} catch (ignored: IOException) {
@@ -55,13 +67,23 @@ internal object RESTClient {
 		return response
 	}
 
-	internal fun postRequest(endpoint: String, headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")), parameters: Map<String, Any>? = null, body: Map<String, Any>): Map<String, Any> {
+	internal fun postRequest(
+		endpoint: String,
+		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")),
+		parameters: Map<String, Any>? = null,
+		body: Map<String, Any>
+	): Map<String, Any> {
 		if (!pingURL())
 			throw RuntimeException("Server is Unavailable")
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
-			connection = setupConnection(endpoint = endpoint, requestMethod = "POST", headers = headers, parameters = parameters)
+			connection = setupConnection(
+				endpoint = endpoint,
+				requestMethod = "POST",
+				headers = headers,
+				parameters = parameters
+			)
 			LOGGER.info("POST >> Body: " + body.toJSON())
 			val wr = OutputStreamWriter(connection.outputStream)
 			wr.write(body.toJSON())
@@ -88,7 +110,12 @@ internal object RESTClient {
 	}
 
 	@Throws(IOException::class)
-	private fun setupConnection(endpoint: String, requestMethod: String, headers: Map<String, String>, parameters: Map<String, Any>? = null): HttpURLConnection {
+	private fun setupConnection(
+		endpoint: String,
+		requestMethod: String,
+		headers: Map<String, String>,
+		parameters: Map<String, Any>? = null
+	): HttpURLConnection {
 		var urlString = Util.ENDPOINT + Config.gameID + endpoint
 		if (parameters != null)
 			urlString = addParameters(endpoint = urlString, parameters = parameters)
@@ -121,10 +148,11 @@ internal object RESTClient {
 		response["Code"] = connection.responseCode
 		response["Message"] = connection.responseMessage
 		if (connection.responseCode != 204) {
-			val returnedData: String = if (connection.responseCode == 200 || connection.responseCode == 201 || connection.responseCode == 202)
-				readAll(BufferedReader(InputStreamReader(connection.inputStream, Charset.forName("UTF-8"))))
-			else
-				readAll(BufferedReader(InputStreamReader(connection.errorStream, Charset.forName("UTF-8"))))
+			val returnedData: String =
+				if (connection.responseCode == 200 || connection.responseCode == 201 || connection.responseCode == 202)
+					readAll(BufferedReader(InputStreamReader(connection.inputStream, Charset.forName("UTF-8"))))
+				else
+					readAll(BufferedReader(InputStreamReader(connection.errorStream, Charset.forName("UTF-8"))))
 			response["Data"] = returnedData.fromJSON()
 		}
 		return response
