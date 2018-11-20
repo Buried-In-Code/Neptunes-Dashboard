@@ -1,129 +1,200 @@
 package macro.neptunes
 
-import macro.neptunes.console.Console
+import com.google.gson.GsonBuilder
+import io.javalin.Context
+import io.javalin.Javalin
+import io.javalin.json.FromJsonMapper
+import io.javalin.json.JavalinJson
+import io.javalin.json.ToJsonMapper
+import io.javalin.security.Role
+import io.javalin.security.SecurityUtil.roles
+import macro.neptunes.Application.SecurityRoles.*
 import macro.neptunes.core.Config
 import macro.neptunes.core.Util
-import macro.neptunes.core.game.Game
-import macro.neptunes.core.player.Player
-import macro.neptunes.core.team.Team
-import macro.neptunes.data.Parser
-import macro.neptunes.data.RestClient
+import macro.neptunes.core.game.GameController
+import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.player.PlayerController
+import macro.neptunes.core.player.PlayerHandler
+import macro.neptunes.core.team.TeamController
+import macro.neptunes.core.team.TeamHandler
+import macro.neptunes.data.Endpoints
+import macro.neptunes.data.Exceptions
+import macro.neptunes.data.HelpController
+import macro.neptunes.data.WelcomeController
 import org.apache.logging.log4j.LogManager
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
 /**
- * Created by Macro303 on 2018-Nov-08.
+ * Created by Macro303 on 2018-Nov-12.
  */
 object Application {
 	private val LOGGER = LogManager.getLogger(Application::class.java)
-	private val game: Game by lazy {
-		getGameData()
-	}
+	private val GSON = GsonBuilder()
+		.serializeNulls()
+		.disableHtmlEscaping()
+		.create()
+	const val JSON = "application/json"
+	const val HTML = "text/HTML"
 
 	init {
 		if (Config.gameID == null) {
 			LOGGER.fatal("Requires a Game ID")
 			exitProcess(0)
 		}
+		refreshData()
 	}
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		Console.displayHeading(text = "Welcome To Neptune's Pride: ${game.name}")
-		do {
-			var players = getPlayerData()
-			var teams = emptyList<Team>()
-			if (Config.enableTeams)
-				teams = createTeams(players = players)
-			displayPlayerLeaderboard(players = players, game = game)
-			if (Config.enableTeams) {
-				displayTeamLeaderboard(teams = teams, game = game)
-				teams = Util.sortTeamList(teams = teams, game = game)
-				if (teams.firstOrNull()?.hasWon(game = game) == true) {
-					Console.display("${Console.HEADING}${teams.first().name} ${Console.STANDARD}wins with ${Util.PERCENT_FORMAT.format(teams.first().calcComplete(game = game))}%")
-					var teamMembers: List<Player> = players.filter { it.team == teams.first().name }
-					teamMembers = teamMembers.filter { it.calcComplete(game = game) > Config.winPercentage.div(teamMembers.size) }
-					Util.sortPlayerList(players = teamMembers, game = game).forEach {
-						Console.display(text = "${Console.HEADING}${it.playerName()} ${Console.STANDARD}was instrumental in the team victory with ${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%")
-					}
-					break
-				}
-			} else {
-				players = Util.sortPlayerList(players = players, game = game)
-				if (players.firstOrNull()?.hasWon(game = game) == true) {
-					Console.display("${Console.HEADING}${players.first().playerName()} ${Console.STANDARD}wins with ${Util.PERCENT_FORMAT.format(players.first().calcComplete(game = game))}%")
-					break
-				}
+		JavalinJson.fromJsonMapper = object : FromJsonMapper {
+			override fun <T> map(json: String, targetClass: Class<T>): T {
+				return GSON.fromJson(json, targetClass)
 			}
-			Thread.sleep((Config.refreshRate * 1000).toLong())
-		} while (true)
-	}
-
-	@Suppress("UNCHECKED_CAST")
-	private fun getGameData(): Game {
-		val response = RestClient.getRequest(endpoint = "/basic")
-		val game = Parser.parseGame(data = response["Data"] as Map<String, Any?>)
-		if (game == null) {
-			LOGGER.fatal("Unable to find game")
-			exitProcess(status = 0)
 		}
-		return game
-	}
-
-	private fun createTeams(players: List<Player>): List<Team> {
-		val teams = ArrayList<Team>()
-		Config.teams.forEach { key, value ->
-			val team = Team(name = key)
-			players.forEach { player ->
-				if (value.contains(player.name)) {
-					player.team = key
-					team.members.add(player)
-				}
+		JavalinJson.toJsonMapper = object : ToJsonMapper {
+			override fun map(obj: Any): String {
+				return GSON.toJson(obj)
 			}
-			LOGGER.info("Loaded Team: ${team.name}")
-			teams.add(team)
 		}
-		return teams
+		val app = Javalin.create().apply {
+			port(Config.port)
+			accessManager { handler, context, permittedRoles ->
+				val userRole = getUserRole(context = context)
+				LOGGER.warn("User access level: $userRole")
+				if (permittedRoles.contains(userRole))
+					handler.handle(context)
+				else
+					Exceptions.illegalAccess(context = context)
+			}
+		}.start()
+
+		app.before {
+			when (it.method()) {
+				"HEAD" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						header = "Content-Type"
+					)}, Access: ${it.header(header = "Access")}"
+				)
+				"GET" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						header = "Content-Type"
+					)}, Access: ${it.header(header = "Access")}"
+				)
+				"POST" -> LOGGER.info(
+					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
+						header = "Content-Type"
+					)}, Access: ${it.header(header = "Access")}, Body: ${it.body()}"
+				)
+			}
+			val now: LocalDateTime = LocalDateTime.now()
+			val difference: Duration = Duration.between(Util.lastUpdate, now)
+			if (difference.toMinutes() > Config.refreshRate)
+				refreshData()
+		}
+		app.after {
+			LOGGER.info("${it.protocol()} ${it.status()} << Content-Type: ${it.header(header = "Content-Type")}")
+		}
+
+		app.get(Endpoints.WELCOME, {
+			if (it.header(header = "Content-Type") == JSON)
+				WelcomeController.apiGet(context = it)
+			else
+				WelcomeController.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.GAME, {
+			if (it.header(header = "Content-Type") == JSON)
+				GameController.apiGet(context = it)
+			else
+				GameController.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.PLAYERS_LEADERBOARD, {
+			if (it.header(header = "Content-Type") == JSON)
+				PlayerController.Leaderboard.apiGet(context = it)
+			else
+				PlayerController.Leaderboard.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.PLAYERS, {
+			if (it.header(header = "Content-Type") == JSON)
+				PlayerController.apiGetAll(context = it)
+			else
+				PlayerController.webGetAll(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.post(Endpoints.PLAYERS, {
+			if (it.header(header = "Content-Type") == JSON)
+				PlayerController.apiPost(context = it)
+		}, roles(DEVELOPER, ADMIN))
+		app.get(Endpoints.PLAYER, {
+			if (it.header(header = "Content-Type") == JSON)
+				PlayerController.apiGet(context = it)
+			else
+				PlayerController.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.TEAMS_LEADERBOARD, {
+			if (it.header(header = "Content-Type") == JSON)
+				TeamController.Leaderboard.apiGet(context = it)
+			else
+				TeamController.Leaderboard.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.TEAMS, {
+			if (it.header(header = "Content-Type") == JSON)
+				TeamController.apiGetAll(context = it)
+			else
+				TeamController.webGetAll(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.post(Endpoints.TEAMS, {
+			if (it.header(header = "Content-Type") == JSON)
+				TeamController.apiPost(context = it)
+		}, roles(DEVELOPER, ADMIN))
+		app.get(Endpoints.TEAM, {
+			if (it.header(header = "Content-Type") == JSON)
+				TeamController.apiGet(context = it)
+			else
+				TeamController.webGet(context = it)
+		}, roles(EVERYONE, DEVELOPER, ADMIN))
+		app.get(Endpoints.REFRESH, {
+			if (it.status() < 400) {
+				refreshData()
+				it.status(204)
+			}
+		}, roles(DEVELOPER, ADMIN))
+		app.get(Endpoints.CONFIG, {
+			if (it.status() < 400)
+				Exceptions.notYetAvailable(context = it)
+		}, roles(DEVELOPER, ADMIN))
+		app.patch(Endpoints.CONFIG, {
+			if (it.status() < 400)
+				Exceptions.notYetAvailable(context = it)
+		}, roles(ADMIN))
+		app.get(Endpoints.HELP, HelpController::get, roles(EVERYONE, DEVELOPER, ADMIN))
+
+		app.error(404) {
+			LOGGER.error("${it.path()} >> Host: ${it.host()}, IP: ${it.ip()}, User-Agent: ${it.userAgent()}")
+		}
 	}
 
-	@Suppress("UNCHECKED_CAST")
-	private fun getPlayerData(): List<Player> {
-		val players = ArrayList<Player>()
-		val response = RestClient.getRequest(endpoint = "/players")
-		(response["Data"] as Map<String, Any?>).values.forEach {
-			val player = Parser.parsePlayer(data = it as Map<String, Any?>)
-			player ?: return@forEach
-			LOGGER.info("Loaded Player: ${player.alias}")
-			players.add(player)
-		}
-		return players
-	}
-
-	private fun displayTeamLeaderboard(teams: List<Team>, game: Game) {
-		val headers = listOf("Team", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Active")
-		val data = ArrayList<List<Any>>()
-		val teamData = Util.sortTeamList(teams = teams, game = game)
-		teamData.forEach {
-			data.add(listOf(it.name, "${it.totalStars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.totalStrength, it.totalEconomy, it.calcMoney(), it.totalIndustry, it.calcShips(), it.totalScience, it.isActive))
-		}
-		Console.displayLeaderboard(headers = headers, data = data)
-	}
-
-	private fun displayPlayerLeaderboard(players: List<Player>, game: Game) {
-		val headers: List<String> = if (Config.enableTeams)
-			listOf("Player", "Team", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Banking", "Experimentation", "Hyperspace", "Manufacturing", "Scanning", "Terraforming", "Weapons", "Active")
-		else
-			listOf("Player", "Stars", "Ships", "Economy", "$/Turn", "Industry", "Ships/Turn", "Science", "Banking", "Experimentation", "Hyperspace", "Manufacturing", "Scanning", "Terraforming", "Weapons", "Active")
-		val data = ArrayList<List<Any>>()
-		val playerData = Util.sortPlayerList(players = players, game = game)
+	fun refreshData() {
+		GameHandler.refreshData()
+		PlayerHandler.refreshData()
 		if (Config.enableTeams)
-			playerData.forEach {
-				data.add(listOf(it.playerName(), it.team, "${it.stars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.strength, it.economy, it.calcMoney(), it.industry, it.calcShips(), it.science, it.banking, it.experimentation, it.hyperspace, it.manufacturing, it.scanning, it.terraforming, it.weapons, it.isActive))
-			}
+			TeamHandler.refreshData()
 		else
-			playerData.forEach {
-				data.add(listOf(it.playerName(), "${it.stars} (${Util.PERCENT_FORMAT.format(it.calcComplete(game = game))}%)", it.strength, it.economy, it.calcMoney(), it.industry, it.calcShips(), it.science, it.banking, it.experimentation, it.hyperspace, it.manufacturing, it.scanning, it.terraforming, it.weapons, it.isActive))
-			}
-		Console.displayLeaderboard(headers = headers, data = data)
+			TeamHandler.teams = null
+		Util.lastUpdate = LocalDateTime.now()
+	}
+
+	private fun getUserRole(context: Context): Role {
+		return when (context.header(header = "Access")?.toLowerCase()) {
+			"admin" -> ADMIN
+			"dev" -> DEVELOPER
+			else -> EVERYONE
+		}
+	}
+
+	private enum class SecurityRoles : Role {
+		EVERYONE,
+		DEVELOPER,
+		ADMIN
 	}
 }

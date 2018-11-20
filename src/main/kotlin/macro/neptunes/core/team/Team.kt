@@ -1,8 +1,9 @@
 package macro.neptunes.core.team
 
 import macro.neptunes.core.Config
-import macro.neptunes.core.game.Game
+import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
+import java.text.NumberFormat
 import kotlin.math.roundToInt
 
 /**
@@ -39,13 +40,13 @@ data class Team(val name: String) {
 	val weapons: Int
 		get() = members.stream().mapToInt { it.weapons }.sum().div(members.size)
 
-	fun calcComplete(game: Game): Double {
-		val total = game.totalStars.toDouble()
-		return (totalStars.div(total).times(10000)).roundToInt().div(100.0)
+	fun calcComplete(): Int {
+		val total = GameHandler.game.totalStars.toDouble()
+		return (totalStars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
 	}
-	
-	fun hasWon(game: Game): Boolean {
-		return calcComplete(game = game) > Config.winPercentage
+
+	fun hasWon(): Boolean {
+		return calcComplete() > Config.starPercentage
 	}
 
 	fun calcMoney(): Int {
@@ -54,5 +55,77 @@ data class Team(val name: String) {
 
 	fun calcShips(): Int {
 		return totalIndustry * (manufacturing + 5) / 24
+	}
+
+	fun shortHTML(): String {
+		var output = "<b>$name</b><ul>"
+		shortJSON().filterNot { it.key == "Name" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is List<*> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li>$it</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
+		}
+		output += "</ul>"
+		return output
+	}
+
+	fun shortJSON(): Map<String, Any> {
+		val data = mapOf(
+			Pair("Name", name),
+			Pair("Star Percentage", calcComplete()),
+			Pair("Members", members.map { it.playerName() })
+		)
+		return data
+	}
+
+	fun longHTML(): String {
+		var output = "<b>$name</b><ul>"
+		longJSON().filterNot { it.key == "Name" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is List<*> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li>$it</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
+		}
+		output += "</ul>"
+		return output
+	}
+
+	fun longJSON(): Map<String, Any> {
+		val data: Map<String, Any> = mapOf(
+			Pair("Name", name),
+			Pair("Star Percentage", calcComplete()),
+			Pair("Members", members.map { it.playerName() }),
+			Pair("Stars", totalStars),
+			Pair("Fleet", totalFleet),
+			Pair("Industry", totalIndustry),
+			Pair("Science", totalScience),
+			Pair("Economy", totalEconomy),
+			Pair("Ships", totalStrength)
+		)
+		return data
 	}
 }
