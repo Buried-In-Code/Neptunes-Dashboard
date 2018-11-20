@@ -32,7 +32,7 @@ object Config {
 	)
 	var gameID: Long? = null
 	var refreshRate: Int = 1
-	var winPercentage: Double = 50.0
+	var starPercentage: Double = 50.0
 	var enableTeams: Boolean = false
 	var teams: Map<String, List<String>> = mapOf(
 		Pair("Team 1", listOf("Name 1", "Name 2")),
@@ -74,7 +74,7 @@ object Config {
 		if (data.containsKey("Players")) players = data["Players"] as Map<String, String>
 		if (data.containsKey("Game ID")) gameID = data["Game ID"] as Long?
 		if (data.containsKey("Refresh Rate")) refreshRate = data["Refresh Rate"] as Int
-		if (data.containsKey("Win Percentage")) winPercentage = data["Win Percentage"] as Double
+		if (data.containsKey("Star Percentage")) starPercentage = data["Star Percentage"] as Double
 		if (data.containsKey("Enable Teams")) enableTeams = data["Enable Teams"] as Boolean
 		if (data.containsKey("Teams") && enableTeams) teams = data["Teams"] as Map<String, List<String>>
 	}
@@ -90,7 +90,7 @@ object Config {
 			Pair("Players", players),
 			Pair("Game ID", gameID),
 			Pair("Refresh Rate", refreshRate),
-			Pair("Win Percentage", winPercentage),
+			Pair("Star Percentage", starPercentage),
 			Pair("Enable Teams", enableTeams)
 		)
 		if (enableTeams)

@@ -1,7 +1,9 @@
 package macro.neptunes.core.team
 
 import io.javalin.Context
+import macro.neptunes.core.Util
 import macro.neptunes.data.Exceptions
+import java.util.stream.Collectors
 
 /**
  * Created by Macro303 on 2018-Nov-16.
@@ -22,23 +24,33 @@ object TeamController {
 
 	private fun filterTeams(context: Context, sort: String): List<Team>? {
 		val teams = getTeams(sort = sort) ?: return null
-		val name: String = context.queryParam("name", default = "")!!
-		val playerName: String = context.queryParam("player-name", default = "")!!
-		val playerAlias: String = context.queryParam("player-alias", default = "")!!
+		val filterString = context.queryParam("filter") ?: ""
+		val filter: Map<String, String> = filterString.trim()
+			.split(",")
+			.stream()
+			.map { it.split(":") }
+			.collect(Collectors.toMap({ it[0].toLowerCase() }, { if (it.size > 1) it[1] else "" }))
+		val name: String = filter["name"] ?: ""
+		val playerName: String = filter["player-name"] ?: ""
+		val playerAlias: String = filter["player-alias"] ?: ""
 		return TeamHandler.filter(name = name, playerName = playerName, playerAlias = playerAlias, teams = teams)
 	}
 
 	fun webGet(context: Context) {
 		val name = context.pathParam("name")
-		val team = TeamHandler.filter(name = name)?.map { it.longHTML() }?.firstOrNull() ?: ""
-		context.html(team)
+		val team = TeamHandler.filter(name = name)?.map { it.longHTML() }?.firstOrNull() ?: "<h3>No Team Found</h3>"
+		val htmlString = Util.addHTML(team, "Get Team")
+		context.html(htmlString)
 	}
 
 	fun webGetAll(context: Context) {
 		val sort: String = context.queryParam("sort", default = "name")!!.toLowerCase()
-		val teams = filterTeams(context = context, sort = sort)?.map { it.shortHTML() }
+		var teams = filterTeams(context = context, sort = sort)?.map { it.shortHTML() }
 			?: return Exceptions.invalidParam(context = context, param = sort)
-		context.html(teams.joinToString("<br />"))
+		if(teams.isEmpty())
+			teams = listOf("<h3>No Teams Found</h3>")
+		val htmlString = Util.addHTML(teams.joinToString(""), "Get Teams")
+		context.html(htmlString)
 	}
 
 	fun apiGet(context: Context) {
@@ -70,7 +82,7 @@ object TeamController {
 			val teams = filterTeams(context = context, sort = sort)
 				?: return Exceptions.invalidParam(context = context, param = sort)
 			val output = TeamHandler.getTableData(teams = teams)
-			var result = "<html><table style=\"width:100%; padding: 5px\"><tr>"
+			var result = "<table style=\"width:100%; padding: 5px\"><tr>"
 			if (output.isNotEmpty()) {
 				output.first().forEach {
 					result += "<th>${it.key}</th>"
@@ -89,8 +101,8 @@ object TeamController {
 				}
 				result += "</tr>"
 			}
-			result += "</table></html>"
-			context.html(result)
+			result += "</table>"
+			context.html(Util.addHTML(result, "Team Leaderboard"))
 		}
 
 		fun apiGet(context: Context) {

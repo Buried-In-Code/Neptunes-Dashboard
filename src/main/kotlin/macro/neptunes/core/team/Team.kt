@@ -3,6 +3,7 @@ package macro.neptunes.core.team
 import macro.neptunes.core.Config
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
+import java.text.NumberFormat
 import kotlin.math.roundToInt
 
 /**
@@ -45,7 +46,7 @@ data class Team(val name: String) {
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > Config.winPercentage
+		return calcComplete() > Config.starPercentage
 	}
 
 	fun calcMoney(): Int {
@@ -57,31 +58,68 @@ data class Team(val name: String) {
 	}
 
 	fun shortHTML(): String {
-		return shortJSON().values.joinToString(" = ")
+		var output = "<b>$name</b><ul>"
+		shortJSON().filterNot { it.key == "Name" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is List<*> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li>$it</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
+		}
+		output += "</ul>"
+		return output
 	}
 
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
 			Pair("Name", name),
-			Pair("Win Percentage", calcComplete())
+			Pair("Star Percentage", calcComplete()),
+			Pair("Members", members.map { it.playerName() })
 		)
 		return data
 	}
 
 	fun longHTML(): String {
 		var output = "<b>$name</b><ul>"
-		longJSON().forEach { key, value ->
-			output += "<li><b>$key:</b> $value</li>"
+		longJSON().filterNot { it.key == "Name" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is List<*> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li>$it</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
 		}
 		output += "</ul>"
 		return output
 	}
 
 	fun longJSON(): Map<String, Any> {
-		val data = mapOf(
+		val data: Map<String, Any> = mapOf(
 			Pair("Name", name),
+			Pair("Star Percentage", calcComplete()),
+			Pair("Members", members.map { it.playerName() }),
 			Pair("Stars", totalStars),
-			Pair("Win Percentage", calcComplete()),
 			Pair("Fleet", totalFleet),
 			Pair("Industry", totalIndustry),
 			Pair("Science", totalScience),

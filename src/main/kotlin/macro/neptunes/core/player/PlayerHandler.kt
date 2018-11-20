@@ -3,6 +3,7 @@ package macro.neptunes.core.player
 import macro.neptunes.core.Config
 import macro.neptunes.data.RESTClient
 import org.apache.logging.log4j.LogManager
+import java.text.NumberFormat
 import kotlin.math.roundToInt
 
 /**
@@ -151,7 +152,10 @@ object PlayerHandler {
 				Pair("Ships/Turn", it.calcShips()),
 				Pair("Science", it.science)
 			)
-			if (Config.enableTeams)
+			playerData.forEach { key, value ->
+				if (value is Int) playerData[key] = NumberFormat.getIntegerInstance().format(value)
+			}
+			if (!Config.enableTeams)
 				playerData.remove("Team")
 			output.add(playerData)
 		}

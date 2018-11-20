@@ -3,6 +3,7 @@ package macro.neptunes.core.team
 import macro.neptunes.core.Config
 import macro.neptunes.core.player.PlayerHandler
 import org.apache.logging.log4j.LogManager
+import java.text.NumberFormat
 
 /**
  * Created by Macro303 on 2018-Nov-15.
@@ -63,6 +64,9 @@ object TeamHandler {
 				Pair("Ships/Turn", it.calcShips()),
 				Pair("Science", it.totalScience)
 			)
+			teamData.forEach { key, value ->
+				if (value is Int) teamData[key] = NumberFormat.getIntegerInstance().format(value)
+			}
 			output.add(teamData)
 		}
 		return output

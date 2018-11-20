@@ -2,6 +2,8 @@ package macro.neptunes.core.player
 
 import macro.neptunes.core.Config
 import macro.neptunes.core.game.GameHandler
+import org.apache.logging.log4j.LogManager
+import java.text.NumberFormat
 import kotlin.math.roundToInt
 
 /**
@@ -25,9 +27,10 @@ data class Player(
 	val banking: Int,
 	val manufacturing: Int
 ) {
+	private val LOGGER = LogManager.getLogger(Player::class.java)
 	var team: String = "Unknown"
 
-	fun playerName() = "$alias ($name)"
+	fun playerName() = "$name ($alias)"
 
 	fun calcComplete(): Int {
 		val total = GameHandler.game.totalStars.toDouble()
@@ -35,7 +38,7 @@ data class Player(
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > Config.winPercentage
+		return calcComplete() > Config.starPercentage
 	}
 
 	fun calcMoney(): Int {
@@ -47,22 +50,61 @@ data class Player(
 	}
 
 	fun shortHTML(): String {
-		return shortJSON().values.joinToString(" = ")
+		var output = "<b>${playerName()}</b>"
+		output += "<ul>"
+		shortJSON().filterNot { it.key == "Name" || it.key == "Alias" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is Map<*, *> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li><b>${it.key}:</b> ${it.value}</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
+		}
+		output += "</ul>"
+		return output
 	}
 
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
-			Pair("Name", playerName()),
+			Pair("Name", name),
+			Pair("Alias", alias),
 			Pair("Team", team),
-			Pair("Win Percentage", calcComplete())
+			Pair("Star Percentage", calcComplete())
 		)
 		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data
 	}
 
+	@Suppress("UNCHECKED_CAST")
 	fun longHTML(): String {
-		var output = "<b>$name</b><ul>"
-		longJSON().forEach {key, value ->
-			output += "<li><b>$key:</b> $value</li>"
+		var output = "<b>${playerName()}</b>"
+		output += "<ul>"
+		longJSON().filterNot { it.key == "Name" || it.key == "Alias" }.forEach { key, value ->
+			var temp = value.toString()
+			if (key == "Star Percentage")
+				temp += "%"
+			when (value) {
+				is Map<*, *> -> {
+					temp = "<ul>"
+					value.forEach {
+						temp += "<li><b>${it.key}:</b> ${it.value}</li>"
+					}
+					temp += "</ul>"
+				}
+				is Int -> {
+					temp = NumberFormat.getIntegerInstance().format(value)
+				}
+			}
+			output += "<li><b>$key:</b> $temp</li>"
 		}
 		output += "</ul>"
 		return output
@@ -73,13 +115,24 @@ data class Player(
 			Pair("Name", name),
 			Pair("Alias", alias),
 			Pair("Team", team),
+			Pair("Star Percentage", calcComplete()),
 			Pair("Stars", stars),
-			Pair("Win Percentage", calcComplete()),
 			Pair("Fleet", fleet),
 			Pair("Industry", industry),
 			Pair("Science", science),
 			Pair("Economy", economy),
-			Pair("Ships", strength)
+			Pair("Ships", strength),
+			Pair(
+				"Technology", mapOf(
+					Pair("Scanning", scanning),
+					Pair("Hyperspace", hyperspace),
+					Pair("Terraforming", terraforming),
+					Pair("Experimentation", experimentation),
+					Pair("Weapons", weapons),
+					Pair("Banking", banking),
+					Pair("Manufacturing", manufacturing)
+				)
+			)
 		)
 		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data
 	}
