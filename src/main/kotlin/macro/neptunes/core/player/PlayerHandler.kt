@@ -2,15 +2,14 @@ package macro.neptunes.core.player
 
 import macro.neptunes.core.Config
 import macro.neptunes.data.RESTClient
-import org.apache.logging.log4j.LogManager
-import java.text.NumberFormat
+import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
 
 /**
  * Created by Macro303 on 2018-Nov-15.
  */
 object PlayerHandler {
-	private val LOGGER = LogManager.getLogger(PlayerHandler::class.java)
+	private val LOGGER = LoggerFactory.getLogger(PlayerHandler::class.java)
 	lateinit var players: List<Player>
 
 	@Suppress("UNCHECKED_CAST")
@@ -128,6 +127,18 @@ object PlayerHandler {
 		return players.sortedWith(compareBy({ !it.isActive }, { -it.strength }, { it.name }, { it.alias }))
 	}
 
+	fun sortByEconomy(players: List<Player> = this.players): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { -it.economy }, { it.name }, { it.alias }))
+	}
+
+	fun sortByIndustry(players: List<Player> = this.players): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { -it.industry }, { it.name }, { it.alias }))
+	}
+
+	fun sortByScience(players: List<Player> = this.players): List<Player> {
+		return players.sortedWith(compareBy({ !it.isActive }, { -it.science }, { it.name }, { it.alias }))
+	}
+
 	fun filter(
 		name: String = "",
 		alias: String = "",
@@ -144,7 +155,8 @@ object PlayerHandler {
 			val playerData = linkedMapOf(
 				Pair("Player", it.playerName()),
 				Pair("Team", it.team),
-				Pair("Stars", "${it.stars} (${it.calcComplete()}%)"),
+				Pair("Stars", it.stars),
+				Pair("%", it.calcComplete()),
 				Pair("Ships", it.strength),
 				Pair("Economy", it.economy),
 				Pair("$/Turn", it.calcMoney()),
@@ -152,9 +164,6 @@ object PlayerHandler {
 				Pair("Ships/Turn", it.calcShips()),
 				Pair("Science", it.science)
 			)
-			playerData.forEach { key, value ->
-				if (value is Int) playerData[key] = NumberFormat.getIntegerInstance().format(value)
-			}
 			if (!Config.enableTeams)
 				playerData.remove("Team")
 			output.add(playerData)

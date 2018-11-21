@@ -1,36 +1,66 @@
 package macro.neptunes
 
-import com.google.gson.GsonBuilder
-import io.javalin.Context
-import io.javalin.Javalin
-import io.javalin.json.FromJsonMapper
-import io.javalin.json.JavalinJson
-import io.javalin.json.ToJsonMapper
-import io.javalin.security.Role
-import io.javalin.security.SecurityUtil.roles
-import macro.neptunes.Application.SecurityRoles.*
+import io.ktor.application.Application
+import io.ktor.application.ApplicationCallPipeline
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.*
+import io.ktor.gson.gson
+import io.ktor.request.ApplicationReceivePipeline
+import io.ktor.request.uri
+import io.ktor.response.respondText
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import macro.neptunes.core.Config
-import macro.neptunes.core.Util
-import macro.neptunes.core.game.GameController
-import macro.neptunes.core.game.GameHandler
-import macro.neptunes.core.player.PlayerController
-import macro.neptunes.core.player.PlayerHandler
-import macro.neptunes.core.team.TeamController
-import macro.neptunes.core.team.TeamHandler
-import macro.neptunes.data.Endpoints
-import macro.neptunes.data.Exceptions
-import macro.neptunes.data.HelpController
-import macro.neptunes.data.WelcomeController
-import org.apache.logging.log4j.LogManager
-import java.time.Duration
-import java.time.LocalDateTime
-import kotlin.system.exitProcess
+import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
 
 /**
  * Created by Macro303 on 2018-Nov-12.
  */
-object Application {
-	private val LOGGER = LogManager.getLogger(Application::class.java)
+private val LOGGER = LoggerFactory.getLogger(Application::class.java)
+
+fun main(args: Array<String>) {
+	embeddedServer(
+		Netty,
+		port = Config.port,
+		module = Application::neptunes
+	).apply { start(wait = true) }
+}
+
+fun Application.neptunes() {
+	install(ContentNegotiation) {
+		gson {
+			setPrettyPrinting()
+			disableHtmlEscaping()
+			serializeNulls()
+			generateNonExecutableJson()
+		}
+	}
+	install(DefaultHeaders)
+	install(CallLogging){
+		level = Level.DEBUG
+	}
+	install(ConditionalHeaders)
+	install(AutoHeadResponse)
+	routing {
+		intercept(ApplicationCallPipeline.Call){
+			LOGGER.info(">> ${call.request.uri}")
+		}
+		intercept(ApplicationReceivePipeline.Before){
+			LOGGER.info("BEFORE >> ${call.request.uri}")
+		}
+		get("/") {
+			call.respondText("Welcome To BIT 269's Neptune's Pride")
+		}
+	}
+}
+
+
+/*object Application {
+	private val LOGGER = LoggerFactory.getLogger(Application::class.java)
 	private val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
@@ -40,7 +70,7 @@ object Application {
 
 	init {
 		if (Config.gameID == null) {
-			LOGGER.fatal("Requires a Game ID")
+			LOGGER.error("Requires a Game ID")
 			exitProcess(0)
 		}
 		refreshData()
@@ -48,17 +78,15 @@ object Application {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		JavalinJson.fromJsonMapper = object : FromJsonMapper {
-			override fun <T> map(json: String, targetClass: Class<T>): T {
-				return GSON.fromJson(json, targetClass)
+		embeddedServer(Netty, Config.port) {
+			routing {
+				get("/") {
+					call.respondText("Welcome To BIT 269's Neptune's Pride")
+				}
 			}
-		}
-		JavalinJson.toJsonMapper = object : ToJsonMapper {
-			override fun map(obj: Any): String {
-				return GSON.toJson(obj)
-			}
-		}
+		}.start(wait = true)
 		val app = Javalin.create().apply {
+			enableStaticFiles("/markdown")
 			port(Config.port)
 			accessManager { handler, context, permittedRoles ->
 				val userRole = getUserRole(context = context)
@@ -197,4 +225,4 @@ object Application {
 		DEVELOPER,
 		ADMIN
 	}
-}
+}*/

@@ -1,10 +1,10 @@
 package macro.neptunes.core.player
 
 import macro.neptunes.core.Config
+import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import java.text.NumberFormat
-import kotlin.math.roundToInt
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -27,14 +27,14 @@ data class Player(
 	val banking: Int,
 	val manufacturing: Int
 ) {
-	private val LOGGER = LogManager.getLogger(Player::class.java)
+	private val LOGGER = LoggerFactory.getLogger(Player::class.java)
 	var team: String = "Unknown"
 
 	fun playerName() = "$name ($alias)"
 
-	fun calcComplete(): Int {
+	fun calcComplete(): Double {
 		val total = GameHandler.game.totalStars.toDouble()
-		return (stars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
+		return stars.div(total)
 	}
 
 	fun hasWon(): Boolean {
@@ -76,10 +76,10 @@ data class Player(
 
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
-			Pair("Name", name),
-			Pair("Alias", alias),
-			Pair("Team", team),
-			Pair("Star Percentage", calcComplete())
+			"Name" to name,
+			"Alias" to alias,
+			"Team" to team,
+			"Star Percentage" to calcComplete()
 		)
 		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data
 	}
@@ -100,9 +100,8 @@ data class Player(
 					}
 					temp += "</ul>"
 				}
-				is Int -> {
-					temp = NumberFormat.getIntegerInstance().format(value)
-				}
+				is Int -> temp = Util.INT_FORMAT.format(value)
+				is Double -> temp = Util.PERCENT_FORMAT.format(value)
 			}
 			output += "<li><b>$key:</b> $temp</li>"
 		}
@@ -112,26 +111,24 @@ data class Player(
 
 	fun longJSON(): Map<String, Any> {
 		val data = mapOf(
-			Pair("Name", name),
-			Pair("Alias", alias),
-			Pair("Team", team),
-			Pair("Star Percentage", calcComplete()),
-			Pair("Stars", stars),
-			Pair("Fleet", fleet),
-			Pair("Industry", industry),
-			Pair("Science", science),
-			Pair("Economy", economy),
-			Pair("Ships", strength),
-			Pair(
-				"Technology", mapOf(
-					Pair("Scanning", scanning),
-					Pair("Hyperspace", hyperspace),
-					Pair("Terraforming", terraforming),
-					Pair("Experimentation", experimentation),
-					Pair("Weapons", weapons),
-					Pair("Banking", banking),
-					Pair("Manufacturing", manufacturing)
-				)
+			"Name" to name,
+			"Alias" to alias,
+			"Team" to team,
+			"Star Percentage" to calcComplete(),
+			"Stars" to stars,
+			"Fleet" to fleet,
+			"Industry" to industry,
+			"Science" to science,
+			"Economy" to economy,
+			"Ships" to strength,
+			"Technology" to mapOf(
+				"Scanning" to scanning,
+				"Hyperspace" to hyperspace,
+				"Terraforming" to terraforming,
+				"Experimentation" to experimentation,
+				"Weapons" to weapons,
+				"Banking" to banking,
+				"Manufacturing" to manufacturing
 			)
 		)
 		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data

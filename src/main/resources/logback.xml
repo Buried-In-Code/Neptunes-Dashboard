@@ -1,0 +1,30 @@
+<configuration scan="true">
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>[%highlight(%d{YYYY-MM-dd HH:mm:ss.SSS})] [%highlight(%-5level)] {%cyan(%logger)} - %highlight(%msg%n)</pattern>>
+		</encoder>
+	</appender>
+
+	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+		<file>logs/neptunes-pride.log</file>
+		<append>true</append>
+		<immediateFlush>true</immediateFlush>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>[%d{YYYY-MM-dd HH:mm:ss.SSS}] [%-5level] {%logger} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.eclipse.jetty" level="INFO"/>
+	<logger name="io.netty" level="INFO"/>
+
+	<root level="DEBUG">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
+	</root>
+</configuration>

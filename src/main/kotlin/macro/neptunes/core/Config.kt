@@ -1,6 +1,6 @@
 package macro.neptunes.core
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -14,7 +14,7 @@ import java.net.Proxy
  * Created by Macro303 on 2018-05-07.
  */
 object Config {
-	private val LOGGER = LogManager.getLogger(Config::class.java)
+	private val LOGGER = LoggerFactory.getLogger(Config::class.java)
 	private val CONFIG_FILE: File = File(Util.BIN, "config.yaml")
 	private var YAML: Yaml = Yaml()
 	var port: Int = 5000

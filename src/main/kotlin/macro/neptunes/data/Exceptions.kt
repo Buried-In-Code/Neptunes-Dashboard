@@ -1,14 +1,11 @@
 package macro.neptunes.data
 
-import io.javalin.Context
-import macro.neptunes.Application
-
 /**
  * Created by Macro303 on 2018-Nov-14.
  */
 internal object Exceptions {
 
-	internal fun notYetAvailable(context: Context) {
+	/*internal fun notYetAvailable(context: Context) {
 		val message = "'${context.path()}' is not yet available, watch this space"
 		if (context.header("Content-Type") == Application.JSON) {
 			val details = mapOf(Pair("Error", message))
@@ -42,5 +39,5 @@ internal object Exceptions {
 			context.html(details)
 		}
 		context.status(401)
-	}
+	}*/
 }

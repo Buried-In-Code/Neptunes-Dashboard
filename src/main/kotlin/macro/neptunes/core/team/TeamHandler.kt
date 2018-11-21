@@ -2,14 +2,13 @@ package macro.neptunes.core.team
 
 import macro.neptunes.core.Config
 import macro.neptunes.core.player.PlayerHandler
-import org.apache.logging.log4j.LogManager
-import java.text.NumberFormat
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-15.
  */
 object TeamHandler {
-	private val LOGGER = LogManager.getLogger(TeamHandler::class.java)
+	private val LOGGER = LoggerFactory.getLogger(TeamHandler::class.java)
 	var teams: List<Team>? = null
 
 	fun refreshData() {
@@ -40,6 +39,18 @@ object TeamHandler {
 		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalStrength }, { it.name }))
 	}
 
+	fun sortByEconomy(teams: List<Team>? = this.teams): List<Team>? {
+		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalEconomy }, { it.name }))
+	}
+
+	fun sortByIndustry(teams: List<Team>? = this.teams): List<Team>? {
+		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalIndustry }, { it.name }))
+	}
+
+	fun sortByScience(teams: List<Team>? = this.teams): List<Team>? {
+		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalScience }, { it.name }))
+	}
+
 	fun filter(
 		name: String = "",
 		playerName: String = "",
@@ -56,7 +67,8 @@ object TeamHandler {
 		teams?.forEach {
 			val teamData = linkedMapOf(
 				Pair("Name", it.name),
-				Pair("Stars", "${it.totalStars} (${it.calcComplete()}%)"),
+				Pair("Stars", it.totalStars),
+				Pair("%", it.calcComplete()),
 				Pair("Ships", it.totalStrength),
 				Pair("Economy", it.totalEconomy),
 				Pair("$/Turn", it.calcMoney()),
@@ -64,9 +76,6 @@ object TeamHandler {
 				Pair("Ships/Turn", it.calcShips()),
 				Pair("Science", it.totalScience)
 			)
-			teamData.forEach { key, value ->
-				if (value is Int) teamData[key] = NumberFormat.getIntegerInstance().format(value)
-			}
 			output.add(teamData)
 		}
 		return output

@@ -4,7 +4,7 @@ import macro.neptunes.core.Config
 import macro.neptunes.core.Util
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -15,7 +15,7 @@ import java.util.*
  * Created by Macro303 on 2018-Nov-08.
  */
 internal object RESTClient {
-	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
+	private val LOGGER = LoggerFactory.getLogger(RESTClient::class.java)
 
 	private fun pingURL(): Boolean {
 		val responseCode = headRequest()
@@ -33,7 +33,7 @@ internal object RESTClient {
 			connection.connect()
 			response = getResponse(connection)
 		} catch (ioe: IOException) {
-			LOGGER.warn(ioe)
+			LOGGER.warn("Unable to make HEAD request", ioe)
 		} finally {
 			connection?.disconnect()
 			LOGGER.info("HEAD << $response")

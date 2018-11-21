@@ -1,6 +1,8 @@
 buildscript {
 	ext.kotlin_version = '1.3.10'
+	ext.ktor_version = '1.0.0'
 	ext.versions_version = '0.20.0'
+	ext.logger_version = '1.3.0-alpha4'
 
 	repositories {
 		mavenCentral()
@@ -24,7 +26,19 @@ version = '2.0.2'
 group = 'macro'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-mainClassName = 'macro.neptunes.Application'
+mainClassName = 'macro.neptunes.ApplicationKt'
+
+compileKotlin {
+	kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+	kotlinOptions.jvmTarget = "1.8"
+}
+
+kotlin {
+	experimental {
+	}
+}
 
 repositories {
 	mavenCentral()
@@ -36,10 +50,10 @@ dependencies {
 	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "$kotlin_version"
 	implementation group: 'com.github.salomonbrys.kotson', name: 'kotson', version: '2.5.0'
 	implementation group: 'org.yaml', name: 'snakeyaml', version: '1.23'
-	implementation group: 'io.javalin', name: 'javalin', version: '2.4.0'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
-	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
-	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.11.1'
+	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktor_version"
+	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktor_version"
+	runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: "$logger_version"
+//	runtimeOnly group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 }
 
 jar {

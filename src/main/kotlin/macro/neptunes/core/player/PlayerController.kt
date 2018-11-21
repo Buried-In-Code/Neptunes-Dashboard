@@ -1,19 +1,12 @@
 package macro.neptunes.core.player
 
-import io.javalin.Context
-import macro.neptunes.Application
-import macro.neptunes.core.Config
-import macro.neptunes.core.Util
-import macro.neptunes.core.Util.fromJSON
-import macro.neptunes.data.Exceptions
-import org.apache.logging.log4j.LogManager
-import java.util.stream.Collectors
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object PlayerController {
-	private val LOGGER = LogManager.getLogger(PlayerController::class.java)
+	private val LOGGER = LoggerFactory.getLogger(PlayerController::class.java)
 	private const val SORT_NAME = "name"
 	private const val SORT_ALIAS = "alias"
 	private const val SORT_TEAMS = "team"
@@ -30,11 +23,14 @@ object PlayerController {
 			SORT_TEAMS -> PlayerHandler.sortByTeams()
 			SORT_STARS -> PlayerHandler.sortByStars()
 			SORT_SHIPS -> PlayerHandler.sortByShips()
+			SORT_ECONOMY -> PlayerHandler.sortByEconomy()
+			SORT_INDUSTRY -> PlayerHandler.sortByIndustry()
+			SORT_SCIENCE -> PlayerHandler.sortByScience()
 			else -> null
 		}
 	}
 
-	private fun filterPlayers(context: Context, sort: String): List<Player>? {
+	/*private fun filterPlayers(context: Context, sort: String): List<Player>? {
 		val players = getPlayers(sort = sort) ?: return null
 		val filterString = context.queryParam("filter") ?: ""
 		val filter: Map<String, String> = filterString.trim()
@@ -90,15 +86,15 @@ object PlayerController {
 		Config.saveConfig()
 		Application.refreshData()
 		context.status(204)
-	}
+	}*/
 
 	object Leaderboard {
-		fun webGet(context: Context) {
+		/*fun webGet(context: Context) {
 			val sort: String = context.queryParam("sort", default = "name")!!.toLowerCase()
 			val players = filterPlayers(context = context, sort = sort)
 				?: return Exceptions.invalidParam(context = context, param = sort)
 			val output = PlayerHandler.getTableData(players = players)
-			var result = "<table style=\"width:100%; padding: 5px\"><tr>"
+			var result = "<table class=\"table table-dark table-striped table-bordered\"><tr>"
 			if (output.isNotEmpty()) {
 				output.first().forEach {
 					result += "<th>${it.key}</th>"
@@ -113,12 +109,17 @@ object PlayerController {
 			output.forEach { player ->
 				result += "<tr>"
 				player.forEach { key, value ->
-					result += "<td${if (key == "Player" || key == "Team") "" else " align=\"right\""}>$value</td>"
+					var temp = value
+					when (value) {
+						is Int -> temp = Util.INT_FORMAT.format(value)
+						is Double -> temp = Util.PERCENT_FORMAT.format(value)
+					}
+					result += "<td>$temp</td>"
 				}
 				result += "</tr>"
 			}
 			result += "</table>"
-			context.html(Util.addHTML(result, "Player Leaderboard"))
+			context.html(Util.addHTML("<div style=\"padding: 10px\">$result</div>", "Player Leaderboard"))
 		}
 
 		fun apiGet(context: Context) {
@@ -127,6 +128,6 @@ object PlayerController {
 				?: return Exceptions.invalidParam(context = context, param = sort)
 			val output = PlayerHandler.getTableData(players = players)
 			context.json(output)
-		}
+		}*/
 	}
 }

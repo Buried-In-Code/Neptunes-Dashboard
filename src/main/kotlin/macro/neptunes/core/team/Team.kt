@@ -4,7 +4,6 @@ import macro.neptunes.core.Config
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import java.text.NumberFormat
-import kotlin.math.roundToInt
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -40,9 +39,9 @@ data class Team(val name: String) {
 	val weapons: Int
 		get() = members.stream().mapToInt { it.weapons }.sum().div(members.size)
 
-	fun calcComplete(): Int {
+	fun calcComplete(): Double {
 		val total = GameHandler.game.totalStars.toDouble()
-		return (totalStars.div(total).times(10000)).roundToInt().div(100.0).roundToInt()
+		return totalStars.div(total)
 	}
 
 	fun hasWon(): Boolean {
