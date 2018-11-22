@@ -1,6 +1,6 @@
 package macro.neptunes.data
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.core.Util
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
@@ -36,7 +36,8 @@ internal object RESTClient {
 			LOGGER.warn("Unable to make HEAD request", ioe)
 		} finally {
 			connection?.disconnect()
-			LOGGER.info("HEAD << $response")
+			LOGGER.info("HEAD << Code: {}, Message: {}", response["Code"], response["Message"])
+			LOGGER.debug("Response Data: {}", response["Data"])
 		}
 		return response.getOrDefault("Code", 500) as Int
 	}
@@ -62,7 +63,8 @@ internal object RESTClient {
 		} catch (ignored: IOException) {
 		} finally {
 			connection?.disconnect()
-			LOGGER.info("GET << $response")
+			LOGGER.info("GET << Code: {}, Message: {}", response["Code"], response["Message"])
+			LOGGER.debug("Response Data: {}", response["Data"])
 		}
 		return response
 	}
@@ -84,7 +86,7 @@ internal object RESTClient {
 				headers = headers,
 				parameters = parameters
 			)
-			LOGGER.info("POST >> Body: " + body.toJSON())
+			LOGGER.debug("POST >> Body: " + body.toJSON())
 			val wr = OutputStreamWriter(connection.outputStream)
 			wr.write(body.toJSON())
 			wr.flush()
@@ -93,7 +95,8 @@ internal object RESTClient {
 		} catch (ignored: IOException) {
 		} finally {
 			connection?.disconnect()
-			LOGGER.info("POST << $response")
+			LOGGER.info("POST << Code: {}, Message: {}", response["Code"], response["Message"])
+			LOGGER.debug("Response Data: {}", response["Data"])
 		}
 		return response
 	}

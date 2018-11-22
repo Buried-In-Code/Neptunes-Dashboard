@@ -1,6 +1,6 @@
 package macro.neptunes.core.game
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.data.RESTClient
 import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
@@ -27,6 +27,7 @@ object GameHandler {
 
 	@Suppress("UNCHECKED_CAST")
 	fun refreshData() {
+		LOGGER.info("Refreshing Game Data")
 		val response = RESTClient.getRequest(endpoint = "/basic")
 		val game = parse(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {

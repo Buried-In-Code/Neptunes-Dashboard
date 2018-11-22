@@ -26,7 +26,7 @@ version = '2.0.2'
 group = 'macro'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
-mainClassName = 'macro.neptunes.ApplicationKt'
+mainClassName = 'macro.neptunes.Application'
 
 compileKotlin {
 	kotlinOptions.jvmTarget = "1.8"
@@ -52,8 +52,8 @@ dependencies {
 	implementation group: 'org.yaml', name: 'snakeyaml', version: '1.23'
 	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktor_version"
 	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktor_version"
+	implementation group: 'io.ktor', name: 'ktor-html-builder', version: "$ktor_version"
 	runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: "$logger_version"
-//	runtimeOnly group: 'org.fusesource.jansi', name: 'jansi', version: '1.17.1'
 }
 
 jar {

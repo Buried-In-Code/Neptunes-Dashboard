@@ -1,6 +1,6 @@
 package macro.neptunes.core.player
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.data.RESTClient
 import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
@@ -89,12 +89,13 @@ object PlayerHandler {
 
 	@Suppress("UNCHECKED_CAST")
 	fun refreshData() {
+		LOGGER.info("Refreshing Player Data")
 		val players = ArrayList<Player>()
 		val response = RESTClient.getRequest(endpoint = "/players")
 		(response["Data"] as Map<String, Any?>).values.forEach {
 			val player = parse(data = it as Map<String, Any?>)
 			player ?: return@forEach
-			LOGGER.info("Loaded Player: ${player.playerName()}")
+			LOGGER.debug("Loaded Player: ${player.playerName()}")
 			players.add(player)
 		}
 		this.players = players

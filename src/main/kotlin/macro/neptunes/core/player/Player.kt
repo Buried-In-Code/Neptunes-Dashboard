@@ -1,6 +1,6 @@
 package macro.neptunes.core.player
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import org.slf4j.LoggerFactory

@@ -1,6 +1,6 @@
 package macro.neptunes.core.team
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import java.text.NumberFormat

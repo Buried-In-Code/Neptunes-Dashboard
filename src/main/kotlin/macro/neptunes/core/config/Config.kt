@@ -1,5 +1,6 @@
-package macro.neptunes.core
+package macro.neptunes.core.config
 
+import macro.neptunes.core.Util
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml

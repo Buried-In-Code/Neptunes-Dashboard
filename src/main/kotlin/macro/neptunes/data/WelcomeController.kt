@@ -1,21 +1,25 @@
 package macro.neptunes.data
 
+import io.ktor.application.call
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.contentType
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.get
+
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object WelcomeController {
 
-	private fun getMessage(): String {
-		return "Welcome to BIT 269's Neptune's Pride API"
+	fun Route.welcome() {
+		get("/") {
+			val message = "Welcome to BIT 269's Neptune's Pride API"
+			if (call.request.contentType() == ContentType.Application.Json)
+				call.respond(Message(message = message))
+			else
+				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+		}
 	}
-
-	/*fun webGet(context: Context) {
-		context.html("<html><h1>${getMessage()}</h1></html>")
-	}
-
-	fun apiGet(context: Context) {
-		if (context.status() >= 400)
-			return
-		context.json(mapOf(Pair("Message", getMessage())))
-	}*/
 }

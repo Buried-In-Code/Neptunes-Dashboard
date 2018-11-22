@@ -1,6 +1,6 @@
 package macro.neptunes.core.team
 
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
 import macro.neptunes.core.player.PlayerHandler
 import org.slf4j.LoggerFactory
 
@@ -9,9 +9,10 @@ import org.slf4j.LoggerFactory
  */
 object TeamHandler {
 	private val LOGGER = LoggerFactory.getLogger(TeamHandler::class.java)
-	var teams: List<Team>? = null
+	var teams: List<Team> = emptyList()
 
 	fun refreshData() {
+		LOGGER.info("Refreshing Team Data")
 		val teams = ArrayList<Team>()
 		Config.teams.forEach { key, value ->
 			val team = Team(name = key)
@@ -21,34 +22,34 @@ object TeamHandler {
 					team.members.add(player)
 				}
 			}
-			LOGGER.info("Loaded Team: ${team.name}")
+			LOGGER.debug("Loaded Team: ${team.name}")
 			teams.add(team)
 		}
 		this.teams = teams
 	}
 
-	fun sortByName(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { it.name }))
+	fun sortByName(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { it.name }))
 	}
 
-	fun sortByStars(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete() }, { -it.totalStars }, { it.name }))
+	fun sortByStars(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.calcComplete() }, { -it.totalStars }, { it.name }))
 	}
 
-	fun sortByShips(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalStrength }, { it.name }))
+	fun sortByShips(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.totalStrength }, { it.name }))
 	}
 
-	fun sortByEconomy(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalEconomy }, { it.name }))
+	fun sortByEconomy(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.totalEconomy }, { it.name }))
 	}
 
-	fun sortByIndustry(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalIndustry }, { it.name }))
+	fun sortByIndustry(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.totalIndustry }, { it.name }))
 	}
 
-	fun sortByScience(teams: List<Team>? = this.teams): List<Team>? {
-		return teams?.sortedWith(compareBy({ !it.isActive }, { -it.totalScience }, { it.name }))
+	fun sortByScience(teams: List<Team> = this.teams): List<Team> {
+		return teams.sortedWith(compareBy({ !it.isActive }, { -it.totalScience }, { it.name }))
 	}
 
 	fun filter(
@@ -56,15 +57,16 @@ object TeamHandler {
 		playerName: String = "",
 		playerAlias: String = "",
 		teams: List<Team>? = this.teams
-	): List<Team>? {
+	): List<Team> {
 		return teams?.filter { it.name.contains(name, ignoreCase = true) }
 			?.filter { it.members.find { it.name.contains(playerName, ignoreCase = true) } != null }
 			?.filter { it.members.find { it.alias.contains(playerAlias, ignoreCase = true) } != null }
+			?: emptyList()
 	}
 
-	fun getTableData(teams: List<Team>? = this.teams): List<Map<String, Any>> {
+	fun getTableData(teams: List<Team> = this.teams): List<Map<String, Any>> {
 		val output: ArrayList<Map<String, Any>> = ArrayList()
-		teams?.forEach {
+		teams.forEach {
 			val teamData = linkedMapOf(
 				Pair("Name", it.name),
 				Pair("Stars", it.totalStars),

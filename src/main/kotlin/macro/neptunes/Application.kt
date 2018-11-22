@@ -6,67 +6,35 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.*
 import io.ktor.gson.gson
-import io.ktor.request.ApplicationReceivePipeline
-import io.ktor.request.uri
-import io.ktor.response.respondText
-import io.ktor.routing.get
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.resource
+import io.ktor.http.content.static
+import io.ktor.request.*
+import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import macro.neptunes.core.Config
+import macro.neptunes.core.config.Config
+import macro.neptunes.core.Util
+import macro.neptunes.core.game.GameController.game
+import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.player.PlayerController.players
+import macro.neptunes.core.player.PlayerHandler
+import macro.neptunes.core.team.TeamController.teams
+import macro.neptunes.core.team.TeamHandler
+import macro.neptunes.data.HttpBinError
+import macro.neptunes.data.WelcomeController.welcome
 import org.slf4j.LoggerFactory
-import org.slf4j.event.Level
+import java.time.Duration
+import java.time.LocalDateTime
+import kotlin.system.exitProcess
 
 /**
  * Created by Macro303 on 2018-Nov-12.
  */
-private val LOGGER = LoggerFactory.getLogger(Application::class.java)
-
-fun main(args: Array<String>) {
-	embeddedServer(
-		Netty,
-		port = Config.port,
-		module = Application::neptunes
-	).apply { start(wait = true) }
-}
-
-fun Application.neptunes() {
-	install(ContentNegotiation) {
-		gson {
-			setPrettyPrinting()
-			disableHtmlEscaping()
-			serializeNulls()
-			generateNonExecutableJson()
-		}
-	}
-	install(DefaultHeaders)
-	install(CallLogging){
-		level = Level.DEBUG
-	}
-	install(ConditionalHeaders)
-	install(AutoHeadResponse)
-	routing {
-		intercept(ApplicationCallPipeline.Call){
-			LOGGER.info(">> ${call.request.uri}")
-		}
-		intercept(ApplicationReceivePipeline.Before){
-			LOGGER.info("BEFORE >> ${call.request.uri}")
-		}
-		get("/") {
-			call.respondText("Welcome To BIT 269's Neptune's Pride")
-		}
-	}
-}
-
-
-/*object Application {
+object Application {
 	private val LOGGER = LoggerFactory.getLogger(Application::class.java)
-	private val GSON = GsonBuilder()
-		.serializeNulls()
-		.disableHtmlEscaping()
-		.create()
-	const val JSON = "application/json"
-	const val HTML = "text/HTML"
 
 	init {
 		if (Config.gameID == null) {
@@ -78,16 +46,106 @@ fun Application.neptunes() {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		embeddedServer(Netty, Config.port) {
-			routing {
-				get("/") {
-					call.respondText("Welcome To BIT 269's Neptune's Pride")
+		val server = embeddedServer(Netty, port = Config.port, host = "0.0.0.0") {
+			install(ContentNegotiation) {
+				gson {
+					setPrettyPrinting()
+					disableHtmlEscaping()
+					serializeNulls()
+					generateNonExecutableJson()
 				}
 			}
-		}.start(wait = true)
+			install(DefaultHeaders) {
+				header(name = HttpHeaders.Server, value = "Ktor-BIT-Neptunes")
+				header(name = "Developer", value = "Jonah Jackson")
+			}
+			install(Compression)
+			install(ConditionalHeaders)
+			install(AutoHeadResponse)
+			install(StatusPages) {
+				exception<Throwable> {
+					val error = HttpBinError(
+						code = HttpStatusCode.InternalServerError,
+						request = call.request.local.uri,
+						message = it.toString(),
+						cause = it
+					)
+					LOGGER.error(error.message, error.cause)
+					call.respond(status = error.code, message = error)
+				}
+				status(HttpStatusCode.NotFound) {
+					val error = HttpBinError(
+						code = HttpStatusCode.NotFound,
+						request = call.request.local.uri,
+						message = "Unable to find endpoint"
+					)
+					LOGGER.error("{}: {}", error.message, error.request, error.cause)
+					call.respond(status = error.code, message = error)
+				}
+			}
+			intercept(ApplicationCallPipeline.Setup) {
+				LOGGER.debug("SETUP >> {}", call.request.path())
+				val now: LocalDateTime = LocalDateTime.now()
+				val difference: Duration = Duration.between(Util.lastUpdate, now)
+				if (difference.toMinutes() > Config.refreshRate)
+					refreshData()
+			}
+			intercept(ApplicationCallPipeline.Monitoring) {
+				LOGGER.debug(
+					"MONITORING >> {} {} >> Endpoint: {}, Content-Type: {}, User-Agent: {}, Host: {}:{}",
+					call.request.httpVersion,
+					call.request.httpMethod.value,
+					call.request.uri,
+					call.request.contentType(),
+					call.request.userAgent(),
+					call.request.host(),
+					call.request.port()
+				)
+				LOGGER.info(
+					"{} {} >> Endpoint: {}, Content-Type: {}",
+					call.request.httpVersion,
+					call.request.httpMethod.value,
+					call.request.path(),
+					call.request.contentType()
+				)
+			}
+			intercept(ApplicationCallPipeline.Features) {
+				LOGGER.debug("FEATURES >> {}", call.request.path())
+			}
+			intercept(ApplicationCallPipeline.Call) {
+				LOGGER.debug("CALL >> {}", call.request.path())
+			}
+			intercept(ApplicationCallPipeline.Fallback) {
+				LOGGER.debug("FALLBACK >> {}", call.request.path())
+				LOGGER.info("{} << Content-Type: {}", call.response.status(), call.response.headers["Content-Type"])
+			}
+			routing {
+				welcome()
+				game()
+				players()
+				teams()
+				static {
+					resource("/help", "help.html")
+				}
+			}
+		}
+		server.start(wait = true)
+	}
+
+	fun refreshData() {
+		GameHandler.refreshData()
+		PlayerHandler.refreshData()
+		if (Config.enableTeams)
+			TeamHandler.refreshData()
+		else
+			TeamHandler.teams = emptyList()
+		Util.lastUpdate = LocalDateTime.now()
+	}
+
+
+/*@JvmStatic
+	fun main(args: Array<String>) {
 		val app = Javalin.create().apply {
-			enableStaticFiles("/markdown")
-			port(Config.port)
 			accessManager { handler, context, permittedRoles ->
 				val userRole = getUserRole(context = context)
 				LOGGER.warn("User access level: $userRole")
@@ -97,90 +155,6 @@ fun Application.neptunes() {
 					Exceptions.illegalAccess(context = context)
 			}
 		}.start()
-
-		app.before {
-			when (it.method()) {
-				"HEAD" -> LOGGER.info(
-					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
-						header = "Content-Type"
-					)}, Access: ${it.header(header = "Access")}"
-				)
-				"GET" -> LOGGER.info(
-					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
-						header = "Content-Type"
-					)}, Access: ${it.header(header = "Access")}"
-				)
-				"POST" -> LOGGER.info(
-					"${it.protocol()} ${it.method()} >> Endpoint: ${it.path()}, Content-Type: ${it.header(
-						header = "Content-Type"
-					)}, Access: ${it.header(header = "Access")}, Body: ${it.body()}"
-				)
-			}
-			val now: LocalDateTime = LocalDateTime.now()
-			val difference: Duration = Duration.between(Util.lastUpdate, now)
-			if (difference.toMinutes() > Config.refreshRate)
-				refreshData()
-		}
-		app.after {
-			LOGGER.info("${it.protocol()} ${it.status()} << Content-Type: ${it.header(header = "Content-Type")}")
-		}
-
-		app.get(Endpoints.WELCOME, {
-			if (it.header(header = "Content-Type") == JSON)
-				WelcomeController.apiGet(context = it)
-			else
-				WelcomeController.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.get(Endpoints.GAME, {
-			if (it.header(header = "Content-Type") == JSON)
-				GameController.apiGet(context = it)
-			else
-				GameController.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.get(Endpoints.PLAYERS_LEADERBOARD, {
-			if (it.header(header = "Content-Type") == JSON)
-				PlayerController.Leaderboard.apiGet(context = it)
-			else
-				PlayerController.Leaderboard.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.get(Endpoints.PLAYERS, {
-			if (it.header(header = "Content-Type") == JSON)
-				PlayerController.apiGetAll(context = it)
-			else
-				PlayerController.webGetAll(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.post(Endpoints.PLAYERS, {
-			if (it.header(header = "Content-Type") == JSON)
-				PlayerController.apiPost(context = it)
-		}, roles(DEVELOPER, ADMIN))
-		app.get(Endpoints.PLAYER, {
-			if (it.header(header = "Content-Type") == JSON)
-				PlayerController.apiGet(context = it)
-			else
-				PlayerController.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.get(Endpoints.TEAMS_LEADERBOARD, {
-			if (it.header(header = "Content-Type") == JSON)
-				TeamController.Leaderboard.apiGet(context = it)
-			else
-				TeamController.Leaderboard.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.get(Endpoints.TEAMS, {
-			if (it.header(header = "Content-Type") == JSON)
-				TeamController.apiGetAll(context = it)
-			else
-				TeamController.webGetAll(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
-		app.post(Endpoints.TEAMS, {
-			if (it.header(header = "Content-Type") == JSON)
-				TeamController.apiPost(context = it)
-		}, roles(DEVELOPER, ADMIN))
-		app.get(Endpoints.TEAM, {
-			if (it.header(header = "Content-Type") == JSON)
-				TeamController.apiGet(context = it)
-			else
-				TeamController.webGet(context = it)
-		}, roles(EVERYONE, DEVELOPER, ADMIN))
 		app.get(Endpoints.REFRESH, {
 			if (it.status() < 400) {
 				refreshData()
@@ -195,21 +169,6 @@ fun Application.neptunes() {
 			if (it.status() < 400)
 				Exceptions.notYetAvailable(context = it)
 		}, roles(ADMIN))
-		app.get(Endpoints.HELP, HelpController::get, roles(EVERYONE, DEVELOPER, ADMIN))
-
-		app.error(404) {
-			LOGGER.error("${it.path()} >> Host: ${it.host()}, IP: ${it.ip()}, User-Agent: ${it.userAgent()}")
-		}
-	}
-
-	fun refreshData() {
-		GameHandler.refreshData()
-		PlayerHandler.refreshData()
-		if (Config.enableTeams)
-			TeamHandler.refreshData()
-		else
-			TeamHandler.teams = null
-		Util.lastUpdate = LocalDateTime.now()
 	}
 
 	private fun getUserRole(context: Context): Role {
@@ -226,3 +185,4 @@ fun Application.neptunes() {
 		ADMIN
 	}
 }*/
+}

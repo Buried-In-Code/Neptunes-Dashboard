@@ -1,38 +1,39 @@
 package macro.neptunes.core.player
 
+import io.ktor.application.call
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.contentType
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.route
+import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
+import java.util.stream.Collectors
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object PlayerController {
 	private val LOGGER = LoggerFactory.getLogger(PlayerController::class.java)
-	private const val SORT_NAME = "name"
-	private const val SORT_ALIAS = "alias"
-	private const val SORT_TEAMS = "team"
-	private const val SORT_STARS = "stars"
-	private const val SORT_SHIPS = "ships"
-	private const val SORT_ECONOMY = "economy"
-	private const val SORT_INDUSTRY = "industry"
-	private const val SORT_SCIENCE = "science"
 
-	private fun getPlayers(sort: String): List<Player>? {
-		return when (sort) {
-			SORT_NAME -> PlayerHandler.sortByName()
-			SORT_ALIAS -> PlayerHandler.sortByAlias()
-			SORT_TEAMS -> PlayerHandler.sortByTeams()
-			SORT_STARS -> PlayerHandler.sortByStars()
-			SORT_SHIPS -> PlayerHandler.sortByShips()
-			SORT_ECONOMY -> PlayerHandler.sortByEconomy()
-			SORT_INDUSTRY -> PlayerHandler.sortByIndustry()
-			SORT_SCIENCE -> PlayerHandler.sortByScience()
-			else -> null
+	private fun sortPlayers(sort: String): List<Player> {
+		return when (sort.toLowerCase()) {
+			"name" -> PlayerHandler.sortByName()
+			"alias" -> PlayerHandler.sortByAlias()
+			"team" -> PlayerHandler.sortByTeams()
+			"stars" -> PlayerHandler.sortByStars()
+			"ships" -> PlayerHandler.sortByShips()
+			"economy" -> PlayerHandler.sortByEconomy()
+			"industry" -> PlayerHandler.sortByIndustry()
+			"science" -> PlayerHandler.sortByScience()
+			else -> PlayerHandler.players
 		}
 	}
 
-	/*private fun filterPlayers(context: Context, sort: String): List<Player>? {
-		val players = getPlayers(sort = sort) ?: return null
-		val filterString = context.queryParam("filter") ?: ""
+	private fun filterPlayers(filterString: String, players: List<Player>): List<Player> {
 		val filter: Map<String, String> = filterString.trim()
 			.split(",")
 			.stream()
@@ -44,7 +45,57 @@ object PlayerController {
 		return PlayerHandler.filter(name = name, alias = alias, team = team, players = players)
 	}
 
-	fun webGet(context: Context) {
+	fun Route.players() {
+		route("/players") {
+			get {
+				val sort = call.request.queryParameters["sort"] ?: "name"
+				val filter = call.request.queryParameters["filter"] ?: ""
+				if (call.request.contentType() == ContentType.Application.Json) {
+					val players = selectPlayers(sort = sort, filter = filter)
+					call.respond(message = players)
+				} else
+					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+			}
+			post {
+				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+			}
+			get("/leaderboard") {
+				val sort = call.request.queryParameters["sort"] ?: "name"
+				val filter = call.request.queryParameters["filter"] ?: ""
+				if (call.request.contentType() == ContentType.Application.Json) {
+					val leaderboard = selectLeaderboard(sort = sort, filter = filter)
+					call.respond(message = leaderboard)
+				} else
+					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+			}
+			get("/{alias}") {
+				val alias = call.parameters["alias"] ?: ""
+				if (call.request.contentType() == ContentType.Application.Json) {
+					val player = selectPlayer(alias = alias)
+					call.respond(message = player)
+				} else
+					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+
+			}
+		}
+	}
+
+	private fun selectPlayer(alias: String): Map<String, Any> {
+		return PlayerHandler.filter(alias = alias).map { it.longJSON() }.firstOrNull() ?: emptyMap()
+	}
+
+	private fun selectPlayers(sort: String, filter: String): List<Map<String, Any>> {
+		val players = sortPlayers(sort = sort)
+		return filterPlayers(filterString = filter, players = players).map { it.shortJSON() }
+	}
+
+	private fun selectLeaderboard(sort: String, filter: String): List<Map<String, Any>> {
+		var players = sortPlayers(sort = sort)
+		players = filterPlayers(filterString = filter, players = players)
+		return PlayerHandler.getTableData(players = players)
+	}
+
+	/*fun webGet(context: Context) {
 		val alias = context.pathParam("alias")
 		val player = PlayerHandler.filter(alias = alias).map { it.longHTML() }.firstOrNull() ?: "<h3>No Player Found</h3>"
 		val htmlString = Util.addHTML(player, "Get Player")
@@ -61,23 +112,6 @@ object PlayerController {
 		context.html(htmlString)
 	}
 
-	fun apiGet(context: Context) {
-		if (context.status() >= 400)
-			return
-		val alias = context.pathParam("alias")
-		val player = PlayerHandler.filter(alias = alias).map { it.longJSON() }.firstOrNull() ?: emptyMap()
-		context.json(player)
-	}
-
-	fun apiGetAll(context: Context) {
-		if (context.status() >= 400)
-			return
-		val sort: String = context.queryParam("sort", default = "name")!!.toLowerCase()
-		val players = filterPlayers(context = context, sort = sort)?.map { it.shortJSON() }
-			?: return Exceptions.invalidParam(context = context, param = sort)
-		context.json(players)
-	}
-
 	fun apiPost(context: Context) {
 		if (context.status() >= 400)
 			return
@@ -86,10 +120,10 @@ object PlayerController {
 		Config.saveConfig()
 		Application.refreshData()
 		context.status(204)
-	}*/
+	}
 
 	object Leaderboard {
-		/*fun webGet(context: Context) {
+		fun webGet(context: Context) {
 			val sort: String = context.queryParam("sort", default = "name")!!.toLowerCase()
 			val players = filterPlayers(context = context, sort = sort)
 				?: return Exceptions.invalidParam(context = context, param = sort)
@@ -120,14 +154,5 @@ object PlayerController {
 			}
 			result += "</table>"
 			context.html(Util.addHTML("<div style=\"padding: 10px\">$result</div>", "Player Leaderboard"))
-		}
-
-		fun apiGet(context: Context) {
-			val sort: String = context.queryParam("sort", default = "name")!!.toLowerCase()
-			val players = filterPlayers(context = context, sort = sort)
-				?: return Exceptions.invalidParam(context = context, param = sort)
-			val output = PlayerHandler.getTableData(players = players)
-			context.json(output)
 		}*/
-	}
 }
