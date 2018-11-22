@@ -1,9 +1,9 @@
 package macro.neptunes.data
 
-import macro.neptunes.core.config.Config
 import macro.neptunes.core.Util
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
+import macro.neptunes.core.config.Config
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.HttpURLConnection
@@ -16,6 +16,7 @@ import java.util.*
  */
 internal object RESTClient {
 	private val LOGGER = LoggerFactory.getLogger(RESTClient::class.java)
+	private const val JSON = "application/json"
 
 	private fun pingURL(): Boolean {
 		val responseCode = headRequest()
@@ -24,7 +25,7 @@ internal object RESTClient {
 
 	private fun headRequest(
 		endpoint: String = "/",
-		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json"))
+		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON))
 	): Int {
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
@@ -44,7 +45,7 @@ internal object RESTClient {
 
 	internal fun getRequest(
 		endpoint: String,
-		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")),
+		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON)),
 		parameters: Map<String, Any>? = null
 	): Map<String, Any> {
 		if (!pingURL())
@@ -71,7 +72,7 @@ internal object RESTClient {
 
 	internal fun postRequest(
 		endpoint: String,
-		headers: Map<String, String> = mapOf(Pair("Content-Type", "application/json")),
+		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON)),
 		parameters: Map<String, Any>? = null,
 		body: Map<String, Any>
 	): Map<String, Any> {
