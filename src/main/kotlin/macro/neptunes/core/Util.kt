@@ -17,7 +17,6 @@ object Util {
 		.serializeNulls()
 		.disableHtmlEscaping()
 		.create()
-	internal const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	internal val INT_FORMAT = NumberFormat.getIntegerInstance()
 	internal val PERCENT_FORMAT = NumberFormat.getPercentInstance()
 	lateinit var lastUpdate: LocalDateTime

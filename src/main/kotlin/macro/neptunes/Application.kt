@@ -15,16 +15,17 @@ import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import macro.neptunes.core.config.Config
+import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
-import macro.neptunes.core.game.GameController.game
 import macro.neptunes.core.game.GameHandler
-import macro.neptunes.core.player.PlayerController.players
 import macro.neptunes.core.player.PlayerHandler
-import macro.neptunes.core.team.TeamController.teams
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.HttpBinError
-import macro.neptunes.data.WelcomeController.welcome
+import macro.neptunes.data.controllers.GameController.game
+import macro.neptunes.data.controllers.PlayerController.players
+import macro.neptunes.data.controllers.TeamController.teams
+import macro.neptunes.data.controllers.UtilController.util
+import macro.neptunes.data.controllers.WelcomeController.welcome
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -37,7 +38,7 @@ object Application {
 	private val LOGGER = LoggerFactory.getLogger(Application::class.java)
 
 	init {
-		if (Config.gameID == null) {
+		if (CONFIG.gameID == null) {
 			LOGGER.error("Requires a Game ID")
 			exitProcess(0)
 		}
@@ -46,7 +47,7 @@ object Application {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val server = embeddedServer(Netty, port = Config.port, host = "0.0.0.0") {
+		val server = embeddedServer(Netty, port = CONFIG.port, host = "0.0.0.0") {
 			install(ContentNegotiation) {
 				gson {
 					setPrettyPrinting()
@@ -87,7 +88,7 @@ object Application {
 				LOGGER.debug("SETUP >> {}", call.request.path())
 				val now: LocalDateTime = LocalDateTime.now()
 				val difference: Duration = Duration.between(Util.lastUpdate, now)
-				if (difference.toMinutes() > Config.refreshRate)
+				if (difference.toMinutes() > CONFIG.refreshRate)
 					refreshData()
 			}
 			intercept(ApplicationCallPipeline.Monitoring) {
@@ -124,6 +125,7 @@ object Application {
 				game()
 				players()
 				teams()
+				util()
 				static {
 					resource("/help", "help.html")
 				}
@@ -135,54 +137,10 @@ object Application {
 	fun refreshData() {
 		GameHandler.refreshData()
 		PlayerHandler.refreshData()
-		if (Config.enableTeams)
+		if (CONFIG.enableTeams)
 			TeamHandler.refreshData()
 		else
 			TeamHandler.teams = emptyList()
 		Util.lastUpdate = LocalDateTime.now()
 	}
-
-
-/*@JvmStatic
-	fun main(args: Array<String>) {
-		val app = Javalin.create().apply {
-			accessManager { handler, context, permittedRoles ->
-				val userRole = getUserRole(context = context)
-				LOGGER.warn("User access level: $userRole")
-				if (permittedRoles.contains(userRole))
-					handler.handle(context)
-				else
-					Exceptions.illegalAccess(context = context)
-			}
-		}.start()
-		app.get(Endpoints.REFRESH, {
-			if (it.status() < 400) {
-				refreshData()
-				it.status(204)
-			}
-		}, roles(DEVELOPER, ADMIN))
-		app.get(Endpoints.CONFIG, {
-			if (it.status() < 400)
-				Exceptions.notYetAvailable(context = it)
-		}, roles(DEVELOPER, ADMIN))
-		app.patch(Endpoints.CONFIG, {
-			if (it.status() < 400)
-				Exceptions.notYetAvailable(context = it)
-		}, roles(ADMIN))
-	}
-
-	private fun getUserRole(context: Context): Role {
-		return when (context.header(header = "Access")?.toLowerCase()) {
-			"admin" -> ADMIN
-			"dev" -> DEVELOPER
-			else -> EVERYONE
-		}
-	}
-
-	private enum class SecurityRoles : Role {
-		EVERYONE,
-		DEVELOPER,
-		ADMIN
-	}
-}*/
 }

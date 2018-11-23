@@ -1,4 +1,4 @@
-package macro.neptunes.core.game
+package macro.neptunes.data.controllers
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
@@ -12,12 +12,13 @@ import macro.neptunes.data.Message
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
-object GameController {
+object WelcomeController {
 
-	fun Route.game(){
-		get("/game"){
+	fun Route.welcome() {
+		get("/") {
+			val message = "Welcome to BIT 269's Neptune's Pride API"
 			if (call.request.contentType() == ContentType.Application.Json)
-				call.respond(GameHandler.game)
+				call.respond(Message(message = message))
 			else
 				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
 		}

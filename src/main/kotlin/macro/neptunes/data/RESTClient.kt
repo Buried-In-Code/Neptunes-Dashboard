@@ -1,9 +1,8 @@
 package macro.neptunes.data
 
-import macro.neptunes.core.Util
+import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
-import macro.neptunes.core.config.Config
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.net.HttpURLConnection
@@ -16,6 +15,7 @@ import java.util.*
  */
 internal object RESTClient {
 	private val LOGGER = LoggerFactory.getLogger(RESTClient::class.java)
+	private const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	private const val JSON = "application/json"
 
 	private fun pingURL(): Boolean {
@@ -120,14 +120,14 @@ internal object RESTClient {
 		headers: Map<String, String>,
 		parameters: Map<String, Any>? = null
 	): HttpURLConnection {
-		var urlString = Util.ENDPOINT + Config.gameID + endpoint
+		var urlString = ENDPOINT + CONFIG.gameID + endpoint
 		if (parameters != null)
 			urlString = addParameters(endpoint = urlString, parameters = parameters)
 		LOGGER.info("$requestMethod >> URL: $urlString, Headers: $headers")
 		val url = URL(urlString)
 		val connection = when {
-			Config.proxy == null -> url.openConnection() as HttpURLConnection
-			else -> url.openConnection(Config.proxy!!) as HttpURLConnection
+			CONFIG.proxy == null -> url.openConnection() as HttpURLConnection
+			else -> url.openConnection(CONFIG.proxy!!) as HttpURLConnection
 		}
 		connection.connectTimeout = 5 * 1000
 		connection.readTimeout = 5 * 1000

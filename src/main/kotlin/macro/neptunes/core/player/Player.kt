@@ -1,6 +1,6 @@
 package macro.neptunes.core.player
 
-import macro.neptunes.core.config.Config
+import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ data class Player(
 	val economy: Int,
 	val stars: Int,
 	val fleet: Int,
-	val strength: Int,
+	val ships: Int,
 	val isActive: Boolean,
 	val scanning: Int,
 	val hyperspace: Int,
@@ -38,7 +38,7 @@ data class Player(
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > Config.starPercentage
+		return calcComplete() > CONFIG.starPercentage
 	}
 
 	fun calcMoney(): Int {
@@ -81,7 +81,7 @@ data class Player(
 			"Team" to team,
 			"Star Percentage" to calcComplete()
 		)
-		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data
+		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "Team" } else data).toSortedMap()
 	}
 
 	@Suppress("UNCHECKED_CAST")
@@ -120,7 +120,7 @@ data class Player(
 			"Industry" to industry,
 			"Science" to science,
 			"Economy" to economy,
-			"Ships" to strength,
+			"Ships" to ships,
 			"Technology" to mapOf(
 				"Scanning" to scanning,
 				"Hyperspace" to hyperspace,
@@ -129,8 +129,8 @@ data class Player(
 				"Weapons" to weapons,
 				"Banking" to banking,
 				"Manufacturing" to manufacturing
-			)
+			).toSortedMap()
 		)
-		return if (!Config.enableTeams) data.filterNot { it.key == "Team" } else data
+		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "Team" } else data).toSortedMap()
 	}
 }

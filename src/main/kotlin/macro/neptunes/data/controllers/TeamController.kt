@@ -1,4 +1,4 @@
-package macro.neptunes.core.team
+package macro.neptunes.data.controllers
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
@@ -9,6 +9,8 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import macro.neptunes.core.team.Team
+import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
@@ -40,7 +42,12 @@ object TeamController {
 		val name: String = filter["name"] ?: ""
 		val playerName: String = filter["player-name"] ?: ""
 		val playerAlias: String = filter["player-alias"] ?: ""
-		return TeamHandler.filter(name = name, playerName = playerName, playerAlias = playerAlias, teams = teams)
+		return TeamHandler.filter(
+			name = name,
+			playerName = playerName,
+			playerAlias = playerAlias,
+			teams = teams
+		)
 	}
 
 	fun Route.teams() {
@@ -61,7 +68,8 @@ object TeamController {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val leaderboard = selectLeaderboard(sort = sort, filter = filter)
+					val leaderboard =
+						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
 					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))

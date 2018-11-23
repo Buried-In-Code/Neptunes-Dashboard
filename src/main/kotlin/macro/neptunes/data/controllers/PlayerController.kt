@@ -1,4 +1,4 @@
-package macro.neptunes.core.player
+package macro.neptunes.data.controllers
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
@@ -9,6 +9,8 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import macro.neptunes.core.player.Player
+import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
@@ -42,7 +44,12 @@ object PlayerController {
 		val name: String = filter["name"] ?: ""
 		val alias: String = filter["alias"] ?: ""
 		val team: String = filter["team"] ?: ""
-		return PlayerHandler.filter(name = name, alias = alias, team = team, players = players)
+		return PlayerHandler.filter(
+			name = name,
+			alias = alias,
+			team = team,
+			players = players
+		)
 	}
 
 	fun Route.players() {
@@ -51,7 +58,8 @@ object PlayerController {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val players = selectPlayers(sort = sort, filter = filter)
+					val players =
+						selectPlayers(sort = sort, filter = filter)
 					call.respond(message = players)
 				} else
 					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
@@ -63,7 +71,8 @@ object PlayerController {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val leaderboard = selectLeaderboard(sort = sort, filter = filter)
+					val leaderboard =
+						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
 					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
@@ -91,7 +100,8 @@ object PlayerController {
 
 	private fun selectLeaderboard(sort: String, filter: String): List<Map<String, Any>> {
 		var players = sortPlayers(sort = sort)
-		players = filterPlayers(filterString = filter, players = players)
+		players =
+				filterPlayers(filterString = filter, players = players)
 		return PlayerHandler.getTableData(players = players)
 	}
 

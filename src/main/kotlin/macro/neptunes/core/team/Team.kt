@@ -1,6 +1,6 @@
 package macro.neptunes.core.team
 
-import macro.neptunes.core.config.Config
+import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import java.text.NumberFormat
@@ -21,7 +21,7 @@ data class Team(val name: String) {
 	val totalFleet: Int
 		get() = members.stream().mapToInt { it.fleet }.sum()
 	val totalStrength: Int
-		get() = members.stream().mapToInt { it.strength }.sum()
+		get() = members.stream().mapToInt { it.ships }.sum()
 	val isActive: Boolean
 		get() = members.stream().anyMatch { it.isActive }
 	val banking: Int
@@ -45,7 +45,7 @@ data class Team(val name: String) {
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > Config.starPercentage
+		return calcComplete() > CONFIG.starPercentage
 	}
 
 	fun calcMoney(): Int {
@@ -82,11 +82,11 @@ data class Team(val name: String) {
 
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
-			Pair("Name", name),
-			Pair("Star Percentage", calcComplete()),
-			Pair("Members", members.map { it.playerName() })
+			"Name" to name,
+			"Star Percentage" to calcComplete(),
+			"Members" to members.map { it.playerName() }.toSortedSet()
 		)
-		return data
+		return data.toSortedMap()
 	}
 
 	fun longHTML(): String {
@@ -115,16 +115,25 @@ data class Team(val name: String) {
 
 	fun longJSON(): Map<String, Any> {
 		val data: Map<String, Any> = mapOf(
-			Pair("Name", name),
-			Pair("Star Percentage", calcComplete()),
-			Pair("Members", members.map { it.playerName() }),
-			Pair("Stars", totalStars),
-			Pair("Fleet", totalFleet),
-			Pair("Industry", totalIndustry),
-			Pair("Science", totalScience),
-			Pair("Economy", totalEconomy),
-			Pair("Ships", totalStrength)
+			"Name" to name,
+			"Star Percentage" to calcComplete(),
+			"Members" to members.map { it.playerName() }.toSortedSet(),
+			"Stars" to totalStars,
+			"Fleet" to totalFleet,
+			"Industry" to totalIndustry,
+			"Science" to totalScience,
+			"Economy" to totalEconomy,
+			"Ships" to totalStrength,
+			"Technology" to mapOf(
+				"Scanning" to scanning,
+				"Hyperspace" to hyperspace,
+				"Terraforming" to terraforming,
+				"Experimentation" to experimentation,
+				"Weapons" to weapons,
+				"Banking" to banking,
+				"Manufacturing" to manufacturing
+			).toSortedMap()
 		)
-		return data
+		return data.toSortedMap()
 	}
 }
