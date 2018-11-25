@@ -1,8 +1,8 @@
 package macro.neptunes.core.game
 
 import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.core.Util.logger
 import macro.neptunes.data.RESTClient
-import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
@@ -10,7 +10,7 @@ import kotlin.system.exitProcess
  * Created by Macro303 on 2018-Nov-15.
  */
 object GameHandler {
-	private val LOGGER = LoggerFactory.getLogger(GameHandler::class.java)
+	private val LOGGER = logger()
 	lateinit var game: Game
 
 	private fun parse(data: Map<String, Any?>): Game? {

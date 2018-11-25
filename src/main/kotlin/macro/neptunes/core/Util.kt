@@ -3,16 +3,18 @@ package macro.neptunes.core
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.NumberFormat
 import java.time.LocalDateTime
+import kotlin.reflect.full.companionObject
 
 /**
  * Created by Macro303 on 2018-Nov-12.
  */
 object Util {
-	private val LOGGER = LoggerFactory.getLogger(Util::class.java)
+	private val LOGGER = logger()
 	private val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
@@ -46,4 +48,12 @@ object Util {
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
+
+	inline fun <T> getClassForLogging(javaClass: Class<T>): Class<*> {
+		return javaClass.enclosingClass?.takeIf {
+			it.kotlin.companionObject?.java == javaClass
+		} ?: javaClass
+	}
+
+	inline fun <reified T> T.logger(): Logger = LoggerFactory.getLogger(getClassForLogging(T::class.java))
 }

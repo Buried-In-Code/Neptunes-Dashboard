@@ -1,6 +1,6 @@
 package macro.neptunes.core
 
-import org.slf4j.LoggerFactory
+import macro.neptunes.core.Util.logger
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -31,7 +31,7 @@ data class Config internal constructor(
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname!!, proxyPort!!))
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Config::class.java)
+		private val LOGGER = logger()
 		private val CONFIG_FILE: File = File(Util.BIN, "config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()

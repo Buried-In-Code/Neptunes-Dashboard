@@ -11,6 +11,7 @@ import io.ktor.routing.patch
 import io.ktor.routing.route
 import macro.neptunes.Application
 import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.core.Util.logger
 import macro.neptunes.core.toMap
 import macro.neptunes.data.Message
 
@@ -18,6 +19,7 @@ import macro.neptunes.data.Message
  * Created by Macro303 on 2018-Nov-23.
  */
 object UtilController {
+	private val LOGGER = logger()
 
 	fun Route.util() {
 		route("/config") {

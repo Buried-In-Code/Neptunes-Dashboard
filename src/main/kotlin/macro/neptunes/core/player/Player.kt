@@ -2,6 +2,7 @@ package macro.neptunes.core.player
 
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
+import macro.neptunes.core.Util.logger
 import macro.neptunes.core.game.GameHandler
 import org.slf4j.LoggerFactory
 import java.text.NumberFormat
@@ -132,5 +133,9 @@ data class Player(
 			).toSortedMap()
 		)
 		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "Team" } else data).toSortedMap()
+	}
+
+	companion object {
+		private val LOGGER = logger()
 	}
 }

@@ -7,6 +7,7 @@ import io.ktor.request.contentType
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import macro.neptunes.core.Util.logger
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.data.Message
 
@@ -14,9 +15,10 @@ import macro.neptunes.data.Message
  * Created by Macro303 on 2018-Nov-16.
  */
 object GameController {
+	private val LOGGER = logger()
 
-	fun Route.game(){
-		get("/game"){
+	fun Route.game() {
+		get("/game") {
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(GameHandler.game)
 			else
