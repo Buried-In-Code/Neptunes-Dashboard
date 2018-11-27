@@ -1,10 +1,11 @@
 <configuration scan="true">
+	<conversionRule conversionWord="highlighter" converterClass="macro.neptunes.console.HighlightLogs"/>
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>DEBUG</level>
 		</filter>
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<pattern>[%highlight(%d{YYYY-MM-dd HH:mm:ss.SSS})] [%highlight(%-5level)] {%cyan(%logger)} - %highlight(%msg%n)</pattern>>
+			<pattern>[%highlighter(%d{YYYY-MM-dd HH:mm:ss.SSS})] [%highlighter(%-5level)] {%magenta(%logger)} - %highlighter(%msg%n)</pattern>>
 		</encoder>
 	</appender>
 
@@ -20,11 +21,11 @@
 		</encoder>
 	</appender>
 
-	<logger name="org.eclipse.jetty" level="DEBUG"/>
-	<logger name="io.netty" level="DEBUG"/>
+	<logger name="org.eclipse.jetty" level="INFO"/>
+	<logger name="io.netty" level="INFO"/>
 
 	<root level="TRACE">
-		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
+		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="FILE"/>
 	</root>
 </configuration>

@@ -37,11 +37,21 @@ object Application {
 	private val LOGGER = logger()
 
 	init {
+		LOGGER.info("Initializing Neptune's Pride")
+		loggerColours()
 		if (CONFIG.gameID == null) {
 			LOGGER.error("Requires a Game ID")
 			exitProcess(0)
 		}
 		refreshData()
+	}
+
+	private fun loggerColours() {
+		LOGGER.trace("Trace is Visible")
+		LOGGER.debug("Debug is Visible")
+		LOGGER.info("Info is Visible")
+		LOGGER.warn("Warn is Visible")
+		LOGGER.error("Error is Visible")
 	}
 
 	@JvmStatic

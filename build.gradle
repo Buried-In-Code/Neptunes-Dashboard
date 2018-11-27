@@ -53,7 +53,7 @@ dependencies {
 	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktor_version"
 	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktor_version"
 	implementation group: 'io.ktor', name: 'ktor-html-builder', version: "$ktor_version"
-	runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: "$logger_version"
+	implementation group: 'ch.qos.logback', name: 'logback-classic', version: "$logger_version"
 }
 
 jar {
