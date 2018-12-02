@@ -7,14 +7,14 @@ import io.ktor.request.contentType
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
-import macro.neptunes.core.Util.logger
 import macro.neptunes.data.Message
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object WelcomeController {
-	private val LOGGER = logger()
+	private val LOGGER = LoggerFactory.getLogger(WelcomeController::class.java)
 
 	fun Route.welcome() {
 		get("/") {

@@ -11,15 +11,15 @@ import io.ktor.routing.patch
 import io.ktor.routing.route
 import macro.neptunes.Application
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util.logger
 import macro.neptunes.core.toMap
 import macro.neptunes.data.Message
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-23.
  */
 object UtilController {
-	private val LOGGER = logger()
+	private val LOGGER = LoggerFactory.getLogger(UtilController::class.java)
 
 	fun Route.util() {
 		route("/config") {

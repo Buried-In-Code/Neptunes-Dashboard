@@ -16,7 +16,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
-import macro.neptunes.core.Util.logger
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
@@ -26,6 +25,7 @@ import macro.neptunes.data.controllers.PlayerController.players
 import macro.neptunes.data.controllers.TeamController.teams
 import macro.neptunes.data.controllers.UtilController.util
 import macro.neptunes.data.controllers.WelcomeController.welcome
+import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
@@ -34,7 +34,7 @@ import kotlin.system.exitProcess
  * Created by Macro303 on 2018-Nov-12.
  */
 object Application {
-	private val LOGGER = logger()
+	private val LOGGER = LoggerFactory.getLogger(Application::class.java)
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")

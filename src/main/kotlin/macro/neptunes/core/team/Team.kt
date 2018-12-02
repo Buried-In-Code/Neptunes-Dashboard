@@ -1,9 +1,9 @@
 package macro.neptunes.core.team
 
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util.logger
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
+import org.slf4j.LoggerFactory
 import java.text.NumberFormat
 
 /**
@@ -139,6 +139,6 @@ data class Team(val name: String) {
 	}
 
 	companion object {
-		private val LOGGER = logger()
+		private val LOGGER = LoggerFactory.getLogger(Team::class.java)
 	}
 }

@@ -1,15 +1,15 @@
 package macro.neptunes.core.player
 
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util.logger
 import macro.neptunes.data.RESTClient
+import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
 
 /**
  * Created by Macro303 on 2018-Nov-15.
  */
 object PlayerHandler {
-	private val LOGGER = logger()
+	private val LOGGER = LoggerFactory.getLogger(PlayerHandler::class.java)
 	lateinit var players: List<Player>
 
 	@Suppress("UNCHECKED_CAST")

@@ -9,17 +9,17 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
-import macro.neptunes.core.Util.logger
 import macro.neptunes.core.team.Team
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.Message
+import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object TeamController {
-	private val LOGGER = logger()
+	private val LOGGER = LoggerFactory.getLogger(TeamController::class.java)
 
 	private fun sortTeams(sort: String): List<Team> {
 		return when (sort.toLowerCase()) {
