@@ -8,6 +8,7 @@ import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.resource
@@ -87,7 +88,10 @@ object Application {
 						cause = it
 					)
 					LOGGER.error(error.message, error.cause)
-					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
+					if (call.request.contentType() == ContentType.Application.Json)
+						call.respond(status = error.code, message = error)
+					else
+						call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
 				}
 				status(HttpStatusCode.NotFound) {
 					val error = HttpBinError(
@@ -96,7 +100,10 @@ object Application {
 						message = "Unable to find endpoint"
 					)
 					LOGGER.error("{}: {}", error.message, error.request, error.cause)
-					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
+					if (call.request.contentType() == ContentType.Application.Json)
+						call.respond(status = error.code, message = error)
+					else
+						call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
 				}
 				status(HttpStatusCode.NotImplemented) {
 					val error = HttpBinError(
@@ -105,7 +112,10 @@ object Application {
 						message = "Not Yet Implemented"
 					)
 					LOGGER.error("{}: {}", error.message, error.request, error.cause)
-					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
+					if (call.request.contentType() == ContentType.Application.Json)
+						call.respond(status = error.code, message = error)
+					else
+						call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
 				}
 			}
 			intercept(ApplicationCallPipeline.Setup) {
