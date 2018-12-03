@@ -22,7 +22,7 @@ object GameController {
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(GameHandler.game)
 			else
-				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+				TODO(reason = "Not Yet Implemented")
 		}
 	}
 }

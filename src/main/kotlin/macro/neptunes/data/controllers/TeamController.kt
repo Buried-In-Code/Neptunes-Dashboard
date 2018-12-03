@@ -59,10 +59,10 @@ object TeamController {
 					val teams = selectTeams(sort = sort, filter = filter)
 					call.respond(message = teams)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					TODO(reason = "Not Yet Implemented")
 			}
 			post {
-				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+				TODO(reason = "Not Yet Implemented")
 			}
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
@@ -72,7 +72,7 @@ object TeamController {
 						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					TODO(reason = "Not Yet Implemented")
 			}
 			get("/{name}") {
 				val name = call.parameters["name"] ?: ""
@@ -80,8 +80,7 @@ object TeamController {
 					val team = selectTeam(name = name)
 					call.respond(message = team)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
-
+					TODO(reason = "Not Yet Implemented")
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package macro.neptunes.data.controllers
 
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.contentType
@@ -57,15 +58,14 @@ object PlayerController {
 			get {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
+				val players = selectPlayers(sort = sort, filter = filter)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val players =
-						selectPlayers(sort = sort, filter = filter)
 					call.respond(message = players)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					call.respond(FreeMarkerContent("player-list.ftl", mapOf("players" to players)))
 			}
 			post {
-				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+				TODO(reason = "Not Yet Implemented")
 			}
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
@@ -75,15 +75,15 @@ object PlayerController {
 						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					TODO(reason = "Not Yet Implemented")
 			}
 			get("/{alias}") {
 				val alias = call.parameters["alias"] ?: ""
+				val player = selectPlayer(alias = alias)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val player = selectPlayer(alias = alias)
 					call.respond(message = player)
 				} else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					call.respond(FreeMarkerContent("player.ftl", mapOf("player" to player)))
 
 			}
 		}
@@ -100,8 +100,7 @@ object PlayerController {
 
 	private fun selectLeaderboard(sort: String, filter: String): List<Map<String, Any>> {
 		var players = sortPlayers(sort = sort)
-		players =
-				filterPlayers(filterString = filter, players = players)
+		players = filterPlayers(filterString = filter, players = players)
 		return PlayerHandler.getTableData(players = players)
 	}
 }

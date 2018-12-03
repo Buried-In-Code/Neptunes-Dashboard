@@ -57,82 +57,35 @@ data class Team(val name: String) {
 		return totalIndustry * (manufacturing + 5) / 24
 	}
 
-	fun shortHTML(): String {
-		var output = "<b>$name</b><ul>"
-		shortJSON().filterNot { it.key == "Name" }.forEach { key, value ->
-			var temp = value.toString()
-			if (key == "Star Percentage")
-				temp += "%"
-			when (value) {
-				is List<*> -> {
-					temp = "<ul>"
-					value.forEach {
-						temp += "<li>$it</li>"
-					}
-					temp += "</ul>"
-				}
-				is Int -> {
-					temp = NumberFormat.getIntegerInstance().format(value)
-				}
-			}
-			output += "<li><b>$key:</b> $temp</li>"
-		}
-		output += "</ul>"
-		return output
-	}
-
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
-			"Name" to name,
-			"Star Percentage" to calcComplete(),
-			"Members" to members.map { it.playerName() }.toSortedSet()
+			"name" to name,
+			"stars" to totalStars,
+			"percentage" to calcComplete(),
+			"members" to members.map { it.playerName() }.toSortedSet()
 		)
 		return data.toSortedMap()
 	}
 
-	fun longHTML(): String {
-		var output = "<b>$name</b><ul>"
-		longJSON().filterNot { it.key == "Name" }.forEach { key, value ->
-			var temp = value.toString()
-			if (key == "Star Percentage")
-				temp += "%"
-			when (value) {
-				is List<*> -> {
-					temp = "<ul>"
-					value.forEach {
-						temp += "<li>$it</li>"
-					}
-					temp += "</ul>"
-				}
-				is Int -> {
-					temp = NumberFormat.getIntegerInstance().format(value)
-				}
-			}
-			output += "<li><b>$key:</b> $temp</li>"
-		}
-		output += "</ul>"
-		return output
-	}
-
 	fun longJSON(): Map<String, Any> {
 		val data: Map<String, Any> = mapOf(
-			"Name" to name,
-			"Star Percentage" to calcComplete(),
-			"Members" to members.map { it.playerName() }.toSortedSet(),
-			"Stars" to totalStars,
-			"Fleet" to totalFleet,
-			"Industry" to totalIndustry,
-			"Science" to totalScience,
-			"Economy" to totalEconomy,
-			"Ships" to totalStrength,
-			"Technology" to mapOf(
-				"Scanning" to scanning,
-				"Hyperspace" to hyperspace,
-				"Terraforming" to terraforming,
-				"Experimentation" to experimentation,
-				"Weapons" to weapons,
-				"Banking" to banking,
-				"Manufacturing" to manufacturing
+			"name" to name,
+			"stars" to totalStars,
+			"percentage" to calcComplete(),
+			"members" to members.map { it.playerName() }.toSortedSet(),
+			"fleet" to totalFleet,
+			"industry" to totalIndustry,
+			"science" to totalScience,
+			"economy" to totalEconomy,
+			"ships" to totalStrength,
+			"technology" to mapOf(
+				"scanning" to scanning,
+				"hyperspace" to hyperspace,
+				"terraforming" to terraforming,
+				"experimentation" to experimentation,
+				"weapons" to weapons,
+				"banking" to banking,
+				"manufacturing" to manufacturing
 			).toSortedMap()
 		)
 		return data.toSortedMap()

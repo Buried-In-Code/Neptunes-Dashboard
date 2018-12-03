@@ -27,10 +27,10 @@ object UtilController {
 				if (call.request.contentType() == ContentType.Application.Json)
 					call.respond(message = CONFIG.toMap())
 				else
-					call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+					TODO(reason = "Not Yet Implemented")
 			}
 			patch {
-				call.respond(status = HttpStatusCode.NotImplemented, message = Message("Not Yet Implemented"))
+				TODO(reason = "Not Yet Implemented")
 			}
 		}
 		get("/refresh") {

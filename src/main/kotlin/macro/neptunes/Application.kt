@@ -1,9 +1,12 @@
 package macro.neptunes
 
+import freemarker.cache.ClassTemplateLoader
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.*
+import io.ktor.freemarker.FreeMarker
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -72,6 +75,9 @@ object Application {
 			install(Compression)
 			install(ConditionalHeaders)
 			install(AutoHeadResponse)
+			install(FreeMarker) {
+				templateLoader = ClassTemplateLoader(Application::class.java, "/templates")
+			}
 			install(StatusPages) {
 				exception<Throwable> {
 					val error = HttpBinError(
@@ -81,7 +87,7 @@ object Application {
 						cause = it
 					)
 					LOGGER.error(error.message, error.cause)
-					call.respond(status = error.code, message = error)
+					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
 				}
 				status(HttpStatusCode.NotFound) {
 					val error = HttpBinError(
@@ -90,7 +96,16 @@ object Application {
 						message = "Unable to find endpoint"
 					)
 					LOGGER.error("{}: {}", error.message, error.request, error.cause)
-					call.respond(status = error.code, message = error)
+					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
+				}
+				status(HttpStatusCode.NotImplemented) {
+					val error = HttpBinError(
+						code = HttpStatusCode.NotImplemented,
+						request = call.request.local.uri,
+						message = "Not Yet Implemented"
+					)
+					LOGGER.error("{}: {}", error.message, error.request, error.cause)
+					call.respond(FreeMarkerContent(template = "error.ftl", model = mapOf("error" to error)))
 				}
 			}
 			intercept(ApplicationCallPipeline.Setup) {

@@ -3,300 +3,333 @@
 <head>
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
-	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css" rel="stylesheet"/>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
 </head>
 <body>
 <div style="padding: 10px">
+	<div class="ui pointing menu">
+		<a class="item" href="/">Home</a>
+		<a class="item" href="/game">Game</a>
+		<a class="item" href="/players">Players</a>
+		<a class="item" href="/teams">Teams</a>
+		<a class="active item" href="/help">Help</a>
+	</div>
 	<h1>BIT 269's Neptune's Pride</h1>
-	<p><i>Put description here</i></p>
-	<div class="card-columns">
-		<div class="card bg-dark text-white">
-			<div class="card-header">
-				<h2><code>GET <a href="/">/</a></code></h2>
+	<div class="ui cards">
+		<a class="card" href="/">
+			<div class="content">
+				<div class="header">
+					<code>GET /</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
+		</a>
+		<a class="card" href="/game">
+			<div class="content">
+				<div class="header">
+					<code>GET /game</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
+		</a>
+		<a class="card" href="/players">
+			<div class="content">
+				<div class="header">
+					<code>GET /players</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+					<table class="ui very basic table">
+						<thead>
+							<tr>
+								<th>Field</th>
+								<th>Sort</th>
+								<th>Filter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Alias</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Team</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Stars</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+							<tr>
+								<td>Ships</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETGame">
-			<div class="card-header">
-				<h2><code>GET <a href="/game">/game</a></code></h2>
+		</a>
+		<a class="card" href="/players">
+			<div class="content">
+				<div class="header">
+					<code>POST /players</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
+		</a>
+		<a class="card" href="/players/leaderboard">
+			<div class="content">
+				<div class="header">
+					<code>GET /players/leaderboard</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+					<table class="ui very basic table">
+						<thead>
+							<tr>
+								<th>Field</th>
+								<th>Sort</th>
+								<th>Filter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Alias</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Team</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Stars</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+							<tr>
+								<td>Ships</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
+		</a>
+		<a class="card" href="/players/Macro303">
+			<div class="content">
+				<div class="header">
+					<code>GET /players/:alias</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETPlayers">
-			<div class="card-header">
-				<h2><code>GET <a href="/players">/players</a></code></h2>
+		</a>
+		<a class="card" href="/teams">
+			<div class="content">
+				<div class="header">
+					<code>GET /teams</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+					<table class="ui very basic table">
+						<thead>
+							<tr>
+								<th>Field</th>
+								<th>Sort</th>
+								<th>Filter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Player-Name</td>
+								<td>&#x2718;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Player-Alias</td>
+								<td>&#x2718;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Stars</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+							<tr>
+								<td>Ships</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<table class="table table-dark table-striped table-sm">
-					<tr>
-						<th>Field</th>
-						<th>Sort</th>
-						<th>Filter</th>
-					</tr>
-					<tr>
-						<td>Name</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Alias</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Team</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Stars</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-					<tr>
-						<td>Ships</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-				</table>
+		</a>
+		<a class="card" href="/teams">
+			<div class="content">
+				<div class="header">
+					<code>POST /teams</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
+		</a>
+		<a class="card" href="/teams/leaderboard">
+			<div class="content">
+				<div class="header">
+					<code>GET /teams/leaderboard</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+					<table class="ui very basic table">
+						<thead>
+							<tr>
+								<th>Field</th>
+								<th>Sort</th>
+								<th>Filter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Name</td>
+								<td>&#x2714;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Player-Name</td>
+								<td>&#x2718;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Player-Alias</td>
+								<td>&#x2718;</td>
+								<td>&#x2714;</td>
+							</tr>
+							<tr>
+								<td>Stars</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+							<tr>
+								<td>Ships</td>
+								<td>&#x2714;</td>
+								<td>&#x2718;</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-		<div class="card bg-dark text-white" id="POSTPlayer">
-			<div class="card-header">
-				<h2><code>POST <a href="/players">/players</a></code></h2>
+		</a>
+		<a class="card" href="/teams/Team%20A">
+			<div class="content">
+				<div class="header">
+					<code>GET /teams/:name</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<p><b>Example Body:</b> <code>[{ "Name": "Alias" }, { "Name": "Alias" }]</code></p>
+		</a>
+		<a class="card" href="/refresh">
+			<div class="content">
+				<div class="header">
+					<code>GET /refresh</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 204</p>
+		</a>
+		<a class="card" href="/config">
+			<div class="content">
+				<div class="header">
+					<code>GET /config</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETPlayerLeaderboard">
-			<div class="card-header">
-				<h2><code>GET <a href="/players/leaderboard">/players/leaderboard</a></code></h2>
+		</a>
+		<a class="card" href="/config">
+			<div class="content">
+				<div class="header">
+					<code>PATCH /config</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<table class="table table-dark table-striped table-sm">
-					<tr>
-						<th>Field</th>
-						<th>Sort</th>
-						<th>Filter</th>
-					</tr>
-					<tr>
-						<td>Name</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Alias</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Team</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Stars</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-					<tr>
-						<td>Ships</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-				</table>
+		</a>
+		<a class="card" href="/help">
+			<div class="content">
+				<div class="header">
+					<code>GET /help</code>
+				</div>
+				<div class="meta">
+					<span><i>Put a description here</i></span>
+				</div>
+				<div class="description">
+				</div>
 			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETPlayer">
-			<div class="card-header">
-				<h2><code>GET <a href="/players/Macro303">/players/:alias</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETTeams">
-			<div class="card-header">
-				<h2><code>GET <a href="/teams">/teams</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<table class="table table-dark table-striped table-sm">
-					<tr>
-						<th>Field</th>
-						<th>Sort</th>
-						<th>Filter</th>
-					</tr>
-					<tr>
-						<td>Name</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Player-Name</td>
-						<td>&#x2718;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Player-Alias</td>
-						<td>&#x2718;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Stars</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-					<tr>
-						<td>Ships</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-				</table>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="POSTTeam">
-			<div class="card-header">
-				<h2><code>POST <a href="/teams">/teams</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<p><b>Example Body:</b> <code>[ "Name", "Name" ]</code></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 204</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETTeamLeaderboard">
-			<div class="card-header">
-				<h2><code>GET <a href="/teams/leaderboard">/teams/leaderboard</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-				<table class="table table-dark table-striped table-sm">
-					<tr>
-						<th>Field</th>
-						<th>Sort</th>
-						<th>Filter</th>
-					</tr>
-					<tr>
-						<td>Name</td>
-						<td>&#x2714;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Player-Name</td>
-						<td>&#x2718;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Player-Alias</td>
-						<td>&#x2718;</td>
-						<td>&#x2714;</td>
-					</tr>
-					<tr>
-						<td>Stars</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-					<tr>
-						<td>Ships</td>
-						<td>&#x2714;</td>
-						<td>&#x2718;</td>
-					</tr>
-				</table>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETTeam">
-			<div class="card-header">
-				<h2><code>GET <a href="/teams/Team%20A">/teams/:name</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETRefresh">
-			<div class="card-header">
-				<h2><code>GET <a href="/refresh">/refresh</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 204</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETConfig">
-			<div class="card-header">
-				<h2><code>GET <a href="/config">/config</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 418</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="PATCHConfig">
-			<div class="card-header">
-				<h2><code>PATCH <a href="/config">/config</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 418</p>
-			</div>
-		</div>
-		<div class="card bg-dark text-white" id="GETHelp">
-			<div class="card-header">
-				<h2><code>GET <a href="/help">/help</a></code></h2>
-			</div>
-			<div class="card-body">
-				<p class="card-text"><i>Put a description here</i></p>
-			</div>
-			<div class="card-footer">
-				<p><b>Response Code:</b> 200</p>
-			</div>
-		</div>
+		</a>
 	</div>
 </div>
 </body>

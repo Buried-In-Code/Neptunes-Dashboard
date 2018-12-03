@@ -49,89 +49,40 @@ data class Player(
 		return industry * (manufacturing + 5) / 24
 	}
 
-	fun shortHTML(): String {
-		var output = "<b>${playerName()}</b>"
-		output += "<ul>"
-		shortJSON().filterNot { it.key == "Name" || it.key == "Alias" }.forEach { key, value ->
-			var temp = value.toString()
-			if (key == "Star Percentage")
-				temp += "%"
-			when (value) {
-				is Map<*, *> -> {
-					temp = "<ul>"
-					value.forEach {
-						temp += "<li><b>${it.key}:</b> ${it.value}</li>"
-					}
-					temp += "</ul>"
-				}
-				is Int -> {
-					temp = NumberFormat.getIntegerInstance().format(value)
-				}
-			}
-			output += "<li><b>$key:</b> $temp</li>"
-		}
-		output += "</ul>"
-		return output
-	}
-
 	fun shortJSON(): Map<String, Any> {
 		val data = mapOf(
-			"Name" to name,
-			"Alias" to alias,
-			"Team" to team,
-			"Star Percentage" to calcComplete()
+			"name" to name,
+			"alias" to alias,
+			"team" to team,
+			"stars" to stars,
+			"percentage" to calcComplete()
 		)
-		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "Team" } else data).toSortedMap()
-	}
-
-	@Suppress("UNCHECKED_CAST")
-	fun longHTML(): String {
-		var output = "<b>${playerName()}</b>"
-		output += "<ul>"
-		longJSON().filterNot { it.key == "Name" || it.key == "Alias" }.forEach { key, value ->
-			var temp = value.toString()
-			if (key == "Star Percentage")
-				temp += "%"
-			when (value) {
-				is Map<*, *> -> {
-					temp = "<ul>"
-					value.forEach {
-						temp += "<li><b>${it.key}:</b> ${it.value}</li>"
-					}
-					temp += "</ul>"
-				}
-				is Int -> temp = Util.INT_FORMAT.format(value)
-				is Double -> temp = Util.PERCENT_FORMAT.format(value)
-			}
-			output += "<li><b>$key:</b> $temp</li>"
-		}
-		output += "</ul>"
-		return output
+		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "team" } else data).toSortedMap()
 	}
 
 	fun longJSON(): Map<String, Any> {
 		val data = mapOf(
-			"Name" to name,
-			"Alias" to alias,
-			"Team" to team,
-			"Star Percentage" to calcComplete(),
-			"Stars" to stars,
-			"Fleet" to fleet,
-			"Industry" to industry,
-			"Science" to science,
-			"Economy" to economy,
-			"Ships" to ships,
-			"Technology" to mapOf(
-				"Scanning" to scanning,
-				"Hyperspace" to hyperspace,
-				"Terraforming" to terraforming,
-				"Experimentation" to experimentation,
-				"Weapons" to weapons,
-				"Banking" to banking,
-				"Manufacturing" to manufacturing
+			"name" to name,
+			"alias" to alias,
+			"team" to team,
+			"stars" to stars,
+			"percentage" to calcComplete(),
+			"fleet" to fleet,
+			"industry" to industry,
+			"science" to science,
+			"economy" to economy,
+			"ships" to ships,
+			"technology" to mapOf(
+				"scanning" to scanning,
+				"hyperspace" to hyperspace,
+				"terraforming" to terraforming,
+				"experimentation" to experimentation,
+				"weapons" to weapons,
+				"banking" to banking,
+				"manufacturing" to manufacturing
 			).toSortedMap()
 		)
-		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "Team" } else data).toSortedMap()
+		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "team" } else data).toSortedMap()
 	}
 
 	companion object {
