@@ -70,12 +70,11 @@ object PlayerController {
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
+				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val leaderboard =
-						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
-					TODO(reason = "Not Yet Implemented")
+					call.respond(FreeMarkerContent("player-leaderboard.ftl", mapOf("leaderboard" to leaderboard)))
 			}
 			get("/{alias}") {
 				val alias = call.parameters["alias"] ?: ""

@@ -18,10 +18,10 @@
 				<li>
 					<a href="/game">Game</a>
 				</li>
-				<li class="active">
+				<li>
 					<a href="/players">Players</a>
 				</li>
-				<li>
+				<li class="active">
 					<a href="/players/leaderboard">Player Leaderboard</a>
 				</li>
 				<li>
@@ -38,26 +38,43 @@
 	</nav>
 </div>
 <div class="container">
-	<div class="row">
-		<#list players as player>
-			<div class="card grey darken-2 col s3 offset-s1">
-				<div class="card-content white-text">
-					<span class="card-title">${player.name!"Unknown"} (${player.alias!"Unknown"})</span>
-					<ul class="browser-default">
-						<#if player.team != "Unknown">
-							<li><b>Team:</b> ${player.team!"None"}</li>
-						</#if>
-						<li><b>Stars:</b> ${player.stars!"0"}</li>
-						<li><b>Percentage:</b> ${player.percentage?string.percent!"0%"}</li>
-					</ul>
-				</div>
-				<div class="card-action">
-					<a href="/players/${player.alias!"Unknown"}">More details</a>
-				</div>
-			</div>
-		</#list>
+	<table class="grey darken-2 white-text">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Alias</th>
+				<#if leaderboard[0].team != "Unknown">
+					<th>Team</th>
+				</#if>
+				<th>Stars</th>
+				<th>%</th>
+				<th>Ships</th>
+				<th>Economy</th>
+				<th>$/Turn</th>
+				<th>Industry</th>
+				<th>Ships/Turn</th>
+				<th>Science</th>
+			</tr>
+		</thead>
+		<tbody>
+			<#list leaderboard as player>
+				<tr>
+					<td>${player.name!"Unknown"}</td>
+					<td>${player.alias!"Unknown"}</td>
+					<#if player.team != "Unknown">
+						<td>${player.team!"None"}</td>
+					</#if>
+					<td>${player.stars!"0"}</td>
+					<td>${player.percentage?string.percent!"0%"}</td>
+					<td>${player.ships!"0"}</td>
+					<td>${player.economy!"0"}</td>
+					<td>${player.economy_turn!"0"}</td>
+					<td>${player.industry!"0"}</td>
+					<td>${player.industry_turn!"0"}</td>
+					<td>${player.science!"0"}</td>
+				</tr>
+			</#list>
+		</tbody>
 	</div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

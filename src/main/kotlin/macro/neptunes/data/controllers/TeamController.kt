@@ -2,7 +2,6 @@ package macro.neptunes.data.controllers
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.request.contentType
 import io.ktor.response.respond
 import io.ktor.routing.Route
@@ -11,7 +10,6 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.team.Team
 import macro.neptunes.core.team.TeamHandler
-import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 
@@ -55,11 +53,12 @@ object TeamController {
 			get {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
+				val teams = selectTeams(sort = sort, filter = filter)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val teams = selectTeams(sort = sort, filter = filter)
 					call.respond(message = teams)
 				} else
 					TODO(reason = "Not Yet Implemented")
+//					call.respond(FreeMarkerContent("team-list.ftl", mapOf("teams" to teams)))
 			}
 			post {
 				TODO(reason = "Not Yet Implemented")
@@ -67,20 +66,21 @@ object TeamController {
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
+				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val leaderboard =
-						selectLeaderboard(sort = sort, filter = filter)
 					call.respond(message = leaderboard)
 				} else
 					TODO(reason = "Not Yet Implemented")
+//					call.respond(FreeMarkerContent("team-leaderboard.ftl", mapOf("leaderboard" to leaderboard)))
 			}
 			get("/{name}") {
 				val name = call.parameters["name"] ?: ""
+				val team = selectTeam(name = name)
 				if (call.request.contentType() == ContentType.Application.Json) {
-					val team = selectTeam(name = name)
 					call.respond(message = team)
 				} else
 					TODO(reason = "Not Yet Implemented")
+//					call.respond(FreeMarkerContent("team.ftl", mapOf("team" to team)))
 			}
 		}
 	}

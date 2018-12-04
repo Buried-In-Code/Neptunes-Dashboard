@@ -161,7 +161,11 @@ object Application {
 				teams()
 				util()
 				static {
-					resource("/help", "help.html")
+					resource(remotePath = "/help", resource = "static/help.html")
+					resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
+					resource(remotePath = "/static/images/background.jpg", resource = "static/images/background.jpg")
+					resource(remotePath = "/images/background.jpg", resource = "static/images/background.jpg")
+					resource(remotePath = "/static/css/styles.css", resource = "static/css/styles.css")
 				}
 			}
 		}

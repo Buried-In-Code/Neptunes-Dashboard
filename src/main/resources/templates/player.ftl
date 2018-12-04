@@ -3,37 +3,71 @@
 <head>
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.js"></script>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+	<link href="../static/css/styles.css" rel="stylesheet"/>
 </head>
 <body>
-	<div style="padding: 10px">
-		<div class="ui pointing menu">
-			<a class="item" href="/">Home</a>
-			<a class="item" href="/game">Game</a>
-			<a class="active item" href="/players">Players</a>
-			<a class="item" href="/teams">Teams</a>
-			<a class="item" href="/help">Help</a>
+<div class="navbar-fixed">
+	<nav class="nav-extended">
+		<div class="nav-wrapper grey darken-4">
+			<ul class="right hide-on-med-and-down" id="nav-mobile">
+				<li>
+					<a href="/">Home</a>
+				</li>
+				<li>
+					<a href="/game">Game</a>
+				</li>
+				<li class="active">
+					<a href="/players">Players</a>
+				</li>
+				<li>
+					<a href="/players/leaderboard">Player Leaderboard</a>
+				</li>
+				<li>
+					<a href="/teams">Teams</a>
+				</li>
+				<li>
+					<a href="/teams/leaderboard">Team Leaderboard</a>
+				</li>
+				<li>
+					<a href="/help">Help</a>
+				</li>
+			</ul>
 		</div>
-		<a class="ui card" href="/players/${player.alias!"Unknown"}">
-			<div class="content">
-				<div class="header">${player.name!"Unknown"}</div>
-				<div class="meta">
-					<span>${player.alias!"Unknown"}</span>
-					<span>${player.percentage?string.percent!"0%"}</span>
-				</div>
-				<div class="description">
-					<ul>
-						<li><b>Team:</b> ${player.team!"None"}</li>
-						<li><b>Stars:</b> ${player.stars!"0"}</li>
-						<li><b>Economy:</b> ${player.economy!"0"}</li>
-						<li><b>Industry:</b> ${player.industry!"0"}</li>
-						<li><b>Science:</b> ${player.science!"0"}</li>
+	</nav>
+</div>
+<div class="container">
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<span class="card-title">${player.name!"Unknown"}</span>
+			<ul class="browser-default">
+				<li><b>Alias:</b> ${player.alias!"Unknown"}</li>
+				<#if player.team != "Unknown">
+					<li><b>Team:</b> ${player.team!"None"}</li>
+				</#if>
+				<li><b>Stars:</b> ${player.stars!"0"}</li>
+				<li><b>Percentage:</b> ${player.percentage?string.percent!"0%"}</li>
+				<li><b>Fleet:</b> ${player.fleet!"0"}</li>
+				<li><b>Economy:</b> ${player.economy!"0"}</li>
+				<li><b>Industry:</b> ${player.industry!"0"}</li>
+				<li><b>Science:</b> ${player.science!"0"}</li>
+				<li><b>Ships:</b> ${player.ships!"0"}</li>
+				<li><b>Technology:</b>
+					<ul class="browser-default">
+						<li><b>Scanning:</b> ${player.technology.scanning!"0"}</li>
+						<li><b>Hyperspace:</b> ${player.technology.hyperspace!"0"}</li>
+						<li><b>Terraforming:</b> ${player.technology.terraforming!"0"}</li>
+						<li><b>Experimentation:</b> ${player.technology.experimentation!"0"}</li>
+						<li><b>Weapons:</b> ${player.technology.weapons!"0"}</li>
+						<li><b>Banking:</b> ${player.technology.banking!"0"}</li>
+						<li><b>Manufacturing:</b> ${player.technology.manufacturing!"0"}</li>
 					</ul>
-				</div>
-			</div>
-		</a>
+				</li>
+			</ul>
+		</div>
 	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>

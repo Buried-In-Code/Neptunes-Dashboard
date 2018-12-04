@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>BIT 269's Neptune's Pride</title>
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+	<link href="../static/css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="navbar-fixed">
+	<nav>
+		<div class="nav-wrapper grey darken-4">
+			<ul class="right hide-on-med-and-down" id="nav-mobile">
+				<li>
+					<a href="/">Home</a>
+				</li>
+				<li>
+					<a href="/game">Game</a>
+				</li>
+				<li>
+					<a href="/players">Players</a>
+				</li>
+				<li>
+					<a href="/players/leaderboard">Player Leaderboard</a>
+				</li>
+				<li>
+					<a href="/teams">Teams</a>
+				</li>
+				<li>
+					<a href="/teams/leaderboard">Team Leaderboard</a>
+				</li>
+				<li class="active">
+					<a href="/help">Help</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div>
+<div class="container">
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /game</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /players</code>
+			<p><i>Put a description here</i></p>
+			<table>
+				<thead>
+				<tr>
+					<th>Field</th>
+					<th>Sortable</th>
+					<th>Filterable</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Name</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Alias</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Team</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Stars</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				<tr>
+					<td>Ships</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">POST /players</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /players/leaderboard</code>
+			<p><i>Put a description here</i></p>
+			<table>
+				<thead>
+				<tr>
+					<th>Field</th>
+					<th>Sortable</th>
+					<th>Filterable</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Name</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Alias</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Team</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Stars</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				<tr>
+					<td>Ships</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /players/:alias</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /teams</code>
+			<p><i>Put a description here</i></p>
+			<table>
+				<thead>
+				<tr>
+					<th>Field</th>
+					<th>Sortable</th>
+					<th>Filterable</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Name</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Player-Name</td>
+					<td>&#x2718;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Player-Alias</td>
+					<td>&#x2718;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Stars</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				<tr>
+					<td>Ships</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">POST /teams</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /teams/leaderboard</code>
+			<p><i>Put a description here</i></p>
+			<table>
+				<thead>
+				<tr>
+					<th>Field</th>
+					<th>Sortable</th>
+					<th>Filterable</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Name</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Player-Name</td>
+					<td>&#x2718;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Player-Alias</td>
+					<td>&#x2718;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Stars</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				<tr>
+					<td>Ships</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /teams/:name</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /refresh</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /config</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">PATCH /config</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card grey darken-2">
+		<div class="card-content white-text">
+			<code class="card-title">GET /help</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>
