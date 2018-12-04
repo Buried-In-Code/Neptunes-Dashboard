@@ -5,11 +5,11 @@
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
-	<link href="../static/css/styles.css" rel="stylesheet"/>
+	<link href="/styles.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="navbar-fixed">
-	<nav class="nav-extended">
+	<nav>
 		<div class="nav-wrapper grey darken-4">
 			<ul class="right hide-on-med-and-down" id="nav-mobile">
 				<li>

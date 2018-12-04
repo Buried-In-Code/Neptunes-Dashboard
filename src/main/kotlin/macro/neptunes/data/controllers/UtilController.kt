@@ -1,6 +1,7 @@
 package macro.neptunes.data.controllers
 
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.contentType
@@ -11,6 +12,7 @@ import io.ktor.routing.patch
 import io.ktor.routing.route
 import macro.neptunes.Application
 import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.core.Util
 import macro.neptunes.core.toMap
 import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
@@ -27,15 +29,31 @@ object UtilController {
 				if (call.request.contentType() == ContentType.Application.Json)
 					call.respond(message = CONFIG.toMap())
 				else
-					TODO(reason = "Not Yet Implemented")
+					call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/config"))
+						), status = HttpStatusCode.NotImplemented
+					)
 			}
 			patch {
-				TODO(reason = "Not Yet Implemented")
+				if (call.request.contentType() == ContentType.Application.Json)
+					call.respond(
+						message = Util.getNotImplementedMessage(endpoint = "/config"),
+						status = HttpStatusCode.NotImplemented
+					)
+				else
+					call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/config"))
+						), status = HttpStatusCode.NotImplemented
+					)
 			}
 		}
 		get("/refresh") {
 			Application.refreshData()
-			call.respond(status = HttpStatusCode.NoContent, message = Message("No Content"))
+			call.respond(status = HttpStatusCode.NoContent, message = Message(title = "No Content", content = ""))
 		}
 	}
 }

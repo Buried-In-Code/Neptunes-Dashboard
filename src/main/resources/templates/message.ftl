@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>BIT 269's Neptune's Pride</title>
-	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
 	<link href="/styles.css" rel="stylesheet"/>
@@ -18,7 +16,7 @@
 				<li>
 					<a href="/game">Game</a>
 				</li>
-				<li class="active">
+				<li>
 					<a href="/players">Players</a>
 				</li>
 				<li>
@@ -38,24 +36,11 @@
 	</nav>
 </div>
 <div class="container">
-	<div class="row">
-		<#list players as player>
-			<div class="card grey darken-2 col s3 offset-s1 small">
-				<div class="card-content white-text">
-					<span class="card-title">${player.name!"Unknown"} (${player.alias!"Unknown"})</span>
-					<ul class="browser-default">
-						<#if player.team != "Unknown">
-							<li><b>Team:</b> ${player.team!"None"}</li>
-						</#if>
-						<li><b>Stars:</b> ${player.stars!"0"}</li>
-						<li><b>Percentage:</b> ${player.percentage?string.percent!"0%"}</li>
-					</ul>
-				</div>
-				<div class="card-action">
-					<a href="/players/${player.alias!"Unknown"}">More details</a>
-				</div>
-			</div>
-		</#list>
+	<div class="card blue darken-4">
+		<div class="card-content white-text">
+			<span class="card-title">${message.title}</span>
+			<p>${message.content}</p>
+		</div>
 	</div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

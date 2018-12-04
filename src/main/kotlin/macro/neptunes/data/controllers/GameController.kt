@@ -1,14 +1,15 @@
 package macro.neptunes.data.controllers
 
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.contentType
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
-import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 
 /**
@@ -22,7 +23,12 @@ object GameController {
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(GameHandler.game)
 			else
-				TODO(reason = "Not Yet Implemented")
+				call.respond(
+					message = FreeMarkerContent(
+						template = "message.ftl",
+						model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/game"))
+					), status = HttpStatusCode.NotImplemented
+				)
 		}
 	}
 }

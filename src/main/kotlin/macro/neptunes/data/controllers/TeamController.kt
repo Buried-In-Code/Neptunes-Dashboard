@@ -1,15 +1,19 @@
 package macro.neptunes.data.controllers
 
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.contentType
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import macro.neptunes.core.Util
 import macro.neptunes.core.team.Team
 import macro.neptunes.core.team.TeamHandler
+import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors
 
@@ -54,33 +58,89 @@ object TeamController {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val teams = selectTeams(sort = sort, filter = filter)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = teams)
-				} else
-					TODO(reason = "Not Yet Implemented")
-//					call.respond(FreeMarkerContent("team-list.ftl", mapOf("teams" to teams)))
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = teams)
+					teams.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "team-list.ftl",
+							model = mapOf("teams" to teams)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "No Teams Found",
+									content = "No teams were found, either Teams have been disabled in the config or you need to check your setup"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 			post {
-				TODO(reason = "Not Yet Implemented")
+				if (call.request.contentType() == ContentType.Application.Json)
+					call.respond(
+						message = Util.getNotImplementedMessage(endpoint = "/teams"),
+						status = HttpStatusCode.NotImplemented
+					)
+				else
+					call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/teams"))
+						), status = HttpStatusCode.NotImplemented
+					)
 			}
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = leaderboard)
-				} else
-					TODO(reason = "Not Yet Implemented")
-//					call.respond(FreeMarkerContent("team-leaderboard.ftl", mapOf("leaderboard" to leaderboard)))
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
+					leaderboard.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "team-leaderboard.ftl",
+							model = mapOf("leaderboard" to leaderboard)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "No Teams Found",
+									content = "No teams were found, either Teams have been disabled in the config or you need to check your setup"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 			get("/{name}") {
 				val name = call.parameters["name"] ?: ""
 				val team = selectTeam(name = name)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = team)
-				} else
-					TODO(reason = "Not Yet Implemented")
-//					call.respond(FreeMarkerContent("team.ftl", mapOf("team" to team)))
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = team)
+					team.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "team.ftl",
+							model = mapOf("team" to team)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "Team Not Found",
+									content = "No teams were found with the name: $name"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 		}
 	}

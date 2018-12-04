@@ -3,12 +3,11 @@ package macro.neptunes.core
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import org.slf4j.Logger
+import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.text.NumberFormat
 import java.time.LocalDateTime
-import kotlin.reflect.full.companionObject
 
 /**
  * Created by Macro303 on 2018-Nov-12.
@@ -48,4 +47,12 @@ object Util {
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
+
+	fun getNotImplementedMessage(endpoint: String): Message {
+		val message = Message(
+			title = "Not Implemented: $endpoint",
+			content = "This endpoint hasn't been implemented yet, feel free to make a pull request and create it yourself."
+		)
+		return message
+	}
 }

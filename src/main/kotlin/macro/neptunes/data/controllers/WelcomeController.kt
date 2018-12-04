@@ -1,7 +1,6 @@
 package macro.neptunes.data.controllers
 
 import io.ktor.application.call
-import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
 import io.ktor.request.contentType
 import io.ktor.response.respond
@@ -18,12 +17,8 @@ object WelcomeController {
 
 	fun Route.welcome() {
 		get("/") {
-			val message = "Welcome to BIT 269's Neptune's Pride API"
 			if (call.request.contentType() == ContentType.Application.Json)
-				call.respond(Message(message = message))
-			else {
-				call.respond(FreeMarkerContent(template = "welcome.ftl", model = null))
-			}
+				call.respond(message = Message(title = "Welcome", content = "Welcome to BIT 269's Neptune's Pride API"))
 		}
 	}
 }

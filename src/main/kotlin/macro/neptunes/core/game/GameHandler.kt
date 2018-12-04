@@ -4,7 +4,6 @@ import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.data.RESTClient
 import org.slf4j.LoggerFactory
 import kotlin.math.roundToInt
-import kotlin.system.exitProcess
 
 /**
  * Created by Macro303 on 2018-Nov-15.
@@ -29,10 +28,10 @@ object GameHandler {
 	fun refreshData() {
 		LOGGER.info("Refreshing Game Data")
 		val response = RESTClient.getRequest(endpoint = "/basic")
-		val game = parse(data = response["Data"] as Map<String, Any?>)
+		var game = parse(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {
 			LOGGER.error("Unable to find game with Game ID: {}", CONFIG.gameID)
-			exitProcess(status = 0)
+			game = OfflineGame.game
 		}
 		this.game = game
 	}

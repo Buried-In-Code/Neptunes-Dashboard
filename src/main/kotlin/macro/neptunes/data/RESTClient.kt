@@ -49,7 +49,7 @@ internal object RESTClient {
 		parameters: Map<String, Any>? = null
 	): Map<String, Any> {
 		if (!pingURL())
-			throw RuntimeException("Server is Unavailable")
+			return mapOf("Code" to 503, "Message" to "Service Unavailable", "Data" to emptyMap<String, Any?>())
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
@@ -77,7 +77,7 @@ internal object RESTClient {
 		body: Map<String, Any>
 	): Map<String, Any> {
 		if (!pingURL())
-			throw RuntimeException("Server is Unavailable")
+			return mapOf("Code" to 503, "Message" to "Service Unavailable", "Data" to emptyMap<String, Any?>())
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
@@ -148,16 +148,17 @@ internal object RESTClient {
 
 	@Throws(IOException::class)
 	private fun getResponse(connection: HttpURLConnection): Map<String, Any> {
-		val response = HashMap<String, Any>()
-		response["Code"] = connection.responseCode
-		response["Message"] = connection.responseMessage
+		val response = mapOf(
+			"Code" to connection.responseCode,
+			"Message" to connection.responseMessage
+		)
 		if (connection.responseCode != 204) {
 			val returnedData: String =
 				if (connection.responseCode == 200 || connection.responseCode == 201 || connection.responseCode == 202)
 					readAll(BufferedReader(InputStreamReader(connection.inputStream, Charset.forName("UTF-8"))))
 				else
 					readAll(BufferedReader(InputStreamReader(connection.errorStream, Charset.forName("UTF-8"))))
-			response["Data"] = returnedData.fromJSON()
+			return response.plus("Data" to returnedData.fromJSON())
 		}
 		return response
 	}

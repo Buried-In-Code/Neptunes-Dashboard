@@ -11,6 +11,7 @@ import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
 import io.ktor.request.*
@@ -161,11 +162,11 @@ object Application {
 				teams()
 				util()
 				static {
+					defaultResource(resource = "static/index.html")
 					resource(remotePath = "/help", resource = "static/help.html")
 					resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
-					resource(remotePath = "/static/images/background.jpg", resource = "static/images/background.jpg")
-					resource(remotePath = "/images/background.jpg", resource = "static/images/background.jpg")
-					resource(remotePath = "/static/css/styles.css", resource = "static/css/styles.css")
+					resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
+					resource(remotePath = "/styles.css", resource = "static/css/styles.css")
 				}
 			}
 		}

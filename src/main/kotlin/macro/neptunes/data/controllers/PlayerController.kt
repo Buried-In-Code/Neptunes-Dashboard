@@ -10,6 +10,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import macro.neptunes.core.Util
 import macro.neptunes.core.player.Player
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.data.Message
@@ -59,31 +60,89 @@ object PlayerController {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val players = selectPlayers(sort = sort, filter = filter)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = players)
-				} else
-					call.respond(FreeMarkerContent("player-list.ftl", mapOf("players" to players)))
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = players)
+					players.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "player-list.ftl",
+							model = mapOf("players" to players)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "No Players Found",
+									content = "No players were found, please check your setup"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 			post {
-				TODO(reason = "Not Yet Implemented")
+				if (call.request.contentType() == ContentType.Application.Json)
+					call.respond(
+						message = Util.getNotImplementedMessage(endpoint = "/players"),
+						status = HttpStatusCode.NotImplemented
+					)
+				else
+					call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/players"))
+						), status = HttpStatusCode.NotImplemented
+					)
 			}
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = leaderboard)
-				} else
-					call.respond(FreeMarkerContent("player-leaderboard.ftl", mapOf("leaderboard" to leaderboard)))
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
+					leaderboard.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "player-leaderboard.ftl",
+							model = mapOf("leaderboard" to leaderboard)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "No Players Found",
+									content = "No players were found, please check your setup"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 			get("/{alias}") {
 				val alias = call.parameters["alias"] ?: ""
 				val player = selectPlayer(alias = alias)
-				if (call.request.contentType() == ContentType.Application.Json) {
-					call.respond(message = player)
-				} else
-					call.respond(FreeMarkerContent("player.ftl", mapOf("player" to player)))
-
+				when {
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = player)
+					player.isNotEmpty() -> call.respond(
+						message = FreeMarkerContent(
+							template = "player.ftl",
+							model = mapOf("player" to player)
+						)
+					)
+					else -> call.respond(
+						message = FreeMarkerContent(
+							template = "message.ftl",
+							model = mapOf(
+								"message" to Message(
+									title = "Player Not Found",
+									content = "No players were found with the alias: $alias"
+								)
+							)
+						), status = HttpStatusCode.NotFound
+					)
+				}
 			}
 		}
 	}

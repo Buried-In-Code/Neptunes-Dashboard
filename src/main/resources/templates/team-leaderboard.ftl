@@ -3,24 +3,42 @@
 <head>
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
-    <link rel="stylesheet" href="../static/css/styles.css"/>
+	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+	<link href="/styles.css" rel="stylesheet"/>
 </head>
 <body>
-	<div class="ui inverted menu">
-		<a class="item" href="/">Home</a>
-		<a class="item" href="/game">Game</a>
-		<a class="item" href="/players">Players</a>
-		<a class="active item" href="/teams">Teams</a>
-		<a class="item" href="/help">Help</a>
-	</div>
-	<div class="ui inverted menu">
-		<a class="item" href="/teams">List</a>
-		<a class="active item" href="/teams/leaderboard">Leaderboard</a>
-	</div>
-	<table class="ui inverted grey table">
+<div class="navbar-fixed">
+	<nav>
+		<div class="nav-wrapper grey darken-4">
+			<ul class="right hide-on-med-and-down" id="nav-mobile">
+				<li>
+					<a href="/">Home</a>
+				</li>
+				<li>
+					<a href="/game">Game</a>
+				</li>
+				<li>
+					<a href="/players">Players</a>
+				</li>
+				<li>
+					<a href="/players/leaderboard">Player Leaderboard</a>
+				</li>
+				<li>
+					<a href="/teams">Teams</a>
+				</li>
+				<li class="active">
+					<a href="/teams/leaderboard">Team Leaderboard</a>
+				</li>
+				<li>
+					<a href="/help">Help</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div>
+<div class="container">
+	<table class="grey darken-2 white-text">
 		<thead>
 			<tr>
 				<th>Name</th>
@@ -49,6 +67,8 @@
 				</tr>
 			</#list>
 		</tbody>
-	</div>
+	</table>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 </body>
 </html>
