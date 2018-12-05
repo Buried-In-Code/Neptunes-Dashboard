@@ -8,5 +8,13 @@ body {
 }
 
 nav ul li.active {
-	background-color: rgba(255, 255, 255, 0.5)
+	background-color: #CFD8DC40
+}
+
+nav ul li:hover {
+	background-color: #CFD8DC20
+}
+
+th {
+	color: #2196F3
 }

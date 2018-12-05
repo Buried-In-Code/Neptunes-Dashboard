@@ -10,97 +10,35 @@
 <body>
 <div class="navbar-fixed">
 	<nav>
-		<div class="nav-wrapper grey darken-4">
-			<ul class="right hide-on-med-and-down" id="nav-mobile">
-				<li>
-					<a href="/">Home</a>
-				</li>
-				<li>
-					<a href="/game">Game</a>
-				</li>
-				<li>
-					<a href="/players">Players</a>
-				</li>
-				<li>
-					<a href="/players/leaderboard">Player Leaderboard</a>
-				</li>
-				<li>
-					<a href="/teams">Teams</a>
-				</li>
-				<li>
-					<a href="/teams/leaderboard">Team Leaderboard</a>
-				</li>
-				<li class="active">
-					<a href="/help">Help</a>
-				</li>
+		<div class="nav-wrapper blue-grey darken-4">
+			<ul class="right">
+				<li><a class="orange-text text-lighten-4" href="/">Home</a></li>
+				<li><a class="orange-text text-lighten-4" href="/game">Game</a></li>
+				<li><a class="orange-text text-lighten-4" href="/players">Players</a></li>
+				<li><a class="orange-text text-lighten-4" href="/players/leaderboard">Player Leaderboard</a></li>
+				<li><a class="orange-text text-lighten-4" href="/teams">Teams</a></li>
+				<li><a class="orange-text text-lighten-4" href="/teams/leaderboard">Team Leaderboard</a></li>
+				<li class="active"><a class="orange-text text-lighten-2" href="/help">Help</a></li>
 			</ul>
 		</div>
 	</nav>
 </div>
 <div class="container">
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /game</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /game</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /players</code>
-			<p><i>Put a description here</i></p>
-			<table>
-				<thead>
-				<tr>
-					<th>Field</th>
-					<th>Sortable</th>
-					<th>Filterable</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td>Name</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Alias</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Team</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Stars</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				<tr>
-					<td>Ships</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">POST /players</code>
-			<p><i>Put a description here</i></p>
-		</div>
-	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /players/leaderboard</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /players</code>
 			<p><i>Put a description here</i></p>
 			<table>
 				<thead>
@@ -140,15 +78,63 @@
 			</table>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /players/:alias</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">POST /players</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /teams</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /players/leaderboard</code>
+			<p><i>Put a description here</i></p>
+			<table>
+				<thead>
+				<tr>
+					<th>Field</th>
+					<th>Sortable</th>
+					<th>Filterable</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<td>Name</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Alias</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Team</td>
+					<td>&#x2714;</td>
+					<td>&#x2714;</td>
+				</tr>
+				<tr>
+					<td>Stars</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				<tr>
+					<td>Ships</td>
+					<td>&#x2714;</td>
+					<td>&#x2718;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /players/:alias</code>
+			<p><i>Put a description here</i></p>
+		</div>
+	</div>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /teams</code>
 			<p><i>Put a description here</i></p>
 			<table>
 				<thead>
@@ -188,15 +174,15 @@
 			</table>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">POST /teams</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">POST /teams</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /teams/leaderboard</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /teams/leaderboard</code>
 			<p><i>Put a description here</i></p>
 			<table>
 				<thead>
@@ -236,33 +222,33 @@
 			</table>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /teams/:name</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /teams/:name</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /refresh</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /refresh</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /config</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /config</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">PATCH /config</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">PATCH /config</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>
-	<div class="card grey darken-2 medium">
-		<div class="card-content white-text">
-			<code class="card-title">GET /help</code>
+	<div class="card blue-grey darken-2 medium">
+		<div class="card-content grey-text text-lighten-2">
+			<code class="card-title blue-text">GET /help</code>
 			<p><i>Put a description here</i></p>
 		</div>
 	</div>

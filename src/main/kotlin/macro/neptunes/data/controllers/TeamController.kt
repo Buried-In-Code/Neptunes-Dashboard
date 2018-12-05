@@ -11,6 +11,7 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.Util
+import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.team.Team
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.Message
@@ -118,28 +119,37 @@ object TeamController {
 					)
 				}
 			}
-			get("/{name}") {
-				val name = call.parameters["name"] ?: ""
-				val team = selectTeam(name = name)
-				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = team)
-					team.isNotEmpty() -> call.respond(
-						message = FreeMarkerContent(
-							template = "team.ftl",
-							model = mapOf("team" to team)
-						)
-					)
-					else -> call.respond(
-						message = FreeMarkerContent(
-							template = "message.ftl",
-							model = mapOf(
-								"message" to Message(
-									title = "Team Not Found",
-									content = "No teams were found with the name: $name"
-								)
+			route("/{name}") {
+				get {
+					val name = call.parameters["name"] ?: ""
+					val team = selectTeam(name = name)
+					when {
+						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team)
+						team.isNotEmpty() -> call.respond(
+							message = FreeMarkerContent(
+								template = "team.ftl",
+								model = mapOf("team" to team.plus("totalStars" to GameHandler.game.totalStars))
 							)
-						), status = HttpStatusCode.NotFound
-					)
+						)
+						else -> call.respond(
+							message = FreeMarkerContent(
+								template = "message.ftl",
+								model = mapOf(
+									"message" to Message(
+										title = "Team Not Found",
+										content = "No teams were found with the name: $name"
+									)
+								)
+							), status = HttpStatusCode.NotFound
+						)
+					}
+				}
+				get("/{field}") {
+					val name = call.parameters["name"] ?: ""
+					val field = call.parameters["field"]
+					val team = selectTeam(name = name)
+					val result = team[field]
+					call.respond(message = mapOf(field to result))
 				}
 			}
 		}

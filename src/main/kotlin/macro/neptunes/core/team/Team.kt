@@ -72,7 +72,7 @@ data class Team(val name: String) {
 			"name" to name,
 			"stars" to totalStars,
 			"percentage" to calcComplete(),
-			"members" to members.map { it.playerName() }.toSortedSet(),
+			"members" to members.map { it.playerName() to it.stars }.toMap(),
 			"ships" to totalStrength,
 			"fleet" to totalFleet,
 			"economy" to totalEconomy,

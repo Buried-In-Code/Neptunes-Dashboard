@@ -70,9 +70,9 @@ data class Player(
 			"ships" to ships,
 			"fleet" to fleet,
 			"economy" to economy,
-			"economy_turn" to calcMoney(),
+			"economyTurn" to calcMoney(),
 			"industry" to industry,
-			"industry_turn" to calcShips(),
+			"industryTurn" to calcShips(),
 			"science" to science,
 			"technology" to mapOf(
 				"scanning" to scanning,

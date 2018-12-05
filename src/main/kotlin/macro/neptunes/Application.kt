@@ -67,7 +67,7 @@ object Application {
 					setPrettyPrinting()
 					disableHtmlEscaping()
 					serializeNulls()
-					generateNonExecutableJson()
+//					generateNonExecutableJson()
 				}
 			}
 			install(DefaultHeaders) {

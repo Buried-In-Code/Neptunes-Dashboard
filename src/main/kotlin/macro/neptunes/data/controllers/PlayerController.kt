@@ -11,6 +11,7 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.Util
+import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.data.Message
@@ -120,28 +121,37 @@ object PlayerController {
 					)
 				}
 			}
-			get("/{alias}") {
-				val alias = call.parameters["alias"] ?: ""
-				val player = selectPlayer(alias = alias)
-				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = player)
-					player.isNotEmpty() -> call.respond(
-						message = FreeMarkerContent(
-							template = "player.ftl",
-							model = mapOf("player" to player)
-						)
-					)
-					else -> call.respond(
-						message = FreeMarkerContent(
-							template = "message.ftl",
-							model = mapOf(
-								"message" to Message(
-									title = "Player Not Found",
-									content = "No players were found with the alias: $alias"
-								)
+			route("/{alias}") {
+				get {
+					val alias = call.parameters["alias"] ?: ""
+					val player = selectPlayer(alias = alias)
+					when {
+						call.request.contentType() == ContentType.Application.Json -> call.respond(message = player)
+						player.isNotEmpty() -> call.respond(
+							message = FreeMarkerContent(
+								template = "player.ftl",
+								model = mapOf("player" to player)
 							)
-						), status = HttpStatusCode.NotFound
-					)
+						)
+						else -> call.respond(
+							message = FreeMarkerContent(
+								template = "message.ftl",
+								model = mapOf(
+									"message" to Message(
+										title = "Player Not Found",
+										content = "No players were found with the alias: $alias"
+									)
+								)
+							), status = HttpStatusCode.NotFound
+						)
+					}
+				}
+				get("/{field}") {
+					val alias = call.parameters["alias"] ?: ""
+					val field = call.parameters["field"]
+					val player = selectPlayer(alias = alias)
+					val result = player[field]
+					call.respond(message = mapOf(field to result))
 				}
 			}
 		}

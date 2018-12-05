@@ -10,35 +10,21 @@
 <body>
 <div class="navbar-fixed">
 	<nav>
-		<div class="nav-wrapper grey darken-4">
-			<ul class="right hide-on-med-and-down" id="nav-mobile">
-				<li>
-					<a href="/">Home</a>
-				</li>
-				<li>
-					<a href="/game">Game</a>
-				</li>
-				<li>
-					<a href="/players">Players</a>
-				</li>
-				<li>
-					<a href="/players/leaderboard">Player Leaderboard</a>
-				</li>
-				<li>
-					<a href="/teams">Teams</a>
-				</li>
-				<li class="active">
-					<a href="/teams/leaderboard">Team Leaderboard</a>
-				</li>
-				<li>
-					<a href="/help">Help</a>
-				</li>
+		<div class="nav-wrapper blue-grey darken-4">
+			<ul class="right">
+				<li><a class="orange-text text-lighten-4" href="/">Home</a></li>
+				<li><a class="orange-text text-lighten-4" href="/game">Game</a></li>
+				<li><a class="orange-text text-lighten-4" href="/players">Players</a></li>
+				<li><a class="orange-text text-lighten-4" href="/players/leaderboard">Player Leaderboard</a></li>
+				<li><a class="orange-text text-lighten-4" href="/teams">Teams</a></li>
+				<li class="active"><a class="orange-text text-lighten-2" href="/teams/leaderboard">Team Leaderboard</a></li>
+				<li><a class="orange-text text-lighten-4" href="/help">Help</a></li>
 			</ul>
 		</div>
 	</nav>
 </div>
 <div class="container">
-	<table class="grey darken-2 white-text">
+	<table class="blue-grey darken-2 grey-text text-lighten-2">
 		<thead>
 			<tr>
 				<th>Name</th>
