@@ -151,6 +151,24 @@ object PlayerController {
 						)
 					}
 				}
+				route(path = "/technology"){
+					get{
+						val alias = call.parameters["alias"] ?: ""
+						val field = "technology"
+						val player = selectPlayer(alias = alias)?.toJson() ?: emptyMap()
+						call.respond(message = mapOf(field to player[field]))
+					}
+					get("/fields"){
+						val player = selectPlayer(alias = "")
+						call.respond(message = (player?.toJson()?.get("technology") as Map<String, Any?>?)?.keys ?: emptySet<String>())
+					}
+					get(path = "/{field}") {
+						val alias = call.parameters["alias"] ?: ""
+						val field = call.parameters["field"]
+						val player = selectPlayer(alias = alias)?.toJson()?.get("technology") as Map<String, Any?>? ?: emptyMap()
+						call.respond(message = mapOf(field to player[field]))
+					}
+				}
 				get(path = "/{field}") {
 					val alias = call.parameters["alias"] ?: ""
 					val field = call.parameters["field"]

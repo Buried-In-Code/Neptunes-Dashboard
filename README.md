@@ -3,14 +3,14 @@
 ![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Pride.svg?label=issues)
 ![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Pride.svg?label=contributors)
 
-Pulls simple game information for Neptune's Pride and attempts to display it in a simple UI
+Pulls simple game information for Neptune's Pride and attempts to display it in a simple web interface and REST endpoints.
 
 ## Dependencies
  - JDK 1.8
- - [kotlin-stdlib-jdk8: 1.3.0](https://kotlinlang.org/)
+ - [kotlin-stdlib-jdk8: 1.3.10](https://kotlinlang.org/)
  - [kotson: 2.5.0](https://github.com/SalomonBrys/Kotson)
  - [snakeyaml: 1.23](https://bitbucket.org/asomov/snakeyaml)
- - [javalin: 2.4.0]()
- - [log4j-api: 2.11.1](https://logging.apache.org/log4j/2.x/)
- - [log4j-core: 2.11.1 (runtime)](https://logging.apache.org/log4j/2.x/)
- - [log4j-slf4j-impl: 2.11.1 (runtime)](https://logging.apache.org/log4j/2.x/)
+ - [ktor-server-netty: 1.0.1](https://ktor.io/)
+ - [ktor-gson: 1.0.1](https://ktor.io/)
+ - [ktor-freemarker: 1.0.1](https://ktor.io/)
+ - [logback-classic: 1.3.0-alpha4](https://logback.qos.ch/)
