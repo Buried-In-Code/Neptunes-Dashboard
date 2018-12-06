@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<title>BIT 269's Neptune's Pride</title>
+	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
 	<link href="/styles.css" rel="stylesheet"/>

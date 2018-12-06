@@ -29,12 +29,9 @@
 			<tr>
 				<th>Name</th>
 				<th>Stars</th>
-				<th>%</th>
 				<th>Ships</th>
 				<th>Economy</th>
-				<th>$/Turn</th>
 				<th>Industry</th>
-				<th>Ships/Turn</th>
 				<th>Science</th>
 			</tr>
 		</thead>
@@ -42,14 +39,11 @@
 			<#list leaderboard as team>
 				<tr>
 					<td>${team.name!"Unknown"}</td>
-					<td>${team.stars!"0"}</td>
-					<td>${team.percentage?string.percent!"0%"}</td>
-					<td>${team.ships!"0"}</td>
-					<td>${team.economy!"0"}</td>
-					<td>${team.economy_turn!"0"}</td>
-					<td>${team.industry!"0"}</td>
-					<td>${team.industry_turn!"0"}</td>
-					<td>${team.science!"0"}</td>
+					<td>${team.totalStars!"0"}</td>
+					<td>${team.totalStrength!"0"}</td>
+					<td>${team.totalEconomy!"0"}</td>
+					<td>${team.totalIndustry!"0"}</td>
+					<td>${team.totalScience!"0"}</td>
 				</tr>
 			</#list>
 		</tbody>

@@ -56,10 +56,10 @@
 				</div>
 				<div class="col s7 offset-s1">
 					<div>
-						<h6 class="blue-text center-align"><strong>Star Count</strong> ${player.percentage?string.percent!"0%"}</h6>
+						<h6 class="blue-text center-align"><strong>Star Count</strong> <span>${player.percent?string.percent!"0%"}</span></h6>
 					</div>
 					<div class="chart-container">
-						<canvas id="winPie" width="200" height="200">
+						<canvas id="winPie" width="400" height="400">
 							<p>Star Percentage</p>
 						</canvas>
 					</div>
@@ -72,24 +72,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0"></script>
+<script src="/script.js"></script>
 <script>
-function getTotalStars(){
-	$.ajax({
-	    url: '/game/totalStars',
-	    type: 'GET',
-	    contentType: 'application/json; charset=utf-8',
-	    success: function (data) {
-	        console.log(data);
-	        winPie.data.datasets[0].data[0] = data.totalStars - ${player.stars};
-	        winPie.update();
-	    },
-	    error: function(xhr, status, error){
-	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error );
-	    }
-	});
-}
 $(document).ready(function(){
-	getTotalStars()
+	getTotalStars(winPie, ${player.stars})
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {
@@ -99,12 +85,22 @@ var winPie = new Chart(ctx, {
         datasets: [{
             data: [0, ${player.stars}],
             backgroundColor: [
-                'rgba(229, 115, 115, 0.25)',
-                'rgba(129, 199, 132, 0.25)'
+                'rgba(229, 115, 115, 0.5)',
+                'rgba(186, 104, 200, 0.5)',
+                'rgba(100, 181, 246, 0.5)',
+                'rgba(129, 199, 132, 0.5)',
+                'rgba(255, 213, 79, 0.5)',
+                'rgba(161, 136, 127, 0.5)',
+                'rgba(224, 224, 224, 0.5)'
             ],
             borderColor: [
                 'rgba(211, 47, 47, 1)',
-                'rgba(56, 148, 60, 1)'
+                'rgba(123, 31, 162, 1)',
+                'rgba(25, 118, 210, 1)',
+                'rgba(56, 142, 60, 1)',
+                'rgba(255, 160, 0, 1)',
+                'rgba(93, 64, 55, 1)',
+                'rgba(97, 97, 97, 1)'
             ],
             borderWidth: 2
         }]

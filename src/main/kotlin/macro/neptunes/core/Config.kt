@@ -19,7 +19,6 @@ data class Config internal constructor(
 	var gameID: Long?,
 	var port: Int = 5000,
 	var refreshRate: Int = 60,
-	var starPercentage: Double = 50.0,
 	var players: Map<String, String> = emptyMap(),
 	var enableTeams: Boolean = false,
 	var teams: Map<String, List<String>> = emptyMap()
@@ -78,8 +77,6 @@ data class Config internal constructor(
 				?: 5000
 			val refreshRate: Int = data["Refresh Rate"] as Int?
 				?: 60
-			val starPercentage: Double = data["Star Percentage"] as Double?
-				?: 50.0
 			val players: Map<String, String> = data["Players"] as Map<String, String>?
 				?: mapOf("Alias" to "Name")
 			val enableTeams: Boolean = data["Enable Teams"] as Boolean?
@@ -92,7 +89,6 @@ data class Config internal constructor(
 				gameID = gameID,
 				port = port,
 				refreshRate = refreshRate,
-				starPercentage = starPercentage,
 				players = players,
 				enableTeams = enableTeams,
 				teams = teams
@@ -110,7 +106,6 @@ internal fun Config.toMap(): Map<String, Any?> {
 		"Game ID" to this.gameID,
 		"Port" to this.port,
 		"Refresh Rate" to this.refreshRate,
-		"Star Percentage" to this.starPercentage,
 		"Players" to this.players,
 		"Enable Teams" to enableTeams,
 		"Teams" to this.teams

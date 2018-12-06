@@ -1,10 +1,8 @@
 package macro.neptunes.core.team
 
-import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import org.slf4j.LoggerFactory
-import java.text.NumberFormat
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -46,7 +44,7 @@ data class Team(val name: String) {
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > CONFIG.starPercentage
+		return calcComplete() > 50.0
 	}
 
 	fun calcMoney(): Int {
@@ -57,29 +55,19 @@ data class Team(val name: String) {
 		return totalIndustry * (manufacturing + 5) / 24
 	}
 
-	fun shortJSON(): Map<String, Any> {
+	fun toJson(): Map<String, Any> {
 		val data = mapOf(
 			"name" to name,
-			"stars" to totalStars,
-			"percentage" to calcComplete(),
-			"members" to members.map { it.playerName() }.toSortedSet()
-		)
-		return data.toSortedMap()
-	}
-
-	fun longJSON(): Map<String, Any> {
-		val data: Map<String, Any> = mapOf(
-			"name" to name,
-			"stars" to totalStars,
-			"percentage" to calcComplete(),
-			"members" to members.map { it.playerName() to it.stars }.toMap(),
-			"ships" to totalStrength,
-			"fleet" to totalFleet,
-			"economy" to totalEconomy,
-			"economy_turn" to calcMoney(),
-			"industry" to totalIndustry,
-			"industry_turn" to calcShips(),
-			"science" to totalScience,
+			"totalStars" to totalStars,
+			"totalShips" to totalStrength,
+			"totalFleet" to totalFleet,
+			"totalEconomy" to totalEconomy,
+			"totalIndustry" to totalIndustry,
+			"totalScience" to totalScience,
+			"percent" to calcComplete(),
+			"economyTurn" to calcMoney(),
+			"industryTurn" to calcShips(),
+			"members" to members.map { it.toJson() },
 			"technology" to mapOf(
 				"scanning" to scanning,
 				"hyperspace" to hyperspace,
@@ -89,8 +77,8 @@ data class Team(val name: String) {
 				"banking" to banking,
 				"manufacturing" to manufacturing
 			).toSortedMap()
-		)
-		return data.toSortedMap()
+		).toSortedMap()
+		return data
 	}
 
 	companion object {

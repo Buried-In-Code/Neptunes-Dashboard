@@ -26,16 +26,16 @@
 <div class="container">
 	<div class="row">
 		<#list teams as team>
-			<div class="card blue-grey darken-2 col s3 offset-s1 small">
+			<div class="card blue-grey darken-2 col s3 offset-s1 medium">
 				<div class="card-content grey-text text-lighten-2">
 					<span class="card-title blue-text">${team.name!"Unknown"}</span>
 					<ul class="browser-default">
-						<li><b>Stars:</b> ${team.stars!"0"}</li>
-						<li><b>Percentage:</b> ${team.percentage?string.percent!"0%"}</li>
+						<li><b>Stars:</b> ${team.totalStars!"0"}</li>
+						<li><b>Percent:</b> ${team.percent?string.percent!"0%"}</li>
 						<li><b>Members:</b>
 							<ul class="browser-default">
 								<#list team.members as member>
-									<li>${member}</li>
+									<li>${member.name} (${member.alias})</li>
 								</#list>
 							</ul>
 						</li>

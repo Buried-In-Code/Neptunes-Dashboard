@@ -11,7 +11,6 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.Util
-import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.data.Message
@@ -56,17 +55,17 @@ object PlayerController {
 	}
 
 	fun Route.players() {
-		route("/players") {
+		route(path = "/players") {
 			get {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val players = selectPlayers(sort = sort, filter = filter)
 				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = players)
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = players.map { it.toJson() })
 					players.isNotEmpty() -> call.respond(
 						message = FreeMarkerContent(
 							template = "player-list.ftl",
-							model = mapOf("players" to players)
+							model = mapOf("players" to players.map { it.toJson() })
 						)
 					)
 					else -> call.respond(
@@ -96,10 +95,10 @@ object PlayerController {
 						), status = HttpStatusCode.NotImplemented
 					)
 			}
-			get("/leaderboard") {
+			get(path = "/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
-				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
+				val leaderboard = selectPlayers(sort = sort, filter = filter)
 				when {
 					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
 					leaderboard.isNotEmpty() -> call.respond(
@@ -121,16 +120,22 @@ object PlayerController {
 					)
 				}
 			}
-			route("/{alias}") {
+			get(path = "/fields") {
+				val player = selectPlayer(alias = "")
+				call.respond(message = player?.toJson()?.keys ?: emptySet<String>())
+			}
+			route(path = "/{alias}") {
 				get {
 					val alias = call.parameters["alias"] ?: ""
 					val player = selectPlayer(alias = alias)
 					when {
-						call.request.contentType() == ContentType.Application.Json -> call.respond(message = player)
-						player.isNotEmpty() -> call.respond(
+						call.request.contentType() == ContentType.Application.Json -> call.respond(
+							message = player ?: emptyMap<String, Any?>()
+						)
+						player != null -> call.respond(
 							message = FreeMarkerContent(
 								template = "player.ftl",
-								model = mapOf("player" to player)
+								model = mapOf("player" to player.toJson())
 							)
 						)
 						else -> call.respond(
@@ -146,29 +151,22 @@ object PlayerController {
 						)
 					}
 				}
-				get("/{field}") {
+				get(path = "/{field}") {
 					val alias = call.parameters["alias"] ?: ""
 					val field = call.parameters["field"]
-					val player = selectPlayer(alias = alias)
-					val result = player[field]
-					call.respond(message = mapOf(field to result))
+					val player = selectPlayer(alias = alias)?.toJson() ?: emptyMap()
+					call.respond(message = mapOf(field to player[field]))
 				}
 			}
 		}
 	}
 
-	private fun selectPlayer(alias: String): Map<String, Any> {
-		return PlayerHandler.filter(alias = alias).map { it.longJSON() }.firstOrNull() ?: emptyMap()
+	private fun selectPlayer(alias: String): Player? {
+		return PlayerHandler.filter(alias = alias).firstOrNull()
 	}
 
-	private fun selectPlayers(sort: String, filter: String): List<Map<String, Any>> {
+	private fun selectPlayers(sort: String, filter: String): List<Player> {
 		val players = sortPlayers(sort = sort)
-		return filterPlayers(filterString = filter, players = players).map { it.shortJSON() }
-	}
-
-	private fun selectLeaderboard(sort: String, filter: String): List<Map<String, Any>> {
-		var players = sortPlayers(sort = sort)
-		players = filterPlayers(filterString = filter, players = players)
-		return PlayerHandler.getTableData(players = players)
+		return filterPlayers(filterString = filter, players = players)
 	}
 }

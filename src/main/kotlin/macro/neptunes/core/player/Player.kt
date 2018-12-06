@@ -1,10 +1,7 @@
 package macro.neptunes.core.player
 
-import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import org.slf4j.LoggerFactory
-import java.text.NumberFormat
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -38,7 +35,7 @@ data class Player(
 	}
 
 	fun hasWon(): Boolean {
-		return calcComplete() > CONFIG.starPercentage
+		return calcComplete() > 50.0
 	}
 
 	fun calcMoney(): Int {
@@ -49,31 +46,21 @@ data class Player(
 		return industry * (manufacturing + 5) / 24
 	}
 
-	fun shortJSON(): Map<String, Any> {
+	fun toJson(): Map<String, Any?> {
 		val data = mapOf(
 			"name" to name,
 			"alias" to alias,
-			"team" to team,
-			"stars" to stars,
-			"percentage" to calcComplete()
-		)
-		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "team" } else data).toSortedMap()
-	}
-
-	fun longJSON(): Map<String, Any> {
-		val data = mapOf(
-			"name" to name,
-			"alias" to alias,
-			"team" to team,
-			"stars" to stars,
-			"percentage" to calcComplete(),
-			"ships" to ships,
-			"fleet" to fleet,
-			"economy" to economy,
-			"economyTurn" to calcMoney(),
 			"industry" to industry,
-			"industryTurn" to calcShips(),
 			"science" to science,
+			"economy" to economy,
+			"stars" to stars,
+			"fleet" to fleet,
+			"ships" to ships,
+			"isActive" to isActive,
+			"team" to team,
+			"percent" to calcComplete(),
+			"economyTurn" to calcMoney(),
+			"industryTurn" to calcShips(),
 			"technology" to mapOf(
 				"scanning" to scanning,
 				"hyperspace" to hyperspace,
@@ -83,8 +70,8 @@ data class Player(
 				"banking" to banking,
 				"manufacturing" to manufacturing
 			).toSortedMap()
-		)
-		return (if (!CONFIG.enableTeams) data.filterNot { it.key == "team" } else data).toSortedMap()
+		).toSortedMap()
+		return data
 	}
 
 	companion object {

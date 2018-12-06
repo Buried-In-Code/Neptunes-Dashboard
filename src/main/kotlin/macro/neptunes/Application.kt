@@ -19,6 +19,7 @@ import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.netty.handler.codec.http.HttpContent
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
@@ -73,6 +74,8 @@ object Application {
 			install(DefaultHeaders) {
 				header(name = HttpHeaders.Server, value = "Ktor-BIT-Neptunes")
 				header(name = "Developer", value = "Jonah Jackson")
+				header(name = HttpHeaders.AcceptLanguage, value = "en-NZ")
+				header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
 			}
 			install(Compression)
 			install(ConditionalHeaders)
@@ -167,6 +170,7 @@ object Application {
 					resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
 					resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
 					resource(remotePath = "/styles.css", resource = "static/css/styles.css")
+					resource(remotePath = "/script.js", resource = "static/js/script.js")
 				}
 			}
 		}

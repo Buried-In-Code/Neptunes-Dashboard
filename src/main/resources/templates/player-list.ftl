@@ -34,7 +34,7 @@
 							<li><b>Team:</b> ${player.team!"None"}</li>
 						</#if>
 						<li><b>Stars:</b> ${player.stars!"0"}</li>
-						<li><b>Percentage:</b> ${player.percentage?string.percent!"0%"}</li>
+						<li><b>Percent:</b> ${player.percent?string.percent!"0%"}</li>
 					</ul>
 				</div>
 				<div class="card-action">

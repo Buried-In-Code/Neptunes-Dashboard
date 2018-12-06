@@ -33,7 +33,6 @@
 					<th>Team</th>
 				</#if>
 				<th>Stars</th>
-				<th>%</th>
 				<th>Ships</th>
 				<th>Economy</th>
 				<th>$/Turn</th>
@@ -51,7 +50,6 @@
 						<td>${player.team!"None"}</td>
 					</#if>
 					<td>${player.stars!"0"}</td>
-					<td>${player.percentage?string.percent!"0%"}</td>
 					<td>${player.ships!"0"}</td>
 					<td>${player.economy!"0"}</td>
 					<td>${player.economyTurn!"0"}</td>

@@ -85,9 +85,4 @@ object TeamHandler {
 			.filter { it.members.find { it.name.contains(playerName, ignoreCase = true) } != null }
 			.filter { it.members.find { it.alias.contains(playerAlias, ignoreCase = true) } != null }
 	}
-
-	fun getTableData(teams: List<Team> = this.teams): List<Map<String, Any>> {
-		val output: List<Map<String, Any>> = teams.map { it.longJSON() }
-		return output
-	}
 }

@@ -60,11 +60,11 @@ object TeamController {
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val teams = selectTeams(sort = sort, filter = filter)
 				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = teams)
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = teams.map { it.toJson() })
 					teams.isNotEmpty() -> call.respond(
 						message = FreeMarkerContent(
 							template = "team-list.ftl",
-							model = mapOf("teams" to teams)
+							model = mapOf("teams" to teams.map { it.toJson() })
 						)
 					)
 					else -> call.respond(
@@ -97,7 +97,7 @@ object TeamController {
 			get("/leaderboard") {
 				val sort = call.request.queryParameters["sort"] ?: "name"
 				val filter = call.request.queryParameters["filter"] ?: ""
-				val leaderboard = selectLeaderboard(sort = sort, filter = filter)
+				val leaderboard = selectTeams(sort = sort, filter = filter)
 				when {
 					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
 					leaderboard.isNotEmpty() -> call.respond(
@@ -124,11 +124,11 @@ object TeamController {
 					val name = call.parameters["name"] ?: ""
 					val team = selectTeam(name = name)
 					when {
-						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team)
-						team.isNotEmpty() -> call.respond(
+						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team ?: emptyMap<String, Any?>())
+						team != null -> call.respond(
 							message = FreeMarkerContent(
 								template = "team.ftl",
-								model = mapOf("team" to team.plus("totalStars" to GameHandler.game.totalStars))
+								model = mapOf("team" to team.toJson())
 							)
 						)
 						else -> call.respond(
@@ -147,26 +147,19 @@ object TeamController {
 				get("/{field}") {
 					val name = call.parameters["name"] ?: ""
 					val field = call.parameters["field"]
-					val team = selectTeam(name = name)
-					val result = team[field]
-					call.respond(message = mapOf(field to result))
+					val team = selectTeam(name = name)?.toJson() ?: emptyMap()
+					call.respond(message = mapOf(field to team[field]))
 				}
 			}
 		}
 	}
 
-	private fun selectTeam(name: String): Map<String, Any> {
-		return TeamHandler.filter(name = name).map { it.longJSON() }.firstOrNull() ?: emptyMap()
+	private fun selectTeam(name: String): Team? {
+		return TeamHandler.filter(name = name).firstOrNull()
 	}
 
-	private fun selectTeams(sort: String, filter: String): List<Map<String, Any>> {
+	private fun selectTeams(sort: String, filter: String): List<Team> {
 		val teams = sortTeams(sort = sort)
-		return filterTeams(filterString = filter, teams = teams).map { it.shortJSON() }
-	}
-
-	private fun selectLeaderboard(sort: String, filter: String): List<Map<String, Any>> {
-		var teams = sortTeams(sort = sort)
-		teams = filterTeams(filterString = filter, teams = teams)
-		return TeamHandler.getTableData(teams = teams)
+		return filterTeams(filterString = filter, teams = teams)
 	}
 }
