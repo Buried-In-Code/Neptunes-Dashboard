@@ -4,40 +4,29 @@ body {
 	-moz-background-size: 100%;
 	-o-background-size: 100%;
 	background-size: 100%;
-	margin-left: 310px;
-}
-
-.sidenav ul li.active {
-	background-color: #CFD8DC40
-}
-
-.sidenav ul li:hover {
-	background-color: #CFD8DC20
-}
-
-.sidenav-fixed {
-	width: 300px;
-}
-
-.card {
-	margin: 10px;
-}
-
-table {
-	margin: 10px;
 }
 
 .opacity {
 	opacity: 0.9;
 }
 
-.btn-flat {
-	padding: 0;
-	margin: 0;
-	width: 100%;
-	height: 100%;
+.ui.card {
+	display: inline-block;
+	margin: 10px;
 }
 
-.white-text {
+.ui.card,
+.ui.cards>.card,
+.ui.card>.content,
+.ui.cards>.ui.card>.content,
+.ui.card>.meta,
+.ui.cards>.card>.meta,
+.ui.card>.content>.header,
+.ui.cards>.card>.content>.header,
+.ui.card>.content>.description,
+.ui.cards>.card>.content>.description,
+.ui.card>.extra,
+.ui.cards>.card>.extra {
+	background-color: black;
 	color: white;
 }

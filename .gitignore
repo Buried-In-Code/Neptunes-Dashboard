@@ -108,5 +108,9 @@ fabric.properties
 # =====User=====
 .idea/
 *.iml
+.classpath
+.project
+.settings/
+.vscode/
 bin/
 logs/

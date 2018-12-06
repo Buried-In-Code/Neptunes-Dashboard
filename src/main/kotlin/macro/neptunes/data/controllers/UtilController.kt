@@ -24,7 +24,7 @@ object UtilController {
 	private val LOGGER = LoggerFactory.getLogger(UtilController::class.java)
 
 	fun Route.util() {
-		route("/config") {
+		route("/settings") {
 			get {
 				if (call.request.contentType() == ContentType.Application.Json)
 					call.respond(message = CONFIG.toMap())
@@ -32,21 +32,21 @@ object UtilController {
 					call.respond(
 						message = FreeMarkerContent(
 							template = "message.ftl",
-							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/config"))
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/settings"))
 						), status = HttpStatusCode.NotImplemented
 					)
 			}
 			patch {
 				if (call.request.contentType() == ContentType.Application.Json)
 					call.respond(
-						message = Util.getNotImplementedMessage(endpoint = "/config"),
+						message = Util.getNotImplementedMessage(endpoint = "/settings"),
 						status = HttpStatusCode.NotImplemented
 					)
 				else
 					call.respond(
 						message = FreeMarkerContent(
 							template = "message.ftl",
-							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/config"))
+							model = mapOf("message" to Util.getNotImplementedMessage(endpoint = "/settings"))
 						), status = HttpStatusCode.NotImplemented
 					)
 			}
