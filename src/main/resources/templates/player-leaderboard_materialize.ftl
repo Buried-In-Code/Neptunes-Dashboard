@@ -33,9 +33,9 @@
 				<i class="material-icons orange-text text-lighten-4">person</i>Players
 			</a>
 		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/players/leaderboard">
-				<i class="material-icons orange-text text-lighten-4">list</i>Player Leaderboard
+		<li class="active">
+			<a class="orange-text text-lighten-2" href="/players/leaderboard">
+				<i class="material-icons orange-text text-lighten-2">list</i>Player Leaderboard
 			</a>
 		</li>
 		<li>
@@ -43,9 +43,9 @@
 				<i class="material-icons orange-text text-lighten-4">group</i>Teams
 			</a>
 		</li>
-		<li class="active">
-			<a class="orange-text text-lighten-2" href="/teams/leaderboard">
-				<i class="material-icons orange-text text-lighten-2">list</i>Team Leaderboard
+		<li>
+			<a class="orange-text text-lighten-4" href="/teams/leaderboard">
+				<i class="material-icons orange-text text-lighten-4">list</i>Team Leaderboard
 			</a>
 		</li>
 		<li>
@@ -60,36 +60,60 @@
 		</li>
 	</ul>
 </header>
-<div style="margin-right: 10px; padding-right: 10px;">
-	<table class="blue-grey darken-2 grey-text text-lighten-2 opacity">
+<div style="margin-right: 20px;">
+	<table class="white">
 		<thead>
 			<tr>
-				<th><a class="btn-flat blue-text" href="?sort=Name">Name</a></th>
+				<!--<th><a class="btn-flat blue-text" href="?sort=Name">Name</a></th>
+				<th><a class="btn-flat blue-text" href="?sort=Alias">Alias</a></th>
+				<#if leaderboard[0].team != "Unknown">
+					<th><a class="btn-flat blue-text" href="?sort=Team">Team</a></th>
+				</#if>
 				<th><a class="btn-flat blue-text" href="?sort=Stars">Stars</a></th>
 				<th><a class="btn-flat blue-text" href="?sort=Ships">Ships</a></th>
 				<th><a class="btn-flat blue-text" href="?sort=Economy">Economy</a></th>
 				<th><a class="btn-flat blue-text disabled">$/Turn</a></th>
 				<th><a class="btn-flat blue-text" href="?sort=Industry">Industry</a></th>
 				<th><a class="btn-flat blue-text disabled">Ships/Turn</a></th>
-				<th><a class="btn-flat blue-text" href="?sort=Science">Science</a></th>
+				<th><a class="btn-flat blue-text" href="?sort=Science">Science</a></th>-->
+				<th>Name</th>
+				<th>Alias</th>
+				<#if leaderboard[0].team != "Unknown">
+					<th>Team</th>
+				</#if>
+				<th>Stars</th>
+				<th>Ships</th>
+				<th>Economy</th>
+				<th>$/Turn</th>
+				<th>Industry</th>
+				<th>Ships/Turn</th>
+				<th>Science</th>
 			</tr>
 		</thead>
 		<tbody>
-			<#list leaderboard as team>
+			<#list leaderboard as player>
 				<tr>
-					<td>${team.name!"Unknown"}</td>
-					<td>${team.totalStars!"0"}</td>
-					<td>${team.totalShips!"0"}</td>
-					<td>${team.totalEconomy!"0"}</td>
-					<td>${team.economyTurn!"0"}</td>
-					<td>${team.totalIndustry!"0"}</td>
-					<td>${team.industryTurn!"0"}</td>
-					<td>${team.totalScience!"0"}</td>
+					<td>${player.name!"Unknown"}</td>
+					<td>${player.alias!"Unknown"}</td>
+					<#if player.team != "Unknown">
+						<td>${player.team!"None"}</td>
+					</#if>
+					<td>${player.stars!"0"}</td>
+					<td>${player.ships!"0"}</td>
+					<td>${player.economy!"0"}</td>
+					<td>${player.economyTurn!"0"}</td>
+					<td>${player.industry!"0"}</td>
+					<td>${player.industryTurn!"0"}</td>
+					<td>${player.science!"0"}</td>
 				</tr>
 			</#list>
 		</tbody>
 	</table>
 </div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.widgets.js"></script>
+<script src="/script.js"></script>
 </body>
 </html>

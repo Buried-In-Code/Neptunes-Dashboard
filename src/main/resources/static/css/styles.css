@@ -4,17 +4,40 @@ body {
 	-moz-background-size: 100%;
 	-o-background-size: 100%;
 	background-size: 100%;
-	padding: 10px;
+	margin-left: 310px;
 }
 
-nav ul li.active {
+.sidenav ul li.active {
 	background-color: #CFD8DC40
 }
 
-nav ul li:hover {
+.sidenav ul li:hover {
 	background-color: #CFD8DC20
 }
 
-th {
-	color: #2196F3
+.sidenav-fixed {
+	width: 300px;
+}
+
+.card {
+	margin: 10px;
+}
+
+table {
+	margin: 10px;
+}
+
+.opacity {
+	opacity: 0.9;
+}
+
+.btn-flat {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.white-text {
+	color: white;
 }

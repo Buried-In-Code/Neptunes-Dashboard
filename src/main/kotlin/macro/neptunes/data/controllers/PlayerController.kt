@@ -23,8 +23,10 @@ import java.util.stream.Collectors
 object PlayerController {
 	private val LOGGER = LoggerFactory.getLogger(PlayerController::class.java)
 
-	private fun sortPlayers(sort: String): List<Player> {
-		return when (sort.toLowerCase()) {
+	private fun sortPlayers(sortString: String): List<Player> {
+		val field = sortString.split(":")[0]
+		val asc = sortString.split(":").getOrNull(1)?.toLowerCase() == "asc"
+		val players = when (field.toLowerCase()) {
 			"name" -> PlayerHandler.sortByName()
 			"alias" -> PlayerHandler.sortByAlias()
 			"team" -> PlayerHandler.sortByTeams()
@@ -35,6 +37,9 @@ object PlayerController {
 			"science" -> PlayerHandler.sortByScience()
 			else -> PlayerHandler.players
 		}
+		if(asc)
+			return players.reversed()
+		return players
 	}
 
 	private fun filterPlayers(filterString: String, players: List<Player>): List<Player> {
@@ -100,11 +105,11 @@ object PlayerController {
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val leaderboard = selectPlayers(sort = sort, filter = filter)
 				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard.map { it.toJson() })
 					leaderboard.isNotEmpty() -> call.respond(
 						message = FreeMarkerContent(
 							template = "player-leaderboard.ftl",
-							model = mapOf("leaderboard" to leaderboard)
+							model = mapOf("leaderboard" to leaderboard.map { it.toJson() })
 						)
 					)
 					else -> call.respond(
@@ -130,7 +135,7 @@ object PlayerController {
 					val player = selectPlayer(alias = alias)
 					when {
 						call.request.contentType() == ContentType.Application.Json -> call.respond(
-							message = player ?: emptyMap<String, Any?>()
+							message = player?.toJson() ?: emptyMap<String, Any?>()
 						)
 						player != null -> call.respond(
 							message = FreeMarkerContent(
@@ -151,21 +156,25 @@ object PlayerController {
 						)
 					}
 				}
-				route(path = "/technology"){
-					get{
+				route(path = "/technology") {
+					get {
 						val alias = call.parameters["alias"] ?: ""
 						val field = "technology"
 						val player = selectPlayer(alias = alias)?.toJson() ?: emptyMap()
 						call.respond(message = mapOf(field to player[field]))
 					}
-					get("/fields"){
+					get("/fields") {
 						val player = selectPlayer(alias = "")
-						call.respond(message = (player?.toJson()?.get("technology") as Map<String, Any?>?)?.keys ?: emptySet<String>())
+						call.respond(
+							message = (player?.toJson()?.get("technology") as Map<String, Any?>?)?.keys
+								?: emptySet<String>()
+						)
 					}
 					get(path = "/{field}") {
 						val alias = call.parameters["alias"] ?: ""
 						val field = call.parameters["field"]
-						val player = selectPlayer(alias = alias)?.toJson()?.get("technology") as Map<String, Any?>? ?: emptyMap()
+						val player =
+							selectPlayer(alias = alias)?.toJson()?.get("technology") as Map<String, Any?>? ?: emptyMap()
 						call.respond(message = mapOf(field to player[field]))
 					}
 				}
@@ -184,7 +193,7 @@ object PlayerController {
 	}
 
 	private fun selectPlayers(sort: String, filter: String): List<Player> {
-		val players = sortPlayers(sort = sort)
+		val players = sortPlayers(sortString = sort)
 		return filterPlayers(filterString = filter, players = players)
 	}
 }

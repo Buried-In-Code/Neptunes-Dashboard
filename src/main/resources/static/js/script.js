@@ -71,3 +71,10 @@ function getTeams(pie, totalStars){
  	    }
  	});
  }
+
+ $(function() {
+    $("table").tablesorter({
+        theme : "materialize",
+        widthFixed: true
+    });
+});

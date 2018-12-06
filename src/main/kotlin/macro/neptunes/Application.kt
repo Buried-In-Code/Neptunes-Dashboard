@@ -171,6 +171,7 @@ object Application {
 					resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
 					resource(remotePath = "/styles.css", resource = "static/css/styles.css")
 					resource(remotePath = "/script.js", resource = "static/js/script.js")
+					resource(remotePath = "/table-sort.js", resource = "static/js/table-sort.js")
 				}
 			}
 		}

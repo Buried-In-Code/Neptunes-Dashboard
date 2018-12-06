@@ -88,7 +88,6 @@ object PlayerHandler {
 
 	fun sortByName(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ it.name },
 			{ it.alias }
 		))
@@ -96,7 +95,6 @@ object PlayerHandler {
 
 	fun sortByAlias(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ it.alias },
 			{ it.name }
 		))
@@ -104,7 +102,6 @@ object PlayerHandler {
 
 	fun sortByTeams(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ it.team },
 			{ it.name },
 			{ it.alias }
@@ -113,7 +110,6 @@ object PlayerHandler {
 
 	fun sortByStars(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ -it.calcComplete() },
 			{ -it.stars },
 			{ it.name },
@@ -123,7 +119,6 @@ object PlayerHandler {
 
 	fun sortByShips(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ -it.ships },
 			{ it.name },
 			{ it.alias }
@@ -132,7 +127,6 @@ object PlayerHandler {
 
 	fun sortByEconomy(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ -it.economy },
 			{ it.name },
 			{ it.alias }
@@ -141,7 +135,6 @@ object PlayerHandler {
 
 	fun sortByIndustry(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ -it.industry },
 			{ it.name },
 			{ it.alias }
@@ -150,7 +143,6 @@ object PlayerHandler {
 
 	fun sortByScience(players: List<Player> = this.players): List<Player> {
 		return players.sortedWith(compareBy(
-			{ !it.isActive },
 			{ -it.science },
 			{ it.name },
 			{ it.alias }

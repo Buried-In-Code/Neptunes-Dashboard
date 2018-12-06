@@ -99,11 +99,11 @@ object TeamController {
 				val filter = call.request.queryParameters["filter"] ?: ""
 				val leaderboard = selectTeams(sort = sort, filter = filter)
 				when {
-					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard)
+					call.request.contentType() == ContentType.Application.Json -> call.respond(message = leaderboard.map { it.toJson() })
 					leaderboard.isNotEmpty() -> call.respond(
 						message = FreeMarkerContent(
 							template = "team-leaderboard.ftl",
-							model = mapOf("leaderboard" to leaderboard)
+							model = mapOf("leaderboard" to leaderboard.map { it.toJson() })
 						)
 					)
 					else -> call.respond(
@@ -124,7 +124,7 @@ object TeamController {
 					val name = call.parameters["name"] ?: ""
 					val team = selectTeam(name = name)
 					when {
-						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team ?: emptyMap<String, Any?>())
+						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team?.toJson() ?: emptyMap<String, Any?>())
 						team != null -> call.respond(
 							message = FreeMarkerContent(
 								template = "team.ftl",
