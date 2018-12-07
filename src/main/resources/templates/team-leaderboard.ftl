@@ -9,37 +9,40 @@
 	<link href="/styles.css" rel="stylesheet"/>
 </head>
 <body>
-	<div class="ui fixed inverted vertical menu" style="height: 100%;">
-		<h2 class="ui center aligned icon orange inverted header">
-			<img class="circular icon" src="/favicon.ico">
-			Neptune's Pride
-		</h2>
-		<a class="item" href="/">
-			<i class="home icon"></i>Home
-		</a>
-		<a class="item" href="/game">
-			<i class="gamepad icon"></i>Game
-		</a>
-		<a class="item" href="/players">
-			<i class="user icon"></i>Players
-		</a>
-		<a class="item" href="/players/leaderboard">
-			<i class="list ol icon"></i>Player Leaderboard
-		</a>
-		<a class="item" href="/teams">
-			<i class="users icon"></i>Teams
-		</a>
-		<a class="item active" href="/teams/leaderboard">
-			<i class="list ol icon"></i>Team Leaderboard
-		</a>
-		<a class="item" href="/settings">
-			<i class="cogs icon"></i>Settings
-		</a>
-		<a class="item" href="/help">
-			<i class="question circle icon"></i>Help
-		</a>
+<div class="ui relaxed stackable grid">
+	<div class="three wide column">
+		<div class="ui large left fixed inverted vertical menu">
+			<h2 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico">
+				Neptune's Pride
+			</h2>
+			<a class="item" href="/">
+				<i class="home icon"></i>Home
+			</a>
+			<a class="item" href="/game">
+				<i class="gamepad icon"></i>Game
+			</a>
+			<a class="item" href="/players">
+				<i class="user icon"></i>Players
+			</a>
+			<a class="item" href="/players/leaderboard">
+				<i class="list ol icon"></i>Player Leaderboard
+			</a>
+			<a class="item" href="/teams">
+				<i class="users icon"></i>Teams
+			</a>
+			<a class="item active" href="/teams/leaderboard">
+				<i class="list ol icon"></i>Team Leaderboard
+			</a>
+			<a class="item" href="/settings">
+				<i class="cogs icon"></i>Settings
+			</a>
+			<a class="item" href="/help">
+				<i class="question circle icon"></i>Help
+			</a>
+		</div>
 	</div>
-	<div class="ui container">
+	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<table class="ui sortable very simple inverted table opacity">
 			<thead>
 				<tr>
@@ -56,7 +59,7 @@
 			<tbody>
 				<#list leaderboard as team>
 					<tr>
-						<td>${team.name!"Unknown"}</td>
+						<td>${team.name}</td>
 						<td data-sort-value=${team.totalStars?c}>${team.totalStars}</td>
 						<td data-sort-value=${team.totalShips?c}>${team.totalShips}</td>
 						<td data-sort-value=${team.totalEconomy?c}>${team.totalEconomy}</td>
@@ -69,6 +72,7 @@
 			</tbody>
 		</table>
 	</div>
+</div>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>

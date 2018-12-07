@@ -45,16 +45,22 @@
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui inverted segment opacity">
 			<h2 class="ui center aligned header">${game.name!"Unknown"}</h2>
-			<ul>
-				<li><b>Started:</b> ${game.started?c!"false"}</li>
-				<li><b>Paused:</b> ${game.paused?c!"true"}</li>
-				<li><b>Stars Required to win:</b> ${game.totalStars/2!"0"}/${game.totalStars!"0"}</li>
-			</ul>
-			<h3 class="ui center aligned header">Stars</h3>
-			<div class="chart-container">
-				<canvas id="winPie" width="400" height="400">
-					<p>Star Percentage</p>
-				</canvas>
+			<div class="ui relaxed stackable grid">
+				<div class="three wide column">
+					<ul>
+						<li><b>Started:</b> ${game.started?c!"false"}</li>
+						<li><b>Paused:</b> ${game.paused?c!"true"}</li>
+						<li><b>Stars Required to win:</b> ${game.totalStars/2!"0"}/${game.totalStars!"0"}</li>
+					</ul>
+				</div>
+				<div class="twelve wide stretched column">
+					<h3 class="ui center aligned header inverted">Stars</h3>
+					<div class="chart-container">
+						<canvas id="winPie" width="400" height="400">
+							<p>Star Percentage</p>
+						</canvas>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -67,7 +73,10 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	getTeams(winPie, ${game.totalStars});
+	if(${game.enabledTeams?c})
+		getTeams(winPie, ${game.totalStars});
+	else
+		getPlayers(winPie, ${game.totalStars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {

@@ -13,25 +13,25 @@ import java.net.Proxy
 /**
  * Created by Macro303 on 2018-Nov-23.
  */
-data class Config internal constructor(
-	var proxyHostname: String?,
-	var proxyPort: Int?,
-	var gameID: Long?,
-	var port: Int = 5000,
+class Config internal constructor(
+	val proxyHostname: String? = null,
+	val proxyPort: Int? = null,
+	var gameID: Long = 1,
+	val port: Int = 5000,
 	var refreshRate: Int = 60,
-	var players: Map<String, String> = emptyMap(),
+	var players: Map<String, String> = mapOf("Alias" to "Name"),
 	var enableTeams: Boolean = false,
-	var teams: Map<String, List<String>> = emptyMap()
+	var teams: Map<String, List<String>> = mapOf("Team" to listOf("Name"))
 ) {
 	val proxy: Proxy?
 		get() = if (proxyHostname == null || proxyPort == null)
 			null
 		else
-			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname!!, proxyPort!!))
+			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
 
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(Config::class.java)
-		private val CONFIG_FILE: File = File(Util.BIN, "config.yaml")
+		private val CONFIG_FILE: File = File("config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()
 			options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
@@ -55,10 +55,11 @@ data class Config internal constructor(
 				LOGGER.warn("Config File is missing, creating `$CONFIG_FILE`")
 				saveConfig()
 			}
+			saveConfig(config = temp!!)
 			return temp!!
 		}
 
-		internal fun saveConfig(config: Config = CONFIG) {
+		internal fun saveConfig(config: Config = Config()) {
 			try {
 				FileWriter(CONFIG_FILE).use {
 					YAML.dump(config.toMap(), it)
@@ -72,7 +73,8 @@ data class Config internal constructor(
 		private fun fromMap(data: Map<String, Any?>): Config {
 			val proxyHostname: String? = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort: Int? = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID: Long? = data["Game ID"] as Long?
+			val gameID: Long = data["Game ID"] as Long?
+				?: 1
 			val port: Int = data["Port"] as Int?
 				?: 5000
 			val refreshRate: Int = data["Refresh Rate"] as Int?
@@ -107,7 +109,7 @@ internal fun Config.toMap(): Map<String, Any?> {
 		"Port" to this.port,
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
-		"Enable Teams" to enableTeams,
+		"Enable Teams" to this.enableTeams,
 		"Teams" to this.teams
 	)
 	return (if (!this.enableTeams) data.filterNot { it.key == "Teams" } else data).toSortedMap()

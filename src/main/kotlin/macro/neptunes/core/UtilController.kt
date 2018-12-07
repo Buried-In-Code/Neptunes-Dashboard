@@ -1,4 +1,4 @@
-package macro.neptunes.data.controllers
+package macro.neptunes.core
 
 import io.ktor.application.call
 import io.ktor.freemarker.FreeMarkerContent
@@ -12,7 +12,6 @@ import io.ktor.routing.patch
 import io.ktor.routing.route
 import macro.neptunes.Application
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util
 import macro.neptunes.core.toMap
 import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory

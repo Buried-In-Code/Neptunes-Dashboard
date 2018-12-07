@@ -4,104 +4,86 @@
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
 	<link href="/styles.css" rel="stylesheet"/>
 </head>
 <body>
-<header>
-	<ul class="sidenav sidenav-fixed blue-grey darken-4">
-		<li>
-			<div class="user-view">
-				<img class="circle left" src="/favicon.ico">
-				<span class="grey-text name">BIT 269</span>
-				<span class="grey-text email">Neptune's Pride</span>
-			</div>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/">
-				<i class="material-icons orange-text text-lighten-4">home</i>Home
+<div class="ui relaxed stackable grid">
+	<div class="three wide column">
+		<div class="ui large left fixed inverted vertical menu">
+			<h2 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico">
+				Neptune's Pride
+			</h2>
+			<a class="item" href="/">
+				<i class="home icon"></i>Home
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/game">
-				<i class="material-icons orange-text text-lighten-4">games</i>Game
+			<a class="item" href="/game">
+				<i class="gamepad icon"></i>Game
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/players">
-				<i class="material-icons orange-text text-lighten-4">person</i>Players
+			<a class="item" href="/players">
+				<i class="user icon"></i>Players
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/players/leaderboard">
-				<i class="material-icons orange-text text-lighten-4">list</i>Player Leaderboard
+			<a class="item" href="/players/leaderboard">
+				<i class="list ol icon"></i>Player Leaderboard
 			</a>
-		</li>
-		<li class="active">
-			<a class="orange-text text-lighten-2" href="/teams">
-				<i class="material-icons orange-text text-lighten-2">group</i>Teams
+			<a class="item active" href="/teams">
+				<i class="users icon"></i>Teams
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/teams/leaderboard">
-				<i class="material-icons orange-text text-lighten-4">list</i>Team Leaderboard
+			<a class="item" href="/teams/leaderboard">
+				<i class="list ol icon"></i>Team Leaderboard
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/config">
-				<i class="material-icons orange-text text-lighten-4">settings</i>Settings
+			<a class="item" href="/settings">
+				<i class="cogs icon"></i>Settings
 			</a>
-		</li>
-		<li>
-			<a class="orange-text text-lighten-4" href="/help">
-				<i class="material-icons orange-text text-lighten-4">help</i>Help
+			<a class="item" href="/help">
+				<i class="question circle icon"></i>Help
 			</a>
-		</li>
-	</ul>
-</header>
-<div class="card opacity blue-grey darken-2">
-	<div class="card-content grey-text text-lighten-2">
-		<span class="card-title blue-text"><strong>${team.name!"Unknown"}</strong></span>
-		<div class="row">
-			<div class="col s4">
-				<ul class="browser-default">
-					<li><b>Stars:</b> ${team.totalStars!"0"}</li>
-					<li><b>Fleet:</b> ${team.totalFleet!"0"}</li>
-					<li><b>Economy:</b> ${team.totalEconomy!"0"}</li>
-					<li><b>Industry:</b> ${team.totalIndustry!"0"}</li>
-					<li><b>Science:</b> ${team.totalScience!"0"}</li>
-					<li><b>Ships:</b> ${team.totalShips!"0"}</li>
-					<li><b>Technology:</b>
-						<ul class="browser-default">
-							<li><b>Scanning:</b> ${team.technology.scanning!"0"}</li>
-							<li><b>Hyperspace:</b> ${team.technology.hyperspace!"0"}</li>
-							<li><b>Terraforming:</b> ${team.technology.terraforming!"0"}</li>
-							<li><b>Experimentation:</b> ${team.technology.experimentation!"0"}</li>
-							<li><b>Weapons:</b> ${team.technology.weapons!"0"}</li>
-							<li><b>Banking:</b> ${team.technology.banking!"0"}</li>
-							<li><b>Manufacturing:</b> ${team.technology.manufacturing!"0"}</li>
-						</ul>
-					</li>
-				</ul>
-			</div>
-			<div class="col s7 offset-s1">
-				<div>
-					<h6 class="blue-text center-align"><strong>Star Count</strong> <span>${team.percent?string.percent!"0%"}</span></h6>
+		</div>
+	</div>
+	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
+		<div class="ui inverted segment opacity">
+			<h2 class="ui center aligned header">${team.name}</h2>
+			<div class="ui relaxed stackable grid">
+				<div class="three wide column">
+					<ul>
+						<li><strong>Stars:</strong> ${team.totalStars}</li>
+						<li><strong>Fleet:</strong> ${team.totalFleet}</li>
+						<li><bstrong>Economy:</strong> ${team.totalEconomy}</li>
+						<li><strong>Industry:</strong> ${team.totalIndustry}</li>
+						<li><strong>Science:</strong> ${team.totalScience}</li>
+						<li><strong>Ships:</strong> ${team.totalShips}</li>
+						<li><strong>Technology:</strong>
+							<ul>
+								<li><strong>Scanning:</strong> ${team.technology.scanning}</li>
+								<li><strong>Hyperspace:</strong> ${team.technology.hyperspace}</li>
+								<li><strong>Terraforming:</strong> ${team.technology.terraforming}</li>
+								<li><strong>Experimentation:</strong> ${team.technology.experimentation}</li>
+								<li><strong>Weapons:</strong> ${team.technology.weapons}</li>
+								<li><strong>Banking:</strong> ${team.technology.banking}</li>
+								<li><strong>Manufacturing:</strong> ${team.technology.manufacturing}</li>
+							</ul>
+						</li>
+					</ul>
 				</div>
-				<div class="chart-container">
-					<canvas id="winPie" width="400" height="400">
-						<p>Star Percentage</p>
-					</canvas>
+				<div class="twelve wide stretched column">
+					<h3 class="ui center aligned header inverted">Stars</h3>
+					<div class="chart-container">
+						<canvas id="winPie" width="400" height="400">
+							<p>Star Percentage</p>
+						</canvas>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0"></script>
+<script src="/table-sort.js"></script>
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){

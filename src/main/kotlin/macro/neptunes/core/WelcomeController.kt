@@ -1,4 +1,4 @@
-package macro.neptunes.data.controllers
+package macro.neptunes.core
 
 import io.ktor.application.call
 import io.ktor.http.ContentType

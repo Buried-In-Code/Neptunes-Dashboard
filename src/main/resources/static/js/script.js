@@ -72,9 +72,35 @@ function getTeams(pie, totalStars){
  	});
  }
 
- $(function() {
-    $("table").tablesorter({
-        theme : "materialize",
-        widthFixed: true
-    });
-});
+ function getPlayers(pie, totalStars){
+	$.ajax({
+		url: "/players?sort=stars",
+		type: 'GET',
+		contentType: 'application/json',
+		dataType: 'json',
+		success: function (data) {
+		   console.log(data);
+			if(pie != null){
+				var starCount = 0
+				for(count = 0; count < data.length; count++){
+					var player = data[count]
+					pie.data.labels[count + 1] = player.alias;
+					pie.data.datasets[0].data[count + 1] = player.stars;
+					starCount += player.stars;
+			   }
+			   pie.data.datasets[0].data[0] = totalStars - starCount;
+			   pie.update();
+			}
+		},
+		error: function(xhr, status, error){
+			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+		}
+	});
+}
+
+/*$(function() {
+	$("table").tablesorter({
+		theme : "materialize",
+		widthFixed: true
+	});
+});*/

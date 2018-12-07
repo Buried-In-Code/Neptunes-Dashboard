@@ -26,11 +26,11 @@ import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.HttpBinError
-import macro.neptunes.data.controllers.GameController.game
-import macro.neptunes.data.controllers.PlayerController.players
-import macro.neptunes.data.controllers.TeamController.teams
-import macro.neptunes.data.controllers.UtilController.util
-import macro.neptunes.data.controllers.WelcomeController.welcome
+import macro.neptunes.core.game.GameController.game
+import macro.neptunes.core.player.PlayerController.players
+import macro.neptunes.core.team.TeamController.teams
+import macro.neptunes.core.UtilController.util
+import macro.neptunes.core.WelcomeController.welcome
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import java.time.LocalDateTime
@@ -45,10 +45,6 @@ object Application {
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
-		if (CONFIG.gameID == null) {
-			LOGGER.error("Requires a Game ID")
-			exitProcess(0)
-		}
 		refreshData()
 	}
 
@@ -127,7 +123,7 @@ object Application {
 				val now: LocalDateTime = LocalDateTime.now()
 				val difference: Duration = Duration.between(Util.lastUpdate, now)
 				if (difference.toMinutes() > CONFIG.refreshRate)
-					refreshData()
+				refreshData()
 			}
 			intercept(ApplicationCallPipeline.Monitoring) {
 				LOGGER.debug(

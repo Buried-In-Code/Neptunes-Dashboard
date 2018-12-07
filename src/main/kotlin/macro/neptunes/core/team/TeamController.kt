@@ -1,4 +1,4 @@
-package macro.neptunes.data.controllers
+package macro.neptunes.core.team
 
 import io.ktor.application.call
 import io.ktor.freemarker.FreeMarkerContent
@@ -12,8 +12,6 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
-import macro.neptunes.core.team.Team
-import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.Message
 import org.slf4j.LoggerFactory
 import java.util.stream.Collectors

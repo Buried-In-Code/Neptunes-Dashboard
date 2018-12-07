@@ -1,4 +1,4 @@
-package macro.neptunes.data.controllers
+package macro.neptunes.core.game
 
 import io.ktor.application.call
 import io.ktor.freemarker.FreeMarkerContent
@@ -8,8 +8,8 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
-import macro.neptunes.core.game.GameHandler
 import org.slf4j.LoggerFactory
+import macro.neptunes.core.Config.Companion.CONFIG
 
 /**
  * Created by Macro303 on 2018-Nov-16.
@@ -26,7 +26,7 @@ object GameController {
 					call.respond(
 						message = FreeMarkerContent(
 							template = "game.ftl",
-							model = mapOf("game" to GameHandler.game)
+							model = mapOf("game" to GameHandler.game.toJson().plus("enabledTeams" to CONFIG.enableTeams))
 						)
 					)
 			}
