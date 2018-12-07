@@ -7,7 +7,7 @@ Pulls simple game information for Neptune's Pride and attempts to display it in 
 
 ## Dependencies
  - JDK 1.8
- - [kotlin-stdlib-jdk8: 1.3.10](https://kotlinlang.org/)
+ - [kotlin-stdlib-jdk8: 1.3.11](https://kotlinlang.org/)
  - [kotson: 2.5.0](https://github.com/SalomonBrys/Kotson)
  - [snakeyaml: 1.23](https://bitbucket.org/asomov/snakeyaml)
  - [ktor-server-netty: 1.0.1](https://ktor.io/)
