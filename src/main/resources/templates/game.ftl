@@ -74,9 +74,9 @@
 <script>
 $(document).ready(function(){
 	if(${game.enabledTeams?c})
-		getTeams(winPie, ${game.totalStars});
+		getTeamStars(winPie, ${game.totalStars});
 	else
-		getPlayers(winPie, ${game.totalStars});
+		getPlayerStars(winPie, ${game.totalStars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {

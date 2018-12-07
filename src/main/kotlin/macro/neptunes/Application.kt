@@ -123,7 +123,7 @@ object Application {
 				val now: LocalDateTime = LocalDateTime.now()
 				val difference: Duration = Duration.between(Util.lastUpdate, now)
 				if (difference.toMinutes() > CONFIG.refreshRate)
-				refreshData()
+					refreshData()
 			}
 			intercept(ApplicationCallPipeline.Monitoring) {
 				LOGGER.debug(

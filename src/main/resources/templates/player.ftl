@@ -92,7 +92,7 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	getTotalStars(winPie, ${player.stars});
+	getGameStars(winPie, ${player.stars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {

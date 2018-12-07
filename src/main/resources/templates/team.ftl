@@ -87,7 +87,7 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	getMembers(winPie, "${team.name}", ${team.totalStars});
+	getTeamPlayerStars(winPie, "${team.name}", ${team.totalStars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {

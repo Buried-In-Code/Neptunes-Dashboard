@@ -4,7 +4,7 @@ function getRandomInt(max) {
 	return value
 }
 
-function getTotalStars(pie, stars){
+function getGameStars(pie, stars){
 	$.ajax({
 	    url: '/game/totalStars',
 	    type: 'GET',
@@ -23,7 +23,7 @@ function getTotalStars(pie, stars){
 	});
 }
 
-function getMembers(pie, teamName, stars){
+function getTeamPlayerStars(pie, teamName, stars){
  	$.ajax({
  	    url: "/players?sort=stars&filter=team:" + teamName,
  	    type: 'GET',
@@ -37,7 +37,7 @@ function getMembers(pie, teamName, stars){
  	                pie.data.labels[count + 1] = member.alias;
  	                pie.data.datasets[0].data[count + 1] = member.stars;
                 }
-                getTotalStars(pie, stars)
+                getGameStars(pie, stars)
  	        }
  	    },
  	    error: function(xhr, status, error){
@@ -46,7 +46,7 @@ function getMembers(pie, teamName, stars){
  	});
  }
 
-function getTeams(pie, totalStars){
+function getTeamStars(pie, totalStars){
  	$.ajax({
  	    url: "/teams?sort=stars",
  	    type: 'GET',
@@ -72,7 +72,7 @@ function getTeams(pie, totalStars){
  	});
  }
 
- function getPlayers(pie, totalStars){
+ function getPlayerStars(pie, totalStars){
 	$.ajax({
 		url: "/players?sort=stars",
 		type: 'GET',
@@ -97,10 +97,3 @@ function getTeams(pie, totalStars){
 		}
 	});
 }
-
-/*$(function() {
-	$("table").tablesorter({
-		theme : "materialize",
-		widthFixed: true
-	});
-});*/

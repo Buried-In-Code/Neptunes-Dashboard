@@ -23,7 +23,7 @@ object PlayerController {
 
 	private fun sortPlayers(sortString: String): List<Player> {
 		val field = sortString.split(":")[0]
-		val asc = sortString.split(":").getOrNull(1)?.toLowerCase() == "asc"
+		val ascending = sortString.split(":").getOrNull(1)?.toLowerCase() == "ascending"
 		val players = when (field.toLowerCase()) {
 			"name" -> PlayerHandler.sortByName()
 			"alias" -> PlayerHandler.sortByAlias()
@@ -35,7 +35,7 @@ object PlayerController {
 			"science" -> PlayerHandler.sortByScience()
 			else -> PlayerHandler.players
 		}
-		if(asc)
+		if (ascending)
 			return players.reversed()
 		return players
 	}
@@ -57,6 +57,7 @@ object PlayerController {
 		)
 	}
 
+	@Suppress("UNCHECKED_CAST")
 	fun Route.players() {
 		route(path = "/players") {
 			get {

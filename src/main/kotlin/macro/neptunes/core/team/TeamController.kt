@@ -51,6 +51,7 @@ object TeamController {
 		)
 	}
 
+	@Suppress("UNCHECKED_CAST")
 	fun Route.teams() {
 		route("/teams") {
 			get {
@@ -122,7 +123,9 @@ object TeamController {
 					val name = call.parameters["name"] ?: ""
 					val team = selectTeam(name = name)
 					when {
-						call.request.contentType() == ContentType.Application.Json -> call.respond(message = team?.toJson() ?: emptyMap<String, Any?>())
+						call.request.contentType() == ContentType.Application.Json -> call.respond(
+							message = team?.toJson() ?: emptyMap<String, Any?>()
+						)
 						team != null -> call.respond(
 							message = FreeMarkerContent(
 								template = "team.ftl",
