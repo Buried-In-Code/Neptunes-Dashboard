@@ -3,7 +3,7 @@ package macro.neptunes.data
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -14,7 +14,7 @@ import java.util.*
  * Created by Macro303 on 2018-Nov-08.
  */
 internal object RESTClient {
-	private val LOGGER = LoggerFactory.getLogger(RESTClient::class.java)
+	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
 	private const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	private const val JSON = "application/json"
 

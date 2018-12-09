@@ -2,7 +2,7 @@ package macro.neptunes.core.team
 
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.Player
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -82,6 +82,6 @@ data class Team(val name: String) {
 	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Team::class.java)
+		private val LOGGER = LogManager.getLogger(Team::class.java)
 	}
 }

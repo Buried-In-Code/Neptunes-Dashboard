@@ -12,14 +12,14 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.core.Util
 import macro.neptunes.data.Message
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.util.stream.Collectors
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object PlayerController {
-	private val LOGGER = LoggerFactory.getLogger(PlayerController::class.java)
+	private val LOGGER = LogManager.getLogger(PlayerController::class.java)
 
 	private fun sortPlayers(sortString: String): List<Player> {
 		val field = sortString.split(":")[0]

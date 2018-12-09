@@ -2,14 +2,14 @@ package macro.neptunes.core.game
 
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.data.RESTClient
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import kotlin.math.roundToInt
 
 /**
  * Created by Macro303 on 2018-Nov-15.
  */
 object GameHandler {
-	private val LOGGER = LoggerFactory.getLogger(GameHandler::class.java)
+	private val LOGGER = LogManager.getLogger(GameHandler::class.java)
 	lateinit var game: Game
 
 	private fun parse(data: Map<String, Any?>): Game? {

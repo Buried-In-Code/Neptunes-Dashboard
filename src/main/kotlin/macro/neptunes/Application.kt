@@ -31,7 +31,7 @@ import macro.neptunes.core.player.PlayerController.players
 import macro.neptunes.core.team.TeamController.teams
 import macro.neptunes.core.UtilController.util
 import macro.neptunes.core.WelcomeController.welcome
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
@@ -40,7 +40,7 @@ import kotlin.system.exitProcess
  * Created by Macro303 on 2018-Nov-12.
  */
 object Application {
-	private val LOGGER = LoggerFactory.getLogger(Application::class.java)
+	private val LOGGER = LogManager.getLogger(Application::class.java)
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
@@ -49,11 +49,12 @@ object Application {
 	}
 
 	private fun loggerColours() {
-		LOGGER.trace("Trace is Visible")
-		LOGGER.debug("Debug is Visible")
-		LOGGER.info("Info is Visible")
-		LOGGER.warn("Warn is Visible")
-		LOGGER.error("Error is Visible")
+		LOGGER.trace("TRACE is Visible")
+		LOGGER.debug("DEBUG is Visible")
+		LOGGER.info("INFO is Visible")
+		LOGGER.warn("WARN is Visible")
+		LOGGER.error("ERROR is Visible")
+		LOGGER.fatal("FATAL is Visible")
 	}
 
 	@JvmStatic

@@ -1,7 +1,7 @@
 package macro.neptunes.core.player
 
 import macro.neptunes.core.game.GameHandler
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -24,7 +24,6 @@ data class Player(
 	val banking: Int,
 	val manufacturing: Int
 ) {
-	private val LOGGER = LoggerFactory.getLogger(Player::class.java)
 	var team: String = "Unknown"
 
 	fun playerName() = "$name ($alias)"
@@ -75,6 +74,6 @@ data class Player(
 	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Player::class.java)
+		private val LOGGER = LogManager.getLogger(Player::class.java)
 	}
 }

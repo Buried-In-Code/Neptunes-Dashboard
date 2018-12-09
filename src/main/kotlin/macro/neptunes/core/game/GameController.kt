@@ -8,14 +8,14 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.route
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import macro.neptunes.core.Config.Companion.CONFIG
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object GameController {
-	private val LOGGER = LoggerFactory.getLogger(GameController::class.java)
+	private val LOGGER = LogManager.getLogger(GameController::class.java)
 
 	fun Route.game() {
 		route("/game") {

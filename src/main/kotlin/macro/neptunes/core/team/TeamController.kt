@@ -13,14 +13,14 @@ import io.ktor.routing.route
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.data.Message
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.util.stream.Collectors
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 object TeamController {
-	private val LOGGER = LoggerFactory.getLogger(TeamController::class.java)
+	private val LOGGER = LogManager.getLogger(TeamController::class.java)
 
 	private fun sortTeams(sort: String): List<Team> {
 		return when (sort.toLowerCase()) {

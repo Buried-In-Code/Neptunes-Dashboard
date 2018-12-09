@@ -2,13 +2,13 @@ package macro.neptunes.core.team
 
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.player.PlayerHandler
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-15.
  */
 object TeamHandler {
-	private val LOGGER = LoggerFactory.getLogger(TeamHandler::class.java)
+	private val LOGGER = LogManager.getLogger(TeamHandler::class.java)
 	var teams: List<Team> = emptyList()
 
 	fun refreshData() {

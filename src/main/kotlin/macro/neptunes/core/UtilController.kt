@@ -14,13 +14,13 @@ import macro.neptunes.Application
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.toMap
 import macro.neptunes.data.Message
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-23.
  */
 object UtilController {
-	private val LOGGER = LoggerFactory.getLogger(UtilController::class.java)
+	private val LOGGER = LogManager.getLogger(UtilController::class.java)
 
 	fun Route.util() {
 		route("/settings") {

@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import macro.neptunes.data.Message
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.text.NumberFormat
 import java.time.LocalDateTime
@@ -13,7 +13,7 @@ import java.time.LocalDateTime
  * Created by Macro303 on 2018-Nov-12.
  */
 object Util {
-	private val LOGGER = LoggerFactory.getLogger(Util::class.java)
+	private val LOGGER = LogManager.getLogger(Util::class.java)
 	private val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
