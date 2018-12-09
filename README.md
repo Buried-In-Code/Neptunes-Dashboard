@@ -1,5 +1,6 @@
 # Neptune's Pride
-![Version](https://img.shields.io/github/tag/Macro303/Neptunes-Pride.svg?label=version)
+![Version](https://img.shields.io/github/release/Macro303/Neptunes-Pride.svg?label=version)
+![Latest](https://img.shields.io/github/tag/Macro303/Neptunes-Pride.svg?label=latest)
 ![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Pride.svg?label=issues)
 ![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Pride.svg?label=contributors)
 
@@ -13,4 +14,6 @@ Pulls simple game information for Neptune's Pride and attempts to display it in 
  - [ktor-server-netty: 1.0.1](https://ktor.io/)
  - [ktor-gson: 1.0.1](https://ktor.io/)
  - [ktor-freemarker: 1.0.1](https://ktor.io/)
- - [logback-classic: 1.3.0-alpha4](https://logback.qos.ch/)
+ - [log4j-api: 2.11.1](https://logging.apache.org/log4j/2.x/)
+ - [log4j-core: 2.11.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
+ - [log4j-slf4j18-impl: 2.11.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
