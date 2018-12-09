@@ -22,7 +22,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'com.github.ben-manes.versions'
 
-version = '2.0.2'
+version = '2.0.0'
 group = 'macro'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

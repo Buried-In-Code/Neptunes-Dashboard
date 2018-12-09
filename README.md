@@ -1,6 +1,6 @@
 # Neptune's Pride
 ![Version](https://img.shields.io/github/release/Macro303/Neptunes-Pride.svg?label=version)
-![Latest](https://img.shields.io/github/tag/Macro303/Neptunes-Pride.svg?label=latest)
+![Latest](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Pride.svg?label=latest&colorB=orange)
 ![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Pride.svg?label=issues)
 ![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Pride.svg?label=contributors)
 
