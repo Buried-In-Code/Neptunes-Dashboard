@@ -58,7 +58,7 @@ object Application {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		val server = embeddedServer(Netty, port = CONFIG.port, host = "0.0.0.0") {
+		val server = embeddedServer(Netty, port = CONFIG.serverPort, host = CONFIG.serverAddress) {
 			install(ContentNegotiation) {
 				gson {
 					setPrettyPrinting()

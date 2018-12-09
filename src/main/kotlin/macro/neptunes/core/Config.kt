@@ -14,10 +14,11 @@ import java.net.Proxy
  * Created by Macro303 on 2018-Nov-23.
  */
 class Config internal constructor(
+	val serverAddress: String = "localhost",
+	val serverPort: Int = 5000,
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
 	var gameID: Long = 1,
-	val port: Int = 5000,
 	var refreshRate: Int = 60,
 	var players: Map<String, String> = mapOf("Alias" to "Name"),
 	var enableTeams: Boolean = false,
@@ -75,7 +76,9 @@ class Config internal constructor(
 			val proxyPort: Int? = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
 			val gameID: Long = data["Game ID"] as Long?
 				?: 1
-			val port: Int = data["Port"] as Int?
+			val serverAddress: String = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
+				?: "localhost"
+			val serverPort: Int = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 				?: 5000
 			val refreshRate: Int = data["Refresh Rate"] as Int?
 				?: 60
@@ -86,10 +89,11 @@ class Config internal constructor(
 			val teams: Map<String, List<String>> = data["Teams"] as Map<String, List<String>>?
 				?: mapOf("Team" to listOf("Name"))
 			return Config(
+				serverAddress = serverAddress,
+				serverPort = serverPort,
 				proxyHostname = proxyHostname,
 				proxyPort = proxyPort,
 				gameID = gameID,
-				port = port,
 				refreshRate = refreshRate,
 				players = players,
 				enableTeams = enableTeams,
@@ -101,12 +105,15 @@ class Config internal constructor(
 
 internal fun Config.toMap(): Map<String, Any?> {
 	val data: Map<String, Any?> = mapOf(
+		"Server" to mapOf(
+			"Address" to this.serverAddress,
+			"Port" to this.serverPort
+		),
 		"Proxy" to mapOf(
 			"Host Name" to this.proxyHostname,
 			"Port" to this.proxyPort
 		),
 		"Game ID" to this.gameID,
-		"Port" to this.port,
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
 		"Enable Teams" to this.enableTeams,
