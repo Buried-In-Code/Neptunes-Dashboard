@@ -69,7 +69,7 @@ object Application {
 			}
 			install(DefaultHeaders) {
 				header(name = HttpHeaders.Server, value = "Ktor-BIT-Neptunes")
-				header(name = "Developer", value = "Jonah Jackson")
+				header(name = "Developer", value = "Macro303")
 				header(name = HttpHeaders.AcceptLanguage, value = "en-NZ")
 				header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
 			}
