@@ -68,7 +68,7 @@ object Application {
 				}
 			}
 			install(DefaultHeaders) {
-				header(name = HttpHeaders.Server, value = "Ktor-BIT-Neptunes")
+				header(name = HttpHeaders.Server, value = "Ktor-BIT269")
 				header(name = "Developer", value = "Macro303")
 				header(name = HttpHeaders.AcceptLanguage, value = "en-NZ")
 				header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
