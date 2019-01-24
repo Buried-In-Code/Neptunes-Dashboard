@@ -23,7 +23,7 @@ data class Player(
 	val weapons: Int,
 	val banking: Int,
 	val manufacturing: Int
-) {
+) : Comparable<Player> {
 	var team: String = "Unknown"
 
 	fun playerName() = "$name ($alias)"
@@ -43,6 +43,10 @@ data class Player(
 
 	fun calcShips(): Int {
 		return industry * (manufacturing + 5) / 24
+	}
+
+	override fun compareTo(other: Player): Int {
+		return byStars.then(byName).then(byAlias).compare(this, other)
 	}
 
 	fun toJson(): Map<String, Any?> {
@@ -75,5 +79,13 @@ data class Player(
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Player::class.java)
+		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Player::name)
+		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, Player::alias)
+		internal val byTeam = compareBy(String.CASE_INSENSITIVE_ORDER, Player::team)
+		internal val byStars = compareBy(Player::stars)
+		internal val byShips = compareBy(Player::ships)
+		internal val byEconomy = compareBy(Player::economy)
+		internal val byIndustry = compareBy(Player::industry)
+		internal val byScience = compareBy(Player::science)
 	}
 }

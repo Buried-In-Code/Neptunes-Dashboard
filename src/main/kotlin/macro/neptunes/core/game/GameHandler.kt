@@ -30,7 +30,7 @@ object GameHandler {
 		val response = RESTClient.getRequest(endpoint = "/basic")
 		var game = parse(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {
-			LOGGER.error("Unable to find game with Game ID: {}", CONFIG.gameID)
+			LOGGER.error("Unable to find game with Game ID: ${CONFIG.gameID}, instead loading Offline Game")
 			game = OfflineGame.game
 		}
 		this.game = game

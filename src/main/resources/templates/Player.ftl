@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -44,30 +43,30 @@
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui inverted segment opacity">
-			<h2 class="ui center aligned header">${player.name}</h2>
+			<h2 class="ui center aligned header">${name}</h2>
 			<div class="ui relaxed stackable grid">
 				<div class="three wide column">
 					<ul>
-						<li><strong>Alias:</strong> ${player.alias}</li>
-						<li><strong>Economy:</strong> ${player.economy}</li>
-						<li><strong>$ per Turn:</strong> ${player.economyTurn}</li>
-						<li><strong>Fleet:</strong> ${player.fleet}</li>
-						<li><strong>Industry:</strong> ${player.industry}</li>
-						<li><strong>Ships per Turn:</strong> ${player.industryTurn}</li>
-						<li><strong>Science:</strong> ${player.science}</li>
-						<li><strong>Ships:</strong> ${player.ships}</li>
-						<#if player.team != "Unknown">
-							<li><strong>Team:</strong> ${player.team}</li>
+						<li><strong>Alias:</strong> ${alias}</li>
+						<li><strong>Economy:</strong> ${economy}</li>
+						<li><strong>$ per Turn:</strong> ${economyTurn}</li>
+						<li><strong>Fleet:</strong> ${fleet}</li>
+						<li><strong>Industry:</strong> ${industry}</li>
+						<li><strong>Ships per Turn:</strong> ${industryTurn}</li>
+						<li><strong>Science:</strong> ${science}</li>
+						<li><strong>Ships:</strong> ${ships}</li>
+						<#if team != "Unknown">
+							<li><strong>Team:</strong> ${team}</li>
 						</#if>
 						<li><strong>Technology:</strong>
 							<ul>
-								<li><strong>Scanning:</strong> ${player.technology.scanning}</li>
-								<li><strong>Hyperspace:</strong> ${player.technology.hyperspace}</li>
-								<li><strong>Terraforming:</strong> ${player.technology.terraforming}</li>
-								<li><strong>Experimentation:</strong> ${player.technology.experimentation}</li>
-								<li><strong>Weapons:</strong> ${player.technology.weapons}</li>
-								<li><strong>Banking:</strong> ${player.technology.banking}</li>
-								<li><strong>Manufacturing:</strong> ${player.technology.manufacturing}</li>
+								<li><strong>Scanning:</strong> ${technology.scanning}</li>
+								<li><strong>Hyperspace:</strong> ${technology.hyperspace}</li>
+								<li><strong>Terraforming:</strong> ${technology.terraforming}</li>
+								<li><strong>Experimentation:</strong> ${technology.experimentation}</li>
+								<li><strong>Weapons:</strong> ${technology.weapons}</li>
+								<li><strong>Banking:</strong> ${technology.banking}</li>
+								<li><strong>Manufacturing:</strong> ${technology.manufacturing}</li>
 							</ul>
 						</li>
 					</ul>
@@ -92,7 +91,7 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	getGameStars(winPie, ${player.stars});
+	getGameStars(winPie, ${stars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {
@@ -100,7 +99,7 @@ var winPie = new Chart(ctx, {
     data: {
         labels: ["Stars Left", "Stars"],
         datasets: [{
-            data: [0, ${player.stars}],
+            data: [0, ${stars}],
             backgroundColor: [
                 'rgba(229, 115, 115, 0.5)',
                 'rgba(186, 104, 200, 0.5)',

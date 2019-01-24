@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -44,7 +43,7 @@
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui stackable relaxed grid">
-			<#list teams as team>
+			<#list Teams as team>
 				<div class="ui attached segment inverted opacity four wide column" style="margin: 10px;">
 					<div class="ui medium header">${team.name}</div>
 					<p>

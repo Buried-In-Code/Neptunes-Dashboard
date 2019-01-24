@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -43,9 +42,9 @@
 		</div>
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
-		<div class="ui info message opacity">
-			<div class="header">${message.title}</div>
-			<p>${message.content}</p>
+		<div class="ui negative message opacity">
+			<div class="header">${code}: ${request}</div>
+			<p>${message}</p>
 		</div>
 	</div>
 </div>

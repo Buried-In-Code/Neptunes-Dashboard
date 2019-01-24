@@ -12,17 +12,16 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
 			<a class="item" href="/game">
 				<i class="gamepad icon"></i>Game
 			</a>
-			<a class="item" href="/players">
+			<a class="item active" href="/players">
 				<i class="user icon"></i>Players
 			</a>
 			<a class="item" href="/players/leaderboard">
@@ -43,9 +42,21 @@
 		</div>
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
-		<div class="ui negative message opacity">
-			<div class="header">${error.code}: ${error.request}</div>
-			<p>${error.message}</p>
+		<div class="ui stackable relaxed grid">
+			<#list Players as player>
+				<div class="ui attached segment inverted opacity two wide column" style="margin: 10px;">
+					<div class="ui medium header">${player.name}</div>
+					<span>${player.alias}</span>
+					<p>
+						<strong>Stars:</strong> ${player.stars}<br>
+						<strong>Percent:</strong> ${player.percent?string.percent}
+					</p>
+					<#if player.team != "Unknown">
+						<span>${player.team}</span>
+					</#if>
+					<a class="ui fluid button" href="/players/${player.alias}">More Details</a>
+				</div>
+			</#list>
 		</div>
 	</div>
 </div>

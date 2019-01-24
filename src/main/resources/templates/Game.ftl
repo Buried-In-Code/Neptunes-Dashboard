@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -44,13 +43,13 @@
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui inverted segment opacity">
-			<h2 class="ui center aligned header">${game.name!"Unknown"}</h2>
+			<h2 class="ui center aligned header">${name!"Unknown"}</h2>
 			<div class="ui relaxed stackable grid">
 				<div class="three wide column">
 					<ul>
-						<li><b>Started:</b> ${game.started?c!"false"}</li>
-						<li><b>Paused:</b> ${game.paused?c!"true"}</li>
-						<li><b>Stars Required to win:</b> ${game.totalStars/2!"0"}/${game.totalStars!"0"}</li>
+						<li><b>Started:</b> ${started?c!"false"}</li>
+						<li><b>Paused:</b> ${paused?c!"true"}</li>
+						<li><b>Stars Required to win:</b> ${totalStars/2!"0"}/${totalStars!"0"}</li>
 					</ul>
 				</div>
 				<div class="twelve wide stretched column">
@@ -73,10 +72,10 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	if(${game.enabledTeams?c})
-		getTeamStars(winPie, ${game.totalStars});
+	if(${enabledTeams?c})
+		getTeamStars(winPie, ${totalStars});
 	else
-		getPlayerStars(winPie, ${game.totalStars});
+		getPlayerStars(winPie, ${totalStars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {
@@ -84,7 +83,7 @@ var winPie = new Chart(ctx, {
     data: {
         labels: ["Stars Left", "Stars"],
         datasets: [{
-            data: [0, ${game.totalStars}],
+            data: [0, ${totalStars}],
             backgroundColor: [
                 'rgba(229, 115, 115, 0.5)',
                 'rgba(186, 104, 200, 0.5)',

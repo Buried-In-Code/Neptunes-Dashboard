@@ -45,7 +45,7 @@ object TeamHandler {
 	fun sortByShips(teams: List<Team> = this.teams): List<Team> {
 		return teams.sortedWith(compareBy(
 			{ !it.isActive },
-			{ -it.totalStrength },
+			{ -it.totalShips },
 			{ it.name }
 		))
 	}

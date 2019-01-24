@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -48,7 +47,7 @@
 				<tr>
 					<th>Name</th>
 					<th>Alias</th>
-					<#if leaderboard[0].team != "Unknown">
+					<#if Leaderboard[0].team != "Unknown">
 						<th>Team</th>
 					</#if>
 					<th>Stars</th>
@@ -61,7 +60,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<#list leaderboard as player>
+				<#list Leaderboard as player>
 					<tr>
 						<td>${player.name}</td>
 						<td>${player.alias}</td>

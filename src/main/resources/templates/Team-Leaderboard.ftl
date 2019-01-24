@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -57,7 +56,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<#list leaderboard as team>
+				<#list Leaderboard as team>
 					<tr>
 						<td>${team.name}</td>
 						<td data-sort-value=${team.totalStars?c}>${team.totalStars}</td>

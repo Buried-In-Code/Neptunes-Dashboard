@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-data class Team(val name: String) {
+data class Team(val name: String) : Comparable<Team> {
 	val members = ArrayList<Player>()
 	val totalIndustry: Int
 		get() = members.stream().mapToInt { it.industry }.sum()
@@ -19,7 +19,7 @@ data class Team(val name: String) {
 		get() = members.stream().mapToInt { it.stars }.sum()
 	val totalFleet: Int
 		get() = members.stream().mapToInt { it.fleet }.sum()
-	val totalStrength: Int
+	val totalShips: Int
 		get() = members.stream().mapToInt { it.ships }.sum()
 	val isActive: Boolean
 		get() = members.stream().anyMatch { it.isActive }
@@ -55,11 +55,15 @@ data class Team(val name: String) {
 		return totalIndustry * (manufacturing + 5) / 24
 	}
 
+	override fun compareTo(other: Team): Int {
+		return byStars.then(byName).compare(this, other)
+	}
+
 	fun toJson(): Map<String, Any> {
 		val data = mapOf(
 			"name" to name,
 			"totalStars" to totalStars,
-			"totalShips" to totalStrength,
+			"totalShips" to totalShips,
 			"totalFleet" to totalFleet,
 			"totalEconomy" to totalEconomy,
 			"totalIndustry" to totalIndustry,
@@ -83,5 +87,11 @@ data class Team(val name: String) {
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Team::class.java)
+		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Team::name)
+		internal val byStars = compareBy(Team::totalStars)
+		internal val byShips = compareBy(Team::totalShips)
+		internal val byEconomy = compareBy(Team::totalEconomy)
+		internal val byIndustry = compareBy(Team::totalIndustry)
+		internal val byScience = compareBy(Team::totalScience)
 	}
 }

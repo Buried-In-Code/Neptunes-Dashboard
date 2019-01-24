@@ -6,7 +6,7 @@ function getRandomInt(max) {
 
 function getGameStars(pie, stars){
 	$.ajax({
-	    url: '/game/totalStars',
+	    url: '/game',
 	    type: 'GET',
 	    contentType: 'application/json',
 	    dataType: 'json',
@@ -25,7 +25,7 @@ function getGameStars(pie, stars){
 
 function getTeamPlayerStars(pie, teamName, stars){
  	$.ajax({
- 	    url: "/players?sort=stars&filter=team:" + teamName,
+ 	    url: "/teams/" + teamName + "/players",
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',
@@ -48,7 +48,7 @@ function getTeamPlayerStars(pie, teamName, stars){
 
 function getTeamStars(pie, totalStars){
  	$.ajax({
- 	    url: "/teams?sort=stars",
+ 	    url: "/teams",
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',
@@ -56,11 +56,16 @@ function getTeamStars(pie, totalStars){
 	        console.log(data);
  	        if(pie != null){
  	            var starCount = 0
- 	            for(count = 0; count < data.length; count++){
- 	                var team = data[count]
- 	                pie.data.labels[count + 1] = team.name;
- 	                pie.data.datasets[0].data[count + 1] = team.totalStars;
- 	                starCount += team.totalStars;
+ 	            for(teamCount = 0; teamCount < data.length; teamCount++){
+ 	                var team = data[teamCount]
+ 	                pie.data.labels[teamCount + 1] = team.name;
+ 	                var teamStars = 0
+ 	                for(memberCount = 0; memberCount < team.members.length; memberCount++){
+ 	                    var member = team.members[memberCount]
+ 	                    teamStars += member.stars
+ 	                }
+ 	                pie.data.datasets[0].data[teamCount + 1] = teamStars;
+ 	                starCount += teamStars;
                 }
 	            pie.data.datasets[0].data[0] = totalStars - starCount;
                 pie.update();
@@ -74,7 +79,7 @@ function getTeamStars(pie, totalStars){
 
  function getPlayerStars(pie, totalStars){
 	$.ajax({
-		url: "/players?sort=stars",
+		url: "/players",
 		type: 'GET',
 		contentType: 'application/json',
 		dataType: 'json',

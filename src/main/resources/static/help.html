@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<title>BIT 269's Neptune's Pride</title>
-	<meta charset="utf-8">
+	<meta charset="utf-8"/>
 	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet"/>
 	<link href="/styles.css" rel="stylesheet"/>
 </head>
+
 <body>
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -44,204 +45,48 @@
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /</code></h3>
-			<p><i>Put the details here</i></p>
+			<h2 class="ui horizontal inverted divider header">GAME</h2>
+			<h3><code>GET /game</code></h3>
+			<p>Read game data</p>
+			<h3><code>PUT /refresh</code></h3>
+			<p>Update/Refresh all the game data</p>
 		</div>
 		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /game</code></h3>
-			<p><i>Put the details here</i></p>
+			<h2 class="ui horizontal inverted divider header">PLAYERS</h2>
+			<h3><code>POST /players</code></h3>
+			<p>Create Player - Requires body on request</p>
+			<h3><code>GET /players</code></h3>
+			<p>Read All Players</p>
+			<h3><code>GET /players/leaderboard</code></h3>
+			<p>Read the Player's Leaderboard</p>
+			<h3><code>GET /players/:alias</code></h3>
+			<p>Read One Player</p>
+			<h3><code>PUT /players/:alias</code></h3>
+			<p>Update Player - Requires body on request</p>
+			<h3><code>DELETE /players/:alias</code></h3>
+			<p>Delete Player</p>
 		</div>
 		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /players</code></h3>
-			<p><i>Put the details here</i></p>
-			<table class="ui very simple inverted table">
-				<thead>
-				<tr>
-					<th>Field</th>
-					<th>Sortable</th>
-					<th>Filterable</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td>Name</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Alias</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Team</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Stars</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				<tr>
-					<td>Ships</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				</tbody>
-			</table>
+			<h2 class="ui horizontal inverted divider header">TEAMS</h2>
+			<h3><code>POST /teams</code></h3>
+			<p>Create Team - Requires body on request</p>
+			<h3><code>GET /teams</code></h3>
+			<p>Read All Teams</p>
+			<h3><code>GET /teams/leaderboard</code></h3>
+			<p>Read the Team's Leaderboard</p>
+			<h3><code>GET /teams/:name</code></h3>
+			<p>Read One Team</p>
+			<h3><code>PUT /teams/:name</code></h3>
+			<p>Update Team - Requires body on request</p>
+			<h3><code>DELETE /teams/:name</code></h3>
+			<p>Delete Team</p>
 		</div>
 		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>POST /players</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /players/leaderboard</code></h3>
-			<p><i>Put the details here</i></p>
-			<table class="ui very simple inverted table">
-				<thead>
-				<tr>
-					<th>Field</th>
-					<th>Sortable</th>
-					<th>Filterable</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td>Name</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Alias</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Team</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Stars</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				<tr>
-					<td>Ships</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /players/:alias</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /teams</code></h3>
-			<p><i>Put the details here</i></p>
-			<table class="ui very simple inverted table">
-				<thead>
-				<tr>
-					<th>Field</th>
-					<th>Sortable</th>
-					<th>Filterable</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td>Name</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Player-Name</td>
-					<td>&#x2718;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Player-Alias</td>
-					<td>&#x2718;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Stars</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				<tr>
-					<td>Ships</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>POST /teams</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /teams/leaderboard</code></h3>
-			<p><i>Put the details here</i></p>
-			<table class="ui very simple inverted table">
-				<thead>
-				<tr>
-					<th>Field</th>
-					<th>Sortable</th>
-					<th>Filterable</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr>
-					<td>Name</td>
-					<td>&#x2714;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Player-Name</td>
-					<td>&#x2718;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Player-Alias</td>
-					<td>&#x2718;</td>
-					<td>&#x2714;</td>
-				</tr>
-				<tr>
-					<td>Stars</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				<tr>
-					<td>Ships</td>
-					<td>&#x2714;</td>
-					<td>&#x2718;</td>
-				</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /teams/:name</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /refresh</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /settings</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>PATCH /settings</code></h3>
-			<p><i>Put the details here</i></p>
-		</div>
-		<div class="ui segment inverted opacity">
-			<h3 class="ui header"><code>GET /help</code></h3>
-			<p><i>Put the details here</i></p>
+			<h2 class="ui horizontal inverted divider header">SETTINGS</h2>
+			<h3><code>GET /settings</code></h3>
+			<p>Read Settings</p>
+			<h3><code>PUT /settings</code></h3>
+			<p>Update Settings - Requires body on request</p>
 		</div>
 	</div>
 </div>

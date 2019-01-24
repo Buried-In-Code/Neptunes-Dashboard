@@ -12,10 +12,9 @@
 <div class="ui relaxed stackable grid">
 	<div class="three wide column">
 		<div class="ui large left fixed inverted vertical menu">
-			<h2 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico">
-				Neptune's Pride
-			</h2>
+			<h1 class="ui center aligned icon orange inverted header">
+				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
+			</h1>
 			<a class="item" href="/">
 				<i class="home icon"></i>Home
 			</a>
@@ -44,25 +43,25 @@
 	</div>
 	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
 		<div class="ui inverted segment opacity">
-			<h2 class="ui center aligned header">${team.name}</h2>
+			<h2 class="ui center aligned header">${name}</h2>
 			<div class="ui relaxed stackable grid">
 				<div class="three wide column">
 					<ul>
-						<li><strong>Stars:</strong> ${team.totalStars}</li>
-						<li><strong>Fleet:</strong> ${team.totalFleet}</li>
-						<li><bstrong>Economy:</strong> ${team.totalEconomy}</li>
-						<li><strong>Industry:</strong> ${team.totalIndustry}</li>
-						<li><strong>Science:</strong> ${team.totalScience}</li>
-						<li><strong>Ships:</strong> ${team.totalShips}</li>
+						<li><strong>Stars:</strong> ${totalStars}</li>
+						<li><strong>Fleet:</strong> ${totalFleet}</li>
+						<li><strong>Economy:</strong> ${totalEconomy}</li>
+						<li><strong>Industry:</strong> ${totalIndustry}</li>
+						<li><strong>Science:</strong> ${totalScience}</li>
+						<li><strong>Ships:</strong> ${totalShips}</li>
 						<li><strong>Technology:</strong>
 							<ul>
-								<li><strong>Scanning:</strong> ${team.technology.scanning}</li>
-								<li><strong>Hyperspace:</strong> ${team.technology.hyperspace}</li>
-								<li><strong>Terraforming:</strong> ${team.technology.terraforming}</li>
-								<li><strong>Experimentation:</strong> ${team.technology.experimentation}</li>
-								<li><strong>Weapons:</strong> ${team.technology.weapons}</li>
-								<li><strong>Banking:</strong> ${team.technology.banking}</li>
-								<li><strong>Manufacturing:</strong> ${team.technology.manufacturing}</li>
+								<li><strong>Scanning:</strong> ${technology.scanning}</li>
+								<li><strong>Hyperspace:</strong> ${technology.hyperspace}</li>
+								<li><strong>Terraforming:</strong> ${technology.terraforming}</li>
+								<li><strong>Experimentation:</strong> ${technology.experimentation}</li>
+								<li><strong>Weapons:</strong> ${technology.weapons}</li>
+								<li><strong>Banking:</strong> ${technology.banking}</li>
+								<li><strong>Manufacturing:</strong> ${technology.manufacturing}</li>
 							</ul>
 						</li>
 					</ul>
@@ -87,7 +86,7 @@
 <script src="/script.js"></script>
 <script>
 $(document).ready(function(){
-	getTeamPlayerStars(winPie, "${team.name}", ${team.totalStars});
+	getTeamPlayerStars(winPie, "${name}", ${totalStars});
 });
 var ctx = document.getElementById("winPie");
 var winPie = new Chart(ctx, {
@@ -95,7 +94,7 @@ var winPie = new Chart(ctx, {
     data: {
         labels: ["Stars Left", "Stars"],
         datasets: [{
-            data: [0, ${team.totalStars}],
+            data: [0, ${totalStars}],
             backgroundColor: [
                 'rgba(229, 115, 115, 0.5)',
                 'rgba(186, 104, 200, 0.5)',

@@ -3,11 +3,13 @@ package macro.neptunes.core
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import io.ktor.request.ApplicationRequest
+import io.ktor.request.httpMethod
+import io.ktor.request.path
 import macro.neptunes.data.Message
 import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.text.NumberFormat
-import java.time.LocalDateTime
 
 /**
  * Created by Macro303 on 2018-Nov-12.
@@ -20,7 +22,6 @@ object Util {
 		.create()
 	internal val INT_FORMAT = NumberFormat.getIntegerInstance()
 	internal val PERCENT_FORMAT = NumberFormat.getPercentInstance()
-	lateinit var lastUpdate: LocalDateTime
 
 	init {
 		PERCENT_FORMAT.minimumFractionDigits = 2
@@ -48,10 +49,10 @@ object Util {
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
 
-	fun getNotImplementedMessage(endpoint: String): Message {
+	fun notImplementedMessage(request: ApplicationRequest): Message {
 		val message = Message(
-			title = "Not Implemented: $endpoint",
-			content = "This endpoint hasn't been implemented yet, feel free to make a pull request and create it yourself."
+			title = "Not Implemented: ${request.httpMethod.value} ${request.path()}",
+			content = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
 		)
 		return message
 	}
