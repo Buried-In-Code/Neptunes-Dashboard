@@ -105,7 +105,7 @@ object TeamController {
 								)
 							else
 								call.respond(
-									message = team.members,
+									message = team.members.sorted(),
 									status = HttpStatusCode.OK
 								)
 						}

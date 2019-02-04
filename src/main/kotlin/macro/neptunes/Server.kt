@@ -131,14 +131,12 @@ fun Application.module() {
 		}
 	}
 	intercept(ApplicationCallPipeline.Setup) {
-		LOGGER.debug("${call.request.httpVersion} ${call.request.httpMethod.value} >> URI: ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
+		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
 		refreshData()
 	}
-	intercept(ApplicationCallPipeline.Monitoring) {
-		LOGGER.info("${call.request.httpVersion} ${call.request.httpMethod.value} >> Endpoint: ${call.request.path()}, Content-Type: ${call.request.contentType()}")
-	}
 	intercept(ApplicationCallPipeline.Fallback) {
-		LOGGER.info("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
+		LOGGER.info("${call.response.status()} << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+		LOGGER.debug("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
 	}
 	install(Routing) {
 		gameRoutes()
@@ -250,7 +248,8 @@ fun Application.module() {
 		}
 		static {
 			defaultResource(resource = "static/index.html")
-			resource(remotePath = "/help", resource = "static/help.html")
+			resource(remotePath = "/documentation", resource = "static/documentation.html")
+			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
 			resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
 			resource(remotePath = "/styles.css", resource = "static/css/styles.css")

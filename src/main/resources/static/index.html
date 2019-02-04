@@ -3,58 +3,75 @@
 <head>
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
-	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-	<link href="/styles.css" rel="stylesheet"/>
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel="stylesheet">
+	<link href="/styles.css" rel="stylesheet">
 </head>
-<body>
-<div class="ui relaxed stackable grid">
-	<div class="three wide column">
-		<div class="ui large left fixed inverted vertical menu">
-			<h1 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
-			</h1>
-			<a class="item active" href="/">
-				<i class="home icon"></i>Home
-			</a>
-			<a class="item" href="/game">
-				<i class="gamepad icon"></i>Game
-			</a>
-			<a class="item" href="/players">
-				<i class="user icon"></i>Players
-			</a>
-			<a class="item" href="/players/leaderboard">
-				<i class="list ol icon"></i>Player Leaderboard
-			</a>
-			<a class="item" href="/teams">
-				<i class="users icon"></i>Teams
-			</a>
-			<a class="item" href="/teams/leaderboard">
-				<i class="list ol icon"></i>Team Leaderboard
-			</a>
-			<a class="item" href="/settings">
-				<i class="cogs icon"></i>Settings
-			</a>
-			<a class="item" href="/help">
-				<i class="question circle icon"></i>Help
-			</a>
-		</div>
+<body class="has-navbar-fixed-top">
+<div id="navbar"></div>
+<section class="section">
+	<div class="container">
+		<section class="hero is-dark is-bold opacity">
+			<div class="hero-body">
+				<div class="container">
+					<h1 class="title">Welcome to BIT269's Neptune's Pride</h1>
+					<h2 class="subtitle">
+						<i>Put Welcome message here</i>
+					</h2>
+				</div>
+			</div>
+		</section>
 	</div>
-	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
-		<div class="ui inverted segment opacity">
-			<h1 class="ui header">Welcome to Neptune's Pride</h1>
-			<p><i>Put welcome message here</i></p>
-		</div>
+</section>
+<section class="section">
+	<div class="container">
+		<article class="message is-dark opacity">
+			<div class="message-header">
+				<p>{{Game Name}}</p>
+			</div>
+			<div class="message-body">
+				<div class="columns is-vcentered">
+					<div class="column">
+						<p class="heading">Started</p>
+						<p class="title">{{Game Started}}</p>
+					</div>
+					<div class="column">
+						<p class="heading">Paused</p>
+						<p class="title">{{Game Paused}}</p>
+					</div>
+					<div class="column">
+						<div>
+							<p class="heading"># of Players</p>
+							<p class="title">{{Game Players}}</p>
+						</div>
+					</div>
+					<div class="column">
+						<div>
+							<p class="heading">Stars to Win</p>
+							<p class="title">{{Game Victory}}/{{Game Total}}</p>
+						</div>
+					</div>
+				</div>
+				<hr />
+				<div class="chart-container">
+					<canvas id="winPie" width="600" height="400"></canvas>
+				</div>
+			</div>
+		</article>
 	</div>
-</div>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+</section>
+<script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js"></script>
 <script src="/table-sort.js"></script>
 <script src="/script.js"></script>
 <script>
+$(document).ready(function(){
+	$("#navbar").load("/navbar.html");
+	getPlayerStars(700);
+});
 </script>
 </body>
 </html>

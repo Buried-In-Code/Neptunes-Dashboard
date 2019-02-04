@@ -46,7 +46,7 @@ data class Player(
 	}
 
 	override fun compareTo(other: Player): Int {
-		return byStars.then(byName).then(byAlias).compare(this, other)
+		return byName.then(byAlias).compare(this, other)
 	}
 
 	fun toJson(): Map<String, Any?> {

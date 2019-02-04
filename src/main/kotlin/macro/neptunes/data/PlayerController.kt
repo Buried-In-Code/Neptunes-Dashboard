@@ -58,7 +58,7 @@ object PlayerController {
 			contentType(contentType = ContentType.Application.Json) {
 				get {
 					call.respond(
-						message = PlayerHandler.players,
+						message = PlayerHandler.players.sorted(),
 						status = HttpStatusCode.OK
 					)
 				}
