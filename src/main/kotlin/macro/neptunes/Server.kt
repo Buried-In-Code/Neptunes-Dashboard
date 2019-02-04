@@ -26,15 +26,15 @@ import macro.neptunes.Server.LOGGER
 import macro.neptunes.Server.refreshData
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
-import macro.neptunes.data.GameController.gameRoutes
 import macro.neptunes.core.game.GameHandler
-import macro.neptunes.data.PlayerController.playerRoutes
 import macro.neptunes.core.player.PlayerHandler
-import macro.neptunes.data.TeamController.teamRoutes
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.ErrorMessage
+import macro.neptunes.data.GameController.gameRoutes
 import macro.neptunes.data.Message
+import macro.neptunes.data.PlayerController.playerRoutes
 import macro.neptunes.data.SettingsController.settingRoutes
+import macro.neptunes.data.TeamController.teamRoutes
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
@@ -79,7 +79,7 @@ object Server {
 			else
 				TeamHandler.teams = emptyList()
 			lastUpdate = LocalDateTime.now()
-			LOGGER.info("Last Updated: $lastUpdate")
+			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
 		}
 	}
 }
@@ -143,15 +143,6 @@ fun Application.module() {
 		playerRoutes()
 		teamRoutes()
 		settingRoutes()
-		get(path = "/game") {
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Game.ftl",
-					model = GameHandler.game.toJson()
-				),
-				status = HttpStatusCode.OK
-			)
-		}
 		route(path = "/players") {
 			get {
 				call.respond(

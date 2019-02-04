@@ -19,6 +19,7 @@ class Config internal constructor(
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
 	var gameID: Long = 1,
+	var gameName: String = "Unknown",
 	var refreshRate: Int = 60,
 	var players: Map<String, String> = mapOf("Alias" to "Name"),
 	var enableTeams: Boolean = false,
@@ -74,8 +75,10 @@ class Config internal constructor(
 		private fun fromMap(data: Map<String, Any?>): Config {
 			val proxyHostname: String? = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort: Int? = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID: Long = data["Game ID"] as Long?
+			val gameID: Long = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
 				?: 1
+			val gameName: String = (data["Game"] as Map<String, Any?>?)?.get("Name") as String?
+				?: "Unknown"
 			val serverAddress: String = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 				?: "localhost"
 			val serverPort: Int = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
@@ -94,6 +97,7 @@ class Config internal constructor(
 				proxyHostname = proxyHostname,
 				proxyPort = proxyPort,
 				gameID = gameID,
+				gameName = gameName,
 				refreshRate = refreshRate,
 				players = players,
 				enableTeams = enableTeams,
@@ -113,7 +117,10 @@ internal fun Config.toMap(): Map<String, Any?> {
 			"Host Name" to this.proxyHostname,
 			"Port" to this.proxyPort
 		),
-		"Game ID" to this.gameID,
+		"Game" to mapOf(
+			"ID" to this.gameID,
+			"Name" to this.gameName
+		),
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
 		"Enable Teams" to this.enableTeams,

@@ -6,7 +6,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.*
 import macro.neptunes.Server
-import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.database.GameTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -20,7 +21,7 @@ object GameController {
 			contentType(contentType = ContentType.Application.Json) {
 				get {
 					call.respond(
-						message = GameHandler.game,
+						message = GameTable.select(name = CONFIG.gameName)?.toJson() ?: emptyMap<String, Any?>(),
 						status = HttpStatusCode.OK
 					)
 				}

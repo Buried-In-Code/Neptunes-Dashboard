@@ -8,8 +8,17 @@ import io.ktor.request.httpMethod
 import io.ktor.request.path
 import macro.neptunes.data.Message
 import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import java.io.File
+import java.sql.Connection
 import java.text.NumberFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Created by Macro303 on 2018-Nov-12.
@@ -20,24 +29,10 @@ object Util {
 		.serializeNulls()
 		.disableHtmlEscaping()
 		.create()
-	internal val INT_FORMAT = NumberFormat.getIntegerInstance()
-	internal val PERCENT_FORMAT = NumberFormat.getPercentInstance()
-
-	init {
-		PERCENT_FORMAT.minimumFractionDigits = 2
-		PERCENT_FORMAT.maximumFractionDigits = 2
-		PERCENT_FORMAT.minimumIntegerDigits = 2
-		PERCENT_FORMAT.maximumIntegerDigits = 2
-	}
-
-	val BIN: File by lazy {
-		val temp = File("bin")
-		if (!temp.exists()) {
-			LOGGER.info("Bin Folder is missing, creating `$temp`")
-			temp.mkdirs()
-		}
-		temp
-	}
+	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+	val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
+	val JODA_FORMATTER = DateTimeFormat.forPattern(DATE_FORMAT)
+	private val database = Database.connect(url = "jdbc:sqlite:neptunes-pride.db", driver = "org.sqlite.JDBC")
 
 	@Throws(JsonSyntaxException::class)
 	internal fun String.fromJSON(): Map<String, Any> {
@@ -49,11 +44,32 @@ object Util {
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
 
+	internal fun DateTime.toJavaDateTime(): LocalDateTime{
+		val jodaString = this.toString(JODA_FORMATTER)
+		return LocalDateTime.parse(jodaString, JAVA_FORMATTER)
+	}
+
+	internal fun LocalDateTime.toJodaDateTime(): DateTime{
+		val javaString = this.format(JAVA_FORMATTER)
+		return DateTime.parse(javaString, JODA_FORMATTER)
+	}
+
 	fun notImplementedMessage(request: ApplicationRequest): Message {
 		val message = Message(
 			title = "Not Implemented: ${request.httpMethod.value} ${request.path()}",
 			content = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
 		)
 		return message
+	}
+
+	internal fun <T> query(block: () -> T): T {
+		return transaction(
+			transactionIsolation = Connection.TRANSACTION_SERIALIZABLE,
+			repetitionAttempts = 1,
+			db = database
+		) {
+			addLogger(Slf4jSqlDebugLogger)
+			block()
+		}
 	}
 }

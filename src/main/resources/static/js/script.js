@@ -4,7 +4,7 @@ function getRandomInt(max) {
 	return value
 }
 
-function getGameStars(pie, stars){
+function getGame(){
 	$.ajax({
 	    url: '/game',
 	    type: 'GET',
@@ -12,10 +12,16 @@ function getGameStars(pie, stars){
 	    dataType: 'json',
 	    success: function (data) {
 	        console.log(data);
-	        if(pie != null){
-	            pie.data.datasets[0].data[0] = data.totalStars - stars;
-                pie.update();
-	        }
+	        document.getElementById("gameName").innerHTML = data.name;
+	        if(data.isStarted){
+	            document.getElementById("gameStarted").innerHTML = data.startTime;
+            }else{
+                document.getElementById("gameStarted").innerHTML = "false";
+            }
+	        document.getElementById("gamePaused").innerHTML = data.isPaused;
+	        document.getElementById("gamePlayers").innerHTML = data.playerCount;
+	        document.getElementById("gameTeams").innerHTML = data.teamCount;
+	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
 	    },
 	    error: function(xhr, status, error){
 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -23,37 +29,15 @@ function getGameStars(pie, stars){
 	});
 }
 
-function getTeamPlayerStars(pie, teamName, stars){
- 	$.ajax({
- 	    url: "/teams/" + teamName + "/players",
- 	    type: 'GET',
- 	    contentType: 'application/json',
- 	    dataType: 'json',
- 	    success: function (data) {
-	        console.log(data);
- 	        if(pie != null){
- 	            for(count = 0; count < data.length; count++){
- 	                var member = data[count]
- 	                pie.data.labels[count + 1] = member.alias;
- 	                pie.data.datasets[0].data[count + 1] = member.stars;
-                }
-                getGameStars(pie, stars)
- 	        }
- 	    },
- 	    error: function(xhr, status, error){
- 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
- 	    }
- 	});
+function getGameStars(pie, stars){
+	console.log("Depreciated")
 }
 
-var dynamicColors = function() {
-    var r = Math.floor(Math.random() * 255);
-    var g = Math.floor(Math.random() * 255);
-    var b = Math.floor(Math.random() * 255);
-    return "rgb(" + r + "," + g + "," + b + ",0.5)";
-};
+function getTeamPlayerStars(pie, teamName, stars){
+	console.log("Depreciated")
+}
 
-function getTeamStars(pie, totalStars){
+function getTeamStars(totalStars){
  	$.ajax({
  	    url: "/teams",
  	    type: 'GET',
@@ -61,23 +45,24 @@ function getTeamStars(pie, totalStars){
  	    dataType: 'json',
  	    success: function (data) {
 	        console.log(data);
- 	        if(pie != null){
- 	            var starCount = 0
- 	            for(teamCount = 0; teamCount < data.length; teamCount++){
- 	                var team = data[teamCount]
- 	                pie.data.labels[teamCount + 1] = team.name;
- 	                var teamStars = 0
- 	                for(memberCount = 0; memberCount < team.members.length; memberCount++){
- 	                    var member = team.members[memberCount]
- 	                    teamStars += member.stars
- 	                }
- 	                pie.data.datasets[0].data[teamCount + 1] = teamStars;
- 	                pie.data.datasets[0].backgroundColour[teamCount + 1] = dynamicColors();
- 	                starCount += teamStars;
-                }
-	            pie.data.datasets[0].data[0] = totalStars - starCount;
-                pie.update();
- 	        }
+			var teamLabels = []
+			var teamData = []
+			teamLabels.push("Stars Left")
+			teamData.push(1)
+			var starCount = 0
+			for(count = 0; count < data.length; count++){
+				var team = data[count]
+				teamLabels.push(team.alias);
+				var teamStars = 0
+				for(memberCount = 0; memberCount < team.members.length; memberCount++){
+					var member = team.members[memberCount]
+					teamStars += member.stars
+				}
+				teamData.push(teamStars);
+				starCount += teamStars;
+			}
+			teamData[0] = totalStars - starCount;
+			createPieGraph(teamLabels, teamData)
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -95,22 +80,17 @@ function getPlayerStars(totalStars){
 			console.log(data);
 			var playerLabels = []
 			var playerData = []
-			var playerColour = []
 			playerLabels.push("Stars Left")
 			playerData.push(1)
-			playerColour.push('rgba(230, 25, 75, 0.5)')
 			var starCount = 0
 			for(count = 0; count < data.length; count++){
 				var player = data[count]
 				playerLabels.push(player.alias);
 				playerData.push(player.stars);
-				playerColour.push(dynamicColors());
 				starCount += player.stars;
 			}
-			console.log("Player Data: " + playerData)
-			console.log("Star Data: " + playerData[0])
 			playerData[0] = totalStars - starCount;
-			createPieGraph(playerLabels, playerData, playerColour)
+			createPieGraph(playerLabels, playerData)
 		},
 		error: function(xhr, status, error){
 			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -118,7 +98,7 @@ function getPlayerStars(totalStars){
 	});
 }
 
-function createPieGraph(labels, data, colour){
+function createPieGraph(labels, data){
 	var ctx = document.getElementById("winPie");
 	var pieGraph = new Chart(ctx, {
 		type: 'pie',
