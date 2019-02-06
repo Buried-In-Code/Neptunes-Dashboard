@@ -1,7 +1,7 @@
 function getGame(){
 	var gameStars = 700;
 	$.ajax({
-	    url: '/game',
+	    url: '/api/game',
 	    type: 'GET',
 	    contentType: 'application/json',
 	    dataType: 'json',
@@ -28,7 +28,7 @@ function getGame(){
 
 function getAllTeamStars(totalStars){
  	$.ajax({
- 	    url: "/teams",
+ 	    url: "/api/teams",
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',
@@ -61,7 +61,7 @@ function getAllTeamStars(totalStars){
 
 function getTeamStars(name){
  	$.ajax({
- 	    url: "/teams/" + name,
+ 	    url: "/api/teams/" + name,
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',

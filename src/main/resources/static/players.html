@@ -37,7 +37,7 @@ $(document).ready(function(){
 	var table = $('#leaderboard').DataTable({
 		"processing" : true,
 		"ajax" : {
-			"url" : "/players",
+			"url" : "/api/players",
 			type: 'GET',
 			contentType: 'application/json',
 			dataType: 'json',

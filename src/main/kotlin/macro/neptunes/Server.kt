@@ -9,9 +9,11 @@ import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
+import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.CachingOptions
 import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
@@ -135,10 +137,12 @@ fun Application.module() {
 		LOGGER.debug("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
 	}
 	install(Routing) {
-		gameRoutes()
-		playerRoutes()
-		teamRoutes()
-		settingRoutes()
+		route(path = "/api") {
+			gameRoutes()
+			playerRoutes()
+			teamRoutes()
+			settingRoutes()
+		}
 		route(path = "/players/{Alias}") {
 			get {
 				val alias = call.parameters["Alias"]

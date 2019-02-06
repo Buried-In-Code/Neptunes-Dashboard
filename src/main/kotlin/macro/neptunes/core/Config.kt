@@ -19,7 +19,6 @@ class Config internal constructor(
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
 	var gameID: Long = 1,
-	var gameName: String = "Unknown",
 	var refreshRate: Int = 60,
 	var players: Map<String, String> = mapOf("Alias" to "Name"),
 	var teams: Map<String, List<String>> = mapOf("Team" to listOf("Name"))
@@ -76,8 +75,6 @@ class Config internal constructor(
 			val proxyPort: Int? = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
 			val gameID: Long = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
 				?: 1
-			val gameName: String = (data["Game"] as Map<String, Any?>?)?.get("Name") as String?
-				?: "Unknown"
 			val serverAddress: String = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 				?: "localhost"
 			val serverPort: Int = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
@@ -94,7 +91,6 @@ class Config internal constructor(
 				proxyHostname = proxyHostname,
 				proxyPort = proxyPort,
 				gameID = gameID,
-				gameName = gameName,
 				refreshRate = refreshRate,
 				players = players,
 				teams = teams
@@ -114,8 +110,7 @@ internal fun Config.toMap(): Map<String, Any?> {
 			"Port" to this.proxyPort
 		),
 		"Game" to mapOf(
-			"ID" to this.gameID,
-			"Name" to this.gameName
+			"ID" to this.gameID
 		),
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
