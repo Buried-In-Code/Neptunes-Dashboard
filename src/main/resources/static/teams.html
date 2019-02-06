@@ -15,13 +15,11 @@
 		<thead class="thead-dark">
 		<tr>
 			<th>Name</th>
-			<th>Alias</th>
-			<th>Team</th>
-			<th>Stars</th>
-			<th>Ships</th>
-			<th>Economy</th>
-			<th>Industry</th>
-			<th>Science</th>
+			<th>Total Stars</th>
+			<th>Total Ships</th>
+			<th>Total Economy</th>
+			<th>Total Industry</th>
+			<th>Total Science</th>
 		</tr>
 		</thead>
 	</table>
@@ -37,7 +35,7 @@ $(document).ready(function(){
 	var table = $('#leaderboard').DataTable({
 		"processing" : true,
 		"ajax" : {
-			"url" : "/players",
+			"url" : "/teams",
 			type: 'GET',
 			contentType: 'application/json',
 			dataType: 'json',
@@ -47,19 +45,17 @@ $(document).ready(function(){
 		"searching": false,
 		"columns" : [
 			{ "data" : "name" },
-			{ "data" : "alias" },
-			{ "data" : "team" },
-			{ "data" : "stars", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "ships", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "economy", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "industry", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "science", render: $.fn.dataTable.render.number( ',' ) }
+			{ "data" : "totalStars", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalShips", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalEconomy", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalIndustry", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalScience", render: $.fn.dataTable.render.number( ',' ) }
 		]
 	});
 	$('#leaderboard tbody').on('click', 'tr', function () {
         var data = table.row( this ).data();
         console.log("Selected: " + data);
-        window.location.href = '/players/' + data.alias;
+        window.location.href = '/teams/' + data.name;
     } );
 });
 </script>

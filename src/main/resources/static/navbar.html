@@ -1,57 +1,35 @@
-<nav aria-label="main navigation" class="navbar is-dark is-fixed-top" role="navigation">
-	<div class="navbar-brand">
-		<a class="navbar-item" href="https://np.ironhelmet.com">
-			<img height="28" src="https://np.ironhelmet.com/images/neptunes_pride.jpg" width="112">
-		</a>
-	</div>
-	<div class="navbar-menu" id="navbarBasicMenu">
-		<div class="navbar-start">
-			<a class="navbar-item" href="/">
-				<span class="icon">
-					<i class="fas fa-home" aria-hidden="true"></i>
-				</span>
-				<span>Home</span>
-			</a>
-			<a class="navbar-item" href="/players">
-				<span class="icon">
-					<i class="fas fa-user" aria-hidden="true"></i>
-				</span>
-				<span>Players</span>
-			</a>
-			<a class="navbar-item" href="/players/leaderboard">
-				<span class="icon">
-					<i class="fas fa-list-ol" aria-hidden="true"></i>
-				</span>
-				<span>Player Leaderboard</span>
-			</a>
-			<a class="navbar-item" href="/teams">
-				<span class="icon">
-					<i class="fas fa-users" aria-hidden="true"></i>
-				</span>
-				<span>Teams</span>
-			</a>
-			<a class="navbar-item" href="/teams/leaderboard">
-				<span class="icon">
-					<i class="fas fa-list-ol" aria-hidden="true"></i>
-				</span>
-				<span>Team Leaderboard</span>
-			</a>
-			<a class="navbar-item" href="/documentation">
-				<span class="icon">
-					<i class="fas fa-book" aria-hidden="true"></i>
-				</span>
-				<span>Documentation</span>
-			</a>
-			<div class="navbar-item has-dropdown is-hoverable">
-				<a class="navbar-link">More</a>
-				<div class="navbar-dropdown">
-					<a class="navbar-item" href="/settings">Settings</a>
-					<a class="navbar-item" href="/about">About</a>
-					<hr class="navbar-divider">
-					<a class="navbar-item" href="https://github.com/Macro303/Neptunes-Pride">Git Repo</a>
-					<a class="navbar-item" href="https://github.com/Macro303/Neptunes-Pride/issues">Report an issue</a>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+	<a class="navbar-brand" href="https://np.ironhelmet.com">
+		<img height="50" src="https://np.ironhelmet.com/images/neptunes_pride.jpg" width="200">
+	</a>
+	<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+	        data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="/">Home</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/players">Players</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/teams">Teams</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="/documentation">Documentation</a>
+			</li>
+			<li class="nav-item dropdown">
+				<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown"
+				   id="navbarDropdownMenuLink" role="button">
+					More
+				</a>
+				<div aria-labelledby="navbarDropdownMenuLink" class="dropdown-menu">
+					<a class="dropdown-item" href="/settings">Settings</a>
+					<a class="dropdown-item" href="/about">About</a>
 				</div>
-			</div>
-		</div>
+			</li>
+		</ul>
 	</div>
 </nav>

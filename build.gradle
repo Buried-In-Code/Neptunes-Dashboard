@@ -48,14 +48,12 @@ repositories {
 
 dependencies {
 	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "$kotlin_version"
-	implementation group: 'org.jetbrains.exposed', name: 'exposed', version: '0.12.1'
 	implementation group: 'com.github.salomonbrys.kotson', name: 'kotson', version: '2.5.0'
 	implementation group: 'org.yaml', name: 'snakeyaml', version: '1.23'
 	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktor_version"
 	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktor_version"
 	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktor_version"
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "$logger_version"
-	runtimeOnly group: 'org.xerial', name: 'sqlite-jdbc', version: '3.25.2'
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: "$logger_version"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j18-impl', version: "$logger_version"
 }

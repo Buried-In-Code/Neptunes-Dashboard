@@ -4,80 +4,78 @@
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel="stylesheet">
-	<link href="/styles.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+	<link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
-<body class="has-navbar-fixed-top">
+<body>
 <div id="navbar"></div>
-<section class="section">
-	<div class="container">
-		<section class="hero is-dark is-bold opacity">
-			<div class="hero-body">
-				<div class="container">
-					<h1 class="title">Welcome to BIT269's Neptune's Pride</h1>
-					<h2 class="subtitle">
-						<i>Put Welcome message here</i>
-					</h2>
-				</div>
-			</div>
-		</section>
+<div class="container">
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h1 class="card-title">Welcome to BIT269's Neptune's Pride</h1>
+			<p class="card-text"><i>Put Welcome message here</i></p>
+		</div>
 	</div>
-</section>
-<section class="section">
-	<div class="container">
-		<article class="message is-dark opacity">
-			<div class="message-header">
-				<p id="gameName">{{Game Name}}</p>
+	<div class="card-columns mb-4">
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Name</h3>
+				<p id="gameName" class="card-text">{{Game Name}}</p>
 			</div>
-			<div class="message-body">
-				<div class="columns is-vcentered">
-					<div class="column">
-						<p class="heading">Started</p>
-						<p id="gameStarted" class="title">{{Game Started}}</p>
-					</div>
-					<div class="column">
-						<p class="heading">Paused</p>
-						<p id="gamePaused" class="title">{{Game Paused}}</p>
-					</div>
-					<div class="column">
-						<div>
-							<p class="heading"># of Players</p>
-							<p id="gamePlayers" class="title">{{Game Players}}</p>
-						</div>
-					</div>
-					<div class="column">
-						<div>
-							<p class="heading"># of Teams</p>
-							<p id="gameTeams" class="title">{{Game Teams}}</p>
-						</div>
-					</div>
-					<div class="column">
-						<div>
-							<p class="heading">Stars to Win</p>
-							<p id="gameStars" class="title">{{Game Victory}}/{{Game Total}}</p>
-						</div>
-					</div>
-				</div>
-				<hr />
-				<div class="chart-container">
-					<canvas id="winPie" width="600" height="400"></canvas>
-				</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Started</h3>
+				<p id="gameStarted" class="card-text">{{Game Started}}</p>
 			</div>
-		</article>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Paused</h3>
+				<p id="gamePaused" class="card-text">{{Game Paused}}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title"># of Players</h3>
+				<p id="gamePlayers" class="card-text">{{Game Players}}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title"># of Teams</h3>
+				<p id="gameTeams" class="card-text">{{Game Teams}}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Stars to Win</h3>
+				<p id="gameStars" class="card-text">{{Game Victory}}/{{Game Total}}</p>
+			</div>
+		</div>
 	</div>
-</section>
-<script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js"></script>
-<script src="/table-sort.js"></script>
-<script src="/script.js"></script>
-<script>
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<div class="chart-container">
+				<canvas id="winPie" width="600" height="400"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/script.js"></script>
+<script type="text/javascript" charset="utf8">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	getGame();
-	getPlayerStars(700);
+	var totalStars = getGame();
+	console.log("Total Stars: " + totalStars)
+	getAllTeamStars(totalStars);
 });
 </script>
 </body>

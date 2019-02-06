@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager
 data class Player(
 	val name: String,
 	val alias: String,
+	var team: String = "Unknown",
 	val industry: Int,
 	val science: Int,
 	val economy: Int,
@@ -24,8 +25,6 @@ data class Player(
 	val banking: Int,
 	val manufacturing: Int
 ) : Comparable<Player> {
-	var team: String = "Unknown"
-
 	fun playerName() = "$name ($alias)"
 
 	fun calcComplete(): Double {
@@ -46,13 +45,14 @@ data class Player(
 	}
 
 	override fun compareTo(other: Player): Int {
-		return byName.then(byAlias).compare(this, other)
+		return byTeam.then(byName).then(byAlias).compare(this, other)
 	}
 
 	fun toJson(): Map<String, Any?> {
 		val data = mapOf(
 			"name" to name,
 			"alias" to alias,
+			"team" to team,
 			"industry" to industry,
 			"science" to science,
 			"economy" to economy,

@@ -3,144 +3,44 @@
 <head>
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
-	<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-	<link href="/styles.css" rel="stylesheet"/>
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 <body>
-<div class="ui relaxed stackable grid">
-	<div class="three wide column">
-		<div class="ui large left fixed inverted vertical menu">
-			<h1 class="ui center aligned icon orange inverted header">
-				<img class="circular icon" src="/favicon.ico"/>Neptune's Pride
-			</h1>
-			<a class="item" href="/">
-				<i class="home icon"></i>Home
-			</a>
-			<a class="item" href="/game">
-				<i class="gamepad icon"></i>Game
-			</a>
-			<a class="item" href="/players">
-				<i class="user icon"></i>Players
-			</a>
-			<a class="item" href="/players/leaderboard">
-				<i class="list ol icon"></i>Player Leaderboard
-			</a>
-			<a class="item active" href="/teams">
-				<i class="users icon"></i>Teams
-			</a>
-			<a class="item" href="/teams/leaderboard">
-				<i class="list ol icon"></i>Team Leaderboard
-			</a>
-			<a class="item" href="/settings">
-				<i class="cogs icon"></i>Settings
-			</a>
-			<a class="item" href="/help">
-				<i class="question circle icon"></i>Help
-			</a>
+<div id="navbar"></div>
+<div class="container">
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h1 class="card-title">${name}</h1>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item list-group-item-dark"><strong>Stars:</strong> ${totalStars}</li>
+				<li class="list-group-item list-group-item-dark"><strong>Ships:</strong> ${totalShips}</li>
+				<li class="list-group-item list-group-item-dark"><strong>Fleet:</strong> ${totalFleet}</li>
+				<li class="list-group-item list-group-item-dark"><strong>Economy:</strong> ${totalEconomy}</li>
+				<li class="list-group-item list-group-item-dark"><strong>Industry:</strong> ${totalIndustry}</li>
+				<li class="list-group-item list-group-item-dark"><strong>Science:</strong> ${totalScience}</li>
+			</ul>
 		</div>
 	</div>
-	<div class="twelve wide stretched column" style="margin-top: 25px; margin-bottom: 25px;">
-		<div class="ui inverted segment opacity">
-			<h2 class="ui center aligned header">${name}</h2>
-			<div class="ui relaxed stackable grid">
-				<div class="three wide column">
-					<ul>
-						<li><strong>Stars:</strong> ${totalStars}</li>
-						<li><strong>Fleet:</strong> ${totalFleet}</li>
-						<li><strong>Economy:</strong> ${totalEconomy}</li>
-						<li><strong>Industry:</strong> ${totalIndustry}</li>
-						<li><strong>Science:</strong> ${totalScience}</li>
-						<li><strong>Ships:</strong> ${totalShips}</li>
-						<li><strong>Technology:</strong>
-							<ul>
-								<li><strong>Scanning:</strong> ${technology.scanning}</li>
-								<li><strong>Hyperspace:</strong> ${technology.hyperspace}</li>
-								<li><strong>Terraforming:</strong> ${technology.terraforming}</li>
-								<li><strong>Experimentation:</strong> ${technology.experimentation}</li>
-								<li><strong>Weapons:</strong> ${technology.weapons}</li>
-								<li><strong>Banking:</strong> ${technology.banking}</li>
-								<li><strong>Manufacturing:</strong> ${technology.manufacturing}</li>
-							</ul>
-						</li>
-					</ul>
-				</div>
-				<div class="twelve wide stretched column">
-					<h3 class="ui center aligned header inverted">Stars</h3>
-					<div class="chart-container">
-						<canvas id="winPie" width="400" height="400">
-							<p>Star Percentage</p>
-						</canvas>
-					</div>
-				</div>
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<div class="chart-container">
+				<canvas id="winPie" width="600" height="400"></canvas>
 			</div>
 		</div>
 	</div>
 </div>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.4.0"></script>
-<script src="/table-sort.js"></script>
-<script src="/script.js"></script>
-<script>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/script.js"></script>
+<script type="text/javascript" charset="utf8">
 $(document).ready(function(){
-	getTeamPlayerStars(winPie, "${name}", ${totalStars});
-});
-var ctx = document.getElementById("winPie");
-var winPie = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: ["Stars Left", "Stars"],
-        datasets: [{
-            data: [0, ${totalStars}],
-            backgroundColor: [
-                'rgba(229, 115, 115, 0.5)',
-                'rgba(186, 104, 200, 0.5)',
-                'rgba(100, 181, 246, 0.5)',
-                'rgba(129, 199, 132, 0.5)',
-                'rgba(255, 213, 79, 0.5)',
-                'rgba(161, 136, 127, 0.5)',
-                'rgba(224, 224, 224, 0.5)'
-            ],
-            borderColor: [
-                'rgba(211, 47, 47, 1)',
-                'rgba(123, 31, 162, 1)',
-                'rgba(25, 118, 210, 1)',
-                'rgba(56, 142, 60, 1)',
-                'rgba(255, 160, 0, 1)',
-                'rgba(93, 64, 55, 1)',
-                'rgba(97, 97, 97, 1)'
-            ],
-            borderWidth: 2
-        }]
-    },
-    options: {
-        legend: {
-            labels: {
-                fontColor: "white",
-                fontSize: 14
-            }
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            datalabels: {
-                color: 'white',
-                display: function(context) {
-                    var dataset = context.dataset;
-                    var count = dataset.data.length;
-                    var value = dataset.data[context.dataIndex];
-                    return value > count;
-                },
-                font: {
-                    weight: 'bold'
-                },
-                formatter: Math.round
-            }
-        }
-    }
+	$("#navbar").load("/navbar.html");
+	getTeamStars("${name}");
 });
 </script>
 </body>

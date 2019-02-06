@@ -2,7 +2,6 @@ package macro.neptunes.core.game
 
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.data.RESTClient
-import macro.neptunes.database.GameTable
 import org.apache.logging.log4j.LogManager
 import java.time.Instant
 import java.time.LocalDateTime
@@ -41,9 +40,8 @@ object GameHandler {
 		val startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(startTimeLong), ZoneId.systemDefault())
 		val totalStars = data.getOrDefault("total_stars", null)?.toString()?.toDoubleOrNull()?.roundToInt()
 			?: return null
-		val productionCounter =
-			data.getOrDefault("production_counter", null)?.toString()?.toDoubleOrNull()?.roundToInt()
-				?: return null
+		val productionCounter = data.getOrDefault("production_counter", null)?.toString()?.toDoubleOrNull()?.roundToInt()
+			?: return null
 		val tradeScanned = data.getOrDefault("trade_scanned", null)?.toString()?.toDoubleOrNull()?.roundToInt()
 			?: return null
 		val tick = data.getOrDefault("tick", null)?.toString()?.toDoubleOrNull()?.roundToInt()
@@ -58,10 +56,9 @@ object GameHandler {
 			?: return null
 		val war = data.getOrDefault("war", null)?.toString()?.toDoubleOrNull()?.roundToInt()
 			?: return null
-		val turnBasedTimeout =
-			data.getOrDefault("turn_based_time_out", null)?.toString()?.toDoubleOrNull()?.roundToInt()
-				?: return null
-		return GameTable.insert(
+		val turnBasedTimeout = data.getOrDefault("turn_based_time_out", null)?.toString()?.toDoubleOrNull()?.roundToInt()
+			?: return null
+		return Game(
 			fleetSpeed = fleetSpeed,
 			isPaused = isPaused,
 			productions = productions,

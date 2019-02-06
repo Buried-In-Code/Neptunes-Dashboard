@@ -3,7 +3,6 @@ package macro.neptunes.core.game
 import macro.neptunes.core.Util
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -13,6 +12,7 @@ data class Game(
 	val fleetSpeed: Double,
 	val isPaused: Boolean,
 	val productions: Int,
+	val tickFragment: Int,
 	val tickRate: Int,
 	val productionRate: Int,
 	val victoryStars: Int,
@@ -21,10 +21,14 @@ data class Game(
 	val startTime: LocalDateTime,
 	val totalStars: Int,
 	val productionCounter: Int,
+	val tradeScanned: Int,
 	val tick: Int,
 	val tradeCost: Int,
 	val name: String,
-	val isTurnBased: Boolean
+	val admin: Int,
+	val isTurnBased: Boolean,
+	val war: Int,
+	val turnBasedTimeout: Int
 ) {
 	fun toJson(): Map<String, Any?> {
 		val data = mapOf(

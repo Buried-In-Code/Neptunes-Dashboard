@@ -22,7 +22,6 @@ class Config internal constructor(
 	var gameName: String = "Unknown",
 	var refreshRate: Int = 60,
 	var players: Map<String, String> = mapOf("Alias" to "Name"),
-	var enableTeams: Boolean = false,
 	var teams: Map<String, List<String>> = mapOf("Team" to listOf("Name"))
 ) {
 	val proxy: Proxy?
@@ -87,8 +86,6 @@ class Config internal constructor(
 				?: 60
 			val players: Map<String, String> = data["Players"] as Map<String, String>?
 				?: mapOf("Alias" to "Name")
-			val enableTeams: Boolean = data["Enable Teams"] as Boolean?
-				?: false
 			val teams: Map<String, List<String>> = data["Teams"] as Map<String, List<String>>?
 				?: mapOf("Team" to listOf("Name"))
 			return Config(
@@ -100,7 +97,6 @@ class Config internal constructor(
 				gameName = gameName,
 				refreshRate = refreshRate,
 				players = players,
-				enableTeams = enableTeams,
 				teams = teams
 			)
 		}
@@ -123,8 +119,7 @@ internal fun Config.toMap(): Map<String, Any?> {
 		),
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
-		"Enable Teams" to this.enableTeams,
 		"Teams" to this.teams
 	)
-	return (if (!this.enableTeams) data.filterNot { it.key == "Teams" } else data).toSortedMap()
+	return data.toSortedMap()
 }

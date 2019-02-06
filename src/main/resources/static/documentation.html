@@ -5,92 +5,53 @@
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" rel="stylesheet">
-	<link href="/styles.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 
-<body class="has-navbar-fixed-top">
+<body>
 <div id="navbar"></div>
-<section class="section">
-	<div class="container">
-		<article class="message is-dark">
-			<div class="message-header">
-				<h2>GAME</h2>
-			</div>
-			<div class="message-body">
-				<h3><code>GET /game</code></h3>
-				<p>Read game data</p>
-				<h3><code>PUT /refresh</code></h3>
-				<p>Update/Refresh all the game data</p>
-			</div>
-		</article>
+<div class="container">
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h3 class="card-title">GAME</h3>
+			<p class="card-text"><code>GET /game</code><br />Read game data</p>
+			<p class="card-text"><code>PUT /refresh</code><br />Update/Refresh all the game data</p>
+		</div>
 	</div>
-</section>
-<section class="section">
-	<div class="container">
-		<article class="message is-dark">
-			<div class="message-header">
-				<h2>PLAYERS</h2>
-			</div>
-			<div class="message-body">
-				<h3><code>POST /players</code></h3>
-				<p>Create Player - Requires body on request</p>
-				<h3><code>GET /players</code></h3>
-				<p>Read All Players</p>
-				<h3><code>GET /players/leaderboard</code></h3>
-				<p>Read the Player's Leaderboard</p>
-				<h3><code>GET /players/:alias</code></h3>
-				<p>Read One Player</p>
-				<h3><code>PUT /players/:alias</code></h3>
-				<p>Update Player - Requires body on request</p>
-				<h3><code>DELETE /players/:alias</code></h3>
-				<p>Delete Player</p>
-			</div>
-		</article>
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h3 class="card-title">PLAYERS</h3>
+			<p class="card-text"><code>POST /players</code><br />Create Player - Requires body on request</p>
+			<p class="card-text"><code>GET /players</code><br />Read All Players</p>
+			<p class="card-text"><code>GET /players/:alias</code><br />Read One Players</p>
+			<p class="card-text"><code>PUT /players/:alias</code><br />Update Player - Requires body on request</p>
+			<p class="card-text"><code>DELETE /players/:alias</code><br />Delete Player</p>
+		</div>
 	</div>
-</section>
-<section class="section">
-	<div class="container">
-		<article class="message is-dark">
-			<div class="message-header">
-				<h2>TEAMS</h2>
-			</div>
-			<div class="message-body">
-				<h3><code>POST /teams</code></h3>
-				<p>Create Team - Requires body on request</p>
-				<h3><code>GET /teams</code></h3>
-				<p>Read All Teams</p>
-				<h3><code>GET /teams/leaderboard</code></h3>
-				<p>Read the Team's Leaderboard</p>
-				<h3><code>GET /teams/:name</code></h3>
-				<p>Read One Team</p>
-				<h3><code>PUT /teams/:name</code></h3>
-				<p>Update Team - Requires body on request</p>
-				<h3><code>DELETE /teams/:name</code></h3>
-				<p>Delete Team</p>
-			</div>
-		</article>
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h3 class="card-title">TEAMS</h3>
+			<p class="card-text"><code>POST /teams</code><br />Create Team - Requires body on request</p>
+			<p class="card-text"><code>GET /teams</code><br />Read All Teams</p>
+			<p class="card-text"><code>GET /teams/:name</code><br />Read One Teams</p>
+			<p class="card-text"><code>PUT /teams/:name</code><br />Update Team - Requires body on request</p>
+			<p class="card-text"><code>DELETE /teams/:name</code><br />Delete Team</p>
+		</div>
 	</div>
-</section>
-<section class="section">
-	<div class="container">
-		<article class="message is-dark">
-			<div class="message-header">
-				<h2>SETTINGS</h2>
-			</div>
-			<div class="message-body">
-				<h3><code>GET /settings</code></h3>
-				<p>Read Settings</p>
-				<h3><code>PUT /settings</code></h3>
-				<p>Update Settings - Requires body on request</p>
-			</div>
-		</article>
+	<div class="card text-white bg-dark mb-4">
+		<div class="card-body">
+			<h3 class="card-title">SETTINGS</h3>
+			<p class="card-text"><code>GET /settings</code><br />Read settings</p>
+			<p class="card-text"><code>PUT /settings</code><br />Update Settings - Requires body on request</p>
+		</div>
 	</div>
-</section>
-<script src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="/script.js"></script>
-<script>
+</div>
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" charset="utf8" src="/script.js"></script>
+<script type="text/javascript" charset="utf8">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
 });

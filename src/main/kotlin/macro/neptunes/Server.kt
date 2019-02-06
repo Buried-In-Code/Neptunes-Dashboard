@@ -31,7 +31,6 @@ import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.ErrorMessage
 import macro.neptunes.data.GameController.gameRoutes
-import macro.neptunes.data.Message
 import macro.neptunes.data.PlayerController.playerRoutes
 import macro.neptunes.data.SettingsController.settingRoutes
 import macro.neptunes.data.TeamController.teamRoutes
@@ -74,10 +73,7 @@ object Server {
 		if (difference.toMinutes() > CONFIG.refreshRate) {
 			GameHandler.refreshData()
 			PlayerHandler.refreshData()
-			if (CONFIG.enableTeams)
-				TeamHandler.refreshData()
-			else
-				TeamHandler.teams = emptyList()
+			TeamHandler.refreshData()
 			lastUpdate = LocalDateTime.now()
 			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
 		}
@@ -143,27 +139,15 @@ fun Application.module() {
 		playerRoutes()
 		teamRoutes()
 		settingRoutes()
-		route(path = "/players") {
+		route(path = "/players/{Alias}") {
 			get {
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Player-List.ftl",
-						model = mapOf("Players" to PlayerHandler.players.sorted().map { it.toJson() })
-					),
-					status = HttpStatusCode.OK
-				)
-			}
-			get(path = "/{Alias}") {
-				val alias = call.parameters["Alias"] ?: "Unknown"
-				val player = PlayerHandler.players.sorted().firstOrNull { it.alias == alias }
-				if (player == null)
+				val alias = call.parameters["Alias"]
+				val player = PlayerHandler.players.sorted().firstOrNull { it.alias.equals(alias, ignoreCase = true) }
+				if (alias == null || player == null)
 					call.respond(
 						message = FreeMarkerContent(
 							template = "Message.ftl",
-							model = Message(
-								title = "No Player Found",
-								content = "No Player was found with the Alias: $alias"
-							)
+							model = Util.notFoundMessage(type = "Player", field = "Alias", value = alias)
 						),
 						status = HttpStatusCode.NotFound
 					)
@@ -176,37 +160,16 @@ fun Application.module() {
 						status = HttpStatusCode.OK
 					)
 			}
-			get(path = "/leaderboard") {
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Player-Leaderboard.ftl",
-						model = mapOf("Leaderboard" to PlayerHandler.players.sorted().map { it.toJson() })
-					),
-					status = HttpStatusCode.OK
-				)
-			}
 		}
-		route(path = "/teams") {
+		route(path = "/teams/{Name}") {
 			get {
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Team-List.ftl",
-						model = mapOf("Teams" to TeamHandler.teams.sorted().map { it.toJson() })
-					),
-					status = HttpStatusCode.OK
-				)
-			}
-			get(path = "/{Name}") {
-				val name = call.parameters["Name"] ?: "Unknown"
-				val team = TeamHandler.teams.sorted().firstOrNull { it.name == name }
-				if (team == null)
+				val name = call.parameters["Name"]
+				val team = TeamHandler.teams.sorted().firstOrNull { it.name.equals(name, ignoreCase = true) }
+				if (name == null || team == null)
 					call.respond(
 						message = FreeMarkerContent(
 							template = "Message.ftl",
-							model = Message(
-								title = "No Team Found",
-								content = "No Team was found with the Alias: $name"
-							)
+							model = Util.notFoundMessage(type = "Team", field = "Name", value = name)
 						),
 						status = HttpStatusCode.NotFound
 					)
@@ -219,15 +182,6 @@ fun Application.module() {
 						status = HttpStatusCode.OK
 					)
 			}
-			get(path = "/leaderboard") {
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Team-Leaderboard.ftl",
-						model = mapOf("Leaderboard" to TeamHandler.teams.sorted().map { it.toJson() })
-					),
-					status = HttpStatusCode.OK
-				)
-			}
 		}
 		get(path = "/settings") {
 			call.respond(
@@ -237,15 +191,24 @@ fun Application.module() {
 				), status = HttpStatusCode.NotImplemented
 			)
 		}
+		get(path = "/about") {
+			call.respond(
+				message = FreeMarkerContent(
+					template = "Message.ftl",
+					model = Util.notImplementedMessage(request = call.request)
+				), status = HttpStatusCode.NotImplemented
+			)
+		}
 		static {
 			defaultResource(resource = "static/index.html")
+			resource(remotePath = "/players", resource = "static/players.html")
+			resource(remotePath = "/teams", resource = "static/teams.html")
 			resource(remotePath = "/documentation", resource = "static/documentation.html")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
 			resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
 			resource(remotePath = "/styles.css", resource = "static/css/styles.css")
 			resource(remotePath = "/script.js", resource = "static/js/script.js")
-			resource(remotePath = "/table-sort.js", resource = "static/js/table-sort.js")
 		}
 	}
 }
