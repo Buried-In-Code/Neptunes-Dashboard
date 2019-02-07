@@ -24,19 +24,12 @@ object PlayerController {
 
 	suspend fun ApplicationCall.parsePlayer(): Player? {
 		val alias = parameters["Alias"]
-		if (alias == null) {
-			respond(
-				message = Util.notFoundMessage(type = "Player", field = "Alias", value = alias),
-				status = HttpStatusCode.NotFound
-			)
-			return null
-		}
 		val player = PlayerHandler.players.sortedBy { it.alias }.firstOrNull {
 			it.alias.equals(alias, ignoreCase = true)
 		}
-		if (player == null) {
+		if (alias == null || player == null) {
 			respond(
-				message = Util.notFoundMessage(type = "Player", field = "Alias", value = alias),
+				message = Util.notFoundMessage(request = request, type = "Player", field = "Alias", value = alias),
 				status = HttpStatusCode.NotFound
 			)
 			return null

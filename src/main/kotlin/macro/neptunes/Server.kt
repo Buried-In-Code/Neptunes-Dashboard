@@ -9,11 +9,9 @@ import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
-import io.ktor.http.CacheControl
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.CachingOptions
 import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
@@ -42,7 +40,7 @@ import java.time.LocalDateTime
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(Server::class.java)
-	private var lastUpdate = LocalDateTime.now().minusMinutes((CONFIG.refreshRate + 100).toLong())
+	internal var lastUpdate = LocalDateTime.now().minusMinutes((CONFIG.refreshRate + 100).toLong())
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
@@ -70,15 +68,11 @@ object Server {
 	}
 
 	fun refreshData() {
-		val now: LocalDateTime = LocalDateTime.now()
-		val difference: Duration = Duration.between(lastUpdate, now)
-		if (difference.toMinutes() > CONFIG.refreshRate) {
-			GameHandler.refreshData()
-			PlayerHandler.refreshData()
-			TeamHandler.refreshData()
-			lastUpdate = LocalDateTime.now()
-			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
-		}
+		GameHandler.refreshData()
+		PlayerHandler.refreshData()
+		TeamHandler.refreshData()
+		lastUpdate = LocalDateTime.now()
+		LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
 	}
 }
 
@@ -121,7 +115,6 @@ fun Application.module() {
 				request = call.request.local.uri,
 				message = "Unable to find endpoint"
 			)
-			LOGGER.error("${error.message}: ${error.request}", error.cause)
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(status = error.code, message = error)
 			else
@@ -130,10 +123,20 @@ fun Application.module() {
 	}
 	intercept(ApplicationCallPipeline.Setup) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
-		refreshData()
+		val now: LocalDateTime = LocalDateTime.now()
+		val difference: Duration = Duration.between(Server.lastUpdate, now)
+		if (difference.toMinutes() > CONFIG.refreshRate) {
+			refreshData()
+		}
 	}
 	intercept(ApplicationCallPipeline.Fallback) {
-		LOGGER.info("${call.response.status()} << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+		val statusCode = call.response.status()
+		when (statusCode) {
+			null -> LOGGER.error("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+			HttpStatusCode.NotFound -> LOGGER.error("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+			HttpStatusCode.NotImplemented -> LOGGER.warn("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+			else -> LOGGER.info("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+		}
 		LOGGER.debug("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
 	}
 	install(Routing) {
@@ -150,8 +153,13 @@ fun Application.module() {
 				if (alias == null || player == null)
 					call.respond(
 						message = FreeMarkerContent(
-							template = "Message.ftl",
-							model = Util.notFoundMessage(type = "Player", field = "Alias", value = alias)
+							template = "Exception.ftl",
+							model = Util.notFoundMessage(
+								request = call.request,
+								type = "Player",
+								field = "Alias",
+								value = alias
+							)
 						),
 						status = HttpStatusCode.NotFound
 					)
@@ -172,8 +180,13 @@ fun Application.module() {
 				if (name == null || team == null)
 					call.respond(
 						message = FreeMarkerContent(
-							template = "Message.ftl",
-							model = Util.notFoundMessage(type = "Team", field = "Name", value = name)
+							template = "Exception.ftl",
+							model = Util.notFoundMessage(
+								request = call.request,
+								type = "Team",
+								field = "Name",
+								value = name
+							)
 						),
 						status = HttpStatusCode.NotFound
 					)
@@ -190,7 +203,7 @@ fun Application.module() {
 		get(path = "/settings") {
 			call.respond(
 				message = FreeMarkerContent(
-					template = "Message.ftl",
+					template = "Exception.ftl",
 					model = Util.notImplementedMessage(request = call.request)
 				), status = HttpStatusCode.NotImplemented
 			)
@@ -198,7 +211,7 @@ fun Application.module() {
 		get(path = "/about") {
 			call.respond(
 				message = FreeMarkerContent(
-					template = "Message.ftl",
+					template = "Exception.ftl",
 					model = Util.notImplementedMessage(request = call.request)
 				), status = HttpStatusCode.NotImplemented
 			)

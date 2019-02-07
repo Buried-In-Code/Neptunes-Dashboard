@@ -29,7 +29,7 @@ object TeamController {
 		}
 		if (name == null || team == null) {
 			respond(
-				message = Util.notFoundMessage(type = "Team", field = "Name", value = name),
+				message = Util.notFoundMessage(request = request, type = "Team", field = "Name", value = name),
 				status = HttpStatusCode.NotFound
 			)
 			return null

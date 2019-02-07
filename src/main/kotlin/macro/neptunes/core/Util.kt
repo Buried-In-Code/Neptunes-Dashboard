@@ -3,10 +3,10 @@ package macro.neptunes.core
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import io.ktor.http.HttpStatusCode
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.httpMethod
-import io.ktor.request.path
-import macro.neptunes.data.Message
+import macro.neptunes.data.ErrorMessage
 import org.apache.logging.log4j.LogManager
 import java.time.format.DateTimeFormatter
 
@@ -32,19 +32,21 @@ object Util {
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
 
-	fun notImplementedMessage(request: ApplicationRequest): Message {
-		val message = Message(
-			title = "Not Implemented: ${request.httpMethod.value} ${request.path()}",
-			content = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
+	fun notImplementedMessage(request: ApplicationRequest): ErrorMessage {
+		val error = ErrorMessage(
+			code = HttpStatusCode.NotImplemented,
+			request = "${request.httpMethod.value} ${request.local.uri}",
+			message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
 		)
-		return message
+		return error
 	}
 
-	fun notFoundMessage(type: String, field: String, value: Any?): Message {
-		val message = Message(
-			title = "No $type Found",
-			content = "No $type was found with the field $field: $value"
+	fun notFoundMessage(request: ApplicationRequest, type: String, field: String, value: Any?): ErrorMessage {
+		val error = ErrorMessage(
+			code = HttpStatusCode.NotFound,
+			request = "${request.httpMethod.value} ${request.local.uri}",
+			message = "No $type was found with the $field: $value"
 		)
-		return message
+		return error
 	}
 }
