@@ -2,6 +2,7 @@ package macro.neptunes.data
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
@@ -22,16 +23,23 @@ object PlayerController {
 		return players.map { it.toJson() }
 	}
 
-	suspend fun ApplicationCall.parsePlayer(): Player? {
+	suspend fun ApplicationCall.parsePlayer(useJson: Boolean = true): Player? {
 		val alias = parameters["Alias"]
 		val player = PlayerHandler.players.sortedBy { it.alias }.firstOrNull {
 			it.alias.equals(alias, ignoreCase = true)
 		}
 		if (alias == null || player == null) {
-			respond(
-				message = Util.notFoundMessage(request = request, type = "Player", field = "Alias", value = alias),
-				status = HttpStatusCode.NotFound
-			)
+			val message = Util.notFoundMessage(request = request, type = "Player", field = "Alias", value = alias)
+			when (useJson) {
+				true -> respond(
+					message = message,
+					status = HttpStatusCode.NotFound
+				)
+				false -> respond(
+					message = FreeMarkerContent(template = "Exception.ftl", model = message),
+					status = HttpStatusCode.NotFound
+				)
+			}
 			return null
 		}
 		return player

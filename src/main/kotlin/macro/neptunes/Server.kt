@@ -31,8 +31,10 @@ import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.ErrorMessage
 import macro.neptunes.data.GameController.gameRoutes
+import macro.neptunes.data.PlayerController.parsePlayer
 import macro.neptunes.data.PlayerController.playerRoutes
 import macro.neptunes.data.SettingsController.settingRoutes
+import macro.neptunes.data.TeamController.parseTeam
 import macro.neptunes.data.TeamController.teamRoutes
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
@@ -148,56 +150,26 @@ fun Application.module() {
 		}
 		route(path = "/players/{Alias}") {
 			get {
-				val alias = call.parameters["Alias"]
-				val player = PlayerHandler.players.sorted().firstOrNull { it.alias.equals(alias, ignoreCase = true) }
-				if (alias == null || player == null)
-					call.respond(
-						message = FreeMarkerContent(
-							template = "Exception.ftl",
-							model = Util.notFoundMessage(
-								request = call.request,
-								type = "Player",
-								field = "Alias",
-								value = alias
-							)
-						),
-						status = HttpStatusCode.NotFound
-					)
-				else
-					call.respond(
-						message = FreeMarkerContent(
-							template = "Player.ftl",
-							model = player.toJson()
-						),
-						status = HttpStatusCode.OK
-					)
+				val player = call.parsePlayer(useJson = false) ?: return@get
+				call.respond(
+					message = FreeMarkerContent(
+						template = "Player.ftl",
+						model = player.toJson()
+					),
+					status = HttpStatusCode.OK
+				)
 			}
 		}
 		route(path = "/teams/{Name}") {
 			get {
-				val name = call.parameters["Name"]
-				val team = TeamHandler.teams.sorted().firstOrNull { it.name.equals(name, ignoreCase = true) }
-				if (name == null || team == null)
-					call.respond(
-						message = FreeMarkerContent(
-							template = "Exception.ftl",
-							model = Util.notFoundMessage(
-								request = call.request,
-								type = "Team",
-								field = "Name",
-								value = name
-							)
-						),
-						status = HttpStatusCode.NotFound
-					)
-				else
-					call.respond(
-						message = FreeMarkerContent(
-							template = "Team.ftl",
-							model = team.toJson()
-						),
-						status = HttpStatusCode.OK
-					)
+				val team = call.parseTeam(useJson = false) ?: return@get
+				call.respond(
+					message = FreeMarkerContent(
+						template = "Team.ftl",
+						model = team.toJson()
+					),
+					status = HttpStatusCode.OK
+				)
 			}
 		}
 		get(path = "/settings") {
