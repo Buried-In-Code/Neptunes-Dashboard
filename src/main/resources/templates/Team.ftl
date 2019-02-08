@@ -13,15 +13,60 @@
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">
 			<h1 class="card-title">${name}</h1>
-			<ul class="list-group list-group-flush">
-				<li class="list-group-item list-group-item-dark"><strong>Stars:</strong> ${totalStars}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Ships:</strong> ${totalShips}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Fleet:</strong> ${totalFleet}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Economy:</strong> ${totalEconomy}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Industry:</strong> ${totalIndustry}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Science:</strong> ${totalScience}</li>
-			</ul>
 		</div>
+	</div>
+	<div class="card-columns mb-4">
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Stars</h3>
+				<p class="card-text"><b>Total:</b> ${totalStars}</p>
+				<p class="card-text"><b>Average:</b> ${totalStars/members?size}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Ships</h3>
+				<p class="card-text"><b>Total:</b> ${totalShips}</p>
+				<p class="card-text"><b>Average:</b> ${totalShips/members?size}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Fleet</h3>
+				<p class="card-text"><b>Total:</b> ${totalFleet}</p>
+				<p class="card-text"><b>Average:</b> ${totalFleet/members?size}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Economy</h3>
+				<p class="card-text"><b>Total:</b> ${totalEconomy}</p>
+				<p class="card-text"><b>Average:</b> ${totalEconomy/members?size}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Industry</h3>
+				<p class="card-text"><b>Total:</b> ${totalIndustry}</p>
+				<p class="card-text"><b>Average:</b> ${totalIndustry/members?size}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Total Science</h3>
+				<p class="card-text"><b>Total:</b> ${totalScience}</p>
+				<p class="card-text"><b>Average:</b> ${totalScience/members?size}</p>
+			</div>
+		</div>
+		<#list members as player>
+			<div class="card text-white bg-dark">
+				<div class="card-body">
+					<h3 class="card-title">${player.name} (${player.alias})</h3>
+					<p class="card-text"><b>Stars:</b> ${player.stars}</p>
+					<p class="card-text"><b>Ships:</b> ${player.ships}</p>
+				</div>
+			</div>
+		</#list>
 	</div>
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">

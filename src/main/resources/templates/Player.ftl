@@ -12,16 +12,75 @@
 <div class="container">
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">
-			<h1 class="card-title">${name} (${alias})</h1>
-			<ul class="list-group list-group-flush">
-				<li class="list-group-item list-group-item-dark"><strong>Team:</strong> ${team}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Stars:</strong> ${stars}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Ships:</strong> ${ships}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Fleet:</strong> ${fleet}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Economy:</strong> ${economy}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Industry:</strong> ${industry}</li>
-				<li class="list-group-item list-group-item-dark"><strong>Science:</strong> ${science}</li>
-			</ul>
+			<h1 class="card-title">${name}</h1>
+		</div>
+	</div>
+	<div class="card-columns mb-4">
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Alias</h3>
+				<p class="card-text">${alias}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Team</h3>
+				<p class="card-text">${team}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Stars</h3>
+				<p class="card-text">${stars}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Ships</h3>
+				<p class="card-text">${ships}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Fleet</h3>
+				<p class="card-text">${fleet}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Economy</h3>
+				<p class="card-text"">${economy}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">$ Per Turn</h3>
+				<p class="card-text""><i>Economy Per Turn</i></p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Industry</h3>
+				<p class="card-text"">${industry}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Ships Per Turn</h3>
+				<p class="card-text""><i>Industry Per Turn</i></p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Science</h3>
+				<p class="card-text"">${science}</p>
+			</div>
+		</div>
+		<div class="card text-white bg-dark">
+			<div class="card-body">
+				<h3 class="card-title">Science Per Turn</h3>
+				<p class="card-text""><i>Science Per Turn</i></p>
+			</div>
 		</div>
 	</div>
 </div>
