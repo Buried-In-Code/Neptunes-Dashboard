@@ -25,12 +25,15 @@ import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
 import macro.neptunes.Server.refreshData
 import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.core.HistoricalGame
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.PlayerHandler
 import macro.neptunes.core.team.TeamHandler
 import macro.neptunes.data.ErrorMessage
 import macro.neptunes.data.GameController.gameRoutes
+import macro.neptunes.data.HistoryController
+import macro.neptunes.data.HistoryController.historyRoutes
 import macro.neptunes.data.PlayerController.parsePlayer
 import macro.neptunes.data.PlayerController.playerRoutes
 import macro.neptunes.data.SettingsController.settingRoutes
@@ -48,6 +51,7 @@ object Server {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
 		refreshData()
+		loadHistoricalGames()
 	}
 
 	private fun loggerColours() {
@@ -70,12 +74,27 @@ object Server {
 	}
 
 	fun refreshData() {
-		if(GameHandler.refreshData()) {
+		if (GameHandler.refreshData()) {
 			PlayerHandler.refreshData()
 			TeamHandler.refreshData()
 			lastUpdate = LocalDateTime.now()
 			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
 		}
+	}
+
+	fun loadHistoricalGames() {
+		CONFIG.history.forEach { gameID, winners ->
+			val teamName = winners.firstOrNull()
+			val players = winners.subList(1, winners.size)
+			HistoryController.historicalGames.add(
+				HistoricalGame(
+					gameID = gameID,
+					teamName = teamName,
+					winnerNames = players
+				)
+			)
+		}
+		LOGGER.info("History: ${HistoryController.historicalGames}")
 	}
 }
 
@@ -155,31 +174,36 @@ fun Application.module() {
 			gameRoutes()
 			playerRoutes()
 			teamRoutes()
+			historyRoutes()
 			settingRoutes()
 		}
-		route(path = "/players/{Alias}") {
-			get {
-				val player = call.parsePlayer(useJson = false) ?: return@get
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Player.ftl",
-						model = player.toJson()
-					),
-					status = HttpStatusCode.OK
-				)
-			}
+		get(path = "/players/{Alias}") {
+			val player = call.parsePlayer(useJson = false) ?: return@get
+			call.respond(
+				message = FreeMarkerContent(
+					template = "Player.ftl",
+					model = player.toJson()
+				),
+				status = HttpStatusCode.OK
+			)
 		}
-		route(path = "/teams/{Name}") {
-			get {
-				val team = call.parseTeam(useJson = false) ?: return@get
-				call.respond(
-					message = FreeMarkerContent(
-						template = "Team.ftl",
-						model = team.toJson()
-					),
-					status = HttpStatusCode.OK
-				)
-			}
+		get(path = "/teams/{Name}") {
+			val team = call.parseTeam(useJson = false) ?: return@get
+			call.respond(
+				message = FreeMarkerContent(
+					template = "Team.ftl",
+					model = team.toJson()
+				),
+				status = HttpStatusCode.OK
+			)
+		}
+		get(path = "/history") {
+			call.respond(
+				message = FreeMarkerContent(
+					template = "Exception.ftl",
+					model = Util.notImplementedMessage(request = call.request)
+				), status = HttpStatusCode.NotImplemented
+			)
 		}
 		get(path = "/settings") {
 			call.respond(

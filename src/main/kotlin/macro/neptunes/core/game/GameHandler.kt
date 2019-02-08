@@ -82,6 +82,15 @@ object GameHandler {
 		)
 	}
 
+	fun getGame(gameID: Long): Game? {
+		LOGGER.info("Getting Game Data")
+		val response = RESTClient.getRequest(endpoint = "/basic")
+		val game = parse(data = response["Data"] as Map<String, Any?>)
+		if (game == null)
+			LOGGER.fatal("Unable to find game with Game ID: ${CONFIG.gameID}")
+		return game
+	}
+
 	@Suppress("UNCHECKED_CAST")
 	fun refreshData(): Boolean {
 		LOGGER.info("Refreshing Game Data")

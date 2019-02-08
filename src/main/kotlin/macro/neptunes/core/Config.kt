@@ -14,20 +14,28 @@ import java.net.Proxy
  * Created by Macro303 on 2018-Nov-23.
  */
 class Config internal constructor(
-	val serverAddress: String = "localhost",
-	val serverPort: Int = 5000,
+	serverAddress: String? = null,
+	serverPort: Int? = null,
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
-	var gameID: Long = 1,
-	var refreshRate: Int = 60,
-	var players: Map<String, String> = mapOf("Alias" to "Name"),
-	var teams: Map<String, List<String>> = mapOf("Team" to listOf("Name"))
+	gameID: Long? = null,
+	refreshRate: Int? = null,
+	players: Map<String, String>? = null,
+	teams: Map<String, List<String>>? = null,
+	history: Map<Long, List<String>>? = null
 ) {
+	val serverAddress: String = serverAddress ?: "localhost"
+	val serverPort: Int = serverPort ?: 5505
 	val proxy: Proxy?
 		get() = if (proxyHostname == null || proxyPort == null)
 			null
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
+	var gameID: Long = gameID ?: 1L
+	var refreshRate: Int = refreshRate ?: 60
+	var players: Map<String, String> = players ?: mapOf("Alias" to "Name")
+	var teams: Map<String, List<String>> = teams ?: mapOf("Team" to listOf("Name"))
+	var history: Map<Long, List<String>> = history ?: mapOf(1L to listOf("Team", "Name"))
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
@@ -71,20 +79,15 @@ class Config internal constructor(
 
 		@Suppress("UNCHECKED_CAST")
 		private fun fromMap(data: Map<String, Any?>): Config {
-			val proxyHostname: String? = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
-			val proxyPort: Int? = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID: Long = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
-				?: 1
-			val serverAddress: String = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
-				?: "localhost"
-			val serverPort: Int = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
-				?: 5000
-			val refreshRate: Int = data["Refresh Rate"] as Int?
-				?: 60
-			val players: Map<String, String> = data["Players"] as Map<String, String>?
-				?: mapOf("Alias" to "Name")
-			val teams: Map<String, List<String>> = data["Teams"] as Map<String, List<String>>?
-				?: mapOf("Team" to listOf("Name"))
+			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
+			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
+			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
+			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
+			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
+			val refreshRate = data["Refresh Rate"] as Int?
+			val players = data["Players"] as Map<String, String>?
+			val teams = data["Teams"] as Map<String, List<String>>?
+			val history = data["HistoricalGame"] as Map<Long, List<String>>?
 			return Config(
 				serverAddress = serverAddress,
 				serverPort = serverPort,
@@ -93,7 +96,8 @@ class Config internal constructor(
 				gameID = gameID,
 				refreshRate = refreshRate,
 				players = players,
-				teams = teams
+				teams = teams,
+				history = history
 			)
 		}
 	}
@@ -114,7 +118,8 @@ internal fun Config.toMap(): Map<String, Any?> {
 		),
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
-		"Teams" to this.teams
+		"Teams" to this.teams,
+		"HistoricalGame" to this.history
 	)
 	return data.toSortedMap()
 }
