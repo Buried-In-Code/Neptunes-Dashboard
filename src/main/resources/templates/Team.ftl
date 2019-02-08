@@ -12,7 +12,7 @@
 <div class="container">
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">
-			<h1 class="card-title">${name}</h1>
+			<h1 class="card-title text-center">${name}</h1>
 		</div>
 	</div>
 	<div class="card-columns mb-4">
@@ -70,6 +70,7 @@
 	</div>
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">
+			<h3 class="card-title text-center">Star Distribution</h3>
 			<div class="chart-container">
 				<canvas id="winPie" width="600" height="400"></canvas>
 			</div>
