@@ -70,7 +70,7 @@ object Server {
 	}
 
 	fun refreshData() {
-		if(!GameHandler.refreshData()) {
+		if(GameHandler.refreshData()) {
 			PlayerHandler.refreshData()
 			TeamHandler.refreshData()
 			lastUpdate = LocalDateTime.now()
