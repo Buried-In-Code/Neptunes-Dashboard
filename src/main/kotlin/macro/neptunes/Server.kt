@@ -41,8 +41,8 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 object Server {
-	internal val LOGGER = LogManager.getLogger(Server::class.java)
-	internal var lastUpdate = LocalDateTime.now().minusMinutes((CONFIG.refreshRate + 100).toLong())
+	internal val LOGGER = LogManager.getLogger(this::class.java)
+	internal lateinit var lastUpdate: LocalDateTime
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
@@ -70,11 +70,12 @@ object Server {
 	}
 
 	fun refreshData() {
-		GameHandler.refreshData()
-		PlayerHandler.refreshData()
-		TeamHandler.refreshData()
-		lastUpdate = LocalDateTime.now()
-		LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
+		if(!GameHandler.refreshData()) {
+			PlayerHandler.refreshData()
+			TeamHandler.refreshData()
+			lastUpdate = LocalDateTime.now()
+			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
+		}
 	}
 }
 
@@ -109,7 +110,10 @@ fun Application.module() {
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(status = error.code, message = error)
 			else
-				call.respond(FreeMarkerContent(template = "Exception.ftl", model = error))
+				call.respond(
+					status = error.code,
+					message = FreeMarkerContent(template = "Exception.ftl", model = error)
+				)
 		}
 		status(HttpStatusCode.NotFound) {
 			val error = ErrorMessage(
@@ -120,24 +124,29 @@ fun Application.module() {
 			if (call.request.contentType() == ContentType.Application.Json)
 				call.respond(status = error.code, message = error)
 			else
-				call.respond(FreeMarkerContent(template = "Exception.ftl", model = error))
+				call.respond(
+					status = error.code,
+					message = FreeMarkerContent(template = "Exception.ftl", model = error)
+				)
 		}
 	}
 	intercept(ApplicationCallPipeline.Setup) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
 		val now: LocalDateTime = LocalDateTime.now()
 		val difference: Duration = Duration.between(Server.lastUpdate, now)
-		if (difference.toMinutes() > CONFIG.refreshRate) {
+		if (difference.toMinutes() >= CONFIG.refreshRate) {
 			refreshData()
 		}
 	}
 	intercept(ApplicationCallPipeline.Fallback) {
 		val statusCode = call.response.status()
+		val logMessage =
+			"$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}"
 		when (statusCode) {
-			null -> LOGGER.error("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
-			HttpStatusCode.NotFound -> LOGGER.error("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
-			HttpStatusCode.NotImplemented -> LOGGER.warn("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
-			else -> LOGGER.info("$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}")
+			null -> LOGGER.error(logMessage)
+			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
+			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
+			else -> LOGGER.info(logMessage)
 		}
 		LOGGER.debug("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
 	}

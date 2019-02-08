@@ -83,14 +83,15 @@ object GameHandler {
 	}
 
 	@Suppress("UNCHECKED_CAST")
-	fun refreshData() {
+	fun refreshData(): Boolean {
 		LOGGER.info("Refreshing Game Data")
 		val response = RESTClient.getRequest(endpoint = "/basic")
 		val game = parse(data = response["Data"] as Map<String, Any?>)
 		if (game == null) {
-			LOGGER.error("Unable to find game with Game ID: ${CONFIG.gameID}, instead loading Offline Game")
-			return
+			LOGGER.error("Unable to find game with Game ID: ${CONFIG.gameID}")
+			return false
 		}
 		this.game = game
+		return true
 	}
 }

@@ -18,38 +18,11 @@ internal object RESTClient {
 	private const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	private const val JSON = "application/json"
 
-	private fun pingURL(): Boolean {
-		val responseCode = headRequest()
-		return responseCode == 200 || responseCode == 201 || responseCode == 204
-	}
-
-	private fun headRequest(
-		endpoint: String = "/",
-		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON))
-	): Int {
-		var response: Map<String, Any> = HashMap()
-		var connection: HttpURLConnection? = null
-		try {
-			connection = setupConnection(endpoint = endpoint, requestMethod = "HEAD", headers = headers)
-			connection.connect()
-			response = getResponse(connection)
-		} catch (ioe: IOException) {
-			LOGGER.warn("Unable to make HEAD request", ioe)
-		} finally {
-			connection?.disconnect()
-			LOGGER.info("HEAD << Code: {}, Message: {}", response["Code"], response["Message"])
-			LOGGER.debug("Response Data: {}", response["Data"])
-		}
-		return response.getOrDefault("Code", 500) as Int
-	}
-
 	internal fun getRequest(
 		endpoint: String,
 		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON)),
 		parameters: Map<String, Any>? = null
 	): Map<String, Any> {
-		if (!pingURL())
-			return mapOf("Code" to 503, "Message" to "Service Unavailable", "Data" to emptyMap<String, Any?>())
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
@@ -76,8 +49,6 @@ internal object RESTClient {
 		parameters: Map<String, Any>? = null,
 		body: Map<String, Any>
 	): Map<String, Any> {
-		if (!pingURL())
-			return mapOf("Code" to 503, "Message" to "Service Unavailable", "Data" to emptyMap<String, Any?>())
 		var response: Map<String, Any> = HashMap()
 		var connection: HttpURLConnection? = null
 		try {
