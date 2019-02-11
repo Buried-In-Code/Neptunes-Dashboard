@@ -6,8 +6,18 @@ import com.google.gson.reflect.TypeToken
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.httpMethod
-import macro.neptunes.data.ErrorMessage
+import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.network.ErrorMessage
 import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import java.io.File
+import java.sql.Connection
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -21,6 +31,27 @@ object Util {
 		.create()
 	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
+	val JODA_FORMATTER = DateTimeFormat.forPattern(DATE_FORMAT)
+	val BIN: File by lazy {
+		val temp = File("config")
+		if (!temp.exists()) {
+			LOGGER.info("Config Folder is missing, creating `$temp`")
+			temp.mkdirs()
+		}
+		temp
+	}
+	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
+
+	internal fun <T> query(block: () -> T): T {
+		return transaction(
+			transactionIsolation = Connection.TRANSACTION_SERIALIZABLE,
+			repetitionAttempts = 1,
+			db = database
+		) {
+			addLogger(Slf4jSqlDebugLogger)
+			block()
+		}
+	}
 
 	@Throws(JsonSyntaxException::class)
 	internal fun String.fromJSON(): Map<String, Any> {
@@ -31,6 +62,16 @@ object Util {
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
+
+	internal fun DateTime.toJavaDateTime(): LocalDateTime {
+		val jodaString = this.toString(JODA_FORMATTER)
+		return LocalDateTime.parse(jodaString, JAVA_FORMATTER)
+	}
+
+	internal fun LocalDateTime.toJodaDateTime(): DateTime {
+		val javaString = this.format(JAVA_FORMATTER)
+		return DateTime.parse(javaString, JODA_FORMATTER)
+	}
 
 	fun notImplementedMessage(request: ApplicationRequest): ErrorMessage {
 		val error = ErrorMessage(

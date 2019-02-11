@@ -25,20 +25,17 @@ import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
 import macro.neptunes.Server.refreshData
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.History
 import macro.neptunes.core.Util
-import macro.neptunes.core.game.GameHandler
-import macro.neptunes.core.player.PlayerHandler
-import macro.neptunes.core.team.TeamHandler
-import macro.neptunes.data.ErrorMessage
-import macro.neptunes.data.GameController.gameRoutes
-import macro.neptunes.data.HistoryController
-import macro.neptunes.data.HistoryController.historyRoutes
-import macro.neptunes.data.PlayerController.parsePlayer
-import macro.neptunes.data.PlayerController.playerRoutes
-import macro.neptunes.data.SettingsController.settingRoutes
-import macro.neptunes.data.TeamController.parseTeam
-import macro.neptunes.data.TeamController.teamRoutes
+import macro.neptunes.core.Util.toJSON
+import macro.neptunes.data.GameTable
+import macro.neptunes.network.ErrorMessage
+import macro.neptunes.network.GameController.gameRoutes
+import macro.neptunes.network.HistoryController.historyRoutes
+import macro.neptunes.network.PlayerController.parsePlayer
+import macro.neptunes.network.PlayerController.playerRoutes
+import macro.neptunes.network.SettingsController.settingRoutes
+import macro.neptunes.network.TeamController.parseTeam
+import macro.neptunes.network.TeamController.teamRoutes
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
@@ -50,8 +47,8 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
+		GameTable.insert(CONFIG.gameID)
 		refreshData()
-		loadHistoricalGames()
 	}
 
 	private fun loggerColours() {
@@ -74,26 +71,8 @@ object Server {
 	}
 
 	fun refreshData() {
-		if (GameHandler.refreshData()) {
-			PlayerHandler.refreshData()
-			TeamHandler.refreshData()
-			lastUpdate = LocalDateTime.now()
-			LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
-		}
-	}
-
-	fun loadHistoricalGames() {
-		CONFIG.history.forEach { gameID, winners ->
-			val teamName = winners.firstOrNull()
-			val players = winners.subList(1, winners.size)
-			HistoryController.games.add(
-				History(
-					gameID = gameID,
-					teamName = teamName,
-					winnerNames = players
-				)
-			)
-		}
+		lastUpdate = LocalDateTime.now()
+		LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
 	}
 }
 
@@ -181,7 +160,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
-					model = player.toJson()
+					model = player.toJSON()
 				),
 				status = HttpStatusCode.OK
 			)
@@ -191,7 +170,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Team.ftl",
-					model = team.toJson()
+					model = team.toJSON()
 				),
 				status = HttpStatusCode.OK
 			)
@@ -200,8 +179,8 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "History.ftl",
-					model = mapOf("games" to HistoryController.games)
-				), status = HttpStatusCode.OK
+					model = Util.notImplementedMessage(request = call.request)
+				), status = HttpStatusCode.NotImplemented
 			)
 		}
 		get(path = "/settings") {

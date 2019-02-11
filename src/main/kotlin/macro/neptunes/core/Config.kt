@@ -9,12 +9,12 @@ import java.io.FileWriter
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
-import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-23.
  */
 class Config internal constructor(
+	databaseFile: String? = null,
 	serverAddress: String? = null,
 	serverPort: Int? = null,
 	val proxyHostname: String? = null,
@@ -22,9 +22,9 @@ class Config internal constructor(
 	gameID: Long? = null,
 	refreshRate: Int? = null,
 	players: Map<String, String>? = null,
-	teams: Map<String, List<String>>? = null,
-	history: Map<Long, List<String>>? = null
+	teams: Map<String, List<String>>? = null
 ) {
+	var databaseFile: File
 	val serverAddress: String = serverAddress ?: "localhost"
 	val serverPort: Int = serverPort ?: 5505
 	val proxy: Proxy?
@@ -36,11 +36,17 @@ class Config internal constructor(
 	var refreshRate: Int = refreshRate ?: 60
 	var players: Map<String, String> = players ?: mapOf("Alias" to "Name")
 	var teams: Map<String, List<String>> = teams ?: mapOf("Team" to listOf("Name"))
-	var history: Map<Long, List<String>> = history ?: mapOf(1L to listOf("Team", "Name"))
+
+	init {
+		this.databaseFile = when (databaseFile) {
+			null -> File(Util.BIN, "Neptunes-Pride.db")
+			else -> File(databaseFile)
+		}
+	}
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
-		private val CONFIG_FILE: File = File("config.yaml")
+		private val CONFIG_FILE: File = File(Util.BIN, "config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()
 			options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK
@@ -62,7 +68,6 @@ class Config internal constructor(
 				saveConfig(config = temp!!)
 				temp!!
 			} catch (ioe: IOException) {
-				LOGGER.warn("Unable to Load Config", ioe)
 				LOGGER.warn("Config File is missing, creating `$CONFIG_FILE`")
 				saveConfig()
 			}
@@ -81,6 +86,7 @@ class Config internal constructor(
 
 		@Suppress("UNCHECKED_CAST")
 		private fun fromMap(data: Map<String, Any?>): Config {
+			val databaseFile = data["Database File"] as String?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
 			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
@@ -89,8 +95,8 @@ class Config internal constructor(
 			val refreshRate = data["Refresh Rate"] as Int?
 			val players = data["Players"] as Map<String, String>?
 			val teams = data["Teams"] as Map<String, List<String>>?
-			val history = parseHistory(data["History"])
 			return Config(
+				databaseFile = databaseFile,
 				serverAddress = serverAddress,
 				serverPort = serverPort,
 				proxyHostname = proxyHostname,
@@ -98,26 +104,15 @@ class Config internal constructor(
 				gameID = gameID,
 				refreshRate = refreshRate,
 				players = players,
-				teams = teams,
-				history = history
+				teams = teams
 			)
-		}
-
-		@Suppress("UNCHECKED_CAST")
-		private fun parseHistory(data: Any?): Map<Long, List<String>>?{
-			val output = TreeMap<Long, List<String>>()
-			val dataMap = data as Map<Any?, List<String>>? ?: return null
-			dataMap.forEach { key, value ->
-				val outputKey = key.toString().toLong()
-				output[outputKey] = value
-			}
-			return output
 		}
 	}
 }
 
-internal fun Config.toMap(): Map<String, Any?> {
-	val data: Map<String, Any?> = mapOf(
+internal fun Config.toMap(): Map<*, *> {
+	val data = mapOf(
+		"Database File" to this.databaseFile.path,
 		"Server" to mapOf(
 			"Address" to this.serverAddress,
 			"Port" to this.serverPort
@@ -131,8 +126,7 @@ internal fun Config.toMap(): Map<String, Any?> {
 		),
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
-		"Teams" to this.teams,
-		"History" to this.history
+		"Teams" to this.teams
 	)
 	return data.toSortedMap()
 }

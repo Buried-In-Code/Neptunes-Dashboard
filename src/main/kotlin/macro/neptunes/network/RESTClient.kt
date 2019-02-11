@@ -1,4 +1,4 @@
-package macro.neptunes.data
+package macro.neptunes.network
 
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util.fromJSON

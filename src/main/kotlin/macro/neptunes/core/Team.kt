@@ -1,12 +1,24 @@
-package macro.neptunes.core.team
-
-import macro.neptunes.core.game.GameHandler
-import macro.neptunes.core.player.Player
-import org.apache.logging.log4j.LogManager
+package macro.neptunes.core
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
+data class Team(
+	val ID: Int,
+	val game: Game,
+	var name: String
+) : Comparable<Team> {
+
+	override fun compareTo(other: Team): Int {
+		return byGame.then(byName).compare(this, other)
+	}
+
+	companion object {
+		internal val byGame = compareBy(Team::game)
+		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Team::name)
+	}
+}
+/*
 data class Team(val name: String) : Comparable<Team> {
 	val members = ArrayList<Player>()
 	val totalIndustry: Int
@@ -94,4 +106,4 @@ data class Team(val name: String) : Comparable<Team> {
 		internal val byIndustry = compareBy(Team::totalIndustry)
 		internal val byScience = compareBy(Team::totalScience)
 	}
-}
+}*/

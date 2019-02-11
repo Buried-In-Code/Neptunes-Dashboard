@@ -1,4 +1,4 @@
-package macro.neptunes.data
+package macro.neptunes.network
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -7,9 +7,9 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.*
+import macro.neptunes.core.Team
 import macro.neptunes.core.Util
-import macro.neptunes.core.team.Team
-import macro.neptunes.core.team.TeamHandler
+import macro.neptunes.data.TeamTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -18,16 +18,14 @@ import org.apache.logging.log4j.LogManager
 object TeamController {
 	private val LOGGER = LogManager.getLogger(TeamController::class.java)
 
-	fun getTeams(): List<Map<String, Any?>> {
-		val teams = TeamHandler.teams.sortedBy { it.name }
-		return teams.map { it.toJson() }
+	fun getTeams(): List<Team> {
+		val teams = TeamTable.search().sorted()
+		return teams
 	}
 
 	suspend fun ApplicationCall.parseTeam(useJson: Boolean = true): Team? {
 		val name = parameters["Name"]
-		val team = TeamHandler.teams.sortedBy { it.name }.firstOrNull {
-			it.name.equals(name, ignoreCase = true)
-		}
+		val team = TeamTable.search(name = name ?: "").sorted().firstOrNull()
 		if (name == null || team == null) {
 			val message = Util.notFoundMessage(request = request, type = "Team", field = "Name", value = name)
 			when (useJson) {

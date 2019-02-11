@@ -1,11 +1,32 @@
-package macro.neptunes.core.player
-
-import macro.neptunes.core.game.GameHandler
-import org.apache.logging.log4j.LogManager
+package macro.neptunes.core
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
+data class Player(
+	val game: Game,
+	val team: Team?,
+	val alias: String,
+	val name: String?,
+	val economy: Int,
+	val industry: Int,
+	val science: Int,
+	val stars: Int,
+	val fleet: Int,
+	val ships: Int,
+	val isActive: Boolean
+): Comparable<Player>{
+
+	override fun compareTo(other: Player): Int {
+		return byGame.then(byAlias).compare(this, other)
+	}
+
+	companion object {
+		internal val byGame = compareBy(Player::game)
+		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, Player::alias)
+	}
+}
+/*
 data class Player(
 	val name: String,
 	val alias: String,
@@ -88,4 +109,4 @@ data class Player(
 		internal val byIndustry = compareBy(Player::industry)
 		internal val byScience = compareBy(Player::science)
 	}
-}
+}*/

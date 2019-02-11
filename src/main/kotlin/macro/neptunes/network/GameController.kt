@@ -1,4 +1,4 @@
-package macro.neptunes.data
+package macro.neptunes.network
 
 import io.ktor.application.call
 import io.ktor.http.ContentType
@@ -6,7 +6,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.*
 import macro.neptunes.Server
-import macro.neptunes.core.game.GameHandler
+import macro.neptunes.core.Config.Companion.CONFIG
+import macro.neptunes.data.GameTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -20,7 +21,7 @@ object GameController {
 			contentType(contentType = ContentType.Application.Json) {
 				get {
 					call.respond(
-						message = GameHandler.game.toJson(),
+						message = GameTable.select(ID = CONFIG.gameID) ?: emptyMap<String, String>(),
 						status = HttpStatusCode.OK
 					)
 				}
@@ -31,7 +32,7 @@ object GameController {
 				put {
 					Server.refreshData()
 					call.respond(
-						message = "",
+						message = emptyMap<String, String>(),
 						status = HttpStatusCode.NoContent
 					)
 				}

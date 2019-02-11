@@ -1,4 +1,4 @@
-package macro.neptunes.data
+package macro.neptunes.network
 
 import io.ktor.http.HttpStatusCode
 

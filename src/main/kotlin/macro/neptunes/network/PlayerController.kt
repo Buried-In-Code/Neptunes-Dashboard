@@ -1,4 +1,4 @@
-package macro.neptunes.data
+package macro.neptunes.network
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -8,8 +8,8 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.*
 import macro.neptunes.core.Util
-import macro.neptunes.core.player.Player
-import macro.neptunes.core.player.PlayerHandler
+import macro.neptunes.core.Player
+import macro.neptunes.data.PlayerTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -18,16 +18,14 @@ import org.apache.logging.log4j.LogManager
 object PlayerController {
 	private val LOGGER = LogManager.getLogger(PlayerController::class.java)
 
-	fun getPlayers(): List<Map<String, Any?>> {
-		val players = PlayerHandler.players.sortedBy { it.alias }
-		return players.map { it.toJson() }
+	fun getPlayers(): List<Player> {
+		val players = PlayerTable.search().sorted()
+		return players
 	}
 
 	suspend fun ApplicationCall.parsePlayer(useJson: Boolean = true): Player? {
 		val alias = parameters["Alias"]
-		val player = PlayerHandler.players.sortedBy { it.alias }.firstOrNull {
-			it.alias.equals(alias, ignoreCase = true)
-		}
+		val player = PlayerTable.search(alias = alias ?: "").sorted().firstOrNull()
 		if (alias == null || player == null) {
 			val message = Util.notFoundMessage(request = request, type = "Player", field = "Alias", value = alias)
 			when (useJson) {
