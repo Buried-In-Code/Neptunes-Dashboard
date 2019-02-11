@@ -13,10 +13,10 @@ import java.util.*
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-internal object RESTClient {
+internal class RESTClient(val gameID: Long = CONFIG.gameID) {
 	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
-	private const val ENDPOINT = "http://nptriton.cqproject.net/game/"
-	private const val JSON = "application/json"
+	private val ENDPOINT = "http://nptriton.cqproject.net/game/"
+	private val JSON = "application/json"
 
 	internal fun getRequest(
 		endpoint: String,
@@ -91,7 +91,7 @@ internal object RESTClient {
 		headers: Map<String, String>,
 		parameters: Map<String, Any>? = null
 	): HttpURLConnection {
-		var urlString = ENDPOINT + CONFIG.gameID + endpoint
+		var urlString = ENDPOINT + gameID + endpoint
 		if (parameters != null)
 			urlString = addParameters(endpoint = urlString, parameters = parameters)
 		LOGGER.info("$requestMethod >> URL: $urlString, Headers: $headers")

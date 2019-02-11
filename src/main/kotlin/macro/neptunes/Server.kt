@@ -25,7 +25,7 @@ import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
 import macro.neptunes.Server.refreshData
 import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.HistoricalGame
+import macro.neptunes.core.History
 import macro.neptunes.core.Util
 import macro.neptunes.core.game.GameHandler
 import macro.neptunes.core.player.PlayerHandler
@@ -45,7 +45,7 @@ import java.time.LocalDateTime
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
-	internal lateinit var lastUpdate: LocalDateTime
+	internal var lastUpdate: LocalDateTime = LocalDateTime.of(1900, 1, 1, 0, 0)
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
@@ -86,15 +86,15 @@ object Server {
 		CONFIG.history.forEach { gameID, winners ->
 			val teamName = winners.firstOrNull()
 			val players = winners.subList(1, winners.size)
-			HistoryController.historicalGames.add(
-				HistoricalGame(
+			HistoryController.games.add(
+				History(
 					gameID = gameID,
 					teamName = teamName,
 					winnerNames = players
 				)
 			)
 		}
-		LOGGER.info("History: ${HistoryController.historicalGames}")
+		LOGGER.info("History: ${HistoryController.games}")
 	}
 }
 
@@ -200,9 +200,9 @@ fun Application.module() {
 		get(path = "/history") {
 			call.respond(
 				message = FreeMarkerContent(
-					template = "Exception.ftl",
-					model = Util.notImplementedMessage(request = call.request)
-				), status = HttpStatusCode.NotImplemented
+					template = "History.ftl",
+					model = mapOf("games" to HistoryController.games)
+				), status = HttpStatusCode.OK
 			)
 		}
 		get(path = "/settings") {

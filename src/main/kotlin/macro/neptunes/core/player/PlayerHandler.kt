@@ -77,7 +77,7 @@ object PlayerHandler {
 	fun refreshData() {
 		LOGGER.info("Refreshing Player Data")
 		val players = ArrayList<Player>()
-		val response = RESTClient.getRequest(endpoint = "/players")
+		val response = RESTClient().getRequest(endpoint = "/players")
 		(response["Data"] as Map<String, Any?>).values.forEach {
 			val player = parse(data = it as Map<String, Any?>) ?: return@forEach
 			LOGGER.debug("Loaded Player: ${player.playerName()}")

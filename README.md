@@ -18,3 +18,4 @@ Pulls simple game information for Neptune's Pride and attempts to display it in 
  - [log4j-api: 2.11.1](https://logging.apache.org/log4j/2.x/)
  - [log4j-core: 2.11.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [log4j-slf4j18-impl: 2.11.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
+ - [log4j-jul: 2.11.1 (Runtime)](https://logging.apache.org/log4j/2.x/)

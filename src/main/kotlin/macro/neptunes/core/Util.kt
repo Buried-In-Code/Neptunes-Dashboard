@@ -27,7 +27,7 @@ object Util {
 		if (this.isBlank()) return emptyMap()
 		val typeOfHashMap = object : TypeToken<Map<String, Any>>() {
 		}.type
-		return GSON.fromJson(this, typeOfHashMap)
+		return GSON.fromJson(this, typeOfHashMap) ?: emptyMap()
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)

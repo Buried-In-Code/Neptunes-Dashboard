@@ -9,6 +9,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-23.
@@ -52,22 +53,22 @@ class Config internal constructor(
 		}
 
 		internal fun loadConfig(): Config {
-			var temp: Config? = null
-			try {
+			return try {
+				var temp: Config? = null
 				FileReader(CONFIG_FILE).use {
 					val loadedConfig: Map<String, Any?> = YAML.load(it)
 					temp = fromMap(data = loadedConfig)
 				}
+				saveConfig(config = temp!!)
+				temp!!
 			} catch (ioe: IOException) {
 				LOGGER.warn("Unable to Load Config", ioe)
 				LOGGER.warn("Config File is missing, creating `$CONFIG_FILE`")
 				saveConfig()
 			}
-			saveConfig(config = temp!!)
-			return temp!!
 		}
 
-		internal fun saveConfig(config: Config = Config()) {
+		internal fun saveConfig(config: Config = Config()): Config {
 			try {
 				FileWriter(CONFIG_FILE).use {
 					YAML.dump(config.toMap(), it)
@@ -75,19 +76,20 @@ class Config internal constructor(
 			} catch (ioe: IOException) {
 				LOGGER.error("Unable to Save Config", ioe)
 			}
+			return config
 		}
 
 		@Suppress("UNCHECKED_CAST")
 		private fun fromMap(data: Map<String, Any?>): Config {
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
+			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val refreshRate = data["Refresh Rate"] as Int?
 			val players = data["Players"] as Map<String, String>?
 			val teams = data["Teams"] as Map<String, List<String>>?
-			val history = data["HistoricalGame"] as Map<Long, List<String>>?
+			val history = parseHistory(data["History"])
 			return Config(
 				serverAddress = serverAddress,
 				serverPort = serverPort,
@@ -99,6 +101,17 @@ class Config internal constructor(
 				teams = teams,
 				history = history
 			)
+		}
+
+		@Suppress("UNCHECKED_CAST")
+		private fun parseHistory(data: Any?): Map<Long, List<String>>?{
+			val output = TreeMap<Long, List<String>>()
+			val dataMap = data as Map<Any?, List<String>>? ?: return null
+			dataMap.forEach { key, value ->
+				val outputKey = key.toString().toLong()
+				output[outputKey] = value
+			}
+			return output
 		}
 	}
 }
@@ -119,7 +132,7 @@ internal fun Config.toMap(): Map<String, Any?> {
 		"Refresh Rate" to this.refreshRate,
 		"Players" to this.players,
 		"Teams" to this.teams,
-		"HistoricalGame" to this.history
+		"History" to this.history
 	)
 	return data.toSortedMap()
 }

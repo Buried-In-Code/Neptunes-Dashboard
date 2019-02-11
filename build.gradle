@@ -22,7 +22,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'com.github.ben-manes.versions'
 
-version = '2.0.0'
+version = '2.0.1'
 group = 'macro'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -56,6 +56,8 @@ dependencies {
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "$logger_version"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: "$logger_version"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j18-impl', version: "$logger_version"
+	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-jul', version: "$logger_version"
+	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: "$logger_version"
 }
 
 jar {

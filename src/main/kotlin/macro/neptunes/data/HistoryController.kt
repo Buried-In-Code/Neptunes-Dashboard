@@ -8,7 +8,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.contentType
 import io.ktor.routing.get
 import io.ktor.routing.route
-import macro.neptunes.core.HistoricalGame
+import macro.neptunes.core.History
 import macro.neptunes.core.Util
 import org.apache.logging.log4j.LogManager
 
@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager
  */
 object HistoryController {
 	private val LOGGER = LogManager.getLogger(HistoryController::class.java)
-	val historicalGames = ArrayList<HistoricalGame>()
+	val games = ArrayList<History>()
 
 	fun Route.historyRoutes() {
 		route(path = "/history") {
