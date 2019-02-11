@@ -24,7 +24,10 @@ class Config internal constructor(
 	players: Map<String, String>? = null,
 	teams: Map<String, List<String>>? = null
 ) {
-	var databaseFile: File
+	var databaseFile: File = when (databaseFile) {
+		null -> File("Neptunes-Pride.db")
+		else -> File(databaseFile)
+	}
 	val serverAddress: String = serverAddress ?: "localhost"
 	val serverPort: Int = serverPort ?: 5505
 	val proxy: Proxy?
@@ -37,16 +40,9 @@ class Config internal constructor(
 	var players: Map<String, String> = players ?: mapOf("Alias" to "Name")
 	var teams: Map<String, List<String>> = teams ?: mapOf("Team" to listOf("Name"))
 
-	init {
-		this.databaseFile = when (databaseFile) {
-			null -> File(Util.BIN, "Neptunes-Pride.db")
-			else -> File(databaseFile)
-		}
-	}
-
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
-		private val CONFIG_FILE: File = File(Util.BIN, "config.yaml")
+		private val CONFIG_FILE: File = File("config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()
 			options.defaultFlowStyle = DumperOptions.FlowStyle.BLOCK

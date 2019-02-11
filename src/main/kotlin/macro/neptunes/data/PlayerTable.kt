@@ -67,7 +67,7 @@ object PlayerTable : Table(name = "Player") {
 	fun insert(player: Player): Player = Util.query {
 		insert {
 			it[gameCol] = EntityID(player.game.ID, GameTable)
-			it[teamCol] = EntityID(player.team?.ID, TeamTable)
+			it[teamCol] = if(player.team != null) EntityID(player.team!!.ID, TeamTable) else null
 			it[aliasCol] = player.alias
 			it[nameCol] = player.name
 			it[economyCol] = player.economy

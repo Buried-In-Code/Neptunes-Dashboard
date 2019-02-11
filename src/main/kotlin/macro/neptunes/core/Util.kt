@@ -32,14 +32,6 @@ object Util {
 	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
 	val JODA_FORMATTER = DateTimeFormat.forPattern(DATE_FORMAT)
-	val BIN: File by lazy {
-		val temp = File("config")
-		if (!temp.exists()) {
-			LOGGER.info("Config Folder is missing, creating `$temp`")
-			temp.mkdirs()
-		}
-		temp
-	}
 	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
 
 	internal fun <T> query(block: () -> T): T {
