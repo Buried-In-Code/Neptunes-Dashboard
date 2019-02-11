@@ -94,7 +94,6 @@ object Server {
 				)
 			)
 		}
-		LOGGER.info("History: ${HistoryController.games}")
 	}
 }
 
