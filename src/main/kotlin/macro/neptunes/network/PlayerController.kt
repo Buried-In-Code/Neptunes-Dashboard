@@ -52,12 +52,6 @@ object PlayerController {
 						status = HttpStatusCode.OK
 					)
 				}
-				post {
-					call.respond(
-						message = Util.notImplementedMessage(request = call.request),
-						status = HttpStatusCode.NotImplemented
-					)
-				}
 				route(path = "/{Alias}") {
 					get {
 						val player = call.parsePlayer() ?: return@get
@@ -68,13 +62,6 @@ object PlayerController {
 					}
 					put {
 						val player = call.parsePlayer() ?: return@put
-						call.respond(
-							message = Util.notImplementedMessage(request = call.request),
-							status = HttpStatusCode.NotImplemented
-						)
-					}
-					delete {
-						val player = call.parsePlayer() ?: return@delete
 						call.respond(
 							message = Util.notImplementedMessage(request = call.request),
 							status = HttpStatusCode.NotImplemented
