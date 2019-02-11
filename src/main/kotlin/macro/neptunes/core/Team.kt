@@ -13,6 +13,11 @@ data class Team(
 		return byGame.then(byName).compare(this, other)
 	}
 
+	fun toOutput(): Map<String, Any> = mapOf(
+		"ID" to ID,
+		"name" to name
+	).toSortedMap()
+
 	companion object {
 		internal val byGame = compareBy(Team::game)
 		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Team::name)

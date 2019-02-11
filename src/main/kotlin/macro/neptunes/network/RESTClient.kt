@@ -3,6 +3,8 @@ package macro.neptunes.network
 import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util.fromJSON
 import macro.neptunes.core.Util.toJSON
+import macro.neptunes.data.GameTable
+import macro.neptunes.data.PlayerTable
 import org.apache.logging.log4j.LogManager
 import java.io.*
 import java.net.HttpURLConnection
@@ -17,6 +19,32 @@ internal class RESTClient(val gameID: Long = CONFIG.gameID) {
 	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
 	private val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	private val JSON = "application/json"
+
+	internal fun updateGame() {
+		val response = getRequest(endpoint = "/basic")
+		if (response["Code"] == 200) {
+			val data = response["Data"] as Map<String, Any?>
+			if (GameTable.select(ID = gameID) == null)
+				GameTable.insert(game = GameTable.mapToGame(ID = gameID, data = data))
+			else
+				GameTable.update(game = GameTable.mapToGame(ID = gameID, data = data))
+			updatePlayers()
+		}
+	}
+
+	internal fun updatePlayers() {
+		val response = getRequest(endpoint = "/players")
+		if (response["Code"] == 200) {
+			val game = GameTable.select(ID = gameID) ?: return
+			val data = response["Data"] as Map<String, Map<String, Any?>>
+			data.forEach { _, playerData ->
+				if (PlayerTable.select(game = game, alias = playerData["alias"] as String) == null)
+					PlayerTable.insert(player = PlayerTable.mapToPlayer(game = game, data = playerData))
+				else
+					PlayerTable.update(player = PlayerTable.mapToPlayer(game = game, data = playerData))
+			}
+		}
+	}
 
 	internal fun getRequest(
 		endpoint: String,

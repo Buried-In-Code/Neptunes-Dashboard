@@ -28,11 +28,13 @@ import macro.neptunes.core.Config.Companion.CONFIG
 import macro.neptunes.core.Util
 import macro.neptunes.core.Util.toJSON
 import macro.neptunes.data.GameTable
+import macro.neptunes.data.PlayerTable
 import macro.neptunes.network.ErrorMessage
 import macro.neptunes.network.GameController.gameRoutes
 import macro.neptunes.network.HistoryController.historyRoutes
 import macro.neptunes.network.PlayerController.parsePlayer
 import macro.neptunes.network.PlayerController.playerRoutes
+import macro.neptunes.network.RESTClient
 import macro.neptunes.network.SettingsController.settingRoutes
 import macro.neptunes.network.TeamController.parseTeam
 import macro.neptunes.network.TeamController.teamRoutes
@@ -42,12 +44,10 @@ import java.time.LocalDateTime
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
-	internal var lastUpdate: LocalDateTime = LocalDateTime.of(1900, 1, 1, 0, 0)
 
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
-		GameTable.insert(CONFIG.gameID)
 		refreshData()
 	}
 
@@ -71,8 +71,7 @@ object Server {
 	}
 
 	fun refreshData() {
-		lastUpdate = LocalDateTime.now()
-		LOGGER.info("Last Updated: ${lastUpdate.format(Util.JAVA_FORMATTER)}")
+		RESTClient().updateGame()
 	}
 }
 
@@ -130,7 +129,7 @@ fun Application.module() {
 	intercept(ApplicationCallPipeline.Setup) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
 		val now: LocalDateTime = LocalDateTime.now()
-		val difference: Duration = Duration.between(Server.lastUpdate, now)
+		val difference: Duration = Duration.between(GameTable.selectCurrent()?.lastUpdated, now)
 		if (difference.toMinutes() >= CONFIG.refreshRate) {
 			refreshData()
 		}

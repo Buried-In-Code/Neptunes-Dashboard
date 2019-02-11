@@ -5,21 +5,34 @@ package macro.neptunes.core
  */
 data class Player(
 	val game: Game,
-	val team: Team?,
+	var team: Team? = null,
 	val alias: String,
-	val name: String?,
-	val economy: Int,
-	val industry: Int,
-	val science: Int,
-	val stars: Int,
-	val fleet: Int,
-	val ships: Int,
-	val isActive: Boolean
+	var name: String? = null,
+	var economy: Int,
+	var industry: Int,
+	var science: Int,
+	var stars: Int,
+	var fleet: Int,
+	var ships: Int,
+	var isActive: Boolean
 ): Comparable<Player>{
 
 	override fun compareTo(other: Player): Int {
 		return byGame.then(byAlias).compare(this, other)
 	}
+
+	fun toOutput(): Map<String, Any?> = mapOf(
+		"Team" to team?.toOutput(),
+		"Alias" to alias,
+		"Name" to name,
+		"Economy" to economy,
+		"Industry" to industry,
+		"Science" to science,
+		"Stars" to stars,
+		"Fleet" to fleet,
+		"Ships" to ships,
+		"isActive" to isActive
+	).toSortedMap()
 
 	companion object {
 		internal val byGame = compareBy(Player::game)

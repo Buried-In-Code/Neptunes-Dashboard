@@ -2,6 +2,7 @@ package macro.neptunes.data
 
 import macro.neptunes.core.Game
 import macro.neptunes.core.Player
+import macro.neptunes.core.Team
 import macro.neptunes.core.Util
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -63,6 +64,38 @@ object PlayerTable : Table(name = "Player") {
 		}.firstOrNull()
 	}
 
+	fun insert(player: Player): Player = Util.query {
+		insert {
+			it[gameCol] = EntityID(player.game.ID, GameTable)
+			it[teamCol] = EntityID(player.team?.ID, TeamTable)
+			it[aliasCol] = player.alias
+			it[nameCol] = player.name
+			it[economyCol] = player.economy
+			it[industryCol] = player.industry
+			it[scienceCol] = player.science
+			it[starsCol] = player.stars
+			it[fleetCol] = player.fleet
+			it[shipsCol] = player.ships
+			it[isActiveCol] = player.isActive
+		}
+		select(game = player.game, alias = player.alias)!!
+	}
+
+	fun update(player: Player): Player = Util.query {
+		update({ gameCol eq player.game.ID and(aliasCol eq aliasCol)}){
+			it[teamCol] = EntityID(player.team?.ID, TeamTable)
+			it[nameCol] = player.name
+			it[economyCol] = player.economy
+			it[industryCol] = player.industry
+			it[scienceCol] = player.science
+			it[starsCol] = player.stars
+			it[fleetCol] = player.fleet
+			it[shipsCol] = player.ships
+			it[isActiveCol] = player.isActive
+		}
+		select(game = player.game, alias = player.alias)!!
+	}
+
 	fun insert(game: Game, data: Map<String, Any>): Player = Util.query {
 		val player = select(game = game, alias = data["alias"] as String)
 		if (player == null) {
@@ -82,13 +115,7 @@ object PlayerTable : Table(name = "Player") {
 			player
 	}
 
-	fun insertAll(game: Game, data: Map<String, Map<String, Any?>>) = Util.query {
-		data.forEach { _, playerData ->
-			insert(game = game, data = parseData(data = playerData))
-		}
-	}
-
-	private fun parseData(data: Map<String, Any?>): Map<String, Any> = Util.query {
+	fun mapToPlayer(game: Game, data: Map<String, Any?>): Player = Util.query {
 		val alias: String = data["alias"] as String
 		val economy = (data["total_economy"] as Double).roundToInt()
 		val industry = (data["total_industry"] as Double).roundToInt()
@@ -97,15 +124,16 @@ object PlayerTable : Table(name = "Player") {
 		val fleet = (data["total_fleets"] as Double).roundToInt()
 		val ships = (data["total_strength"] as Double).roundToInt()
 		val isActive = (data["conceded"] as Double).roundToInt() == 0
-		mapOf(
-			"alias" to alias,
-			"economy" to economy,
-			"industry" to industry,
-			"science" to science,
-			"stars" to stars,
-			"fleet" to fleet,
-			"ships" to ships,
-			"isActive" to isActive
+		Player(
+			game = game,
+			alias = alias,
+			economy = economy,
+			industry = industry,
+			science = science,
+			stars = stars,
+			fleet = fleet,
+			ships = ships,
+			isActive = isActive
 		)
 	}
 
