@@ -81,7 +81,7 @@ class Config internal constructor(
 			val databaseFile = data["Database File"] as String?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID = (data["game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
+			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val refreshRate = data["Refresh Rate"] as Int?
@@ -109,7 +109,7 @@ internal fun Config.toMap(): Map<*, *> {
 			"Host Name" to this.proxyHostname,
 			"Port" to this.proxyPort
 		),
-		"game" to mapOf(
+		"Game" to mapOf(
 			"ID" to this.gameID
 		),
 		"Refresh Rate" to this.refreshRate

@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.*
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object TeamTable : Table(name = "team") {
+object TeamTable : Table(name = "Team") {
 	private val gameCol: Column<EntityID<Long>> = reference(
 		name = "gameID",
 		foreign = GameTable,

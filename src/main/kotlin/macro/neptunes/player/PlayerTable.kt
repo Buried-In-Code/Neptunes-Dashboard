@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.*
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object PlayerTable : Table(name = "player") {
+object PlayerTable : Table(name = "Player") {
 	private val teamCol: Column<String> = reference(
 		name = "teamName",
 		refColumn = TeamTable.nameCol,

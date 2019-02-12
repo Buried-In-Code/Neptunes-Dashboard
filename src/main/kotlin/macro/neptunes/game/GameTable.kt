@@ -13,14 +13,13 @@ import java.time.LocalDateTime
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object GameTable : LongIdTable(name = "game") {
+object GameTable : LongIdTable(name = "Game") {
 	private val nameCol: Column<String> = text(name = "name")
 	private val startTimeCol: Column<DateTime> = datetime(name = "startTime")
 	private val totalStarsCol: Column<Int> = integer(name = "totalStars")
 	private val victoryStarsCol: Column<Int> = integer(name = "victoryStars")
 	private val productionsCol: Column<Int> = integer(name = "productions")
-	private val lastUpdatedCol: Column<DateTime> =
-		datetime(name = "lastUpdated").default(DateTime.parse("1900-01-01 00:00:00", Util.JODA_FORMATTER))
+	private val lastUpdatedCol: Column<DateTime> = datetime(name = "lastUpdated").default(DateTime.parse("1900-01-01 00:00:00", Util.JODA_FORMATTER))
 	private val adminCol: Column<Int> = integer(name = "admin")
 	private val fleetSpeedCol: Column<Double> = double(name = "fleetSpeed")
 	private val isGameOverCol: Column<Boolean> = bool(name = "isGameOver")
