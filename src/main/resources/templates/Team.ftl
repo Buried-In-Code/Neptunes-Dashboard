@@ -4,86 +4,86 @@
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="/styles.css">
+	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet" type="text/css">
+	<link href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.css" rel="stylesheet" type="text/css"/>
+	<link href="/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="navbar"></div>
-<div class="container">
-	<div class="card text-white bg-dark mb-4">
-		<div class="card-body">
-			<h1 class="card-title text-center">${name}</h1>
-		</div>
+<div class="ui container">
+	<div class="ui inverted container segment opacity">
+		<h1 class="ui center aligned header">${name}</h1>
 	</div>
-	<div class="card-columns mb-4">
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Stars</h3>
-				<p class="card-text"><b>Total:</b> ${totalStars}</p>
-				<p class="card-text"><b>Average:</b> ${totalStars/players?size}</p>
+	<div class="ui four stackable cards">
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Stars</div>
+				<div class="description"><b>Total:</b> ${totalStars}</div>
+				<div class="extra content"><b>Average:</b> ${totalStars/players?size}</div>
 			</div>
 		</div>
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Ships</h3>
-				<p class="card-text"><b>Total:</b> ${totalShips}</p>
-				<p class="card-text"><b>Average:</b> ${totalShips/players?size}</p>
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Ships</div>
+				<div class="description"><b>Total:</b> ${totalShips}</div>
+				<div class="extra content"><b>Average:</b> ${totalShips/players?size}</div>
 			</div>
 		</div>
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Fleet</h3>
-				<p class="card-text"><b>Total:</b> ${totalFleet}</p>
-				<p class="card-text"><b>Average:</b> ${totalFleet/players?size}</p>
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Fleet</div>
+				<div class="description"><b>Total:</b> ${totalFleet}</div>
+				<div class="extra content"><b>Average:</b> ${totalFleet/players?size}</div>
 			</div>
 		</div>
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Economy</h3>
-				<p class="card-text"><b>Total:</b> ${totalEconomy}</p>
-				<p class="card-text"><b>Average:</b> ${totalEconomy/players?size}</p>
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Economy</div>
+				<div class="description"><b>Total:</b> ${totalEconomy}</div>
+				<div class="extra content"><b>Average:</b> ${totalEconomy/players?size}</div>
 			</div>
 		</div>
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Industry</h3>
-				<p class="card-text"><b>Total:</b> ${totalIndustry}</p>
-				<p class="card-text"><b>Average:</b> ${totalIndustry/players?size}</p>
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Industry</div>
+				<div class="description"><b>Total:</b> ${totalIndustry}</div>
+				<div class="extra content"><b>Average:</b> ${totalIndustry/players?size}</div>
 			</div>
 		</div>
-		<div class="card text-white bg-dark">
-			<div class="card-body">
-				<h3 class="card-title">Total Science</h3>
-				<p class="card-text"><b>Total:</b> ${totalScience}</p>
-				<p class="card-text"><b>Average:</b> ${totalScience/players?size}</p>
+		<div class="ui orange card opacity">
+			<div class="content">
+				<div class="header">Total Science</div>
+				<div class="description"><b>Total:</b> ${totalScience}</div>
+				<div class="extra content"><b>Average:</b> ${totalScience/players?size}</div>
 			</div>
 		</div>
 		<#list players as player>
-			<div class="card text-white bg-dark">
-				<div class="card-body">
-					<h3 class="card-title">${player.alias} (${player.name!"Unknown"})</h3>
-					<p class="card-text"><b>Stars:</b> ${player.stars}</p>
-					<p class="card-text"><b>Ships:</b> ${player.ships}</p>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">${player.alias} (${player.name!"Unknown"})</div>
+					<div class="description">
+						<b>Stars:</b> ${player.stars}</br>
+						<b>Ships:</b> ${player.ships}
+					</div>
 				</div>
 			</div>
 		</#list>
 	</div>
-	<div class="card text-white bg-dark mb-4">
-		<div class="card-body">
-			<h3 class="card-title text-center">Star Distribution</h3>
-			<div class="chart-container">
-				<canvas id="winPie" width="600" height="400"></canvas>
-			</div>
+	<div class="ui inverted container segment opacity">
+		<div class="ui center aligned large header">Star Distribution</div>
+		<div class="chart-container">
+			<canvas height="400" id="winPie" width="600"></canvas>
 		</div>
 	</div>
 </div>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js"></script>
-<script type="text/javascript" charset="utf8" src="/script.js"></script>
-<script type="text/javascript" charset="utf8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
+<script src="/script.js" type="text/javascript"></script>
+<script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
 	getTeamStars("${name}");

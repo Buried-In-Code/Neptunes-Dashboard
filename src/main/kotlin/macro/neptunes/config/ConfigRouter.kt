@@ -28,7 +28,7 @@ object ConfigRouter: Router<Nothing>() {
 	}
 
 	fun Route.settingRoutes() {
-		route(path = "/config") {
+		route(path = "/settings") {
 			contentType(contentType = ContentType.Application.Json) {
 				get {
 					call.respond(

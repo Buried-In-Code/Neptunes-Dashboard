@@ -14,13 +14,14 @@ function getGame(){
                 document.getElementById("gameStarted").innerHTML = "false";
             }
 	        document.getElementById("gamePaused").innerHTML = data.isPaused;
-	        document.getElementById("gameTeams").innerHTML = data.teams.length;
-	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
 	        var size = 0;
 	        for(teamCount = 0; teamCount < data.teams.length; teamCount++){
 	            size += data.teams[teamCount].players.length
 	        }
 	        document.getElementById("gamePlayers").innerHTML = size;
+	        document.getElementById("gameTeams").innerHTML = data.teams.length;
+	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
+	        document.getElementById("gameTurn").innerHTML = data.tick / 12;
 	        gameStars = data.totalStars;
 	    },
 	    error: function(xhr, status, error){

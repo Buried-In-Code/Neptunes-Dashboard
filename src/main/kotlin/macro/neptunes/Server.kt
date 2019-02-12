@@ -178,7 +178,7 @@ fun Application.module() {
 				), status = HttpStatusCode.NotImplemented
 			)
 		}
-		get(path = "/config") {
+		get(path = "/settings") {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Exception.ftl",

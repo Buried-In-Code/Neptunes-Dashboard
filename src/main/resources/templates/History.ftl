@@ -4,33 +4,35 @@
 	<title>BIT 269's Neptune's Pride</title>
 	<meta charset="utf-8">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="/styles.css">
+	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet" type="text/css">
+	<link href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.css" rel="stylesheet" type="text/css"/>
+	<link href="/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="navbar"></div>
-<div class="container">
-	<div class="card text-white bg-dark mb-4">
-		<div class="card-body">
-			<h1 class="card-title text-center">Previous Games</h1>
-		</div>
+<div class="ui container">
+	<div class="ui inverted container segment opacity">
+		<h1 class="ui center aligned header">Previous Games</h1>
 	</div>
-	<div class="card-columns mb-4">
+	<div class="ui four stackable cards">
 		<#list games as game>
-			<div class="card text-white bg-dark">
-				<div class="card-body">
-					<h3 class="card-title">${(game.game.name)!"Unknown"}</h3>
-					<p class="card-text"><b>${game.teamName}:</b> ${game.winnerNames?join(", ")}</p>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">${(game.game.name)!"Unknown"}</h3>
+					<div class="description"><b>${game.teamName}:</b> ${game.winnerNames?join(", ")}</p>
 				</div>
 			</div>
 		</#list>
 	</div>
 </div>
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" charset="utf8" src="/script.js"></script>
-<script type="text/javascript" charset="utf8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
+<script src="/script.js" type="text/javascript"></script>
+<script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
 });
