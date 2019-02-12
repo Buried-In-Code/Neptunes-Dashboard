@@ -20,48 +20,48 @@
 			<div class="card-body">
 				<h3 class="card-title">Total Stars</h3>
 				<p class="card-text"><b>Total:</b> ${totalStars}</p>
-				<p class="card-text"><b>Average:</b> ${totalStars/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalStars/players?size}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
 			<div class="card-body">
 				<h3 class="card-title">Total Ships</h3>
 				<p class="card-text"><b>Total:</b> ${totalShips}</p>
-				<p class="card-text"><b>Average:</b> ${totalShips/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalShips/players?size}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
 			<div class="card-body">
 				<h3 class="card-title">Total Fleet</h3>
 				<p class="card-text"><b>Total:</b> ${totalFleet}</p>
-				<p class="card-text"><b>Average:</b> ${totalFleet/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalFleet/players?size}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
 			<div class="card-body">
 				<h3 class="card-title">Total Economy</h3>
 				<p class="card-text"><b>Total:</b> ${totalEconomy}</p>
-				<p class="card-text"><b>Average:</b> ${totalEconomy/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalEconomy/players?size}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
 			<div class="card-body">
 				<h3 class="card-title">Total Industry</h3>
 				<p class="card-text"><b>Total:</b> ${totalIndustry}</p>
-				<p class="card-text"><b>Average:</b> ${totalIndustry/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalIndustry/players?size}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
 			<div class="card-body">
 				<h3 class="card-title">Total Science</h3>
 				<p class="card-text"><b>Total:</b> ${totalScience}</p>
-				<p class="card-text"><b>Average:</b> ${totalScience/members?size}</p>
+				<p class="card-text"><b>Average:</b> ${totalScience/players?size}</p>
 			</div>
 		</div>
-		<#list members as player>
+		<#list players as player>
 			<div class="card text-white bg-dark">
 				<div class="card-body">
-					<h3 class="card-title">${player.name} (${player.alias})</h3>
+					<h3 class="card-title">${player.alias} (${player.name!"Unknown"})</h3>
 					<p class="card-text"><b>Stars:</b> ${player.stars}</p>
 					<p class="card-text"><b>Ships:</b> ${player.ships}</p>
 				</div>

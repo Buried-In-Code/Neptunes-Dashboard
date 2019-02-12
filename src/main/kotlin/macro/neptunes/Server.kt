@@ -24,20 +24,16 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
 import macro.neptunes.Server.refreshData
-import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util
-import macro.neptunes.core.Util.toJSON
-import macro.neptunes.data.GameTable
-import macro.neptunes.data.PlayerTable
-import macro.neptunes.network.ErrorMessage
-import macro.neptunes.network.GameController.gameRoutes
-import macro.neptunes.network.HistoryController.historyRoutes
-import macro.neptunes.network.PlayerController.parsePlayer
-import macro.neptunes.network.PlayerController.playerRoutes
-import macro.neptunes.network.RESTClient
-import macro.neptunes.network.SettingsController.settingRoutes
-import macro.neptunes.network.TeamController.parseTeam
-import macro.neptunes.network.TeamController.teamRoutes
+import macro.neptunes.config.Config.Companion.CONFIG
+import macro.neptunes.game.GameTable
+import macro.neptunes.game.GameRouter.gameRoutes
+import macro.neptunes.backend.HistoryController.historyRoutes
+import macro.neptunes.backend.Neptunes
+import macro.neptunes.player.PlayerRouter
+import macro.neptunes.player.PlayerRouter.playerRoutes
+import macro.neptunes.backend.SettingsController.settingRoutes
+import macro.neptunes.team.TeamRouter
+import macro.neptunes.team.TeamRouter.teamRoutes
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
@@ -71,7 +67,7 @@ object Server {
 	}
 
 	fun refreshData() {
-		RESTClient().updateGame()
+		Neptunes.updateGame()
 	}
 }
 
@@ -129,7 +125,7 @@ fun Application.module() {
 	intercept(ApplicationCallPipeline.Setup) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
 		val now: LocalDateTime = LocalDateTime.now()
-		val difference: Duration = Duration.between(GameTable.selectCurrent()?.lastUpdated, now)
+		val difference: Duration = Duration.between(GameTable.select()?.lastUpdated, now)
 		if (difference.toMinutes() >= CONFIG.refreshRate) {
 			refreshData()
 		}
@@ -155,21 +151,21 @@ fun Application.module() {
 			settingRoutes()
 		}
 		get(path = "/players/{Alias}") {
-			val player = call.parsePlayer(useJson = false) ?: return@get
+			val player = PlayerRouter.get(call = call, useJson = false) ?: return@get
 			call.respond(
 				message = FreeMarkerContent(
-					template = "Player.ftl",
-					model = player.toJSON()
+					template = "player.ftl",
+					model = player.toOutput()
 				),
 				status = HttpStatusCode.OK
 			)
 		}
 		get(path = "/teams/{Name}") {
-			val team = call.parseTeam(useJson = false) ?: return@get
+			val team = TeamRouter.get(call = call, useJson = false) ?: return@get
 			call.respond(
 				message = FreeMarkerContent(
-					template = "Team.ftl",
-					model = team.toJSON()
+					template = "team.ftl",
+					model = team.toOutput()
 				),
 				status = HttpStatusCode.OK
 			)
@@ -177,12 +173,12 @@ fun Application.module() {
 		get(path = "/history") {
 			call.respond(
 				message = FreeMarkerContent(
-					template = "History.ftl",
+					template = "Exception.ftl",
 					model = Util.notImplementedMessage(request = call.request)
 				), status = HttpStatusCode.NotImplemented
 			)
 		}
-		get(path = "/settings") {
+		get(path = "/config") {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Exception.ftl",

@@ -1,4 +1,4 @@
-package macro.neptunes.core
+package macro.neptunes
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
@@ -6,8 +6,11 @@ import com.google.gson.reflect.TypeToken
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.ApplicationRequest
 import io.ktor.request.httpMethod
-import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.network.ErrorMessage
+import macro.neptunes.config.Config.Companion.CONFIG
+import macro.neptunes.game.Game
+import macro.neptunes.game.GameDeserializer
+import macro.neptunes.player.Player
+import macro.neptunes.player.PlayerDeserializer
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
@@ -15,7 +18,6 @@ import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
-import java.io.File
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -28,6 +30,12 @@ object Util {
 	private val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
+		.registerTypeAdapter(Game::class.java, GameDeserializer)
+		.registerTypeAdapter(
+			Player::class.java,
+			PlayerDeserializer
+		)
+		.setLenient()
 		.create()
 	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
@@ -46,11 +54,25 @@ object Util {
 	}
 
 	@Throws(JsonSyntaxException::class)
-	internal fun String.fromJSON(): Map<String, Any> {
+	internal fun String.JsonToMap(): Map<String, Any> {
 		if (this.isBlank()) return emptyMap()
-		val typeOfHashMap = object : TypeToken<Map<String, Any>>() {
+		val type = object : TypeToken<Map<String, Any>>() {
 		}.type
-		return GSON.fromJson(this, typeOfHashMap) ?: emptyMap()
+		return GSON.fromJson(this, type) ?: emptyMap()
+	}
+
+	@Throws(JsonSyntaxException::class)
+	internal fun String.JsonToGame(): Game? {
+		if (this.isBlank()) return null
+		return GSON.fromJson(this, Game::class.java)
+	}
+
+	@Throws(JsonSyntaxException::class)
+	internal fun String.JsonToPlayerMap(): Map<String, Player> {
+		if (this.isBlank()) return emptyMap()
+		val type = object : TypeToken<Map<String, Player>>() {
+		}.type
+		return GSON.fromJson(this, type) ?: emptyMap()
 	}
 
 	internal fun Any?.toJSON(): String = GSON.toJson(this)
@@ -70,15 +92,6 @@ object Util {
 			code = HttpStatusCode.NotImplemented,
 			request = "${request.httpMethod.value} ${request.local.uri}",
 			message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
-		)
-		return error
-	}
-
-	fun notFoundMessage(request: ApplicationRequest, type: String, field: String, value: Any?): ErrorMessage {
-		val error = ErrorMessage(
-			code = HttpStatusCode.NotFound,
-			request = "${request.httpMethod.value} ${request.local.uri}",
-			message = "No $type was found with the $field: $value"
 		)
 		return error
 	}

@@ -1,4 +1,4 @@
-package macro.neptunes.core
+package macro.neptunes.config
 
 import org.apache.logging.log4j.LogManager
 import org.yaml.snakeyaml.DumperOptions
@@ -20,9 +20,7 @@ class Config internal constructor(
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
 	gameID: Long? = null,
-	refreshRate: Int? = null,
-	players: Map<String, String>? = null,
-	teams: Map<String, List<String>>? = null
+	refreshRate: Int? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
 		null -> File("Neptunes-Pride.db")
@@ -37,8 +35,6 @@ class Config internal constructor(
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
 	var gameID: Long = gameID ?: 1L
 	var refreshRate: Int = refreshRate ?: 60
-	var players: Map<String, String> = players ?: mapOf("Alias" to "Name")
-	var teams: Map<String, List<String>> = teams ?: mapOf("Team" to listOf("Name"))
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
@@ -85,12 +81,10 @@ class Config internal constructor(
 			val databaseFile = data["Database File"] as String?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
+			val gameID = (data["game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val refreshRate = data["Refresh Rate"] as Int?
-			val players = data["Players"] as Map<String, String>?
-			val teams = data["Teams"] as Map<String, List<String>>?
 			return Config(
 				databaseFile = databaseFile,
 				serverAddress = serverAddress,
@@ -98,9 +92,7 @@ class Config internal constructor(
 				proxyHostname = proxyHostname,
 				proxyPort = proxyPort,
 				gameID = gameID,
-				refreshRate = refreshRate,
-				players = players,
-				teams = teams
+				refreshRate = refreshRate
 			)
 		}
 	}
@@ -117,12 +109,10 @@ internal fun Config.toMap(): Map<*, *> {
 			"Host Name" to this.proxyHostname,
 			"Port" to this.proxyPort
 		),
-		"Game" to mapOf(
+		"game" to mapOf(
 			"ID" to this.gameID
 		),
-		"Refresh Rate" to this.refreshRate,
-		"Players" to this.players,
-		"Teams" to this.teams
+		"Refresh Rate" to this.refreshRate
 	)
 	return data.toSortedMap()
 }

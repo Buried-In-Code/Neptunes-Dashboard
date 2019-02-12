@@ -1,11 +1,13 @@
-package macro.neptunes.core
+package macro.neptunes.player
+
+import macro.neptunes.team.Team
+import macro.neptunes.team.TeamTable
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
 data class Player(
-	val game: Game,
-	var team: Team? = null,
+	var teamName: String,
 	val alias: String,
 	var name: String? = null,
 	var economy: Int,
@@ -17,30 +19,38 @@ data class Player(
 	var isActive: Boolean
 ): Comparable<Player>{
 
+	fun getTeam(): Team = TeamTable.select(name = teamName)!!
+
 	override fun compareTo(other: Player): Int {
-		return byGame.then(byAlias).compare(this, other)
+		return byTeam.then(byAlias).compare(this, other)
 	}
 
-	fun toOutput(): Map<String, Any?> = mapOf(
-		"Team" to team?.toOutput(),
-		"Alias" to alias,
-		"Name" to name,
-		"Economy" to economy,
-		"Industry" to industry,
-		"Science" to science,
-		"Stars" to stars,
-		"Fleet" to fleet,
-		"Ships" to ships,
-		"isActive" to isActive
-	).toSortedMap()
+	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any?> {
+		var output = mapOf(
+			"alias" to alias,
+			"name" to name,
+			"economy" to economy,
+			"industry" to industry,
+			"science" to science,
+			"stars" to stars,
+			"fleet" to fleet,
+			"ships" to ships,
+			"isActive" to isActive
+		)
+		output = when (showParent) {
+			true -> output.plus("team" to getTeam().toOutput(showChildren = false))
+			false -> output.plus("team" to teamName)
+		}
+		return output.toSortedMap()
+	}
 
 	companion object {
-		internal val byGame = compareBy(Player::game)
+		internal val byTeam = compareBy(Player::getTeam)
 		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, Player::alias)
 	}
 }
 /*
-data class Player(
+data class player(
 	val name: String,
 	val alias: String,
 	var team: String = "Unknown",
@@ -58,7 +68,7 @@ data class Player(
 	val weapons: Int,
 	val banking: Int,
 	val manufacturing: Int
-) : Comparable<Player> {
+) : Comparable<player> {
 	fun playerName() = "$name ($alias)"
 
 	fun calcComplete(): Double {
@@ -78,7 +88,7 @@ data class Player(
 		return industry * (manufacturing + 5) / 24
 	}
 
-	override fun compareTo(other: Player): Int {
+	override fun compareTo(other: player): Int {
 		return byTeam.then(byName).then(byAlias).compare(this, other)
 	}
 
@@ -112,14 +122,14 @@ data class Player(
 	}
 
 	companion object {
-		private val LOGGER = LogManager.getLogger(Player::class.java)
-		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Player::name)
-		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, Player::alias)
-		internal val byTeam = compareBy(String.CASE_INSENSITIVE_ORDER, Player::team)
-		internal val byStars = compareBy(Player::stars)
-		internal val byShips = compareBy(Player::ships)
-		internal val byEconomy = compareBy(Player::economy)
-		internal val byIndustry = compareBy(Player::industry)
-		internal val byScience = compareBy(Player::science)
+		private val LOGGER = LogManager.getLogger(player::class.java)
+		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, player::name)
+		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, player::alias)
+		internal val byTeam = compareBy(String.CASE_INSENSITIVE_ORDER, player::team)
+		internal val byStars = compareBy(player::stars)
+		internal val byShips = compareBy(player::ships)
+		internal val byEconomy = compareBy(player::economy)
+		internal val byIndustry = compareBy(player::industry)
+		internal val byScience = compareBy(player::science)
 	}
 }*/

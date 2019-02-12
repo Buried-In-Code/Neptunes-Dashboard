@@ -12,14 +12,14 @@
 <div class="container">
 	<div class="card text-white bg-dark mb-4">
 		<div class="card-body">
-			<h1 class="card-title text-center">${name}</h1>
+			<h1 class="card-title text-center">${alias}</h1>
 		</div>
 	</div>
 	<div class="card-columns mb-4">
 		<div class="card text-white bg-dark">
 			<div class="card-body">
-				<h3 class="card-title">Alias</h3>
-				<p class="card-text">${alias}</p>
+				<h3 class="card-title">Name</h3>
+				<p class="card-text">${name!"Unknown"}</p>
 			</div>
 		</div>
 		<div class="card text-white bg-dark">
