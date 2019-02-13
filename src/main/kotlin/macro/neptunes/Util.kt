@@ -34,7 +34,6 @@ object Util {
 		.disableHtmlEscaping()
 		.registerTypeAdapter(Game::class.java, GameDeserializer)
 		.registerTypeAdapter(Player::class.java, PlayerDeserializer)
-		.setLenient()
 		.create()
 	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)

@@ -12,10 +12,21 @@ data class InvalidContentTypeException(val value: ContentType) : RuntimeExceptio
 		return "To access this endpoint the header Content-Type needs to be ${ContentType.Application.Json}, you supplied $value"
 	}
 }
+data class InvalidBodyException(val field: String) : RuntimeException(){
+	override fun toString(): String {
+		return "$field is required as not null"
+	}
+}
 
 data class DataExistsException(val field: String, val value: Any?): RuntimeException(){
 	override fun toString(): String {
 		return "$field should be unique, $value already exists in the database"
+	}
+}
+
+data class DataNotFoundException(val type: String, val field: String, val value: Any?): RuntimeException(){
+	override fun toString(): String {
+		return "No $type was found with the $field: $value in the database"
 	}
 }
 

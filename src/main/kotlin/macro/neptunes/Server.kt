@@ -13,6 +13,7 @@ import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
 import io.ktor.request.*
+import io.ktor.request.ContentTransformationException
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
@@ -33,6 +34,7 @@ import macro.neptunes.team.TeamRouter
 import macro.neptunes.team.TeamRouter.teamRoutes
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
+import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -107,9 +109,25 @@ fun Application.module() {
 			)
 			call.respond(error = error)
 		}
+		exception<InvalidBodyException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.BadRequest,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error, logLevel = Level.WARN)
+		}
 		exception<DataExistsException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.Conflict,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error)
+		}
+		exception<DataNotFoundException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotFound,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = it.toString()
 			)
@@ -146,7 +164,10 @@ fun Application.module() {
 		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
 		val logMessage = "$statusCode << >> ${call.request.httpMethod.value} ${call.request.path()}"
 		when (statusCode) {
+			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
+			HttpStatusCode.Conflict -> LOGGER.error(logMessage)
+			HttpStatusCode.BadRequest -> LOGGER.error(logMessage)
 			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
 			else -> LOGGER.info(logMessage)
 		}
@@ -164,7 +185,7 @@ fun Application.module() {
 			settingRoutes()
 		}
 		get(path = "/players/{Alias}") {
-			val player = PlayerRouter.get(call = call, useJson = false) ?: return@get
+			val player = PlayerRouter.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
 					template = "player.ftl",
@@ -174,7 +195,7 @@ fun Application.module() {
 			)
 		}
 		get(path = "/teams/{Name}") {
-			val team = TeamRouter.get(call = call, useJson = false) ?: return@get
+			val team = TeamRouter.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
 					template = "team.ftl",
@@ -218,6 +239,6 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 		when (logLevel) {
 			Level.WARN -> LOGGER.warn("${error.code} << >> ${error.request}")
 			Level.ERROR -> LOGGER.error("${error.code} << >> ${error.request}")
-			Level.FATAL -> LOGGER.fatal(error.message, error.cause)
+			Level.FATAL -> LOGGER.fatal(error.message)
 		}
 }

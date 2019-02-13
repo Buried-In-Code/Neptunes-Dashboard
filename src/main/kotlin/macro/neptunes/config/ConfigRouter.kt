@@ -8,6 +8,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
+import macro.neptunes.DataNotFoundException
 import macro.neptunes.IRequest
 import macro.neptunes.IRouter
 import macro.neptunes.config.Config.Companion.CONFIG
@@ -16,18 +17,12 @@ import macro.neptunes.NotImplementedException
 /**
  * Created by Macro303 on 2019-Jan-25.
  */
-internal object ConfigRouter : IRouter<Nothing> {
-	override fun getAll(): List<Nothing> = emptyList()
-	override suspend fun get(call: ApplicationCall, useJson: Boolean): Nothing? = call.parseParam(useJson = useJson)
+internal object ConfigRouter : IRouter<Config> {
+	override fun getAll(): List<Config> = emptyList()
+	override suspend fun get(call: ApplicationCall): Config = call.parseParam()
 
-	override suspend fun ApplicationCall.parseParam(useJson: Boolean): Nothing? {
-		notFound(useJson = useJson, type = "Config", field = "", value = null)
-		return null
-	}
-
-	override suspend fun ApplicationCall.parseBody(useJson: Boolean): IRequest? {
-		badRequest(useJson = useJson, fields = emptyArray(), values = emptyArray())
-		return null
+	override suspend fun ApplicationCall.parseParam(): Config {
+		throw DataNotFoundException(type = "Config", field = "", value = null)
 	}
 
 	fun Route.settingRoutes() {

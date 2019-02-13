@@ -8,6 +8,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
+import macro.neptunes.DataNotFoundException
 import macro.neptunes.IRequest
 import macro.neptunes.IRouter
 import macro.neptunes.Server
@@ -17,16 +18,10 @@ import macro.neptunes.Server
  */
 internal object GameRouter : IRouter<Game> {
 	override fun getAll(): List<Game> = listOfNotNull(GameTable.select())
-	override suspend fun get(call: ApplicationCall, useJson: Boolean): Game? = call.parseParam(useJson = useJson)
+	override suspend fun get(call: ApplicationCall): Game = call.parseParam()
 
-	override suspend fun ApplicationCall.parseParam(useJson: Boolean): Game? {
-		notFound(useJson = useJson, type = "game", field = "", value = null)
-		return null
-	}
-
-	override suspend fun ApplicationCall.parseBody(useJson: Boolean): IRequest? {
-		badRequest(useJson = useJson, fields = emptyArray(), values = emptyArray())
-		return null
+	override suspend fun ApplicationCall.parseParam(): Game {
+		throw DataNotFoundException(type = "Game", field = "", value = null)
 	}
 
 	fun Route.gameRoutes() {
