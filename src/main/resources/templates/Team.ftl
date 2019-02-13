@@ -12,52 +12,62 @@
 <div id="navbar"></div>
 <div class="ui container">
 	<div class="ui inverted container segment opacity">
-		<h1 class="ui center aligned header">Welcome to BIT269's Neptune's Pride</h1>
-		<p><i>Put Welcome message here</i></p>
+		<h1 class="ui center aligned header">${name}</h1>
 	</div>
 	<div class="ui four stackable cards">
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header">Name</div>
-				<div class="description" id="gameName">{{Game Name}}</div>
+				<div class="header">Total Stars</div>
+				<div class="description"><b>Total:</b> ${totalStars}</div>
+				<div class="extra content"><b>Average:</b> ${totalStars/players?size}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header">Started</div>
-				<div class="description" id="gameStarted">{{Game Started}}</div>
+				<div class="header">Total Ships</div>
+				<div class="description"><b>Total:</b> ${totalShips}</div>
+				<div class="extra content"><b>Average:</b> ${totalShips/players?size}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header">Paused</div>
-				<div class="description" id="gamePaused">{{Game Paused}}</div>
+				<div class="header">Total Fleet</div>
+				<div class="description"><b>Total:</b> ${totalFleet}</div>
+				<div class="extra content"><b>Average:</b> ${totalFleet/players?size}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header"># of Players</div>
-				<div class="description" id="gamePlayers">{{Game Players}}</div>
+				<div class="header">Total Economy</div>
+				<div class="description"><b>Total:</b> ${totalEconomy}</div>
+				<div class="extra content"><b>Average:</b> ${totalEconomy/players?size}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header"># of Teams</div>
-				<div class="description" id="gameTeams">{{Game Teams}}</div>
+				<div class="header">Total Industry</div>
+				<div class="description"><b>Total:</b> ${totalIndustry}</div>
+				<div class="extra content"><b>Average:</b> ${totalIndustry/players?size}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
-				<div class="header">Stars to Win</div>
-				<div class="description" id="gameStars">{{Game Victory}}/{{Game Total}}</div>
+				<div class="header">Total Science</div>
+				<div class="description"><b>Total:</b> ${totalScience}</div>
+				<div class="extra content"><b>Average:</b> ${totalScience/players?size}</div>
 			</div>
 		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Turn #</div>
-				<div class="description" id="gameTurn">{{Game Turn}}</div>
+		<#list players as player>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">${player.alias} (${player.name!"Unknown"})</div>
+					<div class="description">
+						<b>Stars:</b> ${player.stars}</br>
+						<b>Ships:</b> ${player.ships}
+					</div>
+				</div>
 			</div>
-		</div>
+		</#list>
 	</div>
 	<div class="ui inverted container segment opacity">
 		<div class="ui center aligned large header">Star Distribution</div>
@@ -76,9 +86,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	var totalStars = getGame();
-	console.log("Total Stars: " + totalStars)
-	getAllTeamStars(totalStars);
+	getTeamStars("${name}");
 });
 </script>
 </body>
