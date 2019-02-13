@@ -10,14 +10,14 @@ import java.util.*
 /**
  * Created by Macro303 on 2019-Feb-12.
  */
-abstract class Router<T> {
+internal interface IRouter<T> {
 
-	abstract fun getAll(): List<T>
-	abstract suspend fun get(call: ApplicationCall, useJson: Boolean = true): T?
-	abstract suspend fun ApplicationCall.parseParam(useJson: Boolean = true): T?
-	abstract suspend fun ApplicationCall.parseBody(useJson: Boolean = true): Map<String, Any?>?
+	fun getAll(): List<T>
+	suspend fun get(call: ApplicationCall, useJson: Boolean = true): T?
+	suspend fun ApplicationCall.parseParam(useJson: Boolean = true): T?
+	suspend fun ApplicationCall.parseBody(useJson: Boolean = true): IRequest?
 
-	protected suspend fun ApplicationCall.notFound(useJson: Boolean = true, type: String, field: String, value: Any?) {
+	suspend fun ApplicationCall.notFound(useJson: Boolean = true, type: String, field: String, value: Any?) {
 		val message = ErrorMessage(
 			code = HttpStatusCode.NotFound,
 			request = "${request.httpMethod.value} ${request.local.uri}",
@@ -26,16 +26,16 @@ abstract class Router<T> {
 		generateResponse(call = this, useJson = useJson, message = message)
 	}
 
-	protected suspend fun ApplicationCall.badRequest(useJson: Boolean = true, fields: Array<String>, values: Array<Any?>) {
+	suspend fun ApplicationCall.badRequest(useJson: Boolean = true, fields: Array<String>, values: Array<Any?>) {
 		val message = ErrorMessage(
 			code = HttpStatusCode.BadRequest,
 			request = "${request.httpMethod.value} ${request.local.uri}",
-			message = "[${Arrays.toString(fields)}] all are required to be valid, however [${Arrays.toString(values)}] were found"
+			message = "${Arrays.toString(fields)} all are required to be valid, however ${Arrays.toString(values)} were found"
 		)
 		generateResponse(call = this, useJson = useJson, message = message)
 	}
 
-	protected suspend fun ApplicationCall.conflict(useJson: Boolean = true, type: String, field: String, value: Any?) {
+	suspend fun ApplicationCall.conflict(useJson: Boolean = true, type: String, field: String, value: Any?) {
 		val message = ErrorMessage(
 			code = HttpStatusCode.Conflict,
 			request = "${request.httpMethod.value} ${request.local.uri}",

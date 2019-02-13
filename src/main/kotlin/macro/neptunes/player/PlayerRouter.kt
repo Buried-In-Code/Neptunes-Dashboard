@@ -1,21 +1,25 @@
 package macro.neptunes.player
 
+import com.google.gson.JsonSyntaxException
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import io.ktor.response.respond
-import io.ktor.routing.*
-import macro.neptunes.Util.JsonToMap
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.put
+import io.ktor.routing.route
+import macro.neptunes.IRouter
+import macro.neptunes.PlayerRequest
+import macro.neptunes.PlayerRequest.Companion.JsonToRequest
+import macro.neptunes.DataExistsException
 import macro.neptunes.player.PlayerTable.update
-import macro.neptunes.team.TeamTable
-import macro.neptunes.Router
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
-object PlayerRouter : Router<Player>() {
+internal object PlayerRouter : IRouter<Player> {
 	override fun getAll(): List<Player> = PlayerTable.search().sorted()
 	override suspend fun get(call: ApplicationCall, useJson: Boolean): Player? = call.parseParam(useJson = useJson)
 
@@ -29,50 +33,41 @@ object PlayerRouter : Router<Player>() {
 		return player
 	}
 
-	override suspend fun ApplicationCall.parseBody(useJson: Boolean): Map<String, Any?>? {
-		val body = this.receiveText().JsonToMap()
-		val name = body["Name"] as String?
-		var teamName = body["team"] as String?
-		if (teamName != null) {
-			teamName = TeamTable.selectCreate(name = teamName).name
+	override suspend fun ApplicationCall.parseBody(useJson: Boolean): PlayerRequest? {
+		return try {
+			this.receiveText().JsonToRequest()
+		} catch (jse: JsonSyntaxException) {
+			null
 		}
-		return mapOf(
-			"team" to teamName,
-			"Name" to name
-		)
 	}
 
 	fun Route.playerRoutes() {
 		route(path = "/players") {
-			contentType(contentType = ContentType.Application.Json) {
+			get {
+				call.respond(
+					message = getAll().map { it.toOutput() },
+					status = HttpStatusCode.OK
+				)
+			}
+			route(path = "/{Alias}") {
 				get {
+					val player = call.parseParam() ?: return@get
 					call.respond(
-						message = getAll().map { it.toOutput() },
+						message = player.toOutput(showParent = true),
 						status = HttpStatusCode.OK
 					)
 				}
-				route(path = "/{Alias}") {
-					get {
-						val player = call.parseParam() ?: return@get
+				put {
+					val player = call.parseParam() ?: return@put
+					val body = call.parseBody() ?: return@put
+					val valid = player.update(teamName = body.getTeam()?.name ?: player.teamName, name = body.name ?: player.name)
+					if (valid)
 						call.respond(
-							message = player.toOutput(showParent = true),
+							message = PlayerTable.select(alias = player.alias)!!.toOutput(showParent = true),
 							status = HttpStatusCode.OK
 						)
-					}
-					put {
-						val player = call.parseParam() ?: return@put
-						val body = call.parseBody() ?: return@put
-						val teamName = body["team"] as String? ?: player.teamName
-						val name = body["Name"] as String? ?: player.name
-						val valid = player.update(teamName = teamName, name = name)
-						if (valid)
-							call.respond(
-								message = PlayerTable.select(alias = player.alias)!!.toOutput(showParent = true),
-								status = HttpStatusCode.OK
-							)
-						else
-							call.conflict(type = "player", field = "Name", value = name)
-					}
+					else
+						throw DataExistsException(field = "Name", value = body.name ?: player.name)
 				}
 			}
 		}

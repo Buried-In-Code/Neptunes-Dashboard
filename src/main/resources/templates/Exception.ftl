@@ -11,8 +11,8 @@
 <body>
 <div id="navbar"></div>
 <div class="ui container">
-	<div class="ui negative massive message">
-		<div class="header">${code}: ${request}</h4>
+	<div class="ui negative big message">
+		<div class="header">${code}: ${request}</div>
 		<p>${message}</p>
 	</div>
 </div>

@@ -27,20 +27,17 @@ import java.time.format.DateTimeFormatter
  */
 object Util {
 	private val LOGGER = LogManager.getLogger(Util::class.java)
-	private val GSON = GsonBuilder()
+	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
+	internal val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
 		.registerTypeAdapter(Game::class.java, GameDeserializer)
-		.registerTypeAdapter(
-			Player::class.java,
-			PlayerDeserializer
-		)
+		.registerTypeAdapter(Player::class.java, PlayerDeserializer)
 		.setLenient()
 		.create()
-	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-	val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
-	val JODA_FORMATTER = DateTimeFormat.forPattern(DATE_FORMAT)
-	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
+	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)
 
 	internal fun <T> query(block: () -> T): T {
 		return transaction(
@@ -92,6 +89,15 @@ object Util {
 			code = HttpStatusCode.NotImplemented,
 			request = "${request.httpMethod.value} ${request.local.uri}",
 			message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
+		)
+		return error
+	}
+
+	fun missingHeaderMessage(request: ApplicationRequest, header: String, value: Any?, actual: Any?): ErrorMessage {
+		val error = ErrorMessage(
+			code = HttpStatusCode.BadRequest,
+			request = "${request.httpMethod.value} ${request.local.uri}",
+			message = "To access this endpoint make sure you have the header: $header, you supplied $value it should be $actual"
 		)
 		return error
 	}

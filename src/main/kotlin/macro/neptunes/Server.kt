@@ -1,10 +1,7 @@
 package macro.neptunes
 
 import freemarker.cache.ClassTemplateLoader
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCallPipeline
-import io.ktor.application.call
-import io.ktor.application.install
+import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
@@ -34,6 +31,7 @@ import macro.neptunes.player.PlayerRouter
 import macro.neptunes.player.PlayerRouter.playerRoutes
 import macro.neptunes.team.TeamRouter
 import macro.neptunes.team.TeamRouter.teamRoutes
+import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
@@ -87,6 +85,7 @@ fun Application.module() {
 	install(Compression)
 	install(ConditionalHeaders)
 	install(AutoHeadResponse)
+	install(XForwardedHeaderSupport)
 	install(FreeMarker) {
 		templateLoader = ClassTemplateLoader(this::class.java, "/templates")
 	}
@@ -94,56 +93,70 @@ fun Application.module() {
 		exception<Throwable> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.InternalServerError,
-				request = call.request.local.uri,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = it.toString(),
 				cause = it
 			)
-			LOGGER.error(error.message, error.cause)
-			if (call.request.contentType() == ContentType.Application.Json)
-				call.respond(status = error.code, message = error)
-			else
-				call.respond(
-					status = error.code,
-					message = FreeMarkerContent(template = "Exception.ftl", model = error)
-				)
+			call.respond(error = error, logLevel = Level.FATAL)
+		}
+		exception<InvalidContentTypeException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.BadRequest,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error)
+		}
+		exception<DataExistsException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.Conflict,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error)
+		}
+		exception<NotImplementedException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotImplemented,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
+			)
+			call.respond(error = error, logLevel = Level.WARN)
 		}
 		status(HttpStatusCode.NotFound) {
 			val error = ErrorMessage(
 				code = HttpStatusCode.NotFound,
-				request = call.request.local.uri,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = "Unable to find endpoint"
 			)
-			if (call.request.contentType() == ContentType.Application.Json)
-				call.respond(status = error.code, message = error)
-			else
-				call.respond(
-					status = error.code,
-					message = FreeMarkerContent(template = "Exception.ftl", model = error)
-				)
+			call.respond(error = error, logLevel = Level.WARN)
 		}
 	}
 	intercept(ApplicationCallPipeline.Setup) {
-		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.host()}:${call.request.port()}")
 		val now: LocalDateTime = LocalDateTime.now()
 		val difference: Duration = Duration.between(GameTable.select()?.lastUpdated, now)
 		if (difference.toMinutes() >= CONFIG.refreshRate) {
 			refreshData()
 		}
 	}
+	intercept(ApplicationCallPipeline.Monitoring) {
+		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")
+	}
 	intercept(ApplicationCallPipeline.Fallback) {
-		val statusCode = call.response.status()
-		val logMessage =
-			"$statusCode << >> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.path()}, Content-Type: ${call.request.contentType()}"
+		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
+		val logMessage = "$statusCode << >> ${call.request.httpMethod.value} ${call.request.path()}"
 		when (statusCode) {
-			null -> LOGGER.error(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
 			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
 			else -> LOGGER.info(logMessage)
 		}
-		LOGGER.debug("${call.response.status()} << ${call.request.path()}, Content-Type: ${call.response.headers["Content-Type"]}")
 	}
 	install(Routing) {
 		route(path = "/api") {
+			intercept(ApplicationCallPipeline.Features) {
+				if (!call.request.contentType().match(ContentType.Application.Json))
+					throw InvalidContentTypeException(value = call.request.contentType())
+			}
 			gameRoutes()
 			playerRoutes()
 			teamRoutes()
@@ -171,28 +184,13 @@ fun Application.module() {
 			)
 		}
 		get(path = "/history") {
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Exception.ftl",
-					model = Util.notImplementedMessage(request = call.request)
-				), status = HttpStatusCode.NotImplemented
-			)
+			throw NotImplementedException()
 		}
 		get(path = "/settings") {
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Exception.ftl",
-					model = Util.notImplementedMessage(request = call.request)
-				), status = HttpStatusCode.NotImplemented
-			)
+			throw NotImplementedException()
 		}
 		get(path = "/about") {
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Exception.ftl",
-					model = Util.notImplementedMessage(request = call.request)
-				), status = HttpStatusCode.NotImplemented
-			)
+			throw NotImplementedException()
 		}
 		static {
 			defaultResource(resource = "static/index.html")
@@ -206,4 +204,20 @@ fun Application.module() {
 			resource(remotePath = "/script.js", resource = "static/js/script.js")
 		}
 	}
+}
+
+suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level.ERROR) {
+	if (request.local.uri.startsWith("/api") || request.contentType() == ContentType.Application.Json)
+		respond(message = error, status = error.code)
+	else
+		respond(
+			message = FreeMarkerContent(template = "Exception.ftl", model = error),
+			status = error.code
+		)
+	if (error.code != HttpStatusCode.NotFound)
+		when (logLevel) {
+			Level.WARN -> LOGGER.warn("${error.code} << >> ${error.request}")
+			Level.ERROR -> LOGGER.error("${error.code} << >> ${error.request}")
+			Level.FATAL -> LOGGER.fatal(error.message, error.cause)
+		}
 }

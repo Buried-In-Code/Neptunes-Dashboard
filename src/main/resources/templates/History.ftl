@@ -18,8 +18,8 @@
 		<#list games as game>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">${(game.game.name)!"Unknown"}</h3>
-					<div class="description"><b>${game.teamName}:</b> ${game.winnerNames?join(", ")}</p>
+					<div class="header">${(game.game.name)!"Unknown"}</div>
+					<div class="description"><b>${game.teamName}:</b> ${game.winnerNames?join(", ")}</div>
 				</div>
 			</div>
 		</#list>

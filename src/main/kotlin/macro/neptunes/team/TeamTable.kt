@@ -28,6 +28,8 @@ object TeamTable : Table(name = "Team") {
 	fun search(): List<Team> = Util.query {
 		selectAll().map {
 			it.parse()
+		}.filterNot {
+			it.getPlayers().isEmpty()
 		}
 	}
 

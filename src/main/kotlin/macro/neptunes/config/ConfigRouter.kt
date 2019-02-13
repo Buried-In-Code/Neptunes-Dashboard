@@ -2,18 +2,21 @@ package macro.neptunes.config
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.put
+import io.ktor.routing.route
+import macro.neptunes.IRequest
+import macro.neptunes.IRouter
 import macro.neptunes.config.Config.Companion.CONFIG
-import macro.neptunes.Router
-import macro.neptunes.Util
+import macro.neptunes.NotImplementedException
 
 /**
  * Created by Macro303 on 2019-Jan-25.
  */
-object ConfigRouter: Router<Nothing>() {
+internal object ConfigRouter : IRouter<Nothing> {
 	override fun getAll(): List<Nothing> = emptyList()
 	override suspend fun get(call: ApplicationCall, useJson: Boolean): Nothing? = call.parseParam(useJson = useJson)
 
@@ -22,26 +25,21 @@ object ConfigRouter: Router<Nothing>() {
 		return null
 	}
 
-	override suspend fun ApplicationCall.parseBody(useJson: Boolean): Map<String, Any?>? {
+	override suspend fun ApplicationCall.parseBody(useJson: Boolean): IRequest? {
 		badRequest(useJson = useJson, fields = emptyArray(), values = emptyArray())
 		return null
 	}
 
 	fun Route.settingRoutes() {
 		route(path = "/settings") {
-			contentType(contentType = ContentType.Application.Json) {
-				get {
-					call.respond(
-						message = CONFIG,
-						status = HttpStatusCode.OK
-					)
-				}
-				put {
-					call.respond(
-						message = Util.notImplementedMessage(request = call.request),
-						status = HttpStatusCode.NotImplemented
-					)
-				}
+			get {
+				call.respond(
+					message = CONFIG,
+					status = HttpStatusCode.OK
+				)
+			}
+			put {
+				throw NotImplementedException()
 			}
 		}
 	}

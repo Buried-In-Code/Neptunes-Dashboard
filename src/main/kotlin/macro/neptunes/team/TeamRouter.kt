@@ -1,21 +1,25 @@
 package macro.neptunes.team
 
+import com.google.gson.JsonSyntaxException
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
-import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.routing.*
-import macro.neptunes.Util
-import macro.neptunes.Util.JsonToMap
+import macro.neptunes.DataExistsException
+import macro.neptunes.IRouter
+import macro.neptunes.NotImplementedException
+import macro.neptunes.TeamRequest
+import macro.neptunes.TeamRequest.Companion.JsonToRequest
+import macro.neptunes.player.PlayerTable
+import macro.neptunes.player.PlayerTable.update
 import macro.neptunes.team.TeamTable.update
-import macro.neptunes.Router
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
-object TeamRouter : Router<Team>() {
+internal object TeamRouter : IRouter<Team> {
 	override fun getAll(): List<Team> = TeamTable.search().sorted()
 	override suspend fun get(call: ApplicationCall, useJson: Boolean): Team? = call.parseParam(useJson = useJson)
 
@@ -29,67 +33,78 @@ object TeamRouter : Router<Team>() {
 		return team
 	}
 
-	override suspend fun ApplicationCall.parseBody(useJson: Boolean): Map<String, Any>? {
-		val body = this.receiveText().JsonToMap()
-		val name = body["Name"] as String?
-		if (name == null) {
-			badRequest(useJson = useJson, fields = arrayOf("Name"), values = arrayOf(name))
-			return null
+	override suspend fun ApplicationCall.parseBody(useJson: Boolean): TeamRequest? {
+		return try {
+			this.receiveText().JsonToRequest()
+		} catch (jse: JsonSyntaxException) {
+			null
 		}
-		return mapOf(
-			"Name" to name
-		)
 	}
 
 	fun Route.teamRoutes() {
 		route(path = "/teams") {
-			contentType(contentType = ContentType.Application.Json) {
-				get {
+			get {
+				call.respond(
+					message = getAll().map { it.toOutput() },
+					status = HttpStatusCode.OK
+				)
+			}
+			post {
+				val body = call.parseBody() ?: return@post
+				if (body.name == null) {
+					call.badRequest(fields = arrayOf("Name"), values = arrayOf(body.name))
+					return@post
+				}
+				val valid = TeamTable.insert(name = body.name)
+				if (valid) {
+					if (!body.players.isNullOrEmpty())
+						body.players.forEach {
+							val player = PlayerTable.select(alias = it)
+							player?.update(
+								teamName = body.name
+							)
+						}
 					call.respond(
-						message = getAll().map { it.toOutput() },
+						message = TeamTable.select(name = body.name)!!.toOutput(showParent = true),
+						status = HttpStatusCode.Created
+					)
+				} else
+					throw DataExistsException(field = "Name", value = body.name)
+			}
+			route(path = "/{Name}") {
+				get {
+					val team = call.parseParam() ?: return@get
+					call.respond(
+						message = team.toOutput(showParent = true),
 						status = HttpStatusCode.OK
 					)
 				}
-				post {
-					val body = call.parseBody() ?: return@post
-					val name = body["Name"] as String
-					val valid = TeamTable.insert(name = name)
-					if (valid)
+				put {
+					val team = call.parseParam() ?: return@put
+					val body = call.parseBody() ?: return@put
+					if (body.name == null) {
+						call.badRequest(fields = arrayOf("Name"), values = arrayOf(body.name))
+						return@put
+					}
+					val valid = team.update(name = body.name)
+					if (valid) {
+						if (!body.players.isNullOrEmpty())
+							body.players.forEach {
+								val player = PlayerTable.select(alias = it)
+								player?.update(
+									teamName = body.name
+								)
+							}
 						call.respond(
-							message = TeamTable.select(name = name)!!.toOutput(showParent = true),
-							status = HttpStatusCode.Created
-						)
-					else
-						call.conflict(type = "team", field = "Name", value = name)
-				}
-				route(path = "/{Name}") {
-					get {
-						val team = call.parseParam() ?: return@get
-						call.respond(
-							message = team.toOutput(showParent = true),
+							message = TeamTable.select(name = body.name)!!.toOutput(showParent = true),
 							status = HttpStatusCode.OK
 						)
-					}
-					put {
-						val team = call.parseParam() ?: return@put
-						val body = call.parseBody() ?: return@put
-						val name = body["Name"] as String
-						val valid = team.update(name = name)
-						if (valid)
-							call.respond(
-								message = TeamTable.select(name = name)!!.toOutput(showParent = true),
-								status = HttpStatusCode.OK
-							)
-						else
-							call.conflict(type = "team", field = "Name", value = name)
-					}
-					delete {
-						val team = call.parseParam() ?: return@delete
-						call.respond(
-							message = Util.notImplementedMessage(request = call.request),
-							status = HttpStatusCode.NotImplemented
-						)
-					}
+					} else
+						throw DataExistsException(field = "Name", value = body.name)
+				}
+				delete {
+					val team = call.parseParam() ?: return@delete
+					throw NotImplementedException()
 				}
 			}
 		}
