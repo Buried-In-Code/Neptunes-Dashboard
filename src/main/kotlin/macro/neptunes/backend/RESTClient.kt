@@ -1,74 +1,41 @@
-package macro.neptunes.data
+package macro.neptunes.backend
 
-import macro.neptunes.core.Config.Companion.CONFIG
-import macro.neptunes.core.Util.fromJSON
-import macro.neptunes.core.Util.toJSON
+import macro.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
-import java.io.*
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.Reader
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-internal class RESTClient(val gameID: Long = CONFIG.gameID) {
+internal class RESTClient(private val endpointUrl: String) {
 	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
-	private val ENDPOINT = "http://nptriton.cqproject.net/game/"
-	private val JSON = "application/json"
 
 	internal fun getRequest(
 		endpoint: String,
-		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON)),
+		headers: Map<String, String> = mapOf("Content-Type" to "application/json"),
 		parameters: Map<String, Any>? = null
 	): Map<String, Any> {
-		var response: Map<String, Any> = HashMap()
+		var response: Map<String, Any> = emptyMap()
 		var connection: HttpURLConnection? = null
 		try {
 			connection = setupConnection(
 				endpoint = endpoint,
-				requestMethod = "GET",
 				headers = headers,
 				parameters = parameters
 			)
 			connection.connect()
-			response = getResponse(connection)
+			response = getResponse(connection = connection)
 		} catch (ignored: IOException) {
 		} finally {
 			connection?.disconnect()
-			LOGGER.info("GET << Code: {}, Message: {}", response["Code"], response["Message"])
-			LOGGER.debug("Response Data: {}", response["Data"])
-		}
-		return response
-	}
-
-	internal fun postRequest(
-		endpoint: String,
-		headers: Map<String, String> = mapOf(Pair("Content-Type", JSON)),
-		parameters: Map<String, Any>? = null,
-		body: Map<String, Any>
-	): Map<String, Any> {
-		var response: Map<String, Any> = HashMap()
-		var connection: HttpURLConnection? = null
-		try {
-			connection = setupConnection(
-				endpoint = endpoint,
-				requestMethod = "POST",
-				headers = headers,
-				parameters = parameters
-			)
-			LOGGER.debug("POST >> Body: " + body.toJSON())
-			val wr = OutputStreamWriter(connection.outputStream)
-			wr.write(body.toJSON())
-			wr.flush()
-			connection.connect()
-			response = getResponse(connection)
-		} catch (ignored: IOException) {
-		} finally {
-			connection?.disconnect()
-			LOGGER.info("POST << Code: {}, Message: {}", response["Code"], response["Message"])
-			LOGGER.debug("Response Data: {}", response["Data"])
+			LOGGER.info("GET << Code: ${response["Code"]}, Message: ${response["Message"]}")
+			LOGGER.debug("Response Data: ${response["Data"]}")
 		}
 		return response
 	}
@@ -87,14 +54,13 @@ internal class RESTClient(val gameID: Long = CONFIG.gameID) {
 	@Throws(IOException::class)
 	private fun setupConnection(
 		endpoint: String,
-		requestMethod: String,
 		headers: Map<String, String>,
-		parameters: Map<String, Any>? = null
+		parameters: Map<String, Any>?
 	): HttpURLConnection {
-		var urlString = ENDPOINT + gameID + endpoint
+		var urlString = endpointUrl + endpoint
 		if (parameters != null)
 			urlString = addParameters(endpoint = urlString, parameters = parameters)
-		LOGGER.info("$requestMethod >> URL: $urlString, Headers: $headers")
+		LOGGER.info("GET >> URL: $urlString, Headers: $headers")
 		val url = URL(urlString)
 		val connection = when {
 			CONFIG.proxy == null -> url.openConnection() as HttpURLConnection
@@ -103,11 +69,7 @@ internal class RESTClient(val gameID: Long = CONFIG.gameID) {
 		connection.connectTimeout = 5 * 1000
 		connection.readTimeout = 5 * 1000
 		headers.forEach { key, value -> connection.setRequestProperty(key, value) }
-		connection.requestMethod = requestMethod
-		if (requestMethod == "POST") {
-			connection.doInput = true
-			connection.doOutput = true
-		}
+		connection.requestMethod = "GET"
 		return connection
 	}
 
@@ -119,17 +81,17 @@ internal class RESTClient(val gameID: Long = CONFIG.gameID) {
 
 	@Throws(IOException::class)
 	private fun getResponse(connection: HttpURLConnection): Map<String, Any> {
-		val response = mapOf(
+		val response = mapOf<String, Any>(
 			"Code" to connection.responseCode,
 			"Message" to connection.responseMessage
 		)
 		if (connection.responseCode != 204) {
-			val returnedData: String =
+			val returnedData =
 				if (connection.responseCode == 200 || connection.responseCode == 201 || connection.responseCode == 202)
 					readAll(BufferedReader(InputStreamReader(connection.inputStream, Charset.forName("UTF-8"))))
 				else
 					readAll(BufferedReader(InputStreamReader(connection.errorStream, Charset.forName("UTF-8"))))
-			return response.plus("Data" to returnedData.fromJSON())
+			return response.plus("Data" to returnedData)
 		}
 		return response
 	}

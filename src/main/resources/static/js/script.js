@@ -14,9 +14,14 @@ function getGame(){
                 document.getElementById("gameStarted").innerHTML = "false";
             }
 	        document.getElementById("gamePaused").innerHTML = data.isPaused;
-	        document.getElementById("gamePlayers").innerHTML = data.playerCount;
-	        document.getElementById("gameTeams").innerHTML = data.teamCount;
+	        var size = 0;
+	        for(teamCount = 0; teamCount < data.teams.length; teamCount++){
+	            size += data.teams[teamCount].players.length
+	        }
+	        document.getElementById("gamePlayers").innerHTML = size;
+	        document.getElementById("gameTeams").innerHTML = data.teams.length;
 	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
+	        document.getElementById("gameTurn").innerHTML = data.tick / 12;
 	        gameStars = data.totalStars;
 	    },
 	    error: function(xhr, status, error){
@@ -34,24 +39,28 @@ function getAllTeamStars(totalStars){
  	    dataType: 'json',
  	    success: function (data) {
 	        console.log(data);
-			var teamLabels = [];
-			var teamData = [];
-			teamLabels.push("Stars Left");
-			teamData.push(1);
-			var starCount = 0;
-			for(count = 0; count < data.length; count++){
-				var team = data[count];
-				teamLabels.push(team.name);
-				var teamStars = 0;
-				for(memberCount = 0; memberCount < team.members.length; memberCount++){
-					var member = team.members[memberCount];
-					teamStars += member.stars;
+	        if(data.length <= 1){
+	            getAllPlayerStars(totalStars)
+            }else{
+				var teamLabels = [];
+				var teamData = [];
+				teamLabels.push("Stars Left");
+				teamData.push(1);
+				var starCount = 0;
+				for(count = 0; count < data.length; count++){
+					var team = data[count];
+					teamLabels.push(team.name);
+					var teamStars = 0;
+					for(playerCount = 0; playerCount < team.players.length; playerCount++){
+						var player = team.players[playerCount];
+						teamStars += player.stars;
+					}
+					teamData.push(teamStars);
+					starCount += teamStars;
 				}
-				teamData.push(teamStars);
-				starCount += teamStars;
+				teamData[0] = totalStars - starCount;
+				createPieGraph(teamLabels, teamData);
 			}
-			teamData[0] = totalStars - starCount;
-			createPieGraph(teamLabels, teamData);
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -67,15 +76,42 @@ function getTeamStars(name){
  	    dataType: 'json',
  	    success: function (data) {
 	        console.log(data);
-			var memberLabels = [];
-			var memberData = [];
-			var members = data.members;
-			for(count = 0; count < members.length; count++){
-				var member = members[count];
-				memberLabels.push(member.alias);
-				memberData.push(member.stars);
+			var playerLabels = [];
+			var playerData = [];
+			for(count = 0; count < data.players.length; count++){
+				var player = data.players[count];
+				playerLabels.push(player.alias);
+				playerData.push(player.stars);
 			}
-			createPieGraph(memberLabels, memberData);
+			createPieGraph(playerLabels, playerData);
+ 	    },
+ 	    error: function(xhr, status, error){
+ 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+ 	    }
+ 	});
+}
+
+function getAllPlayerStars(totalStars){
+ 	$.ajax({
+ 	    url: "/api/players",
+ 	    type: 'GET',
+ 	    contentType: 'application/json',
+ 	    dataType: 'json',
+ 	    success: function (data) {
+	        console.log(data);
+			var playerLabels = [];
+			var playerData = [];
+			playerLabels.push("Stars Left");
+			playerData.push(1);
+			var starCount = 0;
+			for(count = 0; count < data.length; count++){
+				var player = data[count];
+				playerLabels.push(player.alias);
+				playerData.push(player.stars);
+				starCount += player.stars;
+			}
+			playerData[0] = totalStars - starCount;
+			createPieGraph(playerLabels, playerData);
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);

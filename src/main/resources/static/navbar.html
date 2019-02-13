@@ -1,36 +1,30 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
-	<a class="navbar-brand" href="https://np.ironhelmet.com">
-		<img height="50" src="https://np.ironhelmet.com/images/neptunes_pride.jpg" width="200">
-	</a>
-	<button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarSupportedContent" data-toggle="collapse" type="button">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="/">Home</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="/players">Players</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="/teams">Teams</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="/history">History</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="/documentation">Documentation</a>
-			</li>
-			<li class="nav-item dropdown">
-				<a aria-expanded="false" aria-haspopup="true" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink" role="button">
-					More
+<header class="ui inverted top fixed menu">
+	<div class="ui container">
+		<a class="item" href="/">
+			<i class="home icon"></i>Home
+		</a>
+		<a class="item" href="/players">
+			<i class="user icon"></i>Players
+		</a>
+		<a class="item" href="/teams">
+			<i class="users icon"></i>Teams
+		</a>
+		<a class="item" href="/history">
+			<i class="clock icon"></i>History
+		</a>
+		<a class="item" href="/documentation">
+			<i class="book icon"></i>Documentation
+		</a>
+		<div class="ui simple dropdown item">
+			<i class="angle double down icon"></i>More
+			<div class="menu">
+				<a class="item" href="/settings">
+					<i class="cogs icon"></i>Settings
 				</a>
-				<div aria-labelledby="navbarDropdownMenuLink" class="dropdown-menu">
-					<a class="dropdown-item" href="/settings">Settings</a>
-					<a class="dropdown-item" href="/about">About</a>
-				</div>
-			</li>
-		</ul>
+				<a class="item" href="/about">
+					<i class="info circle icon"></i>About
+				</a>
+			</div>
+		</div>
 	</div>
-</nav>
+</header>
