@@ -162,7 +162,7 @@ fun Application.module() {
 	}
 	intercept(ApplicationCallPipeline.Fallback) {
 		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
-		val logMessage = "$statusCode << >> ${call.request.httpMethod.value} ${call.request.path()}"
+		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.path()}"
 		when (statusCode) {
 			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
@@ -237,8 +237,8 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 		)
 	if (error.code != HttpStatusCode.NotFound)
 		when (logLevel) {
-			Level.WARN -> LOGGER.warn("${error.code} << >> ${error.request}")
-			Level.ERROR -> LOGGER.error("${error.code} << >> ${error.request}")
+			Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.path()}")
+			Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.path()}")
 			Level.FATAL -> LOGGER.fatal(error.message)
 		}
 }
