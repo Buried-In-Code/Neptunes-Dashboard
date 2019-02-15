@@ -9,10 +9,7 @@ import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.defaultResource
-import io.ktor.http.content.files
-import io.ktor.http.content.resource
-import io.ktor.http.content.static
+import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
@@ -33,6 +30,7 @@ import macro.neptunes.team.TeamRouter
 import macro.neptunes.team.TeamRouter.teamRoutes
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
+import java.io.File
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -203,22 +201,16 @@ fun Application.module() {
 		get(path = "/settings") {
 			throw NotImplementedException()
 		}
-		static {
-			//HTML
+		static{
+			resources(resourcePackage = "static/images")
+			resources(resourcePackage = "static/css")
+			resources(resourcePackage = "static/js")
 			defaultResource(resource = "static/index.html")
+			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/players", resource = "static/players.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
 			resource(remotePath = "/documentation", resource = "static/documentation.html")
 			resource(remotePath = "/about", resource = "static/about.html")
-			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
-			//Images
-			resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
-			resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
-			resource(remotePath = "/avatar.jpg", resource = "static/images/avatar.jpg")
-			//Css
-			resource(remotePath = "/styles.css", resource = "static/css/styles.css")
-			//Js
-			resource(remotePath = "/script.js", resource = "static/js/script.js")
 		}
 	}
 }
