@@ -12,6 +12,7 @@ import macro.neptunes.DataNotFoundException
 import macro.neptunes.IRequest
 import macro.neptunes.IRouter
 import macro.neptunes.Server
+import macro.neptunes.backend.Neptunes
 
 /**
  * Created by Macro303 on 2018-Nov-16.
@@ -33,7 +34,7 @@ internal object GameRouter : IRouter<Game> {
 				)
 			}
 			put {
-				Server.refreshData()
+				Neptunes.updateGame()
 				call.respond(
 					message = emptyMap<String, String>(),
 					status = HttpStatusCode.NoContent

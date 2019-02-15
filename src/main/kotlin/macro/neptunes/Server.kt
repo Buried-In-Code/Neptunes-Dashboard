@@ -10,10 +10,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.defaultResource
+import io.ktor.http.content.files
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
 import io.ktor.request.*
-import io.ktor.request.ContentTransformationException
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
@@ -21,7 +21,6 @@ import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
-import macro.neptunes.Server.refreshData
 import macro.neptunes.backend.Neptunes
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.config.ConfigRouter.settingRoutes
@@ -34,7 +33,6 @@ import macro.neptunes.team.TeamRouter
 import macro.neptunes.team.TeamRouter.teamRoutes
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
-import java.lang.IllegalArgumentException
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -44,7 +42,7 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
-		refreshData()
+		Neptunes.updateGame()
 	}
 
 	private fun loggerColours() {
@@ -64,10 +62,6 @@ object Server {
 			host = CONFIG.serverAddress,
 			module = Application::module
 		).apply { start(wait = true) }
-	}
-
-	fun refreshData() {
-		Neptunes.updateGame()
 	}
 }
 
@@ -153,16 +147,15 @@ fun Application.module() {
 	intercept(ApplicationCallPipeline.Setup) {
 		val now: LocalDateTime = LocalDateTime.now()
 		val difference: Duration = Duration.between(GameTable.select()?.lastUpdated, now)
-		if (difference.toMinutes() >= CONFIG.refreshRate) {
-			refreshData()
-		}
+		if (difference.toMinutes() >= CONFIG.refreshRate)
+			Neptunes.updateGame()
 	}
 	intercept(ApplicationCallPipeline.Monitoring) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")
 	}
 	intercept(ApplicationCallPipeline.Fallback) {
 		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
-		val logMessage = "$statusCode << >> ${call.request.httpMethod.value} ${call.request.path()}"
+		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.path()}"
 		when (statusCode) {
 			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
@@ -210,18 +203,21 @@ fun Application.module() {
 		get(path = "/settings") {
 			throw NotImplementedException()
 		}
-		get(path = "/about") {
-			throw NotImplementedException()
-		}
 		static {
+			//HTML
 			defaultResource(resource = "static/index.html")
 			resource(remotePath = "/players", resource = "static/players.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
 			resource(remotePath = "/documentation", resource = "static/documentation.html")
+			resource(remotePath = "/about", resource = "static/about.html")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
+			//Images
 			resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
 			resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
+			resource(remotePath = "/avatar.jpg", resource = "static/images/avatar.jpg")
+			//Css
 			resource(remotePath = "/styles.css", resource = "static/css/styles.css")
+			//Js
 			resource(remotePath = "/script.js", resource = "static/js/script.js")
 		}
 	}
@@ -237,8 +233,8 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 		)
 	if (error.code != HttpStatusCode.NotFound)
 		when (logLevel) {
-			Level.WARN -> LOGGER.warn("${error.code} << >> ${error.request}")
-			Level.ERROR -> LOGGER.error("${error.code} << >> ${error.request}")
+			Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.path()}")
+			Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.path()}")
 			Level.FATAL -> LOGGER.fatal(error.message)
 		}
 }
