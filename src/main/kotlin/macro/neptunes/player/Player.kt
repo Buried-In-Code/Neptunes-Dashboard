@@ -20,6 +20,8 @@ data class Player(
 ): Comparable<Player>{
 
 	fun getTeam(): Team = TeamTable.select(name = teamName)!!
+	fun getEconomyTurn(): Double = economy * 10 + 1.0 * 75
+	fun getIndustryTurn(): Double = industry * (1.0 + 5) / 24
 
 	override fun compareTo(other: Player): Int {
 		return byTeam.then(byAlias).compare(this, other)
