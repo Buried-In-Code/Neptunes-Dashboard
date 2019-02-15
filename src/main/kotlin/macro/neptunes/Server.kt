@@ -10,6 +10,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.defaultResource
+import io.ktor.http.content.files
 import io.ktor.http.content.resource
 import io.ktor.http.content.static
 import io.ktor.request.*
@@ -202,18 +203,21 @@ fun Application.module() {
 		get(path = "/settings") {
 			throw NotImplementedException()
 		}
-		get(path = "/about") {
-			throw NotImplementedException()
-		}
 		static {
+			//HTML
 			defaultResource(resource = "static/index.html")
 			resource(remotePath = "/players", resource = "static/players.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
 			resource(remotePath = "/documentation", resource = "static/documentation.html")
+			resource(remotePath = "/about", resource = "static/about.html")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
+			//Images
 			resource(remotePath = "/favicon.ico", resource = "static/images/favicon.ico")
 			resource(remotePath = "/background.jpg", resource = "static/images/background.jpg")
+			resource(remotePath = "/avatar.jpg", resource = "static/images/avatar.jpg")
+			//Css
 			resource(remotePath = "/styles.css", resource = "static/css/styles.css")
+			//Js
 			resource(remotePath = "/script.js", resource = "static/js/script.js")
 		}
 	}
