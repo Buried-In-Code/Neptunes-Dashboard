@@ -37,7 +37,9 @@ data class Player(
 			"stars" to stars,
 			"fleet" to fleet,
 			"ships" to ships,
-			"isActive" to isActive
+			"isActive" to isActive,
+			"economyTurn" to getEconomyTurn(),
+			"industryTurn" to getIndustryTurn()
 		)
 		output = when (showParent) {
 			true -> output.plus("team" to getTeam().toOutput(showChildren = false))
