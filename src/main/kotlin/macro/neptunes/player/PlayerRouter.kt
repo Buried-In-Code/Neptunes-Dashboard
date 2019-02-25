@@ -12,8 +12,9 @@ import io.ktor.routing.route
 import macro.neptunes.DataExistsException
 import macro.neptunes.DataNotFoundException
 import macro.neptunes.IRouter
-import macro.neptunes.PlayerRequest
 import macro.neptunes.player.PlayerTable.update
+import macro.neptunes.team.Team
+import macro.neptunes.team.TeamTable
 
 /**
  * Created by Macro303 on 2018-Nov-16.
@@ -63,5 +64,11 @@ internal object PlayerRouter : IRouter<Player> {
 				}
 			}
 		}
+	}
+}
+
+data class PlayerRequest(val name: String?, val teamName: String?) {
+	fun getTeam(): Team? {
+		return TeamTable.selectCreate(name = teamName ?: return null)
 	}
 }

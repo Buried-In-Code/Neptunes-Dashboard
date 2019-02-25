@@ -2,6 +2,7 @@ package macro.neptunes.team
 
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.game.Game
+import macro.neptunes.game.GameController
 import macro.neptunes.game.GameTable
 import macro.neptunes.player.Player
 import macro.neptunes.player.PlayerTable
@@ -39,7 +40,7 @@ data class Team(
 			"totalShips" to getTotalShips()
 		)
 		output = when (showParent) {
-			true -> output.plus("game" to getGame().toOutput(showChildren = false))
+			true -> output.plus("game" to GameController.getLatest(showChildren = false))
 			false -> output.plus("game" to gameID)
 		}
 		if (showChildren)

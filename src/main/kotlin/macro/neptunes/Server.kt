@@ -21,8 +21,8 @@ import macro.neptunes.Server.LOGGER
 import macro.neptunes.backend.Neptunes
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.config.ConfigRouter.settingRoutes
-import macro.neptunes.game.GameRouter.gameRoutes
-import macro.neptunes.game.GameTable
+import macro.neptunes.game.GameController
+import macro.neptunes.game.GameController.gameRoutes
 import macro.neptunes.history.HistoryRouter.historyRoutes
 import macro.neptunes.player.PlayerRouter
 import macro.neptunes.player.PlayerRouter.playerRoutes
@@ -30,9 +30,6 @@ import macro.neptunes.team.TeamRouter
 import macro.neptunes.team.TeamRouter.teamRoutes
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
-import java.io.File
-import java.time.Duration
-import java.time.LocalDateTime
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
@@ -40,7 +37,7 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
-		Neptunes.updateGame()
+		GameController.addGame(ID = CONFIG.gameID)
 	}
 
 	private fun loggerColours() {
@@ -141,12 +138,6 @@ fun Application.module() {
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
-	}
-	intercept(ApplicationCallPipeline.Setup) {
-		val now: LocalDateTime = LocalDateTime.now()
-		val difference: Duration = Duration.between(GameTable.select()?.lastUpdated, now)
-		if (difference.toMinutes() >= CONFIG.refreshRate)
-			Neptunes.updateGame()
 	}
 	intercept(ApplicationCallPipeline.Monitoring) {
 		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")

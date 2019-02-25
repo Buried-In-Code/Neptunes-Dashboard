@@ -9,7 +9,6 @@ import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.neptunes.DataNotFoundException
-import macro.neptunes.IRequest
 import macro.neptunes.IRouter
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.NotImplementedException

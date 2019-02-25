@@ -3,12 +3,8 @@ package macro.neptunes
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.ApplicationRequest
-import io.ktor.request.httpMethod
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.game.Game
-import macro.neptunes.game.GameDeserializer
 import macro.neptunes.player.Player
 import macro.neptunes.player.PlayerDeserializer
 import macro.neptunes.technology.PlayerTechnology
@@ -29,12 +25,12 @@ import java.time.format.DateTimeFormatter
  */
 object Util {
 	private val LOGGER = LogManager.getLogger(Util::class.java)
-	private val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
+	private const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
+	internal const val ENDPOINT = "http://nptriton.cqproject.net/game/"
 	internal val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
-		.registerTypeAdapter(Game::class.java, GameDeserializer)
 		.registerTypeAdapter(Player::class.java, PlayerDeserializer)
 		.registerTypeAdapter(PlayerTechnology::class.java, TechnologyDeserializer)
 		.create()
@@ -61,15 +57,9 @@ object Util {
 	}
 
 	@Throws(JsonSyntaxException::class)
-	internal fun String.JsonToGame(): Game? {
-		if (this.isBlank()) return null
-		return GSON.fromJson(this, Game::class.java)
-	}
-
-	@Throws(JsonSyntaxException::class)
-	internal fun String.JsonToPlayerMap(): Map<String, Player> {
+	internal fun String.JsonToPlayerMap(): Map<String, Player?> {
 		if (this.isBlank()) return emptyMap()
-		val type = object : TypeToken<Map<String, Player>>() {
+		val type = object : TypeToken<Map<String, Player?>>() {
 		}.type
 		return GSON.fromJson(this, type) ?: emptyMap()
 	}
@@ -84,23 +74,5 @@ object Util {
 	internal fun LocalDateTime.toJodaDateTime(): DateTime {
 		val javaString = this.format(JAVA_FORMATTER)
 		return DateTime.parse(javaString, JODA_FORMATTER)
-	}
-
-	fun notImplementedMessage(request: ApplicationRequest): ErrorMessage {
-		val error = ErrorMessage(
-			code = HttpStatusCode.NotImplemented,
-			request = "${request.httpMethod.value} ${request.local.uri}",
-			message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
-		)
-		return error
-	}
-
-	fun missingHeaderMessage(request: ApplicationRequest, header: String, value: Any?, actual: Any?): ErrorMessage {
-		val error = ErrorMessage(
-			code = HttpStatusCode.BadRequest,
-			request = "${request.httpMethod.value} ${request.local.uri}",
-			message = "To access this endpoint make sure you have the header: $header, you supplied $value it should be $actual"
-		)
-		return error
 	}
 }

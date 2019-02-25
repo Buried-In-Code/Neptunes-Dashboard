@@ -84,3 +84,5 @@ internal object TeamRouter : IRouter<Team> {
 		}
 	}
 }
+
+data class TeamRequest(val name: String?, val players: List<String> = emptyList())

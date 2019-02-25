@@ -35,3 +35,9 @@ data class NotImplementedException(val ignored: Nothing? = null): RuntimeExcepti
 		return "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
 	}
 }
+
+data class GeneralException(val ignored: Nothing? = null): RuntimeException(){
+	override fun toString(): String {
+		return "Something happened check the logs, contact the devs, call the wizard"
+	}
+}

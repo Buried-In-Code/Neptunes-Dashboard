@@ -1,7 +1,7 @@
 package macro.neptunes.player
 
-import macro.neptunes.team.Team
 import macro.neptunes.Util
+import macro.neptunes.team.Team
 import macro.neptunes.team.TeamTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
@@ -16,7 +16,7 @@ object PlayerTable : Table(name = "Player") {
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	).default("Free For All")
-	private val aliasCol: Column<String> = text(name = "alias")
+	val aliasCol: Column<String> = text(name = "alias")
 	private val nameCol: Column<String?> = text(name = "name").nullable()
 	private val economyCol: Column<Int> = integer(name = "economy").default(0)
 	private val industryCol: Column<Int> = integer(name = "industry").default(0)
@@ -55,24 +55,50 @@ object PlayerTable : Table(name = "Player") {
 		}.firstOrNull()
 	}
 
-	fun insert(player: Player): Boolean = Util.query {
+	fun insert(
+		team: Team,
+		alias: String,
+		name: String? = null,
+		economy: Int,
+		industry: Int,
+		science: Int,
+		stars: Int,
+		fleet: Int,
+		ships: Int,
+		isActive: Boolean
+	): Boolean = Util.query {
 		try {
 			insert {
-				it[teamCol] = player.teamName
-				it[aliasCol] = player.alias
-				it[nameCol] = player.name
-				it[economyCol] = player.economy
-				it[industryCol] = player.industry
-				it[scienceCol] = player.science
-				it[starsCol] = player.stars
-				it[fleetCol] = player.fleet
-				it[shipsCol] = player.ships
-				it[isActiveCol] = player.isActive
+				it[teamCol] = team.name
+				it[aliasCol] = alias
+				it[nameCol] = name
+				it[economyCol] = economy
+				it[industryCol] = industry
+				it[scienceCol] = science
+				it[starsCol] = stars
+				it[fleetCol] = fleet
+				it[shipsCol] = ships
+				it[isActiveCol] = isActive
 			}
 			true
 		} catch (esqle: ExposedSQLException) {
 			false
 		}
+	}
+
+	fun insert(player: Player): Boolean = Util.query {
+		insert(
+			team = player.getTeam(),
+			alias = player.alias,
+			name = player.name,
+			economy = player.economy,
+			industry = player.industry,
+			science = player.science,
+			stars = player.stars,
+			fleet = player.fleet,
+			ships = player.ships,
+			isActive = player.isActive
+		)
 	}
 
 	fun update(player: Player): Boolean = Util.query {
