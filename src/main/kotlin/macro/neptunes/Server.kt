@@ -179,7 +179,7 @@ fun Application.module() {
 			val player = PlayerRouter.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
-					template = "player.ftl",
+					template = "Player.ftl",
 					model = player.toOutput()
 				),
 				status = HttpStatusCode.OK
@@ -189,7 +189,7 @@ fun Application.module() {
 			val team = TeamRouter.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
-					template = "team.ftl",
+					template = "Team.ftl",
 					model = team.toOutput()
 				),
 				status = HttpStatusCode.OK
