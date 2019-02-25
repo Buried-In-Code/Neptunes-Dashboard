@@ -5,6 +5,8 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import macro.neptunes.team.TeamTable
+import macro.neptunes.technology.PlayerTechnology
+import macro.neptunes.technology.Technology
 import java.lang.reflect.Type
 
 /**
@@ -25,6 +27,10 @@ object PlayerDeserializer : JsonDeserializer<Player> {
 		val fleet = jsonObject["total_fleets"].asInt
 		val ships = jsonObject["total_strength"].asInt
 		val isActive = jsonObject["conceded"].asInt == 0
+
+		//Technology
+		val temp = jsonObject["tech"].asJsonObject
+		val tech = context!!.deserialize<PlayerTechnology>(temp, PlayerTechnology::class.java)
 		
 		return Player(
 			teamName = teamName,
@@ -35,7 +41,8 @@ object PlayerDeserializer : JsonDeserializer<Player> {
 			stars = stars,
 			fleet = fleet,
 			ships = ships,
-			isActive = isActive
+			isActive = isActive,
+			technologies = tech
 		)
 	}
 }

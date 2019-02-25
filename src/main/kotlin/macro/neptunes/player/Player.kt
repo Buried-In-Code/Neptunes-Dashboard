@@ -2,6 +2,8 @@ package macro.neptunes.player
 
 import macro.neptunes.team.Team
 import macro.neptunes.team.TeamTable
+import macro.neptunes.technology.PlayerTechnology
+import macro.neptunes.technology.Technology
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -16,7 +18,8 @@ data class Player(
 	var stars: Int,
 	var fleet: Int,
 	var ships: Int,
-	var isActive: Boolean
+	var isActive: Boolean,
+	var technologies: PlayerTechnology
 ): Comparable<Player>{
 
 	fun getTeam(): Team = TeamTable.select(name = teamName)!!

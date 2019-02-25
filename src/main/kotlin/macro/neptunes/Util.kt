@@ -11,6 +11,8 @@ import macro.neptunes.game.Game
 import macro.neptunes.game.GameDeserializer
 import macro.neptunes.player.Player
 import macro.neptunes.player.PlayerDeserializer
+import macro.neptunes.technology.PlayerTechnology
+import macro.neptunes.technology.TechnologyDeserializer
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
@@ -34,6 +36,7 @@ object Util {
 		.disableHtmlEscaping()
 		.registerTypeAdapter(Game::class.java, GameDeserializer)
 		.registerTypeAdapter(Player::class.java, PlayerDeserializer)
+		.registerTypeAdapter(PlayerTechnology::class.java, TechnologyDeserializer)
 		.create()
 	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)
