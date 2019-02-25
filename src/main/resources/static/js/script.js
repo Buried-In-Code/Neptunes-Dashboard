@@ -1,6 +1,7 @@
 function getGame(){
 	var gameStars = 700;
 	$.ajax({
+		async: false,
 	    url: '/api/game',
 	    type: 'GET',
 	    contentType: 'application/json',

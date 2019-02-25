@@ -19,7 +19,7 @@ data class Player(
 	var fleet: Int,
 	var ships: Int,
 	var isActive: Boolean,
-	var technologies: PlayerTechnology
+	var technologies: PlayerTechnology? = null
 ): Comparable<Player>{
 
 	fun getTeam(): Team = TeamTable.select(name = teamName)!!
