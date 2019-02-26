@@ -6,9 +6,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.route
 import macro.neptunes.DataNotFoundException
 import macro.neptunes.NotImplementedException
+import macro.neptunes.backend.Neptunes
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -36,17 +38,30 @@ internal object GameController {
 				)
 			}
 			route(path = "/{ID}") {
-				get{
+				get {
 					call.respond(
 						message = call.parseParam().toOutput(),
 						status = HttpStatusCode.OK
 					)
 				}
-				get(path = "/players"){
+				get(path = "/players") {
 					throw NotImplementedException()
 				}
-				get(path = "/teams"){
+				get(path = "/teams") {
 					throw NotImplementedException()
+				}
+				post {
+					val ID = call.parameters["ID"]?.toLongOrNull() ?: throw DataNotFoundException(
+						type = "Game",
+						field = "ID",
+						value = null
+					)
+					Neptunes.getGame(gameID = ID)
+					Neptunes.getPlayers(gameID = ID)
+					call.respond(
+						message = "",
+						status = HttpStatusCode.Created
+					)
 				}
 			}
 		}

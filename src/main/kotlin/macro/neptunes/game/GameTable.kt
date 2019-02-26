@@ -1,7 +1,12 @@
 package macro.neptunes.game
 
 import macro.neptunes.Util
+import macro.neptunes.backend.GameUpdate
+import macro.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 
 /**
@@ -17,6 +22,8 @@ object GameTable : LongIdTable(name = "Game") {
 	private val productionRateCol: Column<Int> = integer(name = "productionRate")
 	private val tickRateCol: Column<Int> = integer(name = "tickRate")
 	private val tradeCostCol: Column<Int> = integer(name = "tradeCost")
+
+	private val LOGGER = LogManager.getLogger(GameTable::class.java)
 
 	init {
 		Util.query {
@@ -36,6 +43,26 @@ object GameTable : LongIdTable(name = "Game") {
 		selectAll().map {
 			it.parse()
 		}.sorted()
+	}
+
+	fun insert(gameID: Long, update: GameUpdate) = Util.query {
+		try {
+			insert {
+				it[id] = EntityID(gameID, GameTable)
+				it[nameCol] = update.name
+				it[totalStarsCol] = update.totalStars
+				it[victoryStarsCol] = update.victoryStars
+				it[adminCol] = update.admin
+				it[fleetSpeedCol] = update.fleetSpeed
+				it[isTurnBasedCol] = update.turnBased == 1
+				it[productionRateCol] = update.productionRate
+				it[tickRateCol] = update.tickRate
+				it[tradeCostCol] = update.tradeCost
+			}
+			val game = select(ID = gameID)
+			TeamTable.insert(game = game, name = "Free For All")
+		} catch (esqle: ExposedSQLException) {
+		}
 	}
 
 	private fun ResultRow.parse() = Game(

@@ -18,7 +18,7 @@ data class Turn(
 	var tickFragment: Int,
 	var tradeScanned: Int,
 	var war: Int,
-	val turnBasedTimeout: Int
+	val turnBasedTimeout: Long
 ) : Comparable<Turn> {
 
 	override fun compareTo(other: Turn): Int {
