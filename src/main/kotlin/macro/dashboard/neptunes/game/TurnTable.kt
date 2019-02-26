@@ -1,9 +1,9 @@
-package macro.neptunes.game
+package macro.dashboard.neptunes.game
 
-import macro.neptunes.Util
-import macro.neptunes.Util.toJavaDateTime
-import macro.neptunes.Util.toJodaDateTime
-import macro.neptunes.backend.TurnUpdate
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.Util.toJavaDateTime
+import macro.dashboard.neptunes.Util.toJodaDateTime
+import macro.dashboard.neptunes.backend.TurnUpdate
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException

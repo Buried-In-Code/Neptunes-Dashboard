@@ -1,6 +1,6 @@
-package macro.neptunes.game
+package macro.dashboard.neptunes.game
 
-import macro.neptunes.Util
+import macro.dashboard.neptunes.Util
 import java.time.LocalDateTime
 
 /**

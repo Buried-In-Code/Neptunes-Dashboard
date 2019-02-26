@@ -1,9 +1,9 @@
-package macro.neptunes.team
+package macro.dashboard.neptunes.team
 
-import macro.neptunes.GeneralException
-import macro.neptunes.Util
-import macro.neptunes.game.Game
-import macro.neptunes.game.GameTable
+import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.game.Game
+import macro.dashboard.neptunes.game.GameTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*

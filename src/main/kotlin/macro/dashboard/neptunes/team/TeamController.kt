@@ -1,4 +1,4 @@
-package macro.neptunes.team
+package macro.dashboard.neptunes.team
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -6,11 +6,10 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.*
-import macro.neptunes.DataNotFoundException
-import macro.neptunes.InvalidBodyException
-import macro.neptunes.NotImplementedException
-import macro.neptunes.player.PlayerTable
-import macro.neptunes.player.PlayerTable.update
+import macro.dashboard.neptunes.DataNotFoundException
+import macro.dashboard.neptunes.InvalidBodyException
+import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.player.PlayerTable.update
 
 /**
  * Created by Macro303 on 2018-Nov-16.

@@ -1,12 +1,12 @@
-package macro.neptunes.backend
+package macro.dashboard.neptunes.backend
 
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import macro.neptunes.Util
-import macro.neptunes.game.GameTable
-import macro.neptunes.game.TurnTable
-import macro.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.game.TurnTable
+import macro.dashboard.neptunes.player.PlayerTable
 import org.apache.logging.log4j.LogManager
 
 /**

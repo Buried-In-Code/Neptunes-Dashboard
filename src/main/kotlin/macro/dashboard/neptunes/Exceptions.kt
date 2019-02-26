@@ -1,8 +1,6 @@
-package macro.neptunes
+package macro.dashboard.neptunes
 
 import io.ktor.http.ContentType
-import macro.neptunes.ErrorMessage
-import org.apache.logging.log4j.Level
 
 /**
  * Created by Macro303 on 2019-Feb-13.

@@ -1,4 +1,4 @@
-package macro.neptunes.backend
+package macro.dashboard.neptunes.backend
 
 import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader

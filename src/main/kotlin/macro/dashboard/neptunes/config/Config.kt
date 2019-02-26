@@ -1,4 +1,4 @@
-package macro.neptunes.config
+package macro.dashboard.neptunes.config
 
 import org.apache.logging.log4j.LogManager
 import org.yaml.snakeyaml.DumperOptions
@@ -7,8 +7,6 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
-import java.net.InetSocketAddress
-import java.net.Proxy
 
 /**
  * Created by Macro303 on 2018-Nov-23.

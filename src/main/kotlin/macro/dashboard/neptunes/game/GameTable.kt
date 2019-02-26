@@ -1,8 +1,8 @@
-package macro.neptunes.game
+package macro.dashboard.neptunes.game
 
-import macro.neptunes.Util
-import macro.neptunes.backend.GameUpdate
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.backend.GameUpdate
+import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongIdTable

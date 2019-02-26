@@ -1,4 +1,4 @@
-package macro.neptunes.player
+package macro.dashboard.neptunes.player
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -9,10 +9,8 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
-import macro.neptunes.DataNotFoundException
-import macro.neptunes.player.PlayerTable.update
-import macro.neptunes.team.Team
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.DataNotFoundException
+import macro.dashboard.neptunes.player.PlayerTable.update
 
 /**
  * Created by Macro303 on 2018-Nov-16.

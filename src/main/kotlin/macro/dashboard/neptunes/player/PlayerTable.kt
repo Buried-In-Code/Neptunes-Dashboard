@@ -1,12 +1,12 @@
-package macro.neptunes.player
+package macro.dashboard.neptunes.player
 
-import macro.neptunes.GeneralException
-import macro.neptunes.Util
-import macro.neptunes.backend.PlayerUpdate
-import macro.neptunes.game.Game
-import macro.neptunes.game.GameTable
-import macro.neptunes.team.Team
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.backend.PlayerUpdate
+import macro.dashboard.neptunes.game.Game
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.team.Team
+import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException
