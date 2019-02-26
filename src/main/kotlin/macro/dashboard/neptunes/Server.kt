@@ -202,9 +202,10 @@ fun Application.module() {
 			teamRoutes()
 			settingRoutes()
 			post(path = "/refresh"){
+				val force = call.request.queryParameters["force"] == "true"
 				GameTable.search().forEach {
 					val required = Neptunes.getGame(gameID = it.ID)
-					if (required)
+					if (required || force)
 						Neptunes.getPlayers(gameID = it.ID)
 					else
 						LOGGER.info("Update not required")
