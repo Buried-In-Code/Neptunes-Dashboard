@@ -2,10 +2,12 @@ package macro.neptunes.player
 
 import macro.neptunes.GeneralException
 import macro.neptunes.Util
+import macro.neptunes.backend.PlayerUpdate
 import macro.neptunes.game.Game
 import macro.neptunes.game.GameTable
 import macro.neptunes.team.Team
 import macro.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
@@ -35,6 +37,8 @@ object PlayerTable : Table(name = "Player") {
 	private val fleetCol: Column<Int> = integer(name = "fleet")
 	private val shipsCol: Column<Int> = integer(name = "ships")
 	private val isActiveCol: Column<Boolean> = bool(name = "isActive")
+
+	private val LOGGER = LogManager.getLogger(PlayerTable::class.java)
 
 	init {
 		Util.query {
@@ -83,6 +87,24 @@ object PlayerTable : Table(name = "Player") {
 		select {
 			gameCol eq temp.ID
 		}.count()
+	}
+
+	fun insert(gameID: Long, update: PlayerUpdate) = Util.query {
+		try {
+			insert {
+				it[gameCol] = EntityID(id = gameID, table = GameTable)
+				it[aliasCol] = update.alias
+				it[economyCol] = update.economy
+				it[industryCol] = update.industry
+				it[scienceCol] = update.science
+				it[starsCol] = update.stars
+				it[fleetCol] = update.fleet
+				it[shipsCol] = update.ships
+				it[isActiveCol] = update.isActive
+			}
+		} catch (esqle: ExposedSQLException) {
+			LOGGER.error(esqle)
+		}
 	}
 
 	fun update(player: Player): Player = Util.query {

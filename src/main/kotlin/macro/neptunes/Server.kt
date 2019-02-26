@@ -18,10 +18,12 @@ import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
+import macro.neptunes.backend.Neptunes
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.config.ConfigRouter.settingRoutes
 import macro.neptunes.game.GameController.gameRoutes
@@ -36,6 +38,9 @@ import macro.neptunes.team.TeamTable
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.exists
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
@@ -199,6 +204,19 @@ fun Application.module() {
 			playerRoutes()
 			teamRoutes()
 			settingRoutes()
+			post(path = "/refresh"){
+				GameTable.search().forEach {
+					val required = Neptunes.getGame(gameID = it.ID)
+					if (required)
+						Neptunes.getPlayers(gameID = it.ID)
+					else
+						LOGGER.info("Update not required")
+				}
+				call.respond(
+					message = "",
+					status = HttpStatusCode.OK
+				)
+			}
 		}
 		get(path = "/players/{Alias}") {
 			val player = PlayerController.get(call = call)

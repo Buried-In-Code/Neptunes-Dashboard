@@ -2,9 +2,16 @@ package macro.neptunes.game
 
 import macro.neptunes.Util
 import macro.neptunes.Util.toJavaDateTime
+import macro.neptunes.Util.toJodaDateTime
+import macro.neptunes.backend.TurnUpdate
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 /**
  * Created by Macro303 on 2019-Feb-25.
@@ -26,7 +33,9 @@ object TurnTable : Table(name = "Game_Turns") {
 	private val tickFragmentCol: Column<Int> = integer(name = "tickFragment")
 	private val tradeScannedCol: Column<Int> = integer(name = "tradeScanned")
 	private val warCol: Column<Int> = integer(name = "war")
-	private val turnBasedTimeoutCol: Column<Int> = integer(name = "turnBasedTimeout")
+	private val turnBasedTimeoutCol: Column<Long> = long(name = "turnBasedTimeout")
+
+	private val LOGGER = LogManager.getLogger(TurnTable::class.java)
 
 	init {
 		Util.query {
@@ -49,6 +58,26 @@ object TurnTable : Table(name = "Game_Turns") {
 		}.map {
 			it.parse()
 		}.sorted()
+	}
+
+	fun insert(gameID: Long, update: TurnUpdate) = Util.query {
+		try {
+			insert {
+				it[gameCol] = EntityID(id = gameID, table = GameTable)
+				it[startTimeCol] = LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime),ZoneId.systemDefault()).toJodaDateTime()
+				it[productionCol] = update.production
+				it[isGameOverCol] = update.gameOver == 1
+				it[isPausedCol] = update.isPaused
+				it[isStartedCol] = update.isStarted
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = update.turnBasedTimeout
+			}
+		} catch (esqle: ExposedSQLException) {
+		}
 	}
 
 	private fun ResultRow.parse() = Turn(
