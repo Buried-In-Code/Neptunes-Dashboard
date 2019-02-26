@@ -2,17 +2,14 @@ package macro.neptunes.game
 
 import macro.neptunes.Util
 import macro.neptunes.Util.toJavaDateTime
-import macro.neptunes.Util.toJodaDateTime
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
-import java.time.LocalDateTime
 
 /**
  * Created by Macro303 on 2019-Feb-25.
  */
-object GameTurnTable : Table(name = "Game Turns") {
+object TurnTable : Table(name = "Game_Turns") {
 	private val gameCol: Column<EntityID<Long>> = reference(
 		name = "gameID",
 		foreign = GameTable,
@@ -29,6 +26,7 @@ object GameTurnTable : Table(name = "Game Turns") {
 	private val tickFragmentCol: Column<Int> = integer(name = "tickFragment")
 	private val tradeScannedCol: Column<Int> = integer(name = "tradeScanned")
 	private val warCol: Column<Int> = integer(name = "war")
+	private val turnBasedTimeoutCol: Column<Int> = integer(name = "turnBasedTimeout")
 
 	init {
 		Util.query {
@@ -37,19 +35,15 @@ object GameTurnTable : Table(name = "Game Turns") {
 		}
 	}
 
-	fun selectLatest(ID: Long): GameTurn? = Util.query {
-		search(ID = ID).firstOrNull()
-	}
-
-	fun select(ID: Long, tick: Int): GameTurn? = Util.query {
-		select{
+	fun select(ID: Long, tick: Int): Turn? = Util.query {
+		select {
 			gameCol eq ID and (tickCol eq tick)
-		}.map{
+		}.map {
 			it.parse()
-		}.firstOrNull()
+		}.sorted().firstOrNull()
 	}
 
-	fun search(ID: Long): List<GameTurn> = Util.query {
+	fun search(ID: Long): List<Turn> = Util.query {
 		select {
 			gameCol eq ID
 		}.map {
@@ -57,40 +51,7 @@ object GameTurnTable : Table(name = "Game Turns") {
 		}.sorted()
 	}
 
-	fun insert(
-		game: Game,
-		startTime: LocalDateTime,
-		production: Int,
-		isGameOver: Boolean,
-		isPaused: Boolean,
-		isStarted: Boolean,
-		productionCounter: Int,
-		tick: Int,
-		tickFragment: Int,
-		tradeScanned: Int,
-		war: Int
-	): GameTurn = Util.query {
-		try{
-			insert{
-				it[gameCol] = EntityID(id = game.ID, table = GameTable)
-				it[startTimeCol] = startTime.toJodaDateTime()
-				it[productionCol] = production
-				it[isGameOverCol] = isGameOver
-				it[isPausedCol] = isPaused
-				it[isStartedCol] = isStarted
-				it[productionCounterCol] = productionCounter
-				it[tickCol] = tick
-				it[tickFragmentCol] = tickFragment
-				it[tradeScannedCol] = tradeScanned
-				it[warCol] = war
-			}
-			select(ID = game.ID, tick = tick)!!
-		}catch (esqle: ExposedSQLException){
-			select(ID = game.ID, tick = tick)!!
-		}
-	}
-
-	private fun ResultRow.parse() = GameTurn(
+	private fun ResultRow.parse() = Turn(
 		game = GameTable.select(ID = this[gameCol].value)!!,
 		startTime = this[startTimeCol].toJavaDateTime(),
 		production = this[productionCol],
@@ -101,6 +62,7 @@ object GameTurnTable : Table(name = "Game Turns") {
 		tick = this[tickCol],
 		tickFragment = this[tickFragmentCol],
 		tradeScanned = this[tradeScannedCol],
-		war = this[warCol]
+		war = this[warCol],
+		turnBasedTimeout = this[turnBasedTimeoutCol]
 	)
 }

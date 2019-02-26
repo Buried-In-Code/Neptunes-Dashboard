@@ -1,8 +1,6 @@
 package macro.neptunes.team
 
-import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.game.Game
-import macro.neptunes.game.GameController
 import macro.neptunes.game.GameTable
 import macro.neptunes.player.Player
 import macro.neptunes.player.PlayerTable
@@ -11,7 +9,7 @@ import macro.neptunes.player.PlayerTable
  * Created by Macro303 on 2018-Nov-08.
  */
 data class Team(
-	val gameID: Long = CONFIG.gameID,
+	val gameID: Long,
 	var name: String
 ) : Comparable<Team> {
 	fun getPlayers(): List<Player> = PlayerTable.search(team = this)
@@ -23,7 +21,7 @@ data class Team(
 	fun getTotalFleet() = getPlayers().sumBy { it.fleet }
 	fun getTotalShips() = getPlayers().sumBy { it.ships }
 
-	fun getGame(): Game = GameTable.select()!!
+	fun getGame(): Game = GameTable.select(ID = gameID)!!
 
 	override fun compareTo(other: Team): Int {
 		return byName.compare(this, other)
@@ -40,7 +38,7 @@ data class Team(
 			"totalShips" to getTotalShips()
 		)
 		output = when (showParent) {
-			true -> output.plus("game" to GameController.getLatest(showChildren = false))
+			true -> output.plus("game" to getGame().toOutput(showChildren = false))
 			false -> output.plus("game" to gameID)
 		}
 		if (showChildren)

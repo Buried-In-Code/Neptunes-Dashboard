@@ -2,27 +2,28 @@ function getGame(){
 	var gameStars = 700;
 	$.ajax({
 		async: false,
-	    url: '/api/game',
+	    url: '/api/game/latest',
 	    type: 'GET',
 	    contentType: 'application/json',
 	    dataType: 'json',
 	    success: function (data) {
 	        console.log(data);
+	        var turn = data.turns[0]
 	        document.getElementById("gameName").innerHTML = data.name;
-	        if(data.isStarted){
-	            document.getElementById("gameStarted").innerHTML = data.startTime;
+	        if(turn.isStarted){
+	            document.getElementById("gameStarted").innerHTML = turn.startTime;
             }else{
                 document.getElementById("gameStarted").innerHTML = "false";
             }
-	        document.getElementById("gamePaused").innerHTML = data.isPaused;
-	        var size = 0;
-	        for(teamCount = 0; teamCount < data.teams.length; teamCount++){
-	            size += data.teams[teamCount].players.length
-	        }
-	        document.getElementById("gamePlayers").innerHTML = size;
-	        document.getElementById("gameTeams").innerHTML = data.teams.length;
+	        document.getElementById("gamePaused").innerHTML = turn.isPaused;
+	        document.getElementById("gamePlayers").innerHTML = data.players;
+	        document.getElementById("gameTeams").innerHTML = data.teams;
 	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
-	        document.getElementById("gameTurn").innerHTML = data.tick / 12;
+	        if(turn.tick == 0){
+	            document.getElementById("gameTurn").innerHTML = 0;
+            }else{
+                document.getElementById("gameTurn").innerHTML = turn.tick / 12;
+            }
 	        gameStars = data.totalStars;
 	    },
 	    error: function(xhr, status, error){
@@ -41,7 +42,7 @@ function getAllTeamStars(totalStars){
  	    success: function (data) {
 	        console.log(data);
 	        if(data.length <= 1){
-	            getAllPlayerStars(totalStars)
+	            getAllPlayerStars(totalStars, data[0].players)
             }else{
 				var teamLabels = [];
 				var teamData = [];
@@ -92,32 +93,21 @@ function getTeamStars(name){
  	});
 }
 
-function getAllPlayerStars(totalStars){
- 	$.ajax({
- 	    url: "/api/players",
- 	    type: 'GET',
- 	    contentType: 'application/json',
- 	    dataType: 'json',
- 	    success: function (data) {
-	        console.log(data);
-			var playerLabels = [];
-			var playerData = [];
-			playerLabels.push("Stars Left");
-			playerData.push(1);
-			var starCount = 0;
-			for(count = 0; count < data.length; count++){
-				var player = data[count];
-				playerLabels.push(player.alias);
-				playerData.push(player.stars);
-				starCount += player.stars;
-			}
-			playerData[0] = totalStars - starCount;
-			createPieGraph(playerLabels, playerData);
- 	    },
- 	    error: function(xhr, status, error){
- 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
- 	    }
- 	});
+function getAllPlayerStars(totalStars, data){
+    console.log(data);
+	var playerLabels = [];
+	var playerData = [];
+	playerLabels.push("Stars Left");
+	playerData.push(1);
+	var starCount = 0;
+	for(count = 0; count < data.length; count++){
+		var player = data[count];
+		playerLabels.push(player.alias);
+		playerData.push(player.stars);
+		starCount += player.stars;
+	}
+	playerData[0] = totalStars - starCount;
+	createPieGraph(playerLabels, playerData);
 }
 
 function createPieGraph(labels, data){

@@ -9,9 +9,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
-import macro.neptunes.DataExistsException
 import macro.neptunes.DataNotFoundException
-import macro.neptunes.IRouter
 import macro.neptunes.player.PlayerTable.update
 import macro.neptunes.team.Team
 import macro.neptunes.team.TeamTable
@@ -19,11 +17,11 @@ import macro.neptunes.team.TeamTable
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
-internal object PlayerRouter : IRouter<Player> {
-	override fun getAll(): List<Player> = PlayerTable.search().sorted()
-	override suspend fun get(call: ApplicationCall): Player = call.parseParam()
+internal object PlayerController {
+	fun getAll(): List<Player> = PlayerTable.search().sorted()
+	fun get(call: ApplicationCall): Player = call.parseParam()
 
-	override suspend fun ApplicationCall.parseParam(): Player {
+	fun ApplicationCall.parseParam(): Player {
 		val alias = parameters["Alias"]
 		val player = PlayerTable.select(alias = alias ?: "INVALID")
 		if (alias == null || player == null)
@@ -50,25 +48,18 @@ internal object PlayerRouter : IRouter<Player> {
 				put {
 					val player = call.parseParam()
 					val body = call.receive<PlayerRequest>()
-					val valid = player.update(
-						teamName = body.getTeam()?.name ?: player.teamName,
+					val updated = player.update(
 						name = body.name ?: player.name
 					)
-					if (valid)
-						call.respond(
-							message = PlayerTable.select(alias = player.alias)!!.toOutput(showParent = true),
-							status = HttpStatusCode.OK
-						)
-					else
-						throw DataExistsException(field = "Name", value = body.name ?: player.name)
+					call.respond(
+						message = updated.toOutput(showParent = true),
+						status = HttpStatusCode.OK
+					)
+
 				}
 			}
 		}
 	}
 }
 
-data class PlayerRequest(val name: String?, val teamName: String?) {
-	fun getTeam(): Team? {
-		return TeamTable.selectCreate(name = teamName ?: return null)
-	}
-}
+data class PlayerRequest(val name: String?)

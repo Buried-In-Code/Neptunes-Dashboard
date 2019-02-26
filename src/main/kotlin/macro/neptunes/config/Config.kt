@@ -16,11 +16,7 @@ import java.net.Proxy
 class Config internal constructor(
 	databaseFile: String? = null,
 	serverAddress: String? = null,
-	serverPort: Int? = null,
-	val proxyHostname: String? = null,
-	val proxyPort: Int? = null,
-	gameID: Long? = null,
-	refreshRate: Int? = null
+	serverPort: Int? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
 		null -> File("Neptunes-Pride.db")
@@ -28,13 +24,6 @@ class Config internal constructor(
 	}
 	val serverAddress: String = serverAddress ?: "localhost"
 	val serverPort: Int = serverPort ?: 5505
-	val proxy: Proxy?
-		get() = if (proxyHostname == null || proxyPort == null)
-			null
-		else
-			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
-	var gameID: Long = gameID ?: 1L
-	var refreshRate: Int = refreshRate ?: 60
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
@@ -79,20 +68,12 @@ class Config internal constructor(
 		@Suppress("UNCHECKED_CAST")
 		private fun fromMap(data: Map<String, Any?>): Config {
 			val databaseFile = data["Database File"] as String?
-			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
-			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID")?.toString()?.toLongOrNull()
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
-			val refreshRate = data["Refresh Rate"] as Int?
 			return Config(
 				databaseFile = databaseFile,
 				serverAddress = serverAddress,
-				serverPort = serverPort,
-				proxyHostname = proxyHostname,
-				proxyPort = proxyPort,
-				gameID = gameID,
-				refreshRate = refreshRate
+				serverPort = serverPort
 			)
 		}
 	}
@@ -104,15 +85,7 @@ internal fun Config.toMap(): Map<*, *> {
 		"Server" to mapOf(
 			"Address" to this.serverAddress,
 			"Port" to this.serverPort
-		),
-		"Proxy" to mapOf(
-			"Host Name" to this.proxyHostname,
-			"Port" to this.proxyPort
-		),
-		"Game" to mapOf(
-			"ID" to this.gameID
-		),
-		"Refresh Rate" to this.refreshRate
+		)
 	)
 	return data.toSortedMap()
 }

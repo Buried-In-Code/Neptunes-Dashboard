@@ -1,8 +1,9 @@
 package macro.neptunes.team
 
-import macro.neptunes.config.Config.Companion.CONFIG
-import macro.neptunes.game.GameTable
+import macro.neptunes.GeneralException
 import macro.neptunes.Util
+import macro.neptunes.game.Game
+import macro.neptunes.game.GameTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
@@ -17,7 +18,7 @@ object TeamTable : Table(name = "Team") {
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	val nameCol: Column<String> = text(name = "name").uniqueIndex()
+	val nameCol: Column<String> = text(name = "name")
 
 	init {
 		Util.query {
@@ -25,51 +26,51 @@ object TeamTable : Table(name = "Team") {
 		}
 	}
 
-	fun search(): List<Team> = Util.query {
-		selectAll().map {
+	fun search(game: Game? = null): List<Team> = Util.query {
+		var temp = game
+		if (temp == null)
+			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+		select {
+			gameCol eq temp.ID
+		}.map {
 			it.parse()
 		}.filterNot {
 			it.getPlayers().isEmpty()
-		}
+		}.sorted()
 	}
 
-	fun select(name: String): Team? = Util.query {
+	fun select(game: Game? = null, name: String): Team? = Util.query {
+		var temp = game
+		if (temp == null)
+			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
 		select {
-			nameCol eq name
+			nameCol eq name and (gameCol eq temp.ID)
 		}.map {
 			it.parse()
-		}.firstOrNull()
+		}.sorted().firstOrNull()
 	}
 
-	fun selectCreate(name: String): Team = Util.query {
-		val team = select(name = name)
-		if (team == null) {
-			insert(name = name)
-			select(name = name)!!
-		} else
-			team
+	fun count(game: Game? = null): Int = Util.query {
+		var temp = game
+		if (temp == null)
+			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+		select {
+			gameCol eq temp.ID
+		}.count()
 	}
 
-	fun insert(name: String): Boolean = Util.query {
+	fun insert(game: Game? = null, name: String): Team = Util.query {
+		var temp = game
+		if (temp == null)
+			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
 		try {
 			insert {
-				it[gameCol] = EntityID(CONFIG.gameID, GameTable)
+				it[gameCol] = EntityID(temp.ID, GameTable)
 				it[nameCol] = name
 			}
-			true
+			select(game = game, name = name)!!
 		} catch (esqle: ExposedSQLException) {
-			false
-		}
-	}
-
-	private fun update(team: Team): Boolean = Util.query {
-		try {
-			update({ nameCol eq team.name }) {
-				it[nameCol] = team.name
-			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
+			select(game = game, name = name)!!
 		}
 	}
 
@@ -77,9 +78,4 @@ object TeamTable : Table(name = "Team") {
 		gameID = this[gameCol].value,
 		name = this[nameCol]
 	)
-
-	fun Team.update(name: String = this.name): Boolean {
-		this.name = name
-		return update(team = this)
-	}
 }

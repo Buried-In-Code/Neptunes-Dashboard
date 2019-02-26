@@ -8,8 +8,12 @@ import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.*
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
@@ -18,18 +22,20 @@ import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.neptunes.Server.LOGGER
-import macro.neptunes.backend.Neptunes
 import macro.neptunes.config.Config.Companion.CONFIG
 import macro.neptunes.config.ConfigRouter.settingRoutes
-import macro.neptunes.game.GameController
 import macro.neptunes.game.GameController.gameRoutes
-import macro.neptunes.history.HistoryRouter.historyRoutes
-import macro.neptunes.player.PlayerRouter
-import macro.neptunes.player.PlayerRouter.playerRoutes
-import macro.neptunes.team.TeamRouter
-import macro.neptunes.team.TeamRouter.teamRoutes
+import macro.neptunes.game.GameTable
+import macro.neptunes.game.TurnTable
+import macro.neptunes.player.PlayerController
+import macro.neptunes.player.PlayerController.playerRoutes
+import macro.neptunes.player.PlayerTable
+import macro.neptunes.team.TeamController
+import macro.neptunes.team.TeamController.teamRoutes
+import macro.neptunes.team.TeamTable
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.sql.exists
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
@@ -37,7 +43,7 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Pride")
 		loggerColours()
-		GameController.addGame(ID = CONFIG.gameID)
+		checkDatabase()
 	}
 
 	private fun loggerColours() {
@@ -47,6 +53,15 @@ object Server {
 		LOGGER.warn("WARN is Visible")
 		LOGGER.error("ERROR is Visible")
 		LOGGER.fatal("FATAL is Visible")
+	}
+
+	private fun checkDatabase() {
+		Util.query {
+			GameTable.exists()
+			TurnTable.exists()
+			TeamTable.exists()
+			PlayerTable.exists()
+		}
 	}
 
 	@JvmStatic
@@ -122,6 +137,22 @@ fun Application.module() {
 			)
 			call.respond(error = error)
 		}
+		exception<AuthorizationException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.Unauthorized,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error)
+		}
+		exception<GeneralException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.InternalServerError,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.toString()
+			)
+			call.respond(error = error, logLevel = Level.FATAL)
+		}
 		exception<NotImplementedException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.NotImplemented,
@@ -149,6 +180,7 @@ fun Application.module() {
 			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
 			HttpStatusCode.Conflict -> LOGGER.error(logMessage)
+			HttpStatusCode.Unauthorized -> LOGGER.error(logMessage)
 			HttpStatusCode.BadRequest -> LOGGER.error(logMessage)
 			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
 			else -> LOGGER.info(logMessage)
@@ -159,15 +191,17 @@ fun Application.module() {
 			intercept(ApplicationCallPipeline.Features) {
 				if (!call.request.contentType().match(ContentType.Application.Json))
 					throw InvalidContentTypeException(value = call.request.contentType())
+				val authorization = call.request.header("Authorization")
+				if (call.request.httpMethod != HttpMethod.Get && authorization != "Basic VXNlcm5hbWU6UGFzc3dvcmQ=")
+					throw AuthorizationException()
 			}
 			gameRoutes()
 			playerRoutes()
 			teamRoutes()
-			historyRoutes()
 			settingRoutes()
 		}
 		get(path = "/players/{Alias}") {
-			val player = PlayerRouter.get(call = call)
+			val player = PlayerController.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
@@ -177,7 +211,7 @@ fun Application.module() {
 			)
 		}
 		get(path = "/teams/{Name}") {
-			val team = TeamRouter.get(call = call)
+			val team = TeamController.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Team.ftl",
@@ -186,13 +220,10 @@ fun Application.module() {
 				status = HttpStatusCode.OK
 			)
 		}
-		get(path = "/history") {
-			throw NotImplementedException()
-		}
 		get(path = "/settings") {
 			throw NotImplementedException()
 		}
-		static{
+		static {
 			resources(resourcePackage = "static/images")
 			resources(resourcePackage = "static/css")
 			resources(resourcePackage = "static/js")
@@ -218,6 +249,6 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 		when (logLevel) {
 			Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.path()}")
 			Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.path()}")
-			Level.FATAL -> LOGGER.fatal(error.message)
+			Level.FATAL -> LOGGER.fatal("${error.code}: ${request.httpMethod.value} - ${request.path()} - ${error.message}")
 		}
 }

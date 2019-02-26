@@ -41,3 +41,9 @@ data class GeneralException(val ignored: Nothing? = null): RuntimeException(){
 		return "Something happened check the logs, contact the devs, call the wizard"
 	}
 }
+
+data class AuthorizationException(val ignored: Nothing? = null): RuntimeException(){
+	override fun toString(): String {
+		return "You are not authorized to access this endpoint"
+	}
+}

@@ -1,15 +1,16 @@
 package macro.neptunes.player
 
+import macro.neptunes.GeneralException
+import macro.neptunes.game.Game
+import macro.neptunes.game.GameTable
 import macro.neptunes.team.Team
 import macro.neptunes.team.TeamTable
-import macro.neptunes.technology.PlayerTechnology
-import macro.neptunes.technology.Technology
-import macro.neptunes.technology.TechnologyTable
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
 data class Player(
+	val gameID: Long,
 	var teamName: String,
 	val alias: String,
 	var name: String? = null,
@@ -20,20 +21,21 @@ data class Player(
 	var fleet: Int,
 	var ships: Int,
 	var isActive: Boolean
-): Comparable<Player>{
+) : Comparable<Player> {
 
-	private fun getTechnologies(): List<Technology> = TechnologyTable.search(player = this)
+	/*private fun getTechnologies(): List<Technology> = TechnologyTable.search(player = this)
 	fun getScanning(): Technology = getTechnologies().first { it.name == "Scanning" }
 	fun getHyperspace(): Technology = getTechnologies().first { it.name == "Hyperspace" }
 	fun getTerraforming(): Technology = getTechnologies().first { it.name == "Terraforming" }
 	fun getExperimentation(): Technology = getTechnologies().first { it.name == "Experimentation" }
 	fun getWeapons(): Technology = getTechnologies().first { it.name == "Weapons" }
 	fun getBanking(): Technology = getTechnologies().first { it.name == "Banking" }
-	fun getManufacturing(): Technology = getTechnologies().first { it.name == "Manufacturing" }
+	fun getManufacturing(): Technology = getTechnologies().first { it.name == "Manufacturing" }*/
 
-	fun getTeam(): Team = TeamTable.select(name = teamName)!!
-	fun getEconomyTurn(): Double = economy * 10 + getBanking().value * 75
-	fun getIndustryTurn(): Double = industry * (getManufacturing().value + 5) / 24
+	fun getGame(): Game = GameTable.select(ID = gameID) ?: GameTable.search().firstOrNull() ?: throw GeneralException()
+	fun getTeam(): Team = TeamTable.select(name = teamName) ?: TeamTable.insert(game = getGame(), name = teamName)
+	fun getEconomyTurn(): Double = /*economy * 10 + getBanking().value * 75*/ 42.0
+	fun getIndustryTurn(): Double = /*industry * (getManufacturing().value + 5) / 24*/ 42.0
 
 	override fun compareTo(other: Player): Int {
 		return byTeam.then(byAlias).compare(this, other)
@@ -51,8 +53,8 @@ data class Player(
 			"ships" to ships,
 			"isActive" to isActive,
 			"economyTurn" to getEconomyTurn(),
-			"industryTurn" to getIndustryTurn(),
-			"technologies" to getTechnologies()
+			"industryTurn" to getIndustryTurn()/*,
+			"technologies" to getTechnologies()*/
 		)
 		output = when (showParent) {
 			true -> output.plus("team" to getTeam().toOutput(showChildren = false))
