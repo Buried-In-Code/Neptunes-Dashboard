@@ -1,4 +1,4 @@
-package macro.neptunes
+package macro.dashboard.neptunes
 
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.application.*
@@ -22,31 +22,28 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import macro.neptunes.Server.LOGGER
-import macro.neptunes.backend.Neptunes
-import macro.neptunes.config.Config.Companion.CONFIG
-import macro.neptunes.config.ConfigRouter.settingRoutes
-import macro.neptunes.game.GameController.gameRoutes
-import macro.neptunes.game.GameTable
-import macro.neptunes.game.TurnTable
-import macro.neptunes.player.PlayerController
-import macro.neptunes.player.PlayerController.playerRoutes
-import macro.neptunes.player.PlayerTable
-import macro.neptunes.team.TeamController
-import macro.neptunes.team.TeamController.teamRoutes
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.Server.LOGGER
+import macro.dashboard.neptunes.backend.Neptunes
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.config.ConfigRouter.settingRoutes
+import macro.dashboard.neptunes.game.GameController.gameRoutes
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.game.TurnTable
+import macro.dashboard.neptunes.player.PlayerController
+import macro.dashboard.neptunes.player.PlayerController.playerRoutes
+import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.team.TeamController
+import macro.dashboard.neptunes.team.TeamController.teamRoutes
+import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.exists
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 object Server {
 	internal val LOGGER = LogManager.getLogger(this::class.java)
 
 	init {
-		LOGGER.info("Initializing Neptune's Pride")
+		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
 		checkDatabase()
 	}

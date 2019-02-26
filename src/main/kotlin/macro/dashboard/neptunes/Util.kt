@@ -1,11 +1,11 @@
-package macro.neptunes
+package macro.dashboard.neptunes
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import macro.neptunes.backend.PlayerUpdate
-import macro.neptunes.backend.UpdateDeserializer
-import macro.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.backend.PlayerUpdate
+import macro.dashboard.neptunes.backend.UpdateDeserializer
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger

@@ -1,8 +1,7 @@
-package macro.neptunes.game
+package macro.dashboard.neptunes.game
 
-import macro.neptunes.player.PlayerTable
-import macro.neptunes.team.Team
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.team.TeamTable
 
 /**
  * Created by Macro303 on 2018-Nov-08.

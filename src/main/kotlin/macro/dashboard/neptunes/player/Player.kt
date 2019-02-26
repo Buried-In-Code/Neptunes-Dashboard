@@ -1,10 +1,10 @@
-package macro.neptunes.player
+package macro.dashboard.neptunes.player
 
-import macro.neptunes.GeneralException
-import macro.neptunes.game.Game
-import macro.neptunes.game.GameTable
-import macro.neptunes.team.Team
-import macro.neptunes.team.TeamTable
+import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.game.Game
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.team.Team
+import macro.dashboard.neptunes.team.TeamTable
 
 /**
  * Created by Macro303 on 2018-Nov-08.

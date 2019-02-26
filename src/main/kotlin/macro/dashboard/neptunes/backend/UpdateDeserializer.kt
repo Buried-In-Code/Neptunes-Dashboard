@@ -1,4 +1,4 @@
-package macro.neptunes.backend
+package macro.dashboard.neptunes.backend
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

@@ -26,5 +26,5 @@ dependencies {
 }
 
 application {
-	mainClassName = "macro.neptunes.Server"
+	mainClassName = "macro.dashboard.neptunes.Server"
 }
