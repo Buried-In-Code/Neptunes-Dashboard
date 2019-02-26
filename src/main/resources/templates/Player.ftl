@@ -54,7 +54,7 @@
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">$ Per Turn</div>
-				<div class="description"><i>Economy Per Turn</i></div>
+				<div class="description"><i>${economyTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
@@ -66,19 +66,13 @@
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Ships Per Turn</div>
-				<div class="description"><i>Industry Per Turn</i></div>
+				<div class="description"><i>${industryTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Science</div>
 				<div class="description">${science}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Science Per Turn</div>
-				<div class="description"><i>Science Per Turn</i></div>
 			</div>
 		</div>
 	</div>

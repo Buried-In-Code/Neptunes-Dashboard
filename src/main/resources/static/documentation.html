@@ -16,69 +16,42 @@
 	<div class="ui inverted container segment opacity">
 		<h1 class="ui center aligned header">GAME</h1>
 		<h4 class="ui horizontal divider header">
-			<code>GET</code> /api/game
+			<code>GET</code> /api/game/latest
 		</h4>
-		<p><i>Read Game Data</i></p>
+		<p><i>Read game with latest ID</i></p>
 		<h4 class="ui horizontal divider header">
-			<code>PUT</code> /api/game
+			<code>GET</code> /api/game/:ID
 		</h4>
-		<p><i>Update Game Data</i></p>
+		<p><i>Read game with given ID</i></p>
 	</div>
 	<div class="ui inverted container segment opacity">
 		<h1 class="ui center aligned header">PLAYERS</h1>
 		<h4 class="ui horizontal divider header">
 			<code>GET</code> /api/players
 		</h4>
-		<p><i>Read All Players</i></p>
+		<p><i>Read all players from latest game</i></p>
 		<h4 class="ui horizontal divider header">
 			<code>GET</code> /api/players/:alias
 		</h4>
-		<p><i>Read One Player</i></p>
-		<h4 class="ui horizontal divider header">
-			<code>PUT</code> /api/players/:alias
-		</h4>
-		<p><i>Update One Player - Requires body on request</i></p>
+		<p><i>Read player with given alias from latest game</i></p>
 	</div>
 	<div class="ui inverted container segment opacity">
 		<h1 class="ui center aligned header">TEAMS</h1>
 		<h4 class="ui horizontal divider header">
-			<code>POST</code> /api/teams
-		</h4>
-		<p><i>Create Team - Requires body on request</i></p>
-		<h4 class="ui horizontal divider header">
 			<code>GET</code> /api/teams
 		</h4>
-		<p><i>Read All Teams</i></p>
+		<p><i>Read all teams from latest game</i></p>
 		<h4 class="ui horizontal divider header">
 			<code>GET</code> /api/teams/:name
 		</h4>
-		<p><i>Read Team</i></p>
-		<h4 class="ui horizontal divider header">
-			<code>PUT</code> /api/players/:name
-		</h4>
-		<p><i>Update Team - Requires body on request</i></p>
-		<h4 class="ui horizontal divider header">
-			<code>DELETE</code> /api/players/:name
-		</h4>
-		<p><i>Delete Team</i></p>
-	</div>
-	<div class="ui inverted container segment opacity">
-		<h1 class="ui center aligned header">HISTORY</h1>
-		<h4 class="ui horizontal divider header">
-			<code>GET</code> /api/history
-		</h4>
-		<p><i>Read All History Games</i></p>
+		<p><i>Read team with given name from latest game</i></p>
 	</div>
 	<div class="ui inverted container segment opacity">
 		<h1 class="ui center aligned header">SETTINGS</h1>
 		<h4 class="ui horizontal divider header">
 			<code>GET</code> /api/settings
 		</h4>
-		<p><i>Read All Settings</i></p>
-		<h4 class="ui horizontal divider header">
-			<code>PUT</code> /api/settings
-		</h4>
-		<p><i>Update Settings</i></p>
+		<p><i>Read all settings</i></p>
 	</div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
