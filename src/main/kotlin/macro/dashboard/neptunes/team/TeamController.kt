@@ -43,7 +43,7 @@ internal object TeamController {
 				}
 				call.respond(
 					message = created.toOutput(showParent = true),
-					status = HttpStatusCode.Created
+					status = HttpStatusCode.OK
 				)
 			}
 			route(path = "/{Name}") {

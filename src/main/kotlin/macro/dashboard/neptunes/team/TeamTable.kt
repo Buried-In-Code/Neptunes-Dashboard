@@ -22,6 +22,7 @@ object TeamTable : Table(name = "Team") {
 
 	init {
 		Util.query {
+			uniqueIndex(gameCol, nameCol)
 			SchemaUtils.create(this)
 		}
 	}
