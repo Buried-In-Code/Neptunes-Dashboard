@@ -22,6 +22,7 @@ object TeamTable : Table(name = "Team") {
 
 	init {
 		Util.query {
+			uniqueIndex(gameCol, nameCol)
 			SchemaUtils.create(this)
 		}
 	}
@@ -48,15 +49,6 @@ object TeamTable : Table(name = "Team") {
 		}.map {
 			it.parse()
 		}.sorted().firstOrNull()
-	}
-
-	fun count(game: Game? = null): Int = Util.query {
-		var temp = game
-		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
-		select {
-			gameCol eq temp.ID
-		}.count()
 	}
 
 	fun insert(game: Game? = null, name: String): Team = Util.query {

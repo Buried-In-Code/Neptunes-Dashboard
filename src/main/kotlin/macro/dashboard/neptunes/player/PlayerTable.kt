@@ -80,15 +80,6 @@ object PlayerTable : Table(name = "Player") {
 		}.sorted().firstOrNull()
 	}
 
-	fun count(game: Game? = null): Int = Util.query {
-		var temp = game
-		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
-		select {
-			gameCol eq temp.ID
-		}.count()
-	}
-
 	fun insert(gameID: Long, update: PlayerUpdate) = Util.query {
 		try {
 			insert {

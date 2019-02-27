@@ -16,10 +16,7 @@ import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
-import io.ktor.routing.Routing
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Server.LOGGER
@@ -201,17 +198,18 @@ fun Application.module() {
 			playerRoutes()
 			teamRoutes()
 			settingRoutes()
-			post(path = "/refresh"){
+			put(path = "/refresh"){
+				val force = call.request.queryParameters["force"] == "true"
 				GameTable.search().forEach {
 					val required = Neptunes.getGame(gameID = it.ID)
-					if (required)
+					if (required || force)
 						Neptunes.getPlayers(gameID = it.ID)
 					else
 						LOGGER.info("Update not required")
 				}
 				call.respond(
 					message = "",
-					status = HttpStatusCode.OK
+					status = HttpStatusCode.NoContent
 				)
 			}
 		}

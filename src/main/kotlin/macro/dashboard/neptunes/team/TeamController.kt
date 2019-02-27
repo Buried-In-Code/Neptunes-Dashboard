@@ -42,26 +42,13 @@ internal object TeamController {
 					PlayerTable.select(game = created.getGame(), alias = it)?.update(teamName = created.name)
 				}
 				call.respond(
-					message = created.toOutput(showParent = true),
-					status = HttpStatusCode.Created
+					message = "",
+					status = HttpStatusCode.NoContent
 				)
 			}
 			route(path = "/{Name}") {
 				get {
 					val team = call.parseParam()
-					call.respond(
-						message = team.toOutput(showParent = true),
-						status = HttpStatusCode.OK
-					)
-				}
-				put {
-					val team = call.parseParam()
-					val body = call.receive<TeamRequest>()
-					body.players.forEach {
-						PlayerTable.select(alias = it)?.update(
-							teamName = team.name
-						)
-					}
 					call.respond(
 						message = team.toOutput(showParent = true),
 						status = HttpStatusCode.OK
