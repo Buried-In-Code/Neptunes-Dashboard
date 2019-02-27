@@ -30,8 +30,8 @@ data class Game(
 			"totalStars" to totalStars,
 			"victoryStars" to victoryStars,
 			"productionRate" to productionRate,
-			"players" to PlayerTable.count(game = this),
-			"teams" to TeamTable.count(game = this)
+			"players" to PlayerTable.search(game = this).size,
+			"teams" to TeamTable.search(game = this).size
 		)
 		if(showChildren)
 			output = output.plus("turns" to TurnTable.search(ID = ID).map { it.toOutput() })

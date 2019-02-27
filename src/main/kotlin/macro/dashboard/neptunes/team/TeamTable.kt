@@ -51,15 +51,6 @@ object TeamTable : Table(name = "Team") {
 		}.sorted().firstOrNull()
 	}
 
-	fun count(game: Game? = null): Int = Util.query {
-		var temp = game
-		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
-		select {
-			gameCol eq temp.ID
-		}.count()
-	}
-
 	fun insert(game: Game? = null, name: String): Team = Util.query {
 		var temp = game
 		if (temp == null)
