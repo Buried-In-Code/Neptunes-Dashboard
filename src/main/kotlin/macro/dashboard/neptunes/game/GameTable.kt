@@ -59,8 +59,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tickRateCol] = update.tickRate
 				it[tradeCostCol] = update.tradeCost
 			}
-			val game = select(ID = gameID)
-			TeamTable.insert(game = game, name = "Free For All")
+			TeamTable.insert(gameID = gameID, name = "Free For All")
 		} catch (esqle: ExposedSQLException) {
 		}
 	}

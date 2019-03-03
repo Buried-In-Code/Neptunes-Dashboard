@@ -27,12 +27,12 @@ object TeamTable : Table(name = "Team") {
 		}
 	}
 
-	fun search(game: Game? = null): List<Team> = Util.query {
-		var temp = game
+	fun search(gameID: Long? = null): List<Team> = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			gameCol eq temp.ID
+			gameCol eq temp
 		}.map {
 			it.parse()
 		}.filterNot {
@@ -40,29 +40,29 @@ object TeamTable : Table(name = "Team") {
 		}.sorted()
 	}
 
-	fun select(game: Game? = null, name: String): Team? = Util.query {
-		var temp = game
+	fun select(gameID: Long? = null, name: String): Team? = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			nameCol eq name and (gameCol eq temp.ID)
+			nameCol eq name and (gameCol eq temp)
 		}.map {
 			it.parse()
 		}.sorted().firstOrNull()
 	}
 
-	fun insert(game: Game? = null, name: String): Team = Util.query {
-		var temp = game
+	fun insert(gameID: Long? = null, name: String): Team = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		try {
 			insert {
-				it[gameCol] = EntityID(temp.ID, GameTable)
+				it[gameCol] = EntityID(temp, GameTable)
 				it[nameCol] = name
 			}
-			select(game = game, name = name)!!
+			select(gameID = temp, name = name)!!
 		} catch (esqle: ExposedSQLException) {
-			select(game = game, name = name)!!
+			select(gameID = temp, name = name)!!
 		}
 	}
 
