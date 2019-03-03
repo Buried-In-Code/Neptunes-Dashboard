@@ -39,7 +39,7 @@ internal object TeamController {
 				body.name ?: throw InvalidBodyException(field = "Name")
 				val created = TeamTable.insert(name = body.name)
 				body.players.forEach {
-					PlayerTable.select(game = created.getGame(), alias = it)?.update(teamName = created.name)
+					PlayerTable.select(gameID = created.getGame().ID, alias = it)?.update(teamName = created.name)
 				}
 				call.respond(
 					message = "",

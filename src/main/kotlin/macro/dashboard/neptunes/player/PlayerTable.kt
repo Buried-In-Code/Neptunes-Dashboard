@@ -42,39 +42,39 @@ object PlayerTable : Table(name = "Player") {
 
 	init {
 		Util.query {
-			uniqueIndex(nameCol, aliasCol)
+			uniqueIndex(gameCol, aliasCol)
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun search(game: Game? = null): List<Player> = Util.query {
-		var temp = game
+	fun search(gameID: Long? = null): List<Player> = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			gameCol eq temp.ID
+			gameCol eq temp
 		}.map {
 			it.parse()
 		}.sorted()
 	}
 
-	fun search(game: Game? = null, team: Team): List<Player> = Util.query {
-		var temp = game
+	fun search(gameID: Long? = null, team: Team): List<Player> = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			teamCol eq team.name and (gameCol eq temp.ID)
+			teamCol eq team.name and (gameCol eq temp)
 		}.map {
 			it.parse()
 		}.sorted()
 	}
 
-	fun select(game: Game? = null, alias: String): Player? = Util.query {
-		var temp = game
+	fun select(gameID: Long? = null, alias: String): Player? = Util.query {
+		var temp = gameID
 		if (temp == null)
-			temp = GameTable.search().firstOrNull() ?: throw GeneralException()
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			aliasCol eq alias and (gameCol eq temp.ID)
+			aliasCol eq alias and (gameCol eq temp)
 		}.map {
 			it.parse()
 		}.sorted().firstOrNull()
@@ -93,8 +93,9 @@ object PlayerTable : Table(name = "Player") {
 				it[shipsCol] = update.ships
 				it[isActiveCol] = update.isActive
 			}
+			select(gameID = gameID, alias = update.alias)!!
 		} catch (esqle: ExposedSQLException) {
-			LOGGER.error(esqle)
+			select(gameID = gameID, alias = update.alias)!!
 		}
 	}
 
@@ -111,9 +112,9 @@ object PlayerTable : Table(name = "Player") {
 				it[shipsCol] = player.ships
 				it[isActiveCol] = player.isActive
 			}
-			select(game = player.getGame(), alias = player.alias)!!
+			select(gameID = player.getGame().ID, alias = player.alias)!!
 		} catch (esqle: ExposedSQLException) {
-			select(game = player.getGame(), alias = player.alias)!!
+			select(gameID = player.getGame().ID, alias = player.alias)!!
 		}
 	}
 

@@ -8,6 +8,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
+import macro.dashboard.neptunes.DataExistsException
 import macro.dashboard.neptunes.DataNotFoundException
 import macro.dashboard.neptunes.NotImplementedException
 import macro.dashboard.neptunes.backend.Neptunes
@@ -56,12 +57,16 @@ internal object GameController {
 						field = "ID",
 						value = null
 					)
-					Neptunes.getGame(gameID = ID)
-					Neptunes.getPlayers(gameID = ID)
-					call.respond(
-						message = "",
-						status = HttpStatusCode.Created
-					)
+					if( GameTable.select(ID = ID) == null) {
+						Neptunes.getGame(gameID = ID)
+						Neptunes.getPlayers(gameID = ID)
+						call.respond(
+							message = "",
+							status = HttpStatusCode.Created
+						)
+					}else{
+						throw DataExistsException(field = "ID", value = ID)
+					}
 				}
 			}
 		}

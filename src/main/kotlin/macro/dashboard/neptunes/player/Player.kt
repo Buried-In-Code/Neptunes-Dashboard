@@ -33,7 +33,7 @@ data class Player(
 	fun getManufacturing(): Technology = getTechnologies().first { it.name == "Manufacturing" }*/
 
 	fun getGame(): Game = GameTable.select(ID = gameID) ?: GameTable.search().firstOrNull() ?: throw GeneralException()
-	fun getTeam(): Team = TeamTable.select(name = teamName) ?: TeamTable.insert(game = getGame(), name = teamName)
+	fun getTeam(): Team = TeamTable.select(name = teamName) ?: TeamTable.insert(gameID = gameID, name = teamName)
 	fun getEconomyTurn(): Double = /*economy * 10 + getBanking().value * 75*/ 42.0
 	fun getIndustryTurn(): Double = /*industry * (getManufacturing().value + 5) / 24*/ 42.0
 

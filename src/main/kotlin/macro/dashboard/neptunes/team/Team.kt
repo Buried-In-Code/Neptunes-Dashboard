@@ -12,7 +12,7 @@ data class Team(
 	val gameID: Long,
 	var name: String
 ) : Comparable<Team> {
-	fun getPlayers(): List<Player> = PlayerTable.search(team = this)
+	fun getPlayers(): List<Player> = PlayerTable.search(gameID = gameID, team = this)
 
 	fun getTotalEconomy() = getPlayers().sumBy { it.economy }
 	fun getTotalIndustry() = getPlayers().sumBy { it.industry }
