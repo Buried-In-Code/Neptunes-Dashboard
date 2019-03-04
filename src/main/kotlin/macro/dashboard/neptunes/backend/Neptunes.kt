@@ -34,13 +34,15 @@ object Neptunes {
 		if (response["Code"] == 200) {
 			val players = response["Data"].toString().JsonToPlayerMap()
 			players.values.filterNotNull().forEach {
-				PlayerTable.insert(gameID = gameID, update = it)
+				val valid = PlayerTable.insert(gameID = gameID, update = it)
+				if (!valid)
+					PlayerTable.update(gameID = gameID, update = it)
 			}
 		}
 	}
 
 	@Throws(JsonSyntaxException::class)
-	internal fun String.JsonToPlayerMap(): Map<String, PlayerUpdate?> {
+	private fun String.JsonToPlayerMap(): Map<String, PlayerUpdate?> {
 		if (this.isBlank()) return emptyMap()
 		val type = object : TypeToken<Map<String, PlayerUpdate?>>() {
 		}.type

@@ -22,7 +22,7 @@ data class Turn(
 ) : Comparable<Turn> {
 
 	override fun compareTo(other: Turn): Int {
-		return byGame.then(byTurn).compare(this, other)
+		return byGame.thenDescending(byTick).compare(this, other)
 	}
 
 	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any?>{
@@ -43,6 +43,6 @@ data class Turn(
 
 	companion object {
 		internal val byGame = compareBy(Turn::game)
-		internal val byTurn = compareBy(Turn::tick)
+		internal val byTick = compareBy(Turn::tick)
 	}
 }

@@ -20,7 +20,7 @@ data class Game(
 ) : Comparable<Game> {
 
 	override fun compareTo(other: Game): Int {
-		return byID.compare(this, other) * -1
+		return byID.reversed().compare(this, other)
 	}
 
 	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any?> {

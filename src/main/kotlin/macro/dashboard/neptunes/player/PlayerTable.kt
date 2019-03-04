@@ -27,7 +27,7 @@ object PlayerTable : Table(name = "Player") {
 		refColumn = TeamTable.nameCol,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
-	).default("Free For All")
+	).default(defaultValue = "Free For All")
 	private val aliasCol: Column<String> = text(name = "alias")
 	private val nameCol: Column<String?> = text(name = "name").nullable()
 	private val economyCol: Column<Int> = integer(name = "economy")
@@ -80,10 +80,13 @@ object PlayerTable : Table(name = "Player") {
 		}.sorted().firstOrNull()
 	}
 
-	fun insert(gameID: Long, update: PlayerUpdate) = Util.query {
+	fun insert(gameID: Long?, update: PlayerUpdate): Boolean = Util.query {
+		var temp = gameID
+		if (temp == null)
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		try {
 			insert {
-				it[gameCol] = EntityID(id = gameID, table = GameTable)
+				it[gameCol] = EntityID(id = temp, table = GameTable)
 				it[aliasCol] = update.alias
 				it[economyCol] = update.economy
 				it[industryCol] = update.industry
@@ -93,28 +96,44 @@ object PlayerTable : Table(name = "Player") {
 				it[shipsCol] = update.ships
 				it[isActiveCol] = update.isActive
 			}
-			select(gameID = gameID, alias = update.alias)!!
+			true
 		} catch (esqle: ExposedSQLException) {
-			select(gameID = gameID, alias = update.alias)!!
+			false
 		}
 	}
 
-	fun update(player: Player): Player = Util.query {
+	fun update(gameID: Long?, alias: String, teamName: String?, name: String?): Player = Util.query {
+		var temp = gameID
+		if (temp == null)
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		try {
-			update({ aliasCol eq player.alias and (gameCol eq player.getGame().ID) }) {
-				it[teamCol] = player.teamName
-				it[nameCol] = player.name
-				it[economyCol] = player.economy
-				it[industryCol] = player.industry
-				it[scienceCol] = player.science
-				it[starsCol] = player.stars
-				it[fleetCol] = player.fleet
-				it[shipsCol] = player.ships
-				it[isActiveCol] = player.isActive
+			update({ aliasCol eq alias and (gameCol eq gameID) }) {
+				it[teamCol] = teamName ?: "Free For All"
+				it[nameCol] = name
 			}
-			select(gameID = player.getGame().ID, alias = player.alias)!!
+			select(gameID = temp, alias = alias)!!
 		} catch (esqle: ExposedSQLException) {
-			select(gameID = player.getGame().ID, alias = player.alias)!!
+			select(gameID = temp, alias = alias)!!
+		}
+	}
+
+	fun update(gameID: Long?, update: PlayerUpdate): Boolean = Util.query {
+		var temp = gameID
+		if (temp == null)
+			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+		try {
+			update({ aliasCol eq update.alias and (gameCol eq temp) }) {
+				it[economyCol] = update.economy
+				it[industryCol] = update.industry
+				it[scienceCol] = update.science
+				it[starsCol] = update.stars
+				it[fleetCol] = update.fleet
+				it[shipsCol] = update.ships
+				it[isActiveCol] = update.isActive
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
 		}
 	}
 
@@ -134,24 +153,10 @@ object PlayerTable : Table(name = "Player") {
 
 	fun Player.update(
 		teamName: String = this.teamName,
-		name: String? = this.name,
-		economy: Int = this.economy,
-		industry: Int = this.industry,
-		science: Int = this.science,
-		stars: Int = this.stars,
-		fleet: Int = this.fleet,
-		ships: Int = this.ships,
-		isActive: Boolean = this.isActive
+		name: String? = this.name
 	): Player {
 		this.teamName = teamName
 		this.name = name
-		this.economy = economy
-		this.industry = industry
-		this.science = science
-		this.stars = stars
-		this.fleet = fleet
-		this.ships = ships
-		this.isActive = isActive
-		return update(player = this)
+		return update(gameID = this.gameID, alias = this.alias, teamName = this.teamName, name = this.name)
 	}
 }
