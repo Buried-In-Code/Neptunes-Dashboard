@@ -7,6 +7,8 @@ import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 /**
  * Created by Macro303 on 2018-Nov-23.
@@ -14,7 +16,9 @@ import java.io.IOException
 class Config internal constructor(
 	databaseFile: String? = null,
 	serverAddress: String? = null,
-	serverPort: Int? = null
+	serverPort: Int? = null,
+	val proxyHostname: String? = null,
+	val proxyPort: Int? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
 		null -> File("Neptunes-Pride.db")
@@ -22,6 +26,26 @@ class Config internal constructor(
 	}
 	val serverAddress: String = serverAddress ?: "localhost"
 	val serverPort: Int = serverPort ?: 5505
+	val proxy: Proxy?
+		get() = if (proxyHostname == null || proxyPort == null)
+			null
+		else
+			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
+
+	fun toMap(): Map<*, *> {
+		val data = mapOf(
+			"Database File" to databaseFile.path,
+			"Server" to mapOf(
+				"Address" to serverAddress,
+				"Port" to serverPort
+			),
+			"Proxy" to mapOf(
+				"Host Name" to proxyHostname,
+				"Port" to proxyPort
+			)
+		)
+		return data.toSortedMap()
+	}
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
@@ -68,22 +92,15 @@ class Config internal constructor(
 			val databaseFile = data["Database File"] as String?
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
+			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
+			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
 			return Config(
 				databaseFile = databaseFile,
 				serverAddress = serverAddress,
-				serverPort = serverPort
+				serverPort = serverPort,
+				proxyHostname = proxyHostname,
+				proxyPort = proxyPort
 			)
 		}
 	}
-}
-
-internal fun Config.toMap(): Map<*, *> {
-	val data = mapOf(
-		"Database File" to this.databaseFile.path,
-		"Server" to mapOf(
-			"Address" to this.serverAddress,
-			"Port" to this.serverPort
-		)
-	)
-	return data.toSortedMap()
 }

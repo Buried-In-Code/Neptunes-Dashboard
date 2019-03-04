@@ -1,12 +1,11 @@
 package macro.dashboard.neptunes.backend
 
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.net.URL
 import java.nio.charset.Charset
 
@@ -40,7 +39,10 @@ data class RESTClient(val baseUrl: String, val gameID: Long) {
 
 	private fun setupConnection(endpoint: String, method: String): HttpURLConnection {
 		val url = URL("$baseUrl/$gameID$endpoint")
-		val connection = url.openConnection(Proxy(Proxy.Type.HTTP, InetSocketAddress("DNZWGPX3.datacom.co.nz", 8080))) as HttpURLConnection
+		val connection = when {
+			CONFIG.proxy == null -> url.openConnection() as HttpURLConnection
+			else -> url.openConnection(CONFIG.proxy!!) as HttpURLConnection
+		}
 		connection.connectTimeout = 5 * 1000
 		connection.readTimeout = 5 * 1000
 		HEADERS.forEach { key, value ->

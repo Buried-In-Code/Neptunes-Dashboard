@@ -2,23 +2,26 @@ package macro.dashboard.neptunes.team
 
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object TeamTable : Table(name = "Team") {
+object TeamTable : IntIdTable(name = "Team") {
 	private val gameCol: Column<EntityID<Long>> = reference(
 		name = "gameID",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	val nameCol: Column<String> = text(name = "name")
+	private val nameCol: Column<String> = text(name = "name")
+
+	private val LOGGER = LogManager.getLogger(TeamTable::class.java)
 
 	init {
 		Util.query {
@@ -27,46 +30,37 @@ object TeamTable : Table(name = "Team") {
 		}
 	}
 
-	fun search(gameID: Long? = null): List<Team> = Util.query {
-		var temp = gameID
-		if (temp == null)
-			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+	fun select(ID: Int): Team? = Util.query {
 		select {
-			gameCol eq temp
-		}.map {
-			it.parse()
-		}.filterNot {
-			it.getPlayers().isEmpty()
-		}.sorted()
-	}
-
-	fun select(gameID: Long? = null, name: String): Team? = Util.query {
-		var temp = gameID
-		if (temp == null)
-			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
-		select {
-			nameCol eq name and (gameCol eq temp)
+			id eq ID
 		}.map {
 			it.parse()
 		}.sorted().firstOrNull()
 	}
 
-	fun insert(gameID: Long? = null, name: String): Team = Util.query {
-		var temp = gameID
-		if (temp == null)
-			temp = GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+	fun search(gameID: Long? = null, name: String = ""): List<Team> = Util.query {
+		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+		select{
+			gameCol eq temp and(nameCol like name)
+		}.map {
+			it.parse()
+		}.sorted()
+	}
+
+	fun insert(gameID: Long, name: String): Boolean = Util.query {
 		try {
 			insert {
-				it[gameCol] = EntityID(temp, GameTable)
+				it[gameCol] = EntityID(gameID, GameTable)
 				it[nameCol] = name
 			}
-			select(gameID = temp, name = name)!!
+			true
 		} catch (esqle: ExposedSQLException) {
-			select(gameID = temp, name = name)!!
+			false
 		}
 	}
 
 	private fun ResultRow.parse(): Team = Team(
+		ID = this[id].value,
 		gameID = this[gameCol].value,
 		name = this[nameCol]
 	)

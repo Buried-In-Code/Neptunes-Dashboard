@@ -10,32 +10,33 @@ import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.DataNotFoundException
+import macro.dashboard.neptunes.InvalidBodyException
 import macro.dashboard.neptunes.player.PlayerTable.update
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object PlayerController {
-	fun getAll(): List<Player> = PlayerTable.search().sorted()
 	fun get(call: ApplicationCall): Player = call.parseParam()
 
-	fun ApplicationCall.parseParam(): Player {
-		val alias = parameters["Alias"]
-		val player = PlayerTable.select(alias = alias ?: "INVALID")
-		if (alias == null || player == null)
-			throw DataNotFoundException(type = "Player", field = "Alias", value = alias)
+	private fun ApplicationCall.parseParam(): Player {
+		val ID = parameters["ID"]
+		val player = PlayerTable.select(ID = ID?.toIntOrNull() ?: -1)
+		if (ID == null || player == null)
+			throw DataNotFoundException(type = "Player", field = "ID", value = ID)
 		return player
 	}
 
 	fun Route.playerRoutes() {
 		route(path = "/players") {
 			get {
+				val alias = call.request.queryParameters["alias"] ?: ""
 				call.respond(
-					message = getAll().map { it.toOutput() },
+					message = PlayerTable.search(alias = alias).map { it.toOutput() },
 					status = HttpStatusCode.OK
 				)
 			}
-			route(path = "/{Alias}") {
+			route(path = "/{ID}") {
 				get {
 					val player = call.parseParam()
 					call.respond(
@@ -46,11 +47,11 @@ internal object PlayerController {
 				put {
 					val player = call.parseParam()
 					val body = call.receive<PlayerRequest>()
-					val updated = player.update(
-						name = body.name ?: player.name
+					player.update(
+						name = body.name
 					)
 					call.respond(
-						message = updated.toOutput(showParent = true),
+						message = "",
 						status = HttpStatusCode.OK
 					)
 
@@ -60,4 +61,6 @@ internal object PlayerController {
 	}
 }
 
-data class PlayerRequest(val name: String?)
+class PlayerRequest(name: String?){
+	val name: String = name ?: throw InvalidBodyException(field = "name")
+}

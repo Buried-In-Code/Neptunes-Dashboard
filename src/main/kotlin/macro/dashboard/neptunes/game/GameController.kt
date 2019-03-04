@@ -1,16 +1,15 @@
 package macro.dashboard.neptunes.game
 
-import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.receive
+import io.ktor.request.receiveOrNull
 import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
-import macro.dashboard.neptunes.DataExistsException
-import macro.dashboard.neptunes.DataNotFoundException
-import macro.dashboard.neptunes.NotImplementedException
+import io.ktor.routing.*
+import macro.dashboard.neptunes.BadRequestException
+import macro.dashboard.neptunes.ConflictException
+import macro.dashboard.neptunes.NotFoundException
+import macro.dashboard.neptunes.UnknownException
 import macro.dashboard.neptunes.backend.Neptunes
 import org.apache.logging.log4j.LogManager
 
@@ -20,19 +19,36 @@ import org.apache.logging.log4j.LogManager
 internal object GameController {
 	private val LOGGER = LogManager.getLogger(GameController::class.java)
 
-	fun ApplicationCall.parseParam(): Game {
-		val ID = parameters["ID"]
-		val game = GameTable.select(ID = ID?.toLongOrNull() ?: 1.toLong())
-		if (ID == null || game == null)
-			throw DataNotFoundException(type = "Game", field = "ID", value = ID)
-		return game
-	}
-
 	fun Route.gameRoutes() {
-		route(path = "/game") {
+		route(path = "/games") {
+			get {
+				val name = call.request.queryParameters["name"] ?: ""
+				val games = GameTable.search(name = name)
+				if (games.isEmpty())
+					throw NotFoundException(message = "No Games were found with the given name '$name'")
+				call.respond(
+					message = games.map { it.toOutput() },
+					status = HttpStatusCode.OK
+				)
+			}
+			post {
+				val request = call.receiveOrNull<GameRequest>() ?: throw BadRequestException(message = "A body is required")
+				if(request.ID == null || request.ID == 0L)
+					throw BadRequestException(message = "ID is required")
+				var found = GameTable.select(ID = request.ID)
+				if (found != null)
+					throw ConflictException(message = "A Game with the given ID: '${request.ID}' already exists")
+				Neptunes.getGame(gameID = request.ID)
+				found = GameTable.select(ID = request.ID)
+					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
+				call.respond(
+					message = found.toOutput(),
+					status = HttpStatusCode.Created
+				)
+			}
 			get(path = "/latest") {
 				val game = GameTable.search().firstOrNull()
-					?: throw DataNotFoundException(type = "Game", field = "ID", value = null)
+					?: throw NotFoundException(message = "No Games were found")
 				call.respond(
 					message = game.toOutput(),
 					status = HttpStatusCode.OK
@@ -40,35 +56,31 @@ internal object GameController {
 			}
 			route(path = "/{ID}") {
 				get {
+					val param: Long = call.parameters["ID"]?.toLongOrNull()
+						?: throw BadRequestException(message = "Invalid ID")
+					val game = GameTable.select(ID = param)
+						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					call.respond(
-						message = call.parseParam().toOutput(),
+						message = game.toOutput(),
 						status = HttpStatusCode.OK
 					)
 				}
-				get(path = "/players") {
-					throw NotImplementedException()
-				}
-				get(path = "/teams") {
-					throw NotImplementedException()
-				}
-				post {
-					val ID = call.parameters["ID"]?.toLongOrNull() ?: throw DataNotFoundException(
-						type = "Game",
-						field = "ID",
-						value = null
+				put {
+					val param: Long = call.parameters["ID"]?.toLongOrNull()
+						?: throw BadRequestException(message = "Invalid ID")
+					var game = GameTable.select(ID = param)
+						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
+					Neptunes.getGame(gameID = game.ID)
+					game = GameTable.select(ID = param)
+						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
+					call.respond(
+						message = game.toOutput(),
+						status = HttpStatusCode.OK
 					)
-					if( GameTable.select(ID = ID) == null) {
-						Neptunes.getGame(gameID = ID)
-						Neptunes.getPlayers(gameID = ID)
-						call.respond(
-							message = "",
-							status = HttpStatusCode.Created
-						)
-					}else{
-						throw DataExistsException(field = "ID", value = ID)
-					}
 				}
 			}
 		}
 	}
 }
+
+data class GameRequest(val ID: Long?)

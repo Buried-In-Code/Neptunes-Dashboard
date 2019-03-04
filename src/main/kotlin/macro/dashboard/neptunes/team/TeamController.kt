@@ -5,48 +5,57 @@ import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.post
+import io.ktor.routing.route
 import macro.dashboard.neptunes.DataNotFoundException
+import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.InvalidBodyException
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.PlayerTable.update
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object TeamController {
-	fun getAll(): List<Team> = TeamTable.search().sorted()
+	private val LOGGER: Logger = LogManager.getLogger(TeamController::class.java)
 	fun get(call: ApplicationCall): Team = call.parseParam()
 
-	fun ApplicationCall.parseParam(): Team {
-		val name = parameters["Name"]
-		val team = TeamTable.select(name = name ?: "Free For All")
-		if (name == null || team == null)
-			throw DataNotFoundException(type = "Team", field = "Name", value = name)
+	private fun ApplicationCall.parseParam(): Team {
+		val ID = parameters["ID"]
+		val team = TeamTable.select(ID = ID?.toIntOrNull() ?: -1)
+		if (ID == null || team == null)
+			throw DataNotFoundException(type = "Team", field = "ID", value = ID)
 		return team
 	}
 
 	fun Route.teamRoutes() {
 		route(path = "/teams") {
 			get {
+				val name = call.request.queryParameters["name"] ?: ""
 				call.respond(
-					message = getAll().map { it.toOutput() },
+					message = TeamTable.search(name = name).map { it.toOutput() },
 					status = HttpStatusCode.OK
 				)
 			}
 			post {
 				val body = call.receive<TeamRequest>()
-				body.name ?: throw InvalidBodyException(field = "Name")
-				val created = TeamTable.insert(name = body.name)
-				body.players.forEach {
-					PlayerTable.select(gameID = created.getGame().ID, alias = it)?.update(teamName = created.name)
+				val created = TeamTable.insert(gameID = body.gameID, name = body.name)
+				if (!created)
+					LOGGER.info("Team ${body.name} already exists")
+				val team = TeamTable.search(gameID = body.gameID, name = body.name).firstOrNull() ?: throw GeneralException()
+				body.players.forEach { alias ->
+					PlayerTable.search(gameID = body.gameID, alias = alias).firstOrNull()?.update(teamID = team.ID)
 				}
 				call.respond(
 					message = "",
 					status = HttpStatusCode.NoContent
 				)
 			}
-			route(path = "/{Name}") {
+			route(path = "/{ID}") {
 				get {
 					val team = call.parseParam()
 					call.respond(
@@ -59,4 +68,31 @@ internal object TeamController {
 	}
 }
 
-data class TeamRequest(val name: String?, val players: List<String> = emptyList())
+class TeamRequest(gameID: Long?, name: String?, val players: List<String> = emptyList()){
+	val gameID: Long = gameID ?: throw InvalidBodyException(field = "gameID")
+	val name: String = name ?: throw InvalidBodyException(field = "name")
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as TeamRequest
+
+		if (name != other.name) return false
+		if (players != other.players) return false
+		if (gameID != other.gameID) return false
+
+		return true
+	}
+
+	override fun hashCode(): Int {
+		var result = name?.hashCode() ?: 0
+		result = 31 * result + players.hashCode()
+		result = 31 * result + gameID.hashCode()
+		return result
+	}
+
+	override fun toString(): String {
+		return "TeamRequest(name=$name, players=$players, gameID=$gameID)"
+	}
+}

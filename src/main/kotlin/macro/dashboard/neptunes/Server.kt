@@ -20,15 +20,14 @@ import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Server.LOGGER
-import macro.dashboard.neptunes.backend.Neptunes
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.config.ConfigRouter.settingRoutes
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.game.TurnTable
 import macro.dashboard.neptunes.player.PlayerController
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.player.PlayerTurnTable
 import macro.dashboard.neptunes.team.TeamController
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
@@ -57,9 +56,9 @@ object Server {
 	private fun checkDatabase() {
 		Util.query {
 			GameTable.exists()
-			TurnTable.exists()
 			TeamTable.exists()
 			PlayerTable.exists()
+			PlayerTurnTable.exists()
 		}
 	}
 
@@ -99,64 +98,40 @@ fun Application.module() {
 			val error = ErrorMessage(
 				code = HttpStatusCode.InternalServerError,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString(),
+				message = it.message ?: "",
 				cause = it
 			)
 			call.respond(error = error, logLevel = Level.FATAL)
 		}
-		exception<InvalidContentTypeException> {
+		exception<BadRequestException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.BadRequest,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
-			)
-			call.respond(error = error)
-		}
-		exception<InvalidBodyException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.BadRequest,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
+				message = it.message
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
-		exception<DataExistsException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.Conflict,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
-			)
-			call.respond(error = error)
-		}
-		exception<DataNotFoundException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.NotFound,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
-			)
-			call.respond(error = error)
-		}
-		exception<AuthorizationException> {
+		exception<UnauthorizedException>{
 			val error = ErrorMessage(
 				code = HttpStatusCode.Unauthorized,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
+				message = it.message
 			)
 			call.respond(error = error)
 		}
-		exception<GeneralException> {
+		exception<NotFoundException>{
 			val error = ErrorMessage(
-				code = HttpStatusCode.InternalServerError,
+				code = HttpStatusCode.NotFound,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.toString()
+				message = it.message
 			)
-			call.respond(error = error, logLevel = Level.FATAL)
+			call.respond(error = error, logLevel = Level.WARN)
 		}
-		exception<NotImplementedException> {
+		exception<ConflictException>{
 			val error = ErrorMessage(
-				code = HttpStatusCode.NotImplemented,
+				code = HttpStatusCode.Conflict,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = "This endpoint hasn't been implemented yet, feel free to make a pull request and add it."
+				message = it.message
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
@@ -166,6 +141,7 @@ fun Application.module() {
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = "Unable to find endpoint"
 			)
+			LOGGER.info("Not Found Status")
 			call.respond(error = error, logLevel = Level.WARN)
 		}
 	}
@@ -177,10 +153,10 @@ fun Application.module() {
 		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.path()}"
 		when (statusCode) {
 			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
-			HttpStatusCode.NotFound -> LOGGER.error(logMessage)
-			HttpStatusCode.Conflict -> LOGGER.error(logMessage)
+			HttpStatusCode.NotFound -> LOGGER.warn(logMessage)
+			HttpStatusCode.Conflict -> LOGGER.warn(logMessage)
 			HttpStatusCode.Unauthorized -> LOGGER.error(logMessage)
-			HttpStatusCode.BadRequest -> LOGGER.error(logMessage)
+			HttpStatusCode.BadRequest -> LOGGER.warn(logMessage)
 			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
 			else -> LOGGER.info(logMessage)
 		}
@@ -189,31 +165,17 @@ fun Application.module() {
 		route(path = "/api") {
 			intercept(ApplicationCallPipeline.Features) {
 				if (!call.request.contentType().match(ContentType.Application.Json))
-					throw InvalidContentTypeException(value = call.request.contentType())
+					throw BadRequestException(message = "The API requires the use of the header 'Content-Type' as 'application/json'")
 				val authorization = call.request.header("Authorization")
 				if (call.request.httpMethod != HttpMethod.Get && authorization != "Basic VXNlcm5hbWU6UGFzc3dvcmQ=")
-					throw AuthorizationException()
+					throw UnauthorizedException(message = "You are not Authorized to use this endpoint")
 			}
 			gameRoutes()
 			playerRoutes()
 			teamRoutes()
 			settingRoutes()
-			put(path = "/refresh"){
-				val force = call.request.queryParameters["force"] == "true"
-				GameTable.search().forEach {
-					val required = Neptunes.getGame(gameID = it.ID)
-					if (required || force)
-						Neptunes.getPlayers(gameID = it.ID)
-					else
-						LOGGER.info("Update not required")
-				}
-				call.respond(
-					message = "",
-					status = HttpStatusCode.NoContent
-				)
-			}
 		}
-		get(path = "/players/{Alias}") {
+		get(path = "/players/{ID}") {
 			val player = PlayerController.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(
@@ -223,7 +185,7 @@ fun Application.module() {
 				status = HttpStatusCode.OK
 			)
 		}
-		get(path = "/teams/{Name}") {
+		get(path = "/teams/{ID}") {
 			val team = TeamController.get(call = call)
 			call.respond(
 				message = FreeMarkerContent(

@@ -23,8 +23,17 @@ dependencies {
 	runtimeOnly("org.apache.logging.log4j:log4j-jul:2.11+")
 	runtimeOnly("org.apache.logging.log4j:log4j-1.2-api:2.11+")
 	runtimeOnly("org.xerial:sqlite-jdbc:3.25+")
+	testImplementation("org.jetbrains.kotlin:kotlin-test")
+	testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 }
 
 application {
 	mainClassName = "macro.dashboard.neptunes.Server"
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+	testLogging {
+		events("passed", "skipped", "failed")
+	}
 }

@@ -22,10 +22,8 @@ data class DataExistsException(val field: String, val value: Any?): RuntimeExcep
 	}
 }
 
-data class DataNotFoundException(val type: String, val field: String, val value: Any?): RuntimeException(){
-	override fun toString(): String {
-		return "No $type was found with the $field: $value in the database"
-	}
+data class DataNotFoundException(val errorMessage: String): RuntimeException(){
+	constructor(type: String, field: String, value: Any?): this(errorMessage = "No $type was found with the $field: $value in the database")
 }
 
 data class NotImplementedException(val ignored: Nothing? = null): RuntimeException(){
@@ -45,3 +43,10 @@ data class AuthorizationException(val ignored: Nothing? = null): RuntimeExceptio
 		return "You are not authorized to access this endpoint"
 	}
 }
+
+data class UnknownException(override val message: String): RuntimeException()
+
+data class BadRequestException(override val message: String): RuntimeException()
+data class UnauthorizedException(override val message: String): RuntimeException()
+data class NotFoundException(override val message: String): RuntimeException()
+data class ConflictException(override val message: String): RuntimeException()

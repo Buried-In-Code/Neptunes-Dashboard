@@ -3,10 +3,11 @@ package macro.dashboard.neptunes.backend
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.game.TurnTable
 import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.player.PlayerTurnTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -16,27 +17,30 @@ object Neptunes {
 	private val LOGGER = LogManager.getLogger(Neptunes::class.java)
 	private const val BASE_URL = "http://nptriton.cqproject.net/game"
 
-	fun getGame(gameID: Long): Boolean {
+	fun getGame(gameID: Long) {
 		val response = RESTClient(baseUrl = BASE_URL, gameID = gameID).getRequest(endpoint = "/basic")
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Data"].toString(), GameUpdate::class.java)
-			GameTable.insert(gameID = gameID, update = game)
-			val latest = TurnTable.search(ID = gameID).firstOrNull()
-			val turn = Util.GSON.fromJson<TurnUpdate>(response["Data"].toString(), TurnUpdate::class.java)
-			TurnTable.insert(gameID = gameID, update = turn)
-			return turn.tick < latest?.tick ?: Int.MAX_VALUE
+			val current = GameTable.select(ID = gameID)
+			if (current == null)
+				GameTable.insert(ID = gameID, update = game)
+			else
+				GameTable.update(ID = gameID, update = game)
+			getPlayers(gameID = gameID)
 		}
-		return false
 	}
 
 	fun getPlayers(gameID: Long) {
 		val response = RESTClient(baseUrl = BASE_URL, gameID = gameID).getRequest(endpoint = "/players")
 		if (response["Code"] == 200) {
 			val players = response["Data"].toString().JsonToPlayerMap()
-			players.values.filterNotNull().forEach {
-				val valid = PlayerTable.insert(gameID = gameID, update = it)
-				if (!valid)
-					PlayerTable.update(gameID = gameID, update = it)
+			players.values.filterNotNull().forEach { update ->
+				PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
+					?: PlayerTable.insert(gameID = gameID, update = update)
+				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
+					?: throw GeneralException()
+				/*val turn = GameTurnTable.searchByGame(gameID = gameID).firstOrNull() ?: throw GeneralException()
+				PlayerTurnTable.insert(turnID = turn.ID, playerID = player.ID, update = update)*/
 			}
 		}
 	}
@@ -67,21 +71,18 @@ data class GameUpdate(
 	val productionRate: Int,
 	@SerializedName(value = "tick_rate")
 	val tickRate: Int,
-	@SerializedName(value = "trade_cost")
-	val tradeCost: Int
-)
-
-data class TurnUpdate(
 	@SerializedName(value = "start_time")
 	val startTime: Long,
-	@SerializedName(value = "productions")
-	val production: Int,
 	@SerializedName(value = "game_over")
 	val gameOver: Int,
 	@SerializedName(value = "paused")
 	val isPaused: Boolean,
 	@SerializedName(value = "started")
 	val isStarted: Boolean,
+	@SerializedName(value = "trade_cost")
+	val tradeCost: Int,
+	@SerializedName(value = "productions")
+	val production: Int,
 	@SerializedName(value = "production_counter")
 	val productionCounter: Int,
 	@SerializedName(value = "tick")
