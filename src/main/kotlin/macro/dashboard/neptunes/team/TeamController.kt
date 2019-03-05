@@ -37,7 +37,7 @@ internal object TeamController {
 			get {
 				val name = call.request.queryParameters["name"] ?: ""
 				call.respond(
-					message = TeamTable.search(name = name).map { it.toOutput() },
+					message = TeamTable.search(name = name).map { it.toOutput(showGame = false, showPlayers = false) },
 					status = HttpStatusCode.OK
 				)
 			}
@@ -59,7 +59,7 @@ internal object TeamController {
 				get {
 					val team = call.parseParam()
 					call.respond(
-						message = team.toOutput(showParent = true),
+						message = team.toOutput(showGame = true, showPlayers = true),
 						status = HttpStatusCode.OK
 					)
 				}

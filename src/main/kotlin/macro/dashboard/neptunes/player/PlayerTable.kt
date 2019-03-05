@@ -50,7 +50,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 	fun search(gameID: Long? = null, alias: String = ""): List<Player> = Util.query {
 		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
-			gameCol eq temp and (aliasCol like alias)
+			gameCol eq temp and (aliasCol like "%$alias%")
 		}.map {
 			it.parse()
 		}.sorted()
@@ -65,7 +65,8 @@ object PlayerTable : IntIdTable(name = "Player") {
 	}
 
 	fun insert(gameID: Long, update: PlayerUpdate): Boolean = Util.query {
-		val teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID ?: throw GeneralException()
+		val teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID
+			?: throw GeneralException()
 		try {
 			insert {
 				it[gameCol] = EntityID(id = gameID, table = GameTable)
@@ -78,9 +79,9 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun update(gameID: Long, alias: String, teamID: Int, name: String?) = Util.query {
+	fun update(ID: Int, teamID: Int, name: String?) = Util.query {
 		try {
-			update({ aliasCol like alias and (gameCol eq gameID) }) {
+			update({ id eq ID }) {
 				it[teamCol] = EntityID(id = teamID, table = TeamTable)
 				it[nameCol] = name
 			}
@@ -102,6 +103,6 @@ object PlayerTable : IntIdTable(name = "Player") {
 	) {
 		this.teamID = teamID
 		this.name = name
-		PlayerTable.update(gameID = this.gameID, alias = this.alias, teamID = this.teamID, name = this.name)
+		PlayerTable.update(ID = this.ID, teamID = this.teamID, name = this.name)
 	}
 }

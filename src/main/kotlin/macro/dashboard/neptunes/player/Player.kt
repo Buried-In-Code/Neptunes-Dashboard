@@ -19,23 +19,26 @@ data class Player(
 
 	fun getGame(): Game = GameTable.select(ID = gameID) ?: throw GeneralException()
 	fun getTeam(): Team = TeamTable.select(ID = teamID) ?: throw GeneralException()
+	fun getTurns(): List<PlayerTurn> = PlayerTurnTable.searchByPlayer(playerID = ID)
 
 	override fun compareTo(other: Player): Int {
 		return byTeam.then(byAlias).compare(this, other)
 	}
 
-	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any?> {
-		var output = mapOf(
+	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean): Map<String, Any?> {
+		val output = mapOf(
 			"ID" to ID,
 			"alias" to alias,
-			"name" to name
-		)
-		output = when (showParent) {
-			true -> output.plus("team" to getTeam().toOutput(showChildren = false))
-			false -> output.plus("team" to teamID)
-		}
-		if (showChildren)
-			output = output.plus("turns" to PlayerTurnTable.searchByPlayer(playerID = ID).map { it.toOutput() })
+			"name" to name,
+			"game" to gameID,
+			"team" to teamID
+		).toMutableMap()
+		if (showGame)
+			output["game"] = getGame().toOutput()
+		if (showTeam)
+			output["team"] = getTeam().toOutput(showGame = false, showPlayers = false)
+		if (showTurns)
+			output["turns"] = getTurns().map { it.toOutput(showPlayer = false) }
 		return output.toSortedMap()
 	}
 

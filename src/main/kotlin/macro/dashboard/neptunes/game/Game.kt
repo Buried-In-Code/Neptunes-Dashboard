@@ -50,7 +50,7 @@ data class Game(
 			"tick" to tick,
 			"players" to PlayerTable.search(gameID = ID).size,
 			"teams" to TeamTable.search(gameID = ID).size
-		)
+		).toMutableMap()
 		return output.toSortedMap()
 	}
 

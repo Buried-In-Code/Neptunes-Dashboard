@@ -7,8 +7,8 @@ import macro.dashboard.neptunes.GeneralException
  */
 data class PlayerTurn(
 	val ID: Int,
-	val turnID: Int,
 	val playerID: Int,
+	val tick: Int,
 	var economy: Int,
 	var industry: Int,
 	var science: Int,
@@ -17,7 +17,7 @@ data class PlayerTurn(
 	var ships: Int,
 	var isActive: Boolean
 ) : Comparable<PlayerTurn> {
-	//	fun getTurn() = GameTurnTable.select(ID = turnID) ?: throw GeneralException()
+
 	fun getPlayer() = PlayerTable.select(ID = playerID) ?: throw GeneralException()
 
 	/*private fun getTechnologies(): List<Technology> = TechnologyTable.search(player = this)
@@ -33,11 +33,13 @@ data class PlayerTurn(
 	fun getIndustryTurn(): Double = /*industry * (getManufacturing().value + 5) / 24*/ 42.0
 
 	override fun compareTo(other: PlayerTurn): Int {
-		return byPlayer/*.then(byTurn)*/.compare(this, other)
+		return byPlayer.then(byTick).compare(this, other)
 	}
 
-	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any?> {
-		var output = mapOf(
+	fun toOutput(showPlayer: Boolean): Map<String, Any?> {
+		val output = mapOf(
+			"tick" to tick,
+			"player" to playerID,
 			"economy" to economy,
 			"industry" to industry,
 			"science" to science,
@@ -48,23 +50,14 @@ data class PlayerTurn(
 			"economyTurn" to getEconomyTurn(),
 			"industryTurn" to getIndustryTurn()/*,
 			"technologies" to getTechnologies()*/
-		)
-		output = when (showParent) {
-			true -> {
-				output.plus(
-					mapOf(
-						"player" to getPlayer().toOutput(showChildren = false)
-//						"turn" to getTurn().toOutput(showChildren = false)
-					)
-				)
-			}
-			false -> output.plus(mapOf("player" to getPlayer().ID/*, "turn" to getTurn().ID*/))
-		}
+		).toMutableMap()
+		if (showPlayer)
+			output["player"] = getPlayer().toOutput(showGame = true, showTeam = true, showTurns = false)
 		return output.toSortedMap()
 	}
 
 	companion object {
 		internal val byPlayer = compareBy(PlayerTurn::getPlayer)
-//		internal val byTurn = compareBy(PlayerTurn::getTurn)
+		internal val byTick = compareBy(PlayerTurn::tick)
 	}
 }

@@ -14,6 +14,8 @@ data class Team(
 	val gameID: Long,
 	var name: String
 ) : Comparable<Team> {
+
+	fun getGame(): Game = GameTable.select(ID = gameID) ?: throw GeneralException()
 	fun getPlayers(): List<Player> = PlayerTable.searchByTeam(teamID = ID)
 
 	/*fun getTotalEconomy() = getPlayers().sumBy { it.economy }
@@ -23,26 +25,26 @@ data class Team(
 	fun getTotalFleet() = getPlayers().sumBy { it.fleet }
 	fun getTotalShips() = getPlayers().sumBy { it.ships }*/
 
-	fun getGame(): Game = GameTable.select(ID = gameID) ?: throw GeneralException()
-
 	override fun compareTo(other: Team): Int {
 		return byName.compare(this, other)
 	}
 
-	fun toOutput(showParent: Boolean = false, showChildren: Boolean = true): Map<String, Any> {
-		var output = mapOf<String, Any>(
-			"name" to name/*,
-			"totalEconomy" to getTotalEconomy(),
+	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any> {
+		val output = mapOf(
+			"name" to name,
+			"game" to gameID,
+			"players" to getPlayers().map { it.ID }
+			/*"totalEconomy" to getTotalEconomy(),
 			"totalIndustry" to getTotalIndustry(),
 			"totalScience" to getTotalScience(),
 			"totalStars" to getTotalStars(),
 			"totalFleet" to getTotalFleet(),
 			"totalShips" to getTotalShips()*/
-		)
-		if (showChildren)
-			output = output.plus(
-				"players" to getPlayers().map { it.toOutput(showParent = false) }
-			)
+		).toMutableMap()
+		if (showGame)
+			output["game"] = getGame().toOutput()
+		if (showPlayers)
+			output["players"] = getPlayers().map { it.toOutput(showGame = false, showTeam = false, showTurns = true) }
 		return output.toSortedMap()
 	}
 

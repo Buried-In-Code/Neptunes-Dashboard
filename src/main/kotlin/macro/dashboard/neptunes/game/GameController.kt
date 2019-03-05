@@ -33,7 +33,7 @@ internal object GameController {
 			}
 			post {
 				val request = call.receiveOrNull<GameRequest>() ?: throw BadRequestException(message = "A body is required")
-				if(request.ID == null || request.ID == 0L)
+				if(request.ID == 0L)
 					throw BadRequestException(message = "ID is required")
 				var found = GameTable.select(ID = request.ID)
 				if (found != null)
@@ -83,4 +83,4 @@ internal object GameController {
 	}
 }
 
-data class GameRequest(val ID: Long?)
+data class GameRequest(val ID: Long)

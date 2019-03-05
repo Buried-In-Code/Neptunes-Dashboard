@@ -39,8 +39,8 @@ object Neptunes {
 					?: PlayerTable.insert(gameID = gameID, update = update)
 				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
 					?: throw GeneralException()
-				/*val turn = GameTurnTable.searchByGame(gameID = gameID).firstOrNull() ?: throw GeneralException()
-				PlayerTurnTable.insert(turnID = turn.ID, playerID = player.ID, update = update)*/
+				val tick = GameTable.select(ID = gameID)?.tick ?: throw GeneralException()
+				PlayerTurnTable.insert(playerID = player.ID, tick = tick, update = update)
 			}
 		}
 	}

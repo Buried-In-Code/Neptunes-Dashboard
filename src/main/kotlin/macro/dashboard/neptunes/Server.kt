@@ -149,7 +149,7 @@ fun Application.module() {
 	}
 	intercept(ApplicationCallPipeline.Fallback) {
 		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
-		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.path()}"
+		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.uri}"
 		when (statusCode) {
 			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
 			HttpStatusCode.NotFound -> LOGGER.warn(logMessage)
@@ -179,7 +179,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
-					model = player.toOutput()
+					model = player.toOutput(showGame = true, showTeam = true, showTurns = true)
 				),
 				status = HttpStatusCode.OK
 			)
@@ -189,7 +189,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Team.ftl",
-					model = team.toOutput()
+					model = team.toOutput(showGame = true, showPlayers = true)
 				),
 				status = HttpStatusCode.OK
 			)

@@ -12,18 +12,13 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Mar-04.
  */
 object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
-	/*private val turnCol: Column<EntityID<Int>> = reference(
-		name = "turnID",
-		foreign = GameTurnTable,
-		onUpdate = ReferenceOption.CASCADE,
-		onDelete = ReferenceOption.CASCADE
-	)*/
 	private val playerCol: Column<EntityID<Int>> = reference(
 		name = "playerID",
 		foreign = PlayerTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
+	private val tickCol: Column<Int> = integer(name = "tick")
 	private val economyCol: Column<Int> = integer(name = "economy")
 	private val industryCol: Column<Int> = integer(name = "industry")
 	private val scienceCol: Column<Int> = integer(name = "science")
@@ -36,7 +31,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 
 	init {
 		Util.query {
-			//			uniqueIndex(turnCol, playerCol)
+			uniqueIndex(tickCol, playerCol)
 			SchemaUtils.create(this)
 		}
 	}
@@ -49,13 +44,13 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}.sorted().firstOrNull()
 	}
 
-	/*fun searchByTurn(turnID: Int): List<PlayerTurn> = Util.query {
+	fun searchByTick(tick: Int): List<PlayerTurn> = Util.query {
 		select {
-			turnCol eq turnID
+			tickCol eq tick
 		}.map {
 			it.parse()
 		}.sorted()
-	}*/
+	}
 
 	fun searchByPlayer(playerID: Int): List<PlayerTurn> = Util.query {
 		select {
@@ -65,11 +60,11 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}.sorted()
 	}
 
-	fun insert(turnID: Int, playerID: Int, update: PlayerUpdate): Boolean = Util.query {
+	fun insert(playerID: Int, tick: Int, update: PlayerUpdate): Boolean = Util.query {
 		try {
 			insert {
-				//				it[turnCol] = EntityID(id = turnID, table = GameTurnTable)
 				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+				it[tickCol] = tick
 				it[economyCol] = update.economy
 				it[industryCol] = update.industry
 				it[scienceCol] = update.science
@@ -86,8 +81,8 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 
 	private fun ResultRow.parse(): PlayerTurn = PlayerTurn(
 		ID = this[id].value,
-		turnID = /*this[turnCol].value*/ 42,
 		playerID = this[playerCol].value,
+		tick = this[tickCol],
 		economy = this[economyCol],
 		industry = this[industryCol],
 		science = this[scienceCol],
