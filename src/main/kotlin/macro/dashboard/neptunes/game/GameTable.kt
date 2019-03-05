@@ -19,7 +19,7 @@ import java.time.ZoneId
  * Created by Macro303 on 2019-Feb-11.
  */
 object GameTable : LongIdTable(name = "Game") {
-	private val nameCol: Column<String> = text(name = "name").uniqueIndex()
+	private val nameCol: Column<String> = text(name = "name")
 	private val totalStarsCol: Column<Int> = integer(name = "totalStars")
 	private val victoryStarsCol: Column<Int> = integer(name = "victoryStars")
 	private val adminCol: Column<Int> = integer(name = "admin")

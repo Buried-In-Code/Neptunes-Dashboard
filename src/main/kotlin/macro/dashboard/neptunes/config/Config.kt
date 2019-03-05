@@ -21,7 +21,7 @@ class Config internal constructor(
 	val proxyPort: Int? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
-		null -> File("Neptunes-Pride.db")
+		null -> File("Neptunes-Dashboard.db")
 		else -> File(databaseFile)
 	}
 	val serverAddress: String = serverAddress ?: "localhost"

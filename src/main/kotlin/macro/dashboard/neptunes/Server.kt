@@ -141,7 +141,6 @@ fun Application.module() {
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = "Unable to find endpoint"
 			)
-			LOGGER.info("Not Found Status")
 			call.respond(error = error, logLevel = Level.WARN)
 		}
 	}

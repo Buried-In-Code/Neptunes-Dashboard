@@ -33,7 +33,7 @@ data class Game(
 ) : Comparable<Game> {
 
 	override fun compareTo(other: Game): Int {
-		return byID.reversed().compare(this, other)
+		return byStartTime.compare(this, other)
 	}
 
 	fun toOutput(): Map<String, Any?> {
@@ -55,6 +55,6 @@ data class Game(
 	}
 
 	companion object {
-		val byID = compareBy(Game::ID)
+		val byStartTime = compareBy(Game::startTime)
 	}
 }
