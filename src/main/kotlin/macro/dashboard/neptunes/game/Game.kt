@@ -33,7 +33,7 @@ data class Game(
 ) : Comparable<Game> {
 
 	override fun compareTo(other: Game): Int {
-		return byStartTime.compare(this, other)
+		return byStartTime.reversed().compare(this, other)
 	}
 
 	fun toOutput(): Map<String, Any?> {

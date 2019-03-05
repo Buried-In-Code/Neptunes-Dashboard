@@ -2,27 +2,26 @@ function getGame(){
 	var gameStars = 700;
 	$.ajax({
 		async: false,
-	    url: '/api/game/latest',
+	    url: '/api/games/latest',
 	    type: 'GET',
 	    contentType: 'application/json',
 	    dataType: 'json',
 	    success: function (data) {
 	        console.log(data);
-	        var turn = data.turns[0]
 	        document.getElementById("gameName").innerHTML = data.name;
-	        if(turn.isStarted){
-	            document.getElementById("gameStarted").innerHTML = turn.startTime;
+	        if(data.isStarted){
+	            document.getElementById("gameStarted").innerHTML = data.startTime;
             }else{
                 document.getElementById("gameStarted").innerHTML = "false";
             }
-	        document.getElementById("gamePaused").innerHTML = turn.isPaused;
+	        document.getElementById("gamePaused").innerHTML = data.isPaused;
 	        document.getElementById("gamePlayers").innerHTML = data.players;
 	        document.getElementById("gameTeams").innerHTML = data.teams;
 	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
-	        if(turn.tick == 0){
+	        if(data.tick == 0){
 	            document.getElementById("gameTurn").innerHTML = 0;
             }else{
-                document.getElementById("gameTurn").innerHTML = turn.tick / 12;
+                document.getElementById("gameTurn").innerHTML = data.tick / 12;
             }
 	        gameStars = data.totalStars;
 	    },
