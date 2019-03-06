@@ -31,7 +31,8 @@ data class Player(
 			"alias" to alias,
 			"name" to name,
 			"game" to gameID,
-			"team" to teamID
+			"team" to getTeam().name,
+			"turns" to getTurns().firstOrNull()?.toOutput(showPlayer = false)
 		).toMutableMap()
 		if (showGame)
 			output["game"] = getGame().toOutput()

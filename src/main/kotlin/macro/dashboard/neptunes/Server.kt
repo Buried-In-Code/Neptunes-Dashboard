@@ -16,7 +16,9 @@ import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Routing
+import io.ktor.routing.get
+import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Server.LOGGER
@@ -24,7 +26,6 @@ import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.config.ConfigRouter.settingRoutes
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.player.PlayerController
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.PlayerTurnTable
@@ -111,7 +112,7 @@ fun Application.module() {
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
-		exception<UnauthorizedException>{
+		exception<UnauthorizedException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.Unauthorized,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
@@ -119,7 +120,7 @@ fun Application.module() {
 			)
 			call.respond(error = error)
 		}
-		exception<NotFoundException>{
+		exception<NotFoundException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.NotFound,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
@@ -127,9 +128,17 @@ fun Application.module() {
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
-		exception<ConflictException>{
+		exception<ConflictException> {
 			val error = ErrorMessage(
 				code = HttpStatusCode.Conflict,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message
+			)
+			call.respond(error = error, logLevel = Level.WARN)
+		}
+		exception<NotImplementedException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotImplemented,
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = it.message
 			)
@@ -150,22 +159,16 @@ fun Application.module() {
 	intercept(ApplicationCallPipeline.Fallback) {
 		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
 		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.uri}"
-		when (statusCode) {
-			HttpStatusCode.InternalServerError -> LOGGER.fatal(logMessage)
-			HttpStatusCode.NotFound -> LOGGER.warn(logMessage)
-			HttpStatusCode.Conflict -> LOGGER.warn(logMessage)
-			HttpStatusCode.Unauthorized -> LOGGER.error(logMessage)
-			HttpStatusCode.BadRequest -> LOGGER.warn(logMessage)
-			HttpStatusCode.NotImplemented -> LOGGER.warn(logMessage)
-			else -> LOGGER.info(logMessage)
-		}
+		if (statusCode.value < 400)
+			LOGGER.info(logMessage)
 	}
 	install(Routing) {
+		trace { LOGGER.debug(it.buildText()) }
 		route(path = "/api") {
 			intercept(ApplicationCallPipeline.Features) {
-				if (!call.request.contentType().match(ContentType.Application.Json))
+				if (call.request.contentType() != ContentType.Application.Json)
 					throw BadRequestException(message = "The API requires the use of the header 'Content-Type' as 'application/json'")
-				val authorization = call.request.header("Authorization")
+				val authorization = call.request.header(name = "Authorization")
 				if (call.request.httpMethod != HttpMethod.Get && authorization != "Basic VXNlcm5hbWU6UGFzc3dvcmQ=")
 					throw UnauthorizedException(message = "You are not Authorized to use this endpoint")
 			}
@@ -174,8 +177,10 @@ fun Application.module() {
 			teamRoutes()
 			settingRoutes()
 		}
-		get(path = "/players/{ID}") {
-			val player = PlayerController.get(call = call)
+		get(path = "/players/{alias}") {
+			val alias = call.request.queryParameters["alias"] ?: ""
+			val player = PlayerTable.search(alias = alias).firstOrNull()
+				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
@@ -193,6 +198,9 @@ fun Application.module() {
 				),
 				status = HttpStatusCode.OK
 			)
+		}
+		get(path = "/history") {
+			throw NotImplementedException()
 		}
 		get(path = "/settings") {
 			throw NotImplementedException()
@@ -219,10 +227,9 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 			message = FreeMarkerContent(template = "Exception.ftl", model = error),
 			status = error.code
 		)
-	if (error.code != HttpStatusCode.NotFound)
-		when (logLevel) {
-			Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.path()}")
-			Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.path()}")
-			Level.FATAL -> LOGGER.fatal("${error.code}: ${request.httpMethod.value} - ${request.path()} - ${error.message}")
-		}
+	when (logLevel) {
+		Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.uri}")
+		Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
+		Level.FATAL -> LOGGER.fatal("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
+	}
 }

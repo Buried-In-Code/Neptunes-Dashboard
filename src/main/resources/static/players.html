@@ -39,7 +39,7 @@ $(document).ready(function(){
 	var table = $('#leaderboard').DataTable({
 		"processing" : true,
 		"ajax" : {
-			"url" : "/api/players",
+			"url" : "/api/latest/players",
 			type: 'GET',
 			contentType: 'application/json',
 			dataType: 'json',
@@ -51,11 +51,11 @@ $(document).ready(function(){
 			{ "data" : "alias" },
 			{ "data" : "name" },
 			{ "data" : "team" },
-			{ "data" : "stars", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "ships", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "economy", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "industry", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "science", render: $.fn.dataTable.render.number( ',' ) }
+			{ "data" : "turns.stars", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.ships", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.economy", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.industry", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.science", render: $.fn.dataTable.render.number( ',' ) }
 		]
 	});
 	$('#leaderboard tbody').on('click', 'tr', function () {

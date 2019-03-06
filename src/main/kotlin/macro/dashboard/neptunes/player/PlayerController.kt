@@ -1,6 +1,5 @@
 package macro.dashboard.neptunes.player
 
-import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveOrNull
@@ -10,37 +9,24 @@ import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
-import macro.dashboard.neptunes.DataNotFoundException
 import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.player.PlayerTable.update
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object PlayerController {
-	fun get(call: ApplicationCall): Player = call.parseParam()
-
-	private fun ApplicationCall.parseParam(): Player {
-		val ID = parameters["ID"]
-		val player = PlayerTable.select(ID = ID?.toIntOrNull() ?: -1)
-		if (ID == null || player == null)
-			throw DataNotFoundException(type = "Player", field = "ID", value = ID)
-		return player
-	}
+	private val LOGGER = LogManager.getLogger(PlayerController::class.java)
 
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
 			get {
 				val gameID = call.parameters["gameID"]?.toLongOrNull()
 				val alias = call.request.queryParameters["alias"] ?: ""
+				val players = PlayerTable.search(gameID = gameID, alias = alias)
 				call.respond(
-					message = PlayerTable.search(gameID = gameID, alias = alias).map {
-						it.toOutput(
-							showGame = false,
-							showTeam = false,
-							showTurns = false
-						)
-					},
+					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
 					status = HttpStatusCode.OK
 				)
 			}

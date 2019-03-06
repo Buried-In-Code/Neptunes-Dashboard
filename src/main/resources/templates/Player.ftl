@@ -18,61 +18,61 @@
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Name</div>
-				<div class="description">${name!"Unknown"}</div>
+				<div class="description">${name!""}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Team</div>
-				<div class="description">${team}</div>
+				<div class="description">${team.name}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Stars</div>
-				<div class="description">${stars}</div>
+				<div class="description">${turns[0].stars}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Ships</div>
-				<div class="description">${ships}</div>
+				<div class="description">${turns[0].ships}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Fleet</div>
-				<div class="description">${fleet}</div>
+				<div class="description">${turns[0].fleet}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Economy</div>
-				<div class="description">${economy}</div>
+				<div class="description">${turns[0].economy}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">$ Per Turn</div>
-				<div class="description"><i>${economyTurn}</i></div>
+				<div class="description"><i>${turns[0].economyTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Industry</div>
-				<div class="description">${industry}</div>
+				<div class="description">${turns[0].industry}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Ships Per Turn</div>
-				<div class="description"><i>${industryTurn}</i></div>
+				<div class="description"><i>${turns[0].industryTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Science</div>
-				<div class="description">${science}</div>
+				<div class="description">${turns[0].science}</div>
 			</div>
 		</div>
 	</div>
