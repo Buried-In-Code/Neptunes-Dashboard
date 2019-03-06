@@ -163,7 +163,7 @@ fun Application.module() {
 			LOGGER.info(logMessage)
 	}
 	install(Routing) {
-		trace { LOGGER.debug(it.buildText()) }
+		trace { LOGGER.trace(it.buildText()) }
 		route(path = "/api") {
 			intercept(ApplicationCallPipeline.Features) {
 				if (call.request.contentType() != ContentType.Application.Json)
