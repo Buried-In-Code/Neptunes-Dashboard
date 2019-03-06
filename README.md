@@ -1,6 +1,5 @@
 # Neptune's Dashboard
-![Version](https://img.shields.io/github/release/Macro303/Neptunes-Dashboard.svg?label=version)
-![Latest](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=latest&colorB=orange)
+![Version](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=version)
 ![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Dashboard.svg?label=issues)
 ![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Dashboard.svg?label=contributors)
 
