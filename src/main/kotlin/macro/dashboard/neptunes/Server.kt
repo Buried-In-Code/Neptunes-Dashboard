@@ -178,7 +178,7 @@ fun Application.module() {
 			settingRoutes()
 		}
 		get(path = "/players/{alias}") {
-			val alias = call.request.queryParameters["alias"] ?: ""
+			val alias = call.parameters["alias"] ?: "%"
 			val player = PlayerTable.search(alias = alias).firstOrNull()
 				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
 			call.respond(
@@ -189,8 +189,10 @@ fun Application.module() {
 				status = HttpStatusCode.OK
 			)
 		}
-		get(path = "/teams/{ID}") {
-			val team = TeamController.get(call = call)
+		get(path = "/teams/{name}") {
+			val name = call.parameters["name"] ?: "%"
+			val team = TeamTable.search(name = name).firstOrNull()
+				?: throw NotFoundException(message = "No Team was found with the given name '$name'")
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Team.ftl",

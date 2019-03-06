@@ -37,7 +37,7 @@ $(document).ready(function(){
 	var table = $('#leaderboard').DataTable({
 		"processing" : true,
 		"ajax" : {
-			"url" : "/api/teams",
+			"url" : "/api/latest/teams",
 			type: 'GET',
 			contentType: 'application/json',
 			dataType: 'json',
@@ -56,7 +56,6 @@ $(document).ready(function(){
 	});
 	$('#leaderboard tbody').on('click', 'tr', function () {
         var data = table.row( this ).data();
-        console.log("Selected: " + data);
         window.location.href = '/teams/' + data.name;
     } );
 });

@@ -38,19 +38,20 @@ object TeamTable : IntIdTable(name = "Team") {
 		}.sorted().firstOrNull()
 	}
 
-	fun search(gameID: Long? = null, name: String = ""): List<Team> = Util.query {
+	fun search(gameID: Long? = null, name: String = "%"): List<Team> = Util.query {
 		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select{
 			gameCol eq temp and(nameCol like name)
 		}.map {
 			it.parse()
-		}.sorted()
+		}.filterNot { it.getPlayers().isEmpty() }.sorted()
 	}
 
-	fun insert(gameID: Long, name: String): Boolean = Util.query {
+	fun insert(gameID: Long?, name: String): Boolean = Util.query {
+		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		try {
 			insert {
-				it[gameCol] = EntityID(gameID, GameTable)
+				it[gameCol] = EntityID(temp, GameTable)
 				it[nameCol] = name
 			}
 			true

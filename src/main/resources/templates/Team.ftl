@@ -60,10 +60,10 @@
 		<#list players as player>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">${player.alias} (${player.name!"Unknown"})</div>
+					<div class="header">${player.alias} (${player.name!""})</div>
 					<div class="description">
-						<b>Stars:</b> ${player.stars}</br>
-						<b>Ships:</b> ${player.ships}
+						<b>Stars:</b> ${player.turns[0].stars}</br>
+						<b>Ships:</b> ${player.turns[0].ships}
 					</div>
 				</div>
 			</div>
@@ -86,7 +86,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	getTeamStars("${name}");
+	getTeamStars(${ID});
 });
 </script>
 </body>

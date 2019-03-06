@@ -18,12 +18,12 @@ data class Team(
 	fun getGame(): Game = GameTable.select(ID = gameID) ?: throw GeneralException()
 	fun getPlayers(): List<Player> = PlayerTable.searchByTeam(teamID = ID)
 
-	/*fun getTotalEconomy() = getPlayers().sumBy { it.economy }
-	fun getTotalIndustry() = getPlayers().sumBy { it.industry }
-	fun getTotalScience() = getPlayers().sumBy { it.science }
-	fun getTotalStars() = getPlayers().sumBy { it.stars }
-	fun getTotalFleet() = getPlayers().sumBy { it.fleet }
-	fun getTotalShips() = getPlayers().sumBy { it.ships }*/
+	fun getTotalEconomy() = getPlayers().sumBy { it.getTurns().first().economy }
+	fun getTotalIndustry() = getPlayers().sumBy { it.getTurns().first().industry }
+	fun getTotalScience() = getPlayers().sumBy { it.getTurns().first().science }
+	fun getTotalStars() = getPlayers().sumBy { it.getTurns().first().stars }
+	fun getTotalFleet() = getPlayers().sumBy { it.getTurns().first().fleet }
+	fun getTotalShips() = getPlayers().sumBy { it.getTurns().first().ships }
 
 	override fun compareTo(other: Team): Int {
 		return byName.compare(this, other)
@@ -31,15 +31,16 @@ data class Team(
 
 	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any> {
 		val output = mapOf(
+			"ID" to ID,
 			"name" to name,
 			"game" to gameID,
-			"players" to getPlayers().map { it.ID }
-			/*"totalEconomy" to getTotalEconomy(),
+			"players" to getPlayers().map { it.ID },
+			"totalEconomy" to getTotalEconomy(),
 			"totalIndustry" to getTotalIndustry(),
 			"totalScience" to getTotalScience(),
 			"totalStars" to getTotalStars(),
 			"totalFleet" to getTotalFleet(),
-			"totalShips" to getTotalShips()*/
+			"totalShips" to getTotalShips()
 		).toMutableMap()
 		if (showGame)
 			output["game"] = getGame().toOutput()

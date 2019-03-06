@@ -7,7 +7,6 @@ function getGame(){
 	    contentType: 'application/json',
 	    dataType: 'json',
 	    success: function (data) {
-	        console.log(data);
 	        document.getElementById("gameName").innerHTML = data.name;
 	        if(data.isStarted){
 	            document.getElementById("gameStarted").innerHTML = data.startTime;
@@ -34,12 +33,11 @@ function getGame(){
 
 function getAllTeamStars(totalStars){
  	$.ajax({
- 	    url: "/api/teams",
+ 	    url: "/api/latest/teams",
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',
  	    success: function (data) {
-	        console.log(data);
 	        if(data.length <= 1){
 	            getAllPlayerStars(totalStars, data[0].players)
             }else{
@@ -54,7 +52,7 @@ function getAllTeamStars(totalStars){
 					var teamStars = 0;
 					for(playerCount = 0; playerCount < team.players.length; playerCount++){
 						var player = team.players[playerCount];
-						teamStars += player.stars;
+						teamStars += player.turns[0].stars;
 					}
 					teamData.push(teamStars);
 					starCount += teamStars;
@@ -69,20 +67,19 @@ function getAllTeamStars(totalStars){
  	});
 }
 
-function getTeamStars(name){
+function getTeamStars(ID){
  	$.ajax({
- 	    url: "/api/teams/" + name,
+ 	    url: "/api/teams/" + ID,
  	    type: 'GET',
  	    contentType: 'application/json',
  	    dataType: 'json',
  	    success: function (data) {
-	        console.log(data);
 			var playerLabels = [];
 			var playerData = [];
 			for(count = 0; count < data.players.length; count++){
 				var player = data.players[count];
 				playerLabels.push(player.alias);
-				playerData.push(player.stars);
+				playerData.push(player.turns[0].stars);
 			}
 			createPieGraph(playerLabels, playerData);
  	    },
@@ -93,7 +90,6 @@ function getTeamStars(name){
 }
 
 function getAllPlayerStars(totalStars, data){
-    console.log(data);
 	var playerLabels = [];
 	var playerData = [];
 	playerLabels.push("Stars Left");
@@ -102,8 +98,8 @@ function getAllPlayerStars(totalStars, data){
 	for(count = 0; count < data.length; count++){
 		var player = data[count];
 		playerLabels.push(player.alias);
-		playerData.push(player.stars);
-		starCount += player.stars;
+		playerData.push(player.turns[0].stars);
+		starCount += player.turns[0].stars;
 	}
 	playerData[0] = totalStars - starCount;
 	createPieGraph(playerLabels, playerData);
