@@ -44,7 +44,7 @@ object TeamTable : IntIdTable(name = "Team") {
 			gameCol eq temp and(nameCol like name)
 		}.map {
 			it.parse()
-		}.filterNot { it.getPlayers().isEmpty() }.sorted()
+		}.sorted()
 	}
 
 	fun insert(gameID: Long?, name: String): Boolean = Util.query {

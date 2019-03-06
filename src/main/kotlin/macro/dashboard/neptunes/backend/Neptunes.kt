@@ -26,20 +26,18 @@ object Neptunes {
 				GameTable.insert(ID = gameID, update = game)
 			else
 				GameTable.update(ID = gameID, update = game)
-			getPlayers(gameID = gameID)
+			getPlayers(gameID = gameID, tick = game.tick)
 		}
 	}
 
-	fun getPlayers(gameID: Long) {
+	fun getPlayers(gameID: Long, tick: Int) {
 		val response = RESTClient(baseUrl = BASE_URL, gameID = gameID).getRequest(endpoint = "/players")
 		if (response["Code"] == 200) {
 			val players = response["Data"].toString().JsonToPlayerMap()
 			players.values.filterNotNull().forEach { update ->
-				PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
-					?: PlayerTable.insert(gameID = gameID, update = update)
+				PlayerTable.insert(gameID = gameID, update = update)
 				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
 					?: throw GeneralException()
-				val tick = GameTable.select(ID = gameID)?.tick ?: throw GeneralException()
 				PlayerTurnTable.insert(playerID = player.ID, tick = tick, update = update)
 			}
 		}

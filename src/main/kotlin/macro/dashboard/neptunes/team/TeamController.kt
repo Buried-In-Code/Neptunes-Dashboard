@@ -28,7 +28,7 @@ internal object TeamController {
 				val name = call.request.queryParameters["name"] ?: "%"
 				val teams = TeamTable.search(gameID = gameID, name = name)
 				call.respond(
-					message = teams.map { it.toOutput(showGame = false, showPlayers = true) },
+					message = teams.filterNot { it.getPlayers().isEmpty() }.map { it.toOutput(showGame = false, showPlayers = true) },
 					status = HttpStatusCode.OK
 				)
 			}
