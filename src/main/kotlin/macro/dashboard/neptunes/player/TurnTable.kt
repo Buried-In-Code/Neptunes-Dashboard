@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.*
 /**
  * Created by Macro303 on 2019-Mar-04.
  */
-object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
+object TurnTable : IntIdTable(name = "Turn") {
 	private val playerCol: Column<EntityID<Int>> = reference(
 		name = "playerID",
 		foreign = PlayerTable,
@@ -27,7 +27,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 	private val shipsCol: Column<Int> = integer(name = "ships")
 	private val isActiveCol: Column<Boolean> = bool(name = "isActive")
 
-	private val LOGGER = LogManager.getLogger(PlayerTurnTable::class.java)
+	private val LOGGER = LogManager.getLogger(TurnTable::class.java)
 
 	init {
 		Util.query {
@@ -36,7 +36,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}
 	}
 
-	fun select(ID: Int): PlayerTurn? = Util.query {
+	fun select(ID: Int): Turn? = Util.query {
 		select {
 			id eq ID
 		}.map {
@@ -44,7 +44,15 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}.sorted().firstOrNull()
 	}
 
-	fun searchByTick(tick: Int): List<PlayerTurn> = Util.query {
+	fun select(playerID: Int, tick: Int): Turn? = Util.query {
+		select {
+			playerCol eq playerID and(tickCol eq tick)
+		}.map {
+			it.parse()
+		}.sorted().firstOrNull()
+	}
+
+	fun searchByTick(tick: Int): List<Turn> = Util.query {
 		select {
 			tickCol eq tick
 		}.map {
@@ -52,7 +60,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}.sorted()
 	}
 
-	fun searchByPlayer(playerID: Int): List<PlayerTurn> = Util.query {
+	fun searchByPlayer(playerID: Int): List<Turn> = Util.query {
 		select {
 			playerCol eq playerID
 		}.map {
@@ -79,7 +87,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 		}
 	}
 
-	private fun ResultRow.parse(): PlayerTurn = PlayerTurn(
+	private fun ResultRow.parse(): Turn = Turn(
 		ID = this[id].value,
 		playerID = this[playerCol].value,
 		tick = this[tickCol],

@@ -45,7 +45,7 @@ data class Team(
 		if (showGame)
 			output["game"] = getGame().toOutput()
 		if (showPlayers)
-			output["players"] = getPlayers().map { it.toOutput(showGame = false, showTeam = false, showTurns = true) }
+			output["players"] = getPlayers().map { it.toOutput(showGame = false, showTeam = false) }
 		return output.toSortedMap()
 	}
 

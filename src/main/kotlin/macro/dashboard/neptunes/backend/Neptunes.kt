@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.Util.JsonToMap
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.player.PlayerTurnTable
+import macro.dashboard.neptunes.player.TurnTable
+import macro.dashboard.neptunes.technology.TechnologyTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -29,7 +29,11 @@ object Neptunes {
 				PlayerTable.insert(gameID = gameID, update = update)
 				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
 					?: throw GeneralException()
-				PlayerTurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
+				TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
+				val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
+				update.tech.forEach { name, tech ->
+					TechnologyTable.insert(turnID = turn.ID, name = name, update = tech)
+				}
 			}
 		}
 	}
@@ -53,7 +57,7 @@ data class GameUpdate(
 	val production: Int,
 	@SerializedName(value = "tick_fragment")
 	val tickFragment: Int,
-	//now
+	val now: Long,
 	@SerializedName(value = "tick_rate")
 	val tickRate: Int,
 	@SerializedName(value = "production_rate")
@@ -77,7 +81,8 @@ data class GameUpdate(
 	@SerializedName(value = "trade_cost")
 	val tradeCost: Int,
 	val name: String,
-	//player_uid
+	@SerializedName(value = "player_uid")
+	val playerUid: Int,
 	val admin: Int,
 	@SerializedName(value = "turn_based")
 	val turnBased: Int,
@@ -103,7 +108,7 @@ data class PlayerUpdate(
 	@SerializedName(value = "total_strength")
 	val ships: Int,
 	val alias: String,
-	//tech
+	val tech: Map<String, TechUpdate>,
 	val avatar: Int,
 	val conceded: Int,
 	val ready: Int,
@@ -113,4 +118,9 @@ data class PlayerUpdate(
 	val missed: Int,
 	@SerializedName(value = "karma_to_give")
 	val karma: Int
+)
+
+data class TechUpdate(
+	val value: Double,
+	val level: Int
 )

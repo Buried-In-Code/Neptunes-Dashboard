@@ -28,8 +28,7 @@ import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.player.PlayerTurnTable
-import macro.dashboard.neptunes.team.TeamController
+import macro.dashboard.neptunes.player.TurnTable
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.Level
@@ -59,7 +58,7 @@ object Server {
 			GameTable.exists()
 			TeamTable.exists()
 			PlayerTable.exists()
-			PlayerTurnTable.exists()
+			TurnTable.exists()
 		}
 	}
 
@@ -184,7 +183,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
-					model = player.toOutput(showGame = true, showTeam = true, showTurns = true)
+					model = player.toOutput(showGame = true, showTeam = true)
 				),
 				status = HttpStatusCode.OK
 			)

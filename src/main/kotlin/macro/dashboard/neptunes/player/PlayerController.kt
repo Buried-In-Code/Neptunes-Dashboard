@@ -26,7 +26,7 @@ internal object PlayerController {
 				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.search(gameID = gameID, alias = alias)
 				call.respond(
-					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
+					message = players.map { it.toOutput(showGame = false, showTeam = false) },
 					status = HttpStatusCode.OK
 				)
 			}
@@ -38,7 +38,7 @@ internal object PlayerController {
 				val player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				call.respond(
-					message = player.toOutput(showGame = true, showTeam = true, showTurns = true),
+					message = player.toOutput(showGame = true, showTeam = true),
 					status = HttpStatusCode.OK
 				)
 			}
@@ -55,7 +55,7 @@ internal object PlayerController {
 				player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				call.respond(
-					message = player.toOutput(showGame = true, showTeam = true, showTurns = true),
+					message = player.toOutput(showGame = true, showTeam = true),
 					status = HttpStatusCode.OK
 				)
 			}
