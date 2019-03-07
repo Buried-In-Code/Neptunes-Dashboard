@@ -19,6 +19,7 @@ dependencies {
 	implementation("org.jetbrains.exposed:exposed:0.12+")
 	implementation("khttp:khttp:0.1+")
 	implementation("com.mashape.unirest:unirest-java:1.4.9")
+	implementation("org.json:json:20140107")
 	implementation("org.apache.logging.log4j:log4j-api:2.11+")
 	runtimeOnly("org.apache.logging.log4j:log4j-core:2.11+")
 	runtimeOnly("org.apache.logging.log4j:log4j-slf4j18-impl:2.11+")

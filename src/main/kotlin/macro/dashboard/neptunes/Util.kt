@@ -4,7 +4,6 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import macro.dashboard.neptunes.backend.PlayerUpdate
-import macro.dashboard.neptunes.backend.UpdateDeserializer
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
@@ -27,7 +26,6 @@ object Util {
 	internal val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
-		.registerTypeAdapter(PlayerUpdate::class.java, UpdateDeserializer())
 		.create()
 	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)

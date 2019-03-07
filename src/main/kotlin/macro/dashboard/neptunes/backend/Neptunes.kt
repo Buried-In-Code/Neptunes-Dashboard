@@ -18,15 +18,14 @@ object Neptunes {
 	private val LOGGER = LogManager.getLogger(Neptunes::class.java)
 	private const val BASE_URL = "http://nptriton.cqproject.net/game"
 
-	fun getGame(gameID: Long) {
-		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = "X4UwIE")
+	fun getGame(gameID: Long, code: String) {
+		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
-			val valid = GameTable.insert(ID = gameID, update = game)
+			val valid = GameTable.insert(ID = gameID, code = code, update = game)
 			if(!valid)
 				GameTable.update(ID = gameID, update = game)
-			val players = response["Response"].toString().JsonToMap()["players"].toString().JsonToPlayerMap()
-			players.values.filterNotNull().forEach { update ->
+			game.players.values.forEach { update ->
 				PlayerTable.insert(gameID = gameID, update = update)
 				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
 					?: throw GeneralException()
@@ -45,63 +44,73 @@ object Neptunes {
 }
 
 data class GameUpdate(
-	@SerializedName(value = "name")
-	val name: String,
-	@SerializedName(value = "total_stars")
-	val totalStars: Int,
-	@SerializedName(value = "stars_for_victory")
-	val victoryStars: Int,
-	@SerializedName(value = "admin")
-	val admin: Int,
+	//fleets
 	@SerializedName(value = "fleet_speed")
 	val fleetSpeed: Double,
-	@SerializedName(value = "turn_based")
-	val turnBased: Int,
-	@SerializedName(value = "production_rate")
-	val productionRate: Int,
-	@SerializedName(value = "tick_rate")
-	val tickRate: Int,
-	@SerializedName(value = "start_time")
-	val startTime: Long,
-	@SerializedName(value = "game_over")
-	val gameOver: Int,
 	@SerializedName(value = "paused")
 	val isPaused: Boolean,
-	@SerializedName(value = "started")
-	val isStarted: Boolean,
-	@SerializedName(value = "trade_cost")
-	val tradeCost: Int,
 	@SerializedName(value = "productions")
 	val production: Int,
-	@SerializedName(value = "production_counter")
-	val productionCounter: Int,
-	@SerializedName(value = "tick")
-	val tick: Int,
 	@SerializedName(value = "tick_fragment")
 	val tickFragment: Int,
+	//now
+	@SerializedName(value = "tick_rate")
+	val tickRate: Int,
+	@SerializedName(value = "production_rate")
+	val productionRate: Int,
+	//stars
+	@SerializedName(value = "stars_for_victory")
+	val victoryStars: Int,
+	@SerializedName(value = "game_over")
+	val gameOver: Int,
+	@SerializedName(value = "started")
+	val isStarted: Boolean,
+	@SerializedName(value = "start_time")
+	val startTime: Long,
+	@SerializedName(value = "total_stars")
+	val totalStars: Int,
+	@SerializedName(value = "production_counter")
+	val productionCounter: Int,
 	@SerializedName(value = "trade_scanned")
 	val tradeScanned: Int,
-	@SerializedName(value = "war")
+	val tick: Int,
+	@SerializedName(value = "trade_cost")
+	val tradeCost: Int,
+	val name: String,
+	//player_uid
+	val admin: Int,
+	@SerializedName(value = "turn_based")
+	val turnBased: Int,
 	val war: Int,
+	val players: Map<String, PlayerUpdate>,
 	@SerializedName(value = "turn_based_time_out")
 	val turnBasedTimeout: Long
 )
 
 data class PlayerUpdate(
-	@SerializedName(value = "alias")
-	val alias: String,
-	@SerializedName(value = "total_economy")
-	val economy: Int,
 	@SerializedName(value = "total_industry")
 	val industry: Int,
+	val regard: Int,
 	@SerializedName(value = "total_science")
 	val science: Int,
+	val uid: Int,
+	val ai: Int,
+	val huid: Int,
 	@SerializedName(value = "total_stars")
 	val stars: Int,
 	@SerializedName(value = "total_fleets")
 	val fleet: Int,
 	@SerializedName(value = "total_strength")
 	val ships: Int,
-	@SerializedName(value = "conceded")
-	val isActive: Boolean
+	val alias: String,
+	//tech
+	val avatar: Int,
+	val conceded: Int,
+	val ready: Int,
+	@SerializedName(value = "total_economy")
+	val economy: Int,
+	@SerializedName(value = "missed_turns")
+	val missed: Int,
+	@SerializedName(value = "karma_to_give")
+	val karma: Int
 )

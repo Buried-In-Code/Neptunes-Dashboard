@@ -19,6 +19,7 @@ import java.time.ZoneId
  * Created by Macro303 on 2019-Feb-11.
  */
 object GameTable : LongIdTable(name = "Game") {
+	private val codeCol: Column<String> = text(name = "code")
 	private val nameCol: Column<String> = text(name = "name")
 	private val totalStarsCol: Column<Int> = integer(name = "totalStars")
 	private val victoryStarsCol: Column<Int> = integer(name = "victoryStars")
@@ -64,10 +65,11 @@ object GameTable : LongIdTable(name = "Game") {
 		}.sorted()
 	}
 
-	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query {
+	fun insert(ID: Long, code: String, update: GameUpdate): Boolean = Util.query {
 		try {
 			insert {
 				it[id] = EntityID(ID, GameTable)
+				it[codeCol] = code
 				it[nameCol] = update.name
 				it[totalStarsCol] = update.totalStars
 				it[victoryStarsCol] = update.victoryStars
@@ -116,6 +118,7 @@ object GameTable : LongIdTable(name = "Game") {
 
 	private fun ResultRow.parse() = Game(
 		ID = this[id].value,
+		code = this[codeCol],
 		name = this[nameCol],
 		totalStars = this[totalStarsCol],
 		victoryStars = this[victoryStarsCol],

@@ -71,7 +71,7 @@ object PlayerTurnTable : IntIdTable(name = "Player_Turns") {
 				it[starsCol] = update.stars
 				it[fleetCol] = update.fleet
 				it[shipsCol] = update.ships
-				it[isActiveCol] = update.isActive
+				it[isActiveCol] = update.conceded == 0
 			}
 			true
 		} catch (esqle: ExposedSQLException) {

@@ -35,10 +35,12 @@ internal object GameController {
 				val request = call.receiveOrNull<GameRequest>() ?: throw BadRequestException(message = "A body is required")
 				if(request.ID == 0L)
 					throw BadRequestException(message = "ID is required")
+				if(request.code == "")
+					throw BadRequestException(message = "code is required")
 				var found = GameTable.select(ID = request.ID)
 				if (found != null)
 					throw ConflictException(message = "A Game with the given ID: '${request.ID}' already exists")
-				Neptunes.getGame(gameID = request.ID)
+				Neptunes.getGame(gameID = request.ID, code = request.code)
 				found = GameTable.select(ID = request.ID)
 					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
 				call.respond(
@@ -70,7 +72,7 @@ internal object GameController {
 						?: throw BadRequestException(message = "Invalid ID")
 					var game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
-					Neptunes.getGame(gameID = game.ID)
+					Neptunes.getGame(gameID = game.ID, code = game.code)
 					game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					call.respond(
@@ -83,4 +85,4 @@ internal object GameController {
 	}
 }
 
-data class GameRequest(val ID: Long)
+data class GameRequest(val ID: Long, val code: String)
