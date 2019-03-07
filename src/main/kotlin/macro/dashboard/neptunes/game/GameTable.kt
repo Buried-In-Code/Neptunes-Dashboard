@@ -64,7 +64,7 @@ object GameTable : LongIdTable(name = "Game") {
 		}.sorted()
 	}
 
-	fun insert(ID: Long, update: GameUpdate) = Util.query {
+	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query {
 		try {
 			insert {
 				it[id] = EntityID(ID, GameTable)
@@ -92,7 +92,9 @@ object GameTable : LongIdTable(name = "Game") {
 				it[turnBasedTimeoutCol] = update.turnBasedTimeout
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
+			true
 		} catch (esqle: ExposedSQLException) {
+			false
 		}
 	}
 

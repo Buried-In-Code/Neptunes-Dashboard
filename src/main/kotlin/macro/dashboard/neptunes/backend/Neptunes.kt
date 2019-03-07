@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.Util.JsonToMap
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.PlayerTurnTable
@@ -18,27 +19,18 @@ object Neptunes {
 	private const val BASE_URL = "http://nptriton.cqproject.net/game"
 
 	fun getGame(gameID: Long) {
-		val response = RESTClient(baseUrl = BASE_URL, gameID = gameID).getRequest(endpoint = "/basic")
+		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = "X4UwIE")
 		if (response["Code"] == 200) {
-			val game = Util.GSON.fromJson<GameUpdate>(response["Data"].toString(), GameUpdate::class.java)
-			val current = GameTable.select(ID = gameID)
-			if (current == null)
-				GameTable.insert(ID = gameID, update = game)
-			else
+			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
+			val valid = GameTable.insert(ID = gameID, update = game)
+			if(!valid)
 				GameTable.update(ID = gameID, update = game)
-			getPlayers(gameID = gameID, tick = game.tick)
-		}
-	}
-
-	fun getPlayers(gameID: Long, tick: Int) {
-		val response = RESTClient(baseUrl = BASE_URL, gameID = gameID).getRequest(endpoint = "/players")
-		if (response["Code"] == 200) {
-			val players = response["Data"].toString().JsonToPlayerMap()
+			val players = response["Response"].toString().JsonToMap()["players"].toString().JsonToPlayerMap()
 			players.values.filterNotNull().forEach { update ->
 				PlayerTable.insert(gameID = gameID, update = update)
 				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
 					?: throw GeneralException()
-				PlayerTurnTable.insert(playerID = player.ID, tick = tick, update = update)
+				PlayerTurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
 			}
 		}
 	}
