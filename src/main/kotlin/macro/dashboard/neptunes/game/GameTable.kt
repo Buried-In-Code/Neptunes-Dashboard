@@ -103,12 +103,19 @@ object GameTable : LongIdTable(name = "Game") {
 	fun update(ID: Long, update: GameUpdate): Boolean = Util.query {
 		try {
 			update({ id eq ID }) {
+				it[startTimeCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault()
+				).toJodaDateTime()
+				it[productionCol] = update.production
 				it[isGameOverCol] = update.gameOver == 1
 				it[isPausedCol] = update.isPaused
 				it[isStartedCol] = update.isStarted
-				it[startTimeCol] =
-					LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault())
-						.toJodaDateTime()
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = update.turnBasedTimeout
 			}
 			true
 		} catch (esqle: ExposedSQLException) {
