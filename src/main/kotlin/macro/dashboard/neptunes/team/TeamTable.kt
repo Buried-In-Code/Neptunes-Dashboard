@@ -60,9 +60,27 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 	}
 
+	fun update(ID: Int, name: String): Boolean = Util.query {
+		try {
+			update({id eq ID}) {
+				it[nameCol] = name
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
 	private fun ResultRow.parse(): Team = Team(
 		ID = this[id].value,
 		gameID = this[gameCol].value,
 		name = this[nameCol]
 	)
+
+	fun Team.update(
+		name: String = this.name
+	) {
+		this.name = name
+		TeamTable.update(ID = this.ID, name = this.name)
+	}
 }

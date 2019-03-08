@@ -43,7 +43,7 @@ object RESTClient {
 				"code" to code
 			)
 		)
-		LOGGER.info("Status: ${response.statusCode}")
+		LOGGER.info("$url: ${response.statusCode}")
 		return mapOf(
 			"Code" to response.statusCode,
 			"Response" to response.jsonObject["scanning_data"].toString()
@@ -58,7 +58,7 @@ object RESTClient {
 			.header("User-Agent", "Neptune's Dashboard")
 			.body("--$boundary\r\nContent-Disposition: form-data; name=\"api_version\"\r\n\r\n0.1\r\n--$boundary\r\nContent-Disposition: form-data; name=\"game_number\"\r\n\r\n$gameID\r\n--$boundary\r\nContent-Disposition: form-data; name=\"code\"\r\n\r\n$code\r\n--$boundary--")
 			.asJson()
-		LOGGER.info("Status: ${response.status}")
+		LOGGER.info("$url: ${response.status}")
 		return mapOf(
 			"Code" to response.status,
 			"Response" to response.body.`object`["scanning_data"].toString()

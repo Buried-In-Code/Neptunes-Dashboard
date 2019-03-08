@@ -2,16 +2,16 @@ package macro.dashboard.neptunes.team
 
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
 import io.ktor.request.receiveOrNull
 import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
-import macro.dashboard.neptunes.*
+import io.ktor.routing.*
+import macro.dashboard.neptunes.BadRequestException
+import macro.dashboard.neptunes.ConflictException
+import macro.dashboard.neptunes.NotFoundException
+import macro.dashboard.neptunes.UnknownException
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.PlayerTable.update
+import macro.dashboard.neptunes.team.TeamTable.update
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
@@ -28,7 +28,12 @@ internal object TeamController {
 				val name = call.request.queryParameters["name"] ?: "%"
 				val teams = TeamTable.search(gameID = gameID, name = name)
 				call.respond(
-					message = teams.filterNot { it.getPlayers().isEmpty() }.map { it.toOutput(showGame = false, showPlayers = true) },
+					message = teams.filterNot { it.getPlayers().isEmpty() }.map {
+						it.toOutput(
+							showGame = false,
+							showPlayers = true
+						)
+					},
 					status = HttpStatusCode.OK
 				)
 			}
@@ -57,6 +62,23 @@ internal object TeamController {
 			get {
 				val ID = call.parameters["ID"]?.toIntOrNull()
 					?: throw BadRequestException(message = "Invalid ID")
+				val team = TeamTable.select(ID = ID)
+					?: throw NotFoundException(message = "No Team was found with the given ID '$ID'")
+				call.respond(
+					message = team.toOutput(showGame = true, showPlayers = true),
+					status = HttpStatusCode.OK
+				)
+			}
+			put {
+				val ID = call.parameters["ID"]?.toIntOrNull()
+					?: throw BadRequestException(message = "Invalid ID")
+				val request = call.receiveOrNull<TeamRequest>()
+					?: throw BadRequestException(message = "A body is required")
+				TeamTable.select(ID = ID)?.update(name = request.name)
+					?: throw NotFoundException(message = "No Team was found with the given ID '$ID'")
+				request.players.forEach { playerID ->
+					PlayerTable.select(ID = playerID)?.update(teamID = ID)
+				}
 				val team = TeamTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Team was found with the given ID '$ID'")
 				call.respond(

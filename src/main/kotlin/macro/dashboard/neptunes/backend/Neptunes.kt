@@ -23,7 +23,6 @@ object Neptunes {
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
 			val valid = GameTable.insert(ID = gameID, code = code, update = game)
-			LOGGER.info("Valid: $valid")
 			if(!valid)
 				GameTable.update(ID = gameID, update = game)
 			game.players.values.forEach { update ->
