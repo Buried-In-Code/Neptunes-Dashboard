@@ -27,13 +27,15 @@ object Neptunes {
 			if(!valid)
 				GameTable.update(ID = gameID, update = game)
 			game.players.values.forEach { update ->
-				PlayerTable.insert(gameID = gameID, update = update)
-				val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
-					?: throw GeneralException()
-				TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
-				val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
-				update.tech.forEach { name, tech ->
-					TechnologyTable.insert(turnID = turn.ID, name = name, update = tech)
+				if (update.alias.isNotBlank()) {
+					PlayerTable.insert(gameID = gameID, update = update)
+					val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
+						?: throw GeneralException()
+					TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
+					val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
+					update.tech.forEach { name, tech ->
+						TechnologyTable.insert(turnID = turn.ID, name = name, update = tech)
+					}
 				}
 			}
 		}
