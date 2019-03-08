@@ -35,7 +35,7 @@ data class Turn(
 	fun getIndustryTurn(): Double = industry * (getManufacturing().value + 5) / 24
 
 	override fun compareTo(other: Turn): Int {
-		return byPlayer.then(byTick).compare(this, other)
+		return byPlayer.thenDescending(byTick).compare(this, other)
 	}
 
 	fun toOutput(): Map<String, Any?> {

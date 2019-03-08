@@ -26,7 +26,7 @@ internal object PlayerController {
 				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.search(gameID = gameID, alias = alias)
 				call.respond(
-					message = players.map { it.toOutput(showGame = false, showTeam = false) },
+					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns=false) },
 					status = HttpStatusCode.OK
 				)
 			}

@@ -23,19 +23,21 @@ data class Player(
 		return byTeam.then(byAlias).compare(this, other)
 	}
 
-	fun toOutput(showGame: Boolean, showTeam: Boolean): Map<String, Any?> {
+	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean = true): Map<String, Any?> {
 		val output = mapOf(
 			"ID" to ID,
 			"alias" to alias,
 			"name" to name,
 			"game" to gameID,
 			"team" to getTeam().name,
-			"turns" to getTurns().map { it.toOutput() }
+			"turns" to getTurns().first().toOutput()
 		).toMutableMap()
 		if (showGame)
 			output["game"] = getGame().toOutput()
 		if (showTeam)
 			output["team"] = getTeam().toOutput(showGame = false, showPlayers = false)
+		if(showTurns)
+			output["turns"] = getTurns().map { it.toOutput() }
 		return output.toSortedMap()
 	}
 
