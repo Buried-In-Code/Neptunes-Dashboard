@@ -59,7 +59,7 @@ data class Turn(
 				"weapons" to getWeapons().level,
 				"banking" to getBanking().level,
 				"manufacturing" to getManufacturing().level
-			)
+			).toSortedMap()
 		).toMutableMap()
 		return output.toSortedMap()
 	}
