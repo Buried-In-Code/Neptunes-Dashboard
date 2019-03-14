@@ -2,15 +2,15 @@ package macro.dashboard.neptunes.game
 
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.receive
-import io.ktor.request.receiveOrNull
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import io.ktor.routing.put
+import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
-import macro.dashboard.neptunes.ConflictException
 import macro.dashboard.neptunes.NotFoundException
-import macro.dashboard.neptunes.UnknownException
 import macro.dashboard.neptunes.backend.Neptunes
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -29,23 +29,6 @@ internal object GameController {
 				call.respond(
 					message = games.map { it.toOutput() },
 					status = HttpStatusCode.OK
-				)
-			}
-			post {
-				val request = call.receiveOrNull<GameRequest>() ?: throw BadRequestException(message = "A body is required")
-				if(request.ID == 0L)
-					throw BadRequestException(message = "ID is required")
-				if(request.code == "")
-					throw BadRequestException(message = "code is required")
-				var found = GameTable.select(ID = request.ID)
-				if (found != null)
-					throw ConflictException(message = "A Game with the given ID: '${request.ID}' already exists")
-				Neptunes.getGame(gameID = request.ID, code = request.code)
-				found = GameTable.select(ID = request.ID)
-					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
-				call.respond(
-					message = found.toOutput(),
-					status = HttpStatusCode.Created
 				)
 			}
 			get(path = "/latest") {
@@ -72,7 +55,7 @@ internal object GameController {
 						?: throw BadRequestException(message = "Invalid ID")
 					var game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
-					Neptunes.getGame(gameID = game.ID, code = game.code)
+					Neptunes.getGame(gameID = game.ID, code = CONFIG.games[game.ID] ?: "")
 					game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					call.respond(
@@ -84,5 +67,3 @@ internal object GameController {
 		}
 	}
 }
-
-data class GameRequest(val ID: Long, val code: String)

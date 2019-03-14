@@ -18,7 +18,8 @@ class Config internal constructor(
 	serverAddress: String? = null,
 	serverPort: Int? = null,
 	val proxyHostname: String? = null,
-	val proxyPort: Int? = null
+	val proxyPort: Int? = null,
+	games: Map<Long, String>? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
 		null -> File("Neptunes-Dashboard.db")
@@ -31,6 +32,7 @@ class Config internal constructor(
 			null
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
+	val games: Map<Long, String> = games ?: mapOf(1L to "Key")
 
 	fun toMap(): Map<*, *> {
 		val data = mapOf(
@@ -42,7 +44,8 @@ class Config internal constructor(
 			"Proxy" to mapOf(
 				"Host Name" to proxyHostname,
 				"Port" to proxyPort
-			)
+			),
+			"Games" to games.toSortedMap()
 		)
 		return data.toSortedMap()
 	}
@@ -94,12 +97,14 @@ class Config internal constructor(
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
+			val games = data["Games"] as Map<Long, String>?
 			return Config(
 				databaseFile = databaseFile,
 				serverAddress = serverAddress,
 				serverPort = serverPort,
 				proxyHostname = proxyHostname,
-				proxyPort = proxyPort
+				proxyPort = proxyPort,
+				games = games
 			)
 		}
 	}

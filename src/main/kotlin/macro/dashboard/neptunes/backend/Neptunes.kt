@@ -22,7 +22,7 @@ object Neptunes {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
-			val valid = GameTable.insert(ID = gameID, code = code, update = game)
+			val valid = GameTable.insert(ID = gameID, update = game)
 			if(!valid)
 				GameTable.update(ID = gameID, update = game)
 			game.players.values.forEach { update ->
@@ -38,14 +38,6 @@ object Neptunes {
 				}
 			}
 		}
-	}
-
-	@Throws(JsonSyntaxException::class)
-	private fun String.JsonToPlayerMap(): Map<String, PlayerUpdate?> {
-		if (this.isBlank()) return emptyMap()
-		val type = object : TypeToken<Map<String, PlayerUpdate?>>() {
-		}.type
-		return Util.GSON.fromJson(this, type) ?: emptyMap()
 	}
 }
 

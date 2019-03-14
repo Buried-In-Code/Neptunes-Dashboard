@@ -10,7 +10,6 @@ import java.time.LocalDateTime
  */
 data class Game(
 	val ID: Long,
-	val code: String,
 	val name: String,
 	val totalStars: Int,
 	val victoryStars: Int,
