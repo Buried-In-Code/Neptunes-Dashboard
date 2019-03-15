@@ -18,24 +18,42 @@ data class Turn(
 	var fleet: Int,
 	var ships: Int,
 	var isActive: Boolean
-) : Comparable<Turn> {
+) {
 
-	fun getPlayer() = PlayerTable.select(ID = playerID) ?: throw GeneralException()
-	fun getTechnology() = TechnologyTable.searchByTurn(turnID = ID)
+	val player: Player by lazy {
+		PlayerTable.select(ID = playerID) ?: throw GeneralException()
+	}
+	val technology: List<Technology> by lazy {
+		TechnologyTable.searchByTurn(turnID = ID)
+	}
 
-	fun getScanning(): Technology = getTechnology().first { it.name == "scanning" }
-	fun getHyperspace(): Technology = getTechnology().first { it.name == "propulsion" }
-	fun getTerraforming(): Technology = getTechnology().first { it.name == "terraforming" }
-	fun getExperimentation(): Technology = getTechnology().first { it.name == "research" }
-	fun getWeapons(): Technology = getTechnology().first { it.name == "weapons" }
-	fun getBanking(): Technology = getTechnology().first { it.name == "banking" }
-	fun getManufacturing(): Technology = getTechnology().first { it.name == "manufacturing" }
+	val scanning: Technology by lazy {
+		technology.first { it.name == "scanning" }
+	}
+	val hyperspace: Technology by lazy {
+		technology.first { it.name == "propulsion" }
+	}
+	val terraforming: Technology by lazy {
+		technology.first { it.name == "terraforming" }
+	}
+	val experimentation: Technology by lazy {
+		technology.first { it.name == "research" }
+	}
+	val weapons: Technology by lazy {
+		technology.first { it.name == "weapons" }
+	}
+	val banking: Technology by lazy {
+		technology.first { it.name == "banking" }
+	}
+	val manufacturing: Technology by lazy {
+		technology.first { it.name == "manufacturing" }
+	}
 
-	fun getEconomyTurn(): Double = economy * 10 + getBanking().value * 75
-	fun getIndustryTurn(): Double = industry * (getManufacturing().value + 5) / 24
-
-	override fun compareTo(other: Turn): Int {
-		return byPlayer.thenDescending(byTick).compare(this, other)
+	val economyPerTurn: Double by lazy {
+		economy * 10 + banking.value * 75
+	}
+	val industryPerTurn: Double by lazy {
+		industry * (manufacturing.value + 5) / 24
 	}
 
 	fun toOutput(): Map<String, Any?> {
@@ -49,23 +67,18 @@ data class Turn(
 			"fleet" to fleet,
 			"ships" to ships,
 			"isActive" to isActive,
-			"economyTurn" to getEconomyTurn(),
-			"industryTurn" to getIndustryTurn(),
+			"economyPerTurn" to economyPerTurn,
+			"industryPerTurn" to industryPerTurn,
 			"tech" to mapOf(
-				"scanning" to getScanning().level,
-				"hyperspace" to getHyperspace().level,
-				"terraforming" to getTerraforming().level,
-				"experimentation" to getExperimentation().level,
-				"weapons" to getWeapons().level,
-				"banking" to getBanking().level,
-				"manufacturing" to getManufacturing().level
+				"scanning" to scanning.level,
+				"hyperspace" to hyperspace.level,
+				"terraforming" to terraforming.level,
+				"experimentation" to experimentation.level,
+				"weapons" to weapons.level,
+				"banking" to banking.level,
+				"manufacturing" to manufacturing.level
 			).toSortedMap()
 		).toMutableMap()
 		return output.toSortedMap()
-	}
-
-	companion object {
-		internal val byPlayer = compareBy(Turn::getPlayer)
-		internal val byTick = compareBy(Turn::tick)
 	}
 }

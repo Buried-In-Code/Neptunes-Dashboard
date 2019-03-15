@@ -9,11 +9,13 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.NotImplementedException
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2019-Jan-25.
  */
-internal object ConfigRouter {
+internal object ConfigController {
+	private val LOGGER = LogManager.getLogger()
 
 	fun Route.settingRoutes() {
 		route(path = "/settings") {

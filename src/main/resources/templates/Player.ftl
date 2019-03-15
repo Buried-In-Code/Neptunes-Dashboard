@@ -30,49 +30,49 @@
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Stars</div>
-				<div class="description">${turns[0].stars}</div>
+				<div class="description">${turns.stars}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Ships</div>
-				<div class="description">${turns[0].ships}</div>
+				<div class="description">${turns.ships}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Fleet</div>
-				<div class="description">${turns[0].fleet}</div>
+				<div class="description">${turns.fleet}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Economy</div>
-				<div class="description">${turns[0].economy}</div>
+				<div class="description">${turns.economy}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">$ Per Turn</div>
-				<div class="description"><i>${turns[0].economyTurn}</i></div>
+				<div class="description"><i>${turns.economyPerTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Industry</div>
-				<div class="description">${turns[0].industry}</div>
+				<div class="description">${turns.industry}</div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Ships Per Turn</div>
-				<div class="description"><i>${turns[0].industryTurn}</i></div>
+				<div class="description"><i>${turns.industryPerTurn}</i></div>
 			</div>
 		</div>
 		<div class="ui orange card opacity">
 			<div class="content">
 				<div class="header">Science</div>
-				<div class="description">${turns[0].science}</div>
+				<div class="description">${turns.science}</div>
 			</div>
 		</div>
 	</div>

@@ -3,11 +3,13 @@ package macro.dashboard.neptunes.team
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.player.PlayerTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import java.time.LocalDateTime
 
 /**
  * Created by Macro303 on 2019-Feb-11.
@@ -24,30 +26,30 @@ object TeamTable : IntIdTable(name = "Team") {
 	private val LOGGER = LogManager.getLogger(TeamTable::class.java)
 
 	init {
-		Util.query {
+		Util.query(description = "Create Team table") {
 			uniqueIndex(gameCol, nameCol)
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun select(ID: Int): Team? = Util.query {
+	fun select(ID: Int): Team? = Util.query(description = "Select Team by ID") {
 		select {
 			id eq ID
-		}.map {
+		}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted().firstOrNull()
+		}.firstOrNull()
 	}
 
-	fun search(gameID: Long? = null, name: String = "%"): List<Team> = Util.query {
+	fun search(gameID: Long? = null, name: String = "%"): List<Team> = Util.query(description = "Search for Teams from Game: $gameID with name: $name") {
 		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select{
 			gameCol eq temp and(nameCol like name)
-		}.map {
+		}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted()
+		}
 	}
 
-	fun insert(gameID: Long?, name: String): Boolean = Util.query {
+	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
 		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		try {
 			insert {
@@ -60,7 +62,7 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 	}
 
-	fun update(ID: Int, name: String): Boolean = Util.query {
+	fun update(ID: Int, name: String): Boolean = Util.query(description = "Update Team") {
 		try {
 			update({id eq ID}) {
 				it[nameCol] = name

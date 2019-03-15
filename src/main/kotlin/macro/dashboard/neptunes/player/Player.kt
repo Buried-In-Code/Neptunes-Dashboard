@@ -1,7 +1,9 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
 
 /**
@@ -13,14 +15,19 @@ data class Player(
 	var teamID: Int,
 	val alias: String,
 	var name: String? = null
-) : Comparable<Player> {
+) {
 
-	fun getGame() = GameTable.select(ID = gameID) ?: throw GeneralException()
-	fun getTeam() = TeamTable.select(ID = teamID) ?: throw GeneralException()
-	fun getTurns() = TurnTable.searchByPlayer(playerID = ID)
-
-	override fun compareTo(other: Player): Int {
-		return byTeam.then(byAlias).compare(this, other)
+	val game: Game by lazy {
+		GameTable.select(ID = gameID) ?: throw GeneralException()
+	}
+	val team: Team by lazy {
+		TeamTable.select(ID = teamID) ?: throw GeneralException()
+	}
+	val turns: List<Turn> by lazy {
+		TurnTable.searchByPlayer(playerID = ID)
+	}
+	val latestTurn: Turn by lazy {
+		TurnTable.searchLatestByPlayer(playerID = ID) ?: throw GeneralException()
 	}
 
 	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean = true): Map<String, Any?> {
@@ -29,20 +36,15 @@ data class Player(
 			"alias" to alias,
 			"name" to name,
 			"game" to gameID,
-			"team" to getTeam().name,
-			"turns" to getTurns().first().toOutput()
+			"team" to team.name,
+			"turns" to latestTurn.toOutput()
 		).toMutableMap()
 		if (showGame)
-			output["game"] = getGame().toOutput()
+			output["game"] = game.toOutput()
 		if (showTeam)
-			output["team"] = getTeam().toOutput(showGame = false, showPlayers = false)
-		if(showTurns)
-			output["turns"] = getTurns().map { it.toOutput() }
+			output["team"] = team.toOutput(showGame = false, showPlayers = false)
+		if (showTurns)
+			output["turns"] = turns.map { it.toOutput() }
 		return output.toSortedMap()
-	}
-
-	companion object {
-		internal val byTeam = compareBy(Player::getTeam)
-		internal val byAlias = compareBy(String.CASE_INSENSITIVE_ORDER, Player::alias)
 	}
 }

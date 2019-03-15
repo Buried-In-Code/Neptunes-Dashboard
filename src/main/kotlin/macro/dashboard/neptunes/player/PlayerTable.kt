@@ -33,38 +33,38 @@ object PlayerTable : IntIdTable(name = "Player") {
 	private val LOGGER = LogManager.getLogger(PlayerTable::class.java)
 
 	init {
-		Util.query {
+		Util.query(description = "Create Player table") {
 			uniqueIndex(gameCol, aliasCol)
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun select(ID: Int): Player? = Util.query {
+	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
 		select {
 			id eq ID
-		}.map {
+		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted().firstOrNull()
+		}.firstOrNull()
 	}
 
-	fun search(gameID: Long? = null, alias: String = ""): List<Player> = Util.query {
+	fun search(gameID: Long? = null, alias: String = ""): List<Player> = Util.query(description = "Search for Players from Game: $gameID with alias: $alias") {
 		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
 		select {
 			gameCol eq temp and (aliasCol like "%$alias%")
-		}.map {
+		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted()
+		}
 	}
 
-	fun searchByTeam(teamID: Int): List<Player> = Util.query {
+	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
 		select {
 			teamCol eq teamID
-		}.map {
+		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted()
+		}
 	}
 
-	fun insert(gameID: Long, update: PlayerUpdate): Boolean = Util.query {
+	fun insert(gameID: Long, update: PlayerUpdate): Boolean = Util.query(description = "Insert Player") {
 		val teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID
 			?: throw GeneralException()
 		try {
@@ -79,7 +79,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun update(ID: Int, teamID: Int, name: String?) = Util.query {
+	fun update(ID: Int, teamID: Int, name: String?) = Util.query(description = "Update Player") {
 		try {
 			update({ id eq ID }) {
 				it[teamCol] = EntityID(id = teamID, table = TeamTable)

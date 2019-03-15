@@ -23,7 +23,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Server.LOGGER
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
-import macro.dashboard.neptunes.config.ConfigRouter.settingRoutes
+import macro.dashboard.neptunes.config.ConfigController.settingRoutes
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
@@ -54,7 +54,7 @@ object Server {
 	}
 
 	private fun checkDatabase() {
-		Util.query {
+		Util.query(description = "Check All Tables Exist") {
 			GameTable.exists()
 			TeamTable.exists()
 			PlayerTable.exists()
@@ -183,7 +183,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
-					model = player.toOutput(showGame = true, showTeam = true)
+					model = player.toOutput(showGame = true, showTeam = true, showTurns = false)
 				),
 				status = HttpStatusCode.OK
 			)

@@ -27,29 +27,29 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	private val LOGGER = LogManager.getLogger(TurnTable::class.java)
 
 	init {
-		Util.query {
+		Util.query(description = "Create Tech table") {
 			uniqueIndex(turnCol, nameCol)
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun select(ID: Int): Technology? = Util.query {
+	fun select(ID: Int): Technology? = Util.query(description = "Select Tech by ID: $ID") {
 		select {
 			id eq ID
-		}.map {
+		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted().firstOrNull()
+		}.firstOrNull()
 	}
 
-	fun searchByTurn(turnID: Int): List<Technology> = Util.query {
+	fun searchByTurn(turnID: Int): List<Technology> = Util.query(description = "Search for Techs at Turn: $turnID") {
 		select {
 			turnCol eq turnID
-		}.map {
+		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
 			it.parse()
-		}.sorted()
+		}
 	}
 
-	fun insert(turnID: Int, name: String, update: TechUpdate): Boolean = Util.query {
+	fun insert(turnID: Int, name: String, update: TechUpdate): Boolean = Util.query(description = "Insert Tech") {
 		try {
 			insert {
 				it[turnCol] = EntityID(id = turnID, table = TurnTable)

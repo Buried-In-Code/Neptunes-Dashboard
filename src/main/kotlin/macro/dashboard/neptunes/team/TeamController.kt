@@ -28,7 +28,7 @@ internal object TeamController {
 				val name = call.request.queryParameters["name"] ?: "%"
 				val teams = TeamTable.search(gameID = gameID, name = name)
 				call.respond(
-					message = teams.filterNot { it.getPlayers().isEmpty() }.map {
+					message = teams.filterNot { it.players.isEmpty() }.map {
 						it.toOutput(
 							showGame = false,
 							showPlayers = true
@@ -49,9 +49,6 @@ internal object TeamController {
 				TeamTable.insert(gameID = gameID, name = request.name)
 				found = TeamTable.search(gameID = gameID, name = request.name).firstOrNull()
 					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
-				request.players.forEach { playerID ->
-					PlayerTable.select(ID = playerID)?.update(teamID = found.ID)
-				}
 				call.respond(
 					message = found.toOutput(showGame = true, showPlayers = true),
 					status = HttpStatusCode.Created
@@ -74,11 +71,10 @@ internal object TeamController {
 					?: throw BadRequestException(message = "Invalid ID")
 				val request = call.receiveOrNull<TeamRequest>()
 					?: throw BadRequestException(message = "A body is required")
+				if (request.name == "")
+					throw BadRequestException(message = "name is required")
 				TeamTable.select(ID = ID)?.update(name = request.name)
 					?: throw NotFoundException(message = "No Team was found with the given ID '$ID'")
-				request.players.forEach { playerID ->
-					PlayerTable.select(ID = playerID)?.update(teamID = ID)
-				}
 				val team = TeamTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Team was found with the given ID '$ID'")
 				call.respond(
@@ -90,4 +86,4 @@ internal object TeamController {
 	}
 }
 
-class TeamRequest(val name: String, val players: List<Int> = emptyList())
+class TeamRequest(val name: String)

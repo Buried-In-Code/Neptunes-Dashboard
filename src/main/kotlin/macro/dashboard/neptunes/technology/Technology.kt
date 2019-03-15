@@ -1,6 +1,7 @@
 package macro.dashboard.neptunes.technology
 
 import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.player.Turn
 import macro.dashboard.neptunes.player.TurnTable
 
 /**
@@ -12,11 +13,10 @@ data class Technology(
 	val name: String,
 	val value: Double,
 	val level: Int
-) : Comparable<Technology> {
-	fun getTurn() = TurnTable.select(ID = turnID) ?: throw GeneralException()
+) {
 
-	override fun compareTo(other: Technology): Int {
-		return byTurn.then(byName).compare(this, other)
+	val turn: Turn by lazy {
+		TurnTable.select(ID = turnID) ?: throw GeneralException()
 	}
 
 	fun toOutput(): Map<String, Any?> {
@@ -28,10 +28,5 @@ data class Technology(
 			"level" to level
 		).toMutableMap()
 		return output.toSortedMap()
-	}
-
-	companion object {
-		internal val byTurn = compareBy(Technology::getTurn)
-		internal val byName = compareBy(Technology::name)
 	}
 }

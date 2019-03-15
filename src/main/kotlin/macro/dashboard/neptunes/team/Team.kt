@@ -13,20 +13,32 @@ data class Team(
 	val ID: Int,
 	val gameID: Long,
 	var name: String
-) : Comparable<Team> {
+) {
 
-	fun getGame(): Game = GameTable.select(ID = gameID) ?: throw GeneralException()
-	fun getPlayers(): List<Player> = PlayerTable.searchByTeam(teamID = ID)
+	val game: Game by lazy{
+		GameTable.select(ID = gameID) ?: throw GeneralException()
+	}
+	val players: List<Player> by lazy{
+		PlayerTable.searchByTeam(teamID = ID)
+	}
 
-	fun getTotalEconomy() = getPlayers().sumBy { it.getTurns().first().economy }
-	fun getTotalIndustry() = getPlayers().sumBy { it.getTurns().first().industry }
-	fun getTotalScience() = getPlayers().sumBy { it.getTurns().first().science }
-	fun getTotalStars() = getPlayers().sumBy { it.getTurns().first().stars }
-	fun getTotalFleet() = getPlayers().sumBy { it.getTurns().first().fleet }
-	fun getTotalShips() = getPlayers().sumBy { it.getTurns().first().ships }
-
-	override fun compareTo(other: Team): Int {
-		return byName.compare(this, other)
+	val totalEconomy: Int by lazy{
+		players.sumBy { it.latestTurn.economy }
+	}
+	val totalIndustry: Int by lazy{
+		players.sumBy { it.latestTurn.industry }
+	}
+	val totalScience: Int by lazy{
+		players.sumBy { it.latestTurn.science }
+	}
+	val totalStars: Int by lazy{
+		players.sumBy { it.latestTurn.stars }
+	}
+	val totalFleet: Int by lazy{
+		players.sumBy { it.latestTurn.fleet }
+	}
+	val totalShips: Int by lazy{
+		players.sumBy { it.latestTurn.ships }
 	}
 
 	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any> {
@@ -34,22 +46,18 @@ data class Team(
 			"ID" to ID,
 			"name" to name,
 			"game" to gameID,
-			"players" to getPlayers().map { it.ID },
-			"totalEconomy" to getTotalEconomy(),
-			"totalIndustry" to getTotalIndustry(),
-			"totalScience" to getTotalScience(),
-			"totalStars" to getTotalStars(),
-			"totalFleet" to getTotalFleet(),
-			"totalShips" to getTotalShips()
+			"players" to players.map { it.ID },
+			"totalEconomy" to totalEconomy,
+			"totalIndustry" to totalIndustry,
+			"totalScience" to totalScience,
+			"totalStars" to totalStars,
+			"totalFleet" to totalFleet,
+			"totalShips" to totalShips
 		).toMutableMap()
 		if (showGame)
-			output["game"] = getGame().toOutput()
+			output["game"] = game.toOutput()
 		if (showPlayers)
-			output["players"] = getPlayers().map { it.toOutput(showGame = false, showTeam = false) }
+			output["players"] = players.map { it.toOutput(showGame = false, showTeam = false) }
 		return output.toSortedMap()
-	}
-
-	companion object {
-		internal val byName = compareBy(String.CASE_INSENSITIVE_ORDER, Team::name)
 	}
 }

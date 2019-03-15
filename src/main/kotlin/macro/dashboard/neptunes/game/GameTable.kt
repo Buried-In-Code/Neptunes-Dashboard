@@ -43,28 +43,28 @@ object GameTable : LongIdTable(name = "Game") {
 	private val LOGGER = LogManager.getLogger(GameTable::class.java)
 
 	init {
-		Util.query {
+		Util.query(description = "Create Game table") {
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun select(ID: Long): Game? = Util.query {
+	fun select(ID: Long): Game? = Util.query(description = "Select Game by ID: $ID") {
 		select {
 			id eq ID
-		}.map {
+		}.orderBy(startTimeCol, SortOrder.DESC).map {
 			it.parse()
-		}.sorted().firstOrNull()
+		}.firstOrNull()
 	}
 
-	fun search(name: String = ""): List<Game> = Util.query {
+	fun search(name: String = ""): List<Game> = Util.query(description = "Search for Games with name: $name") {
 		select {
 			nameCol like "%$name%"
-		}.map {
+		}.orderBy(startTimeCol, SortOrder.DESC).map {
 			it.parse()
-		}.sorted()
+		}
 	}
 
-	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query {
+	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Insert Game") {
 		try {
 			insert {
 				it[id] = EntityID(ID, GameTable)
@@ -98,7 +98,7 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun update(ID: Long, update: GameUpdate): Boolean = Util.query {
+	fun update(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Update Game") {
 		try {
 			update({ id eq ID }) {
 				it[startTimeCol] = LocalDateTime.ofInstant(

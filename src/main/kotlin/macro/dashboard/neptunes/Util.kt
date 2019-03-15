@@ -15,6 +15,7 @@ import org.joda.time.format.DateTimeFormat
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 /**
  * Created by Macro303 on 2018-Nov-12.
@@ -30,8 +31,9 @@ object Util {
 	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
 	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)
 
-	internal fun <T> query(block: () -> T): T {
-		return transaction(
+	internal fun <T> query(description: String, block: () -> T): T {
+		val startTime = LocalDateTime.now()
+		val transaction = transaction(
 			transactionIsolation = Connection.TRANSACTION_SERIALIZABLE,
 			repetitionAttempts = 1,
 			db = database
@@ -39,6 +41,8 @@ object Util {
 			addLogger(Slf4jSqlDebugLogger)
 			block()
 		}
+		LOGGER.debug("Took ${ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())}ms to $description")
+		return transaction
 	}
 
 	@Throws(JsonSyntaxException::class)

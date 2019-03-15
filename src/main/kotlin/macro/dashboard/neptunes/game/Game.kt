@@ -30,11 +30,7 @@ data class Game(
 	var tradeScanned: Int,
 	var war: Int,
 	var turnBasedTimeout: Long
-) : Comparable<Game> {
-
-	override fun compareTo(other: Game): Int {
-		return byStartTime.reversed().compare(this, other)
-	}
+) {
 
 	fun toOutput(): Map<String, Any?> {
 		val output = mapOf(
@@ -49,12 +45,8 @@ data class Game(
 			"isStarted" to isStarted,
 			"tick" to tick,
 			"players" to PlayerTable.search(gameID = ID).size,
-			"teams" to TeamTable.search(gameID = ID).filterNot { it.getPlayers().isEmpty() }.size
+			"teams" to TeamTable.search(gameID = ID).filterNot { it.players.isEmpty() }.size
 		).toMutableMap()
 		return output.toSortedMap()
-	}
-
-	companion object {
-		val byStartTime = compareBy(Game::startTime)
 	}
 }
