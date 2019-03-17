@@ -30,7 +30,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 	private val aliasCol: Column<String> = text(name = "alias")
 	private val nameCol: Column<String?> = text(name = "name").nullable()
 
-	private val LOGGER = LogManager.getLogger(PlayerTable::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	init {
 		Util.query(description = "Create Player table") {
@@ -47,14 +47,15 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}.firstOrNull()
 	}
 
-	fun search(gameID: Long? = null, alias: String = ""): List<Player> = Util.query(description = "Search for Players from Game: $gameID with alias: $alias") {
-		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
-		select {
-			gameCol eq temp and (aliasCol like "%$alias%")
-		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-			it.parse()
+	fun search(gameID: Long? = null, alias: String = ""): List<Player> =
+		Util.query(description = "Search for Players from Game: $gameID with alias: $alias") {
+			val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+			select {
+				gameCol eq temp and (aliasCol like "%$alias%")
+			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
+				it.parse()
+			}
 		}
-	}
 
 	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
 		select {

@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object PlayerController {
-	private val LOGGER = LogManager.getLogger(PlayerController::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
@@ -26,7 +26,7 @@ internal object PlayerController {
 				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.search(gameID = gameID, alias = alias)
 				call.respond(
-					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns=false) },
+					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
 					status = HttpStatusCode.OK
 				)
 			}

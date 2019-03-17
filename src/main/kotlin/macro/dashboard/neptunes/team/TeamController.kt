@@ -9,17 +9,14 @@ import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.ConflictException
 import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.UnknownException
-import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.player.PlayerTable.update
 import macro.dashboard.neptunes.team.TeamTable.update
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object TeamController {
-	private val LOGGER: Logger = LogManager.getLogger(TeamController::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	fun Route.teamRoutes() {
 		route(path = "/{gameID}/teams") {

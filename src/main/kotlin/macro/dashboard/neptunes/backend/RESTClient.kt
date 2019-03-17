@@ -3,23 +3,14 @@ package macro.dashboard.neptunes.backend
 import com.mashape.unirest.http.Unirest
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.http.HttpHost
-import org.apache.http.auth.AuthScope
-import org.apache.http.auth.UsernamePasswordCredentials
-import org.apache.http.impl.client.BasicCredentialsProvider
-import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.client.ProxyAuthenticationStrategy
 import org.apache.logging.log4j.LogManager
-import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.Charset
 import khttp.post as httpPost
 
 /**
  * Created by Macro303 on 2019-Feb-26.
  */
 object RESTClient {
-	private val LOGGER = LogManager.getLogger(RESTClient::class.java)
+	private val LOGGER = LogManager.getLogger()
 	private val HEADERS = mapOf(
 		"Content-Type" to "application/json",
 		"User-Agent" to "Neptune's Dashboard"
@@ -50,7 +41,7 @@ object RESTClient {
 		)
 	}
 
-	private fun unirestRequest(url: String, gameID: Long, code: String): Map<String, Any>{
+	private fun unirestRequest(url: String, gameID: Long, code: String): Map<String, Any> {
 		Unirest.setProxy(HttpHost(CONFIG.proxyHostname, CONFIG.proxyPort!!))
 		val boundary = "===${System.currentTimeMillis()}==="
 		val response = Unirest.post(url)

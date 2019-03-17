@@ -3,7 +3,6 @@ package macro.dashboard.neptunes
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import macro.dashboard.neptunes.backend.PlayerUpdate
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
@@ -21,7 +20,7 @@ import java.time.temporal.ChronoUnit
  * Created by Macro303 on 2018-Nov-12.
  */
 object Util {
-	private val LOGGER = LogManager.getLogger(Util::class.java)
+	private val LOGGER = LogManager.getLogger()
 	private const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
 	internal val GSON = GsonBuilder()

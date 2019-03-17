@@ -1,8 +1,6 @@
 package macro.dashboard.neptunes.backend
 
-import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
-import com.google.gson.reflect.TypeToken
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
@@ -15,7 +13,7 @@ import org.apache.logging.log4j.LogManager
  * Created by Macro303 on 2019-Feb-26.
  */
 object Neptunes {
-	private val LOGGER = LogManager.getLogger(Neptunes::class.java)
+	private val LOGGER = LogManager.getLogger()
 	private const val BASE_URL = "http://nptriton.cqproject.net/game"
 
 	fun getGame(gameID: Long, code: String) {
@@ -23,7 +21,7 @@ object Neptunes {
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
-			if(!valid)
+			if (!valid)
 				GameTable.update(ID = gameID, update = game)
 			game.players.values.forEach { update ->
 				if (update.alias.isNotBlank()) {

@@ -27,7 +27,7 @@ object TurnTable : IntIdTable(name = "Turn") {
 	private val shipsCol: Column<Int> = integer(name = "ships")
 	private val isActiveCol: Column<Boolean> = bool(name = "isActive")
 
-	private val LOGGER = LogManager.getLogger(TurnTable::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	init {
 		Util.query(description = "Create Turn table") {
@@ -44,13 +44,14 @@ object TurnTable : IntIdTable(name = "Turn") {
 		}.firstOrNull()
 	}
 
-	fun select(playerID: Int, tick: Int): Turn? = Util.query(description = "Select Turn by Player: $playerID and Tick: $tick") {
-		select {
-			playerCol eq playerID and(tickCol eq tick)
-		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).map {
-			it.parse()
-		}.firstOrNull()
-	}
+	fun select(playerID: Int, tick: Int): Turn? =
+		Util.query(description = "Select Turn by Player: $playerID and Tick: $tick") {
+			select {
+				playerCol eq playerID and (tickCol eq tick)
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).map {
+				it.parse()
+			}.firstOrNull()
+		}
 
 	fun searchByTick(tick: Int): List<Turn> = Util.query(description = "Search for Turns at Tick: $tick") {
 		select {
@@ -60,13 +61,14 @@ object TurnTable : IntIdTable(name = "Turn") {
 		}
 	}
 
-	fun searchLatestByPlayer(playerID: Int): Turn? = Util.query(description = "Search for Latest Turn by Player: $playerID") {
-		select {
-			playerCol eq playerID
-		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).map {
-			it.parse()
-		}.firstOrNull()
-	}
+	fun searchLatestByPlayer(playerID: Int): Turn? =
+		Util.query(description = "Search for Latest Turn by Player: $playerID") {
+			select {
+				playerCol eq playerID
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).map {
+				it.parse()
+			}.firstOrNull()
+		}
 
 	fun searchByPlayer(playerID: Int): List<Turn> = Util.query(description = "Search for Turns by Player: $playerID") {
 		select {

@@ -19,6 +19,7 @@ import java.time.ZoneId
  * Created by Macro303 on 2019-Feb-11.
  */
 object GameTable : LongIdTable(name = "Game") {
+	private val codeCol: Column<String> = text(name = "code")
 	private val nameCol: Column<String> = text(name = "name")
 	private val totalStarsCol: Column<Int> = integer(name = "totalStars")
 	private val victoryStarsCol: Column<Int> = integer(name = "victoryStars")
@@ -40,7 +41,7 @@ object GameTable : LongIdTable(name = "Game") {
 	private val warCol: Column<Int> = integer(name = "war")
 	private val turnBasedTimeoutCol: Column<Long> = long(name = "turnBasedTimeout")
 
-	private val LOGGER = LogManager.getLogger(GameTable::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	init {
 		Util.query(description = "Create Game table") {
@@ -68,6 +69,7 @@ object GameTable : LongIdTable(name = "Game") {
 		try {
 			insert {
 				it[id] = EntityID(ID, GameTable)
+				it[codeCol] = "DEPRECIATED"
 				it[nameCol] = update.name
 				it[totalStarsCol] = update.totalStars
 				it[victoryStarsCol] = update.victoryStars
@@ -101,6 +103,7 @@ object GameTable : LongIdTable(name = "Game") {
 	fun update(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Update Game") {
 		try {
 			update({ id eq ID }) {
+				it[codeCol] = "DEPRECIATED"
 				it[startTimeCol] = LocalDateTime.ofInstant(
 					Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault()
 				).toJodaDateTime()

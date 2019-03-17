@@ -24,7 +24,7 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	private val valueCol = double(name = "value")
 	private val levelCol = integer(name = "level")
 
-	private val LOGGER = LogManager.getLogger(TurnTable::class.java)
+	private val LOGGER = LogManager.getLogger()
 
 	init {
 		Util.query(description = "Create Tech table") {

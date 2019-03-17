@@ -51,7 +51,7 @@ class Config internal constructor(
 	}
 
 	companion object {
-		private val LOGGER = LogManager.getLogger(Config::class.java)
+		private val LOGGER = LogManager.getLogger()
 		private val CONFIG_FILE: File = File("config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()

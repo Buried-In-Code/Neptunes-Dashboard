@@ -36,7 +36,7 @@ import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.exists
 
 object Server {
-	internal val LOGGER = LogManager.getLogger(this::class.java)
+	internal val LOGGER = LogManager.getLogger()
 
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
