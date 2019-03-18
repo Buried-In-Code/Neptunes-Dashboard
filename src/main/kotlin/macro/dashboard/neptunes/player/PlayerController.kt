@@ -11,6 +11,7 @@ import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.player.PlayerTable.update
+import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -51,7 +52,11 @@ internal object PlayerController {
 					throw BadRequestException(message = "name is required")
 				var player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
-				player.update(name = request.name)
+				val team = if(!request.team.isNullOrBlank())
+					TeamTable.search(gameID = player.gameID, name = request.team).firstOrNull()
+				else
+					null
+				player.update(name = request.name, teamID = team?.ID ?: player.teamID)
 				player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				call.respond(
@@ -63,4 +68,4 @@ internal object PlayerController {
 	}
 }
 
-class PlayerRequest(val name: String)
+class PlayerRequest(val name: String, val team: String?)
