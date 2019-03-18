@@ -18,3 +18,4 @@ process/
 collection/
 *.db
 *.yaml
+!Neptunes-Dashboard.yaml
