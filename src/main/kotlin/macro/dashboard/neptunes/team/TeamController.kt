@@ -9,6 +9,7 @@ import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.ConflictException
 import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.UnknownException
+import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable.update
 import org.apache.logging.log4j.LogManager
 
@@ -21,9 +22,11 @@ internal object TeamController {
 	fun Route.teamRoutes() {
 		route(path = "/{gameID}/teams") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull()
+				val gameID =
+					call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
+					?: throw UnknownException(message = "Game Not Found")
 				val name = call.request.queryParameters["name"] ?: "%"
-				val teams = TeamTable.search(gameID = gameID, name = name)
+				val teams = TeamTable.searchByGame(gameID = gameID)
 				call.respond(
 					message = teams.filterNot { it.players.isEmpty() }.map {
 						it.toOutput(
@@ -35,16 +38,18 @@ internal object TeamController {
 				)
 			}
 			post {
-				val gameID = call.parameters["gameID"]?.toLongOrNull()
+				val gameID =
+					call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
+					?: throw UnknownException(message = "Game Not Found")
 				val request = call.receiveOrNull<TeamRequest>()
 					?: throw BadRequestException(message = "A body is required")
 				if (request.name == "")
 					throw BadRequestException(message = "name is required")
-				var found = TeamTable.search(gameID = gameID, name = request.name).firstOrNull()
+				var found = TeamTable.select(gameID = gameID, name = request.name)
 				if (found != null)
 					throw ConflictException(message = "A Team with the given Name: '${request.name}' already exists")
 				TeamTable.insert(gameID = gameID, name = request.name)
-				found = TeamTable.search(gameID = gameID, name = request.name).firstOrNull()
+				found = TeamTable.select(gameID = gameID, name = request.name)
 					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
 				call.respond(
 					message = found.toOutput(showGame = true, showPlayers = true),

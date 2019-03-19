@@ -1,4 +1,4 @@
-package macro.dashboard.neptunes.technology
+package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.TechUpdate
@@ -12,13 +12,12 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Mar-08.
  */
 object TechnologyTable : IntIdTable(name = "Technology") {
-	private val turnCol = integer(name = "turnID")
-	/*private val turnCol = reference(
+	private val turnCol = reference(
 		name = "turnID",
 		foreign = TurnTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
-	)*/
+	)
 	private val nameCol = text(name = "name")
 	private val valueCol = double(name = "value")
 	private val levelCol = integer(name = "level")
@@ -35,10 +34,15 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	fun select(ID: Int): Technology? = Util.query(description = "Select Tech by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
-			it.parse()
-		}.firstOrNull()
+		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
 	}
+
+	fun select(turnID: Int, name: String): Technology? =
+		Util.query(description = "Select Tech by Turn: $turnID and name: $name") {
+			select {
+				turnCol eq turnID and (nameCol like name)
+			}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
+		}
 
 	fun searchByTurn(turnID: Int): List<Technology> = Util.query(description = "Search for Techs at Turn: $turnID") {
 		select {
@@ -51,8 +55,7 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	fun insert(turnID: Int, name: String, update: TechUpdate): Boolean = Util.query(description = "Insert Tech") {
 		try {
 			insert {
-//				it[turnCol] = EntityID(id = turnID, table = TurnTable)
-				it[turnCol] = turnID
+				it[turnCol] = EntityID(id = turnID, table = TurnTable)
 				it[nameCol] = name
 				it[valueCol] = update.value
 				it[levelCol] = update.level
@@ -63,12 +66,12 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 		}
 	}
 
-	private fun ResultRow.parse(): Technology = Technology(
-		ID = this[id].value,
-//		turnID = this[turnCol].value,
-		turnID = this[turnCol],
-		name = this[nameCol],
-		value = this[valueCol],
-		level = this[levelCol]
-	)
+	private fun ResultRow.parse(): Technology =
+		Technology(
+			ID = this[id].value,
+			turnID = this[turnCol].value,
+			name = this[nameCol],
+			value = this[valueCol],
+			level = this[levelCol]
+		)
 }

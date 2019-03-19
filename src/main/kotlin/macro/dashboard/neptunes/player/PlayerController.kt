@@ -25,8 +25,9 @@ internal object PlayerController {
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull() ?: GameTable.searchAll().firstOrNull()?.ID
-				?: throw UnknownException(message = "Game Not Found")
+				val gameID =
+					call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
+					?: throw UnknownException(message = "Game Not Found")
 				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.searchByGame(gameID = gameID)
 				call.respond(
@@ -56,7 +57,7 @@ internal object PlayerController {
 				var player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				val team = if (!request.team.isNullOrBlank())
-					TeamTable.search(gameID = player.gameID, name = request.team).firstOrNull()
+					TeamTable.select(gameID = player.gameID, name = request.team)
 				else
 					null
 				player.update(name = request.name, teamID = team?.ID ?: player.teamID)

@@ -1,229 +1,148 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.NotImplementedException
-import macro.dashboard.neptunes.Table
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.Util.toJavaDateTime
+import macro.dashboard.neptunes.Util.toJodaDateTime
+import macro.dashboard.neptunes.backend.GameUpdate
+import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
-import java.sql.ResultSet
-import java.sql.SQLException
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
- * Created by Macro303 on 2019-Mar-19.
+ * Created by Macro303 on 2019-Feb-11.
  */
-object GameTable : Table<Game>(tableName = "Game") {
+object GameTable : LongIdTable(name = "Game") {
+	private val nameCol = text(name = "name")
+	private val totalStarsCol = integer(name = "totalStars")
+	private val victoryStarsCol = integer(name = "victoryStars")
+	private val adminCol = integer(name = "admin")
+	private val fleetSpeedCol = double(name = "fleetSpeed")
+	private val isTurnBasedCol = bool(name = "isTurnBased")
+	private val productionRateCol = integer(name = "productionRate")
+	private val tickRateCol = integer(name = "tickRate")
+	private val tradeCostCol = integer(name = "tradeCost")
+	private val startTimeCol = datetime(name = "startTime").uniqueIndex()
+	private val productionCol = integer(name = "production")
+	private val isGameOverCol = bool(name = "isGameOver")
+	private val isPausedCol = bool(name = "isPaused")
+	private val isStartedCol = bool(name = "isStarted")
+	private val productionCounterCol = integer(name = "productionCounter")
+	private val tickCol = integer(name = "tick")
+	private val tickFragmentCol = integer(name = "tickFragment")
+	private val tradeScannedCol = integer(name = "tradeScanned")
+	private val warCol = integer(name = "war")
+	private val turnBasedTimeoutCol = long(name = "turnBasedTimeout")
+
 	private val LOGGER = LogManager.getLogger()
 
 	init {
-		if (!checkExists())
-			createTable()
-	}
-
-	@Throws(SQLException::class)
-	override fun parse(result: ResultSet): Game {
-		val ID = result.getLong("id")
-		val name = result.getString("name")
-		val totalStars = result.getInt("totalStars")
-		val victoryStars = result.getInt("victoryStars")
-		val admin = result.getInt("admin")
-		val fleetSpeed = result.getDouble("fleetSpeed")
-		val isTurnBased = result.getBoolean("isTurnBased")
-		val productionRate = result.getInt("productionRate")
-		val tickRate = result.getInt("tickRate")
-		val tradeCost = result.getInt("tradeCost")
-		val startTime =
-			LocalDateTime.ofInstant(Instant.ofEpochMilli(result.getLong("startTime")), ZoneId.systemDefault())
-		val production = result.getInt("production")
-		val isGameOver = result.getBoolean("isGameOver")
-		val isPaused = result.getBoolean("isPaused")
-		val isStarted = result.getBoolean("isStarted")
-		val productionCounter = result.getInt("productionCounter")
-		val tick = result.getInt("tick")
-		val tickFragment = result.getInt("tickFragment")
-		val tradeScanned = result.getInt("tradeScanned")
-		val war = result.getInt("war")
-		val turnBasedTimeout = result.getLong("turnBasedTimeout")
-		return Game(
-			ID = ID,
-			name = name,
-			totalStars = totalStars,
-			victoryStars = victoryStars,
-			admin = admin,
-			fleetSpeed = fleetSpeed,
-			isTurnBased = isTurnBased,
-			productionRate = productionRate,
-			tickRate = tickRate,
-			tradeCost = tradeCost,
-			startTime = startTime,
-			production = production,
-			isGameOver = isGameOver,
-			isPaused = isPaused,
-			isStarted = isStarted,
-			productionCounter = productionCounter,
-			tick = tick,
-			tickFragment = tickFragment,
-			tradeScanned = tradeScanned,
-			war = war,
-			turnBasedTimeout = turnBasedTimeout
-		)
-	}
-
-	override fun createTable() {
-		val query = "CREATE TABLE $tableName(" +
-				"id BIGINT PRIMARY KEY NOT NULL UNIQUE, " +
-				"name TEXT NOT NULL, " +
-				"totalStars INTEGER NOT NULL, " +
-				"victoryStars INTEGER NOT NULL, " +
-				"admin INTEGER NOT NULL, " +
-				"fleetSpeed DOUBLE PRECISION NOT NULL, " +
-				"isTurnBased BOOLEAN NOT NULL, " +
-				"productionRate INTEGER NOT NULL, " +
-				"tickRate INTEGER NOT NULL, " +
-				"tradeCost INTEGER NOT NULL, " +
-				"startTime TEXT NOT NULL, " +
-				"production INTEGER NOT NULL, " +
-				"isGameOver BOOLEAN NOT NULL, " +
-				"isPaused BOOLEAN NOT NULL, " +
-				"isStarted BOOLEAN NOT NULL, " +
-				"productionCounter INTEGER NOT NULL, " +
-				"tick INTEGER NOT NULL, " +
-				"tickFragment INTEGER NOT NULL, " +
-				"tradeScanned INTEGER NOT NULL, " +
-				"war INTEGER NOT NULL, " +
-				"turnBasedTimeout BIGINT NOT NULL);"
-		insert(query = query)
-	}
-
-	fun insert(
-		ID: Long,
-		name: String,
-		totalStars: Int,
-		victoryStars: Int,
-		admin: Int,
-		fleetSpeed: Double,
-		isTurnBased: Boolean,
-		productionRate: Int,
-		tickRate: Int,
-		tradeCost: Int,
-		startTime: LocalDateTime,
-		production: Int,
-		isGameOver: Boolean,
-		isPaused: Boolean,
-		isStarted: Boolean,
-		productionCounter: Int,
-		tick: Int,
-		tickFragment: Int,
-		tradeScanned: Int,
-		war: Int,
-		turnBasedTimeout: Long
-	): Boolean {
-		if (select(ID = ID) == null) {
-			val query =
-				"INSERT INTO $tableName(id, name, totalStars, victoryStars, admin, fleetSpeed, isTurnBased, productionRate, tickRate, tradeCost, startTime, production, isGameOver, isPaused, isStarted, productionCounter, tick, tickFragment, tradeScanned, war, turnBasedTimeout) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
-			if (insert(
-					ID,
-					name,
-					totalStars,
-					victoryStars,
-					admin,
-					fleetSpeed,
-					isTurnBased,
-					productionRate,
-					tickRate,
-					tradeCost,
-					startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-					production,
-					isGameOver,
-					isPaused,
-					isStarted,
-					productionCounter,
-					tick,
-					tickFragment,
-					tradeScanned,
-					war,
-					turnBasedTimeout,
-					query = query
-				)
-			) {
-				LOGGER.info("Added Game: $ID - $name")
-				return true
-			}
+		Util.query(description = "Create Game table") {
+			SchemaUtils.create(this)
 		}
-		LOGGER.info("Game: $ID already exists")
-		return false
 	}
 
-	fun update(
-		ID: Long,
-		name: String,
-		totalStars: Int,
-		victoryStars: Int,
-		admin: Int,
-		fleetSpeed: Double,
-		isTurnBased: Boolean,
-		productionRate: Int,
-		tickRate: Int,
-		tradeCost: Int,
-		startTime: LocalDateTime,
-		production: Int,
-		isGameOver: Boolean,
-		isPaused: Boolean,
-		isStarted: Boolean,
-		productionCounter: Int,
-		tick: Int,
-		tickFragment: Int,
-		tradeScanned: Int,
-		war: Int,
-		turnBasedTimeout: Long
-	): Boolean {
-		if (select(ID = ID) != null) {
-			val query =
-				"UPDATE $tableName SET name = ?, totalStars = ?, victoryStars = ?, admin = ?, fleetSpeed = ?, isTurnBased = ?, productionRate = ?, tickRate = ?, tradeCost = ?, startTime = ?, production = ?, isGameOver = ?, isPaused = ?, isStarted = ?, productionCounter = ?, tick = ?, tickFragment = ?, tradeScanned = ?, war = ?, turnBasedTimeout = ? WHERE ID = ?;"
-			if (update(
-					name,
-					totalStars,
-					victoryStars,
-					admin,
-					fleetSpeed,
-					isTurnBased,
-					productionRate,
-					tickRate,
-					tradeCost,
-					startTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-					production,
-					isGameOver,
-					isPaused,
-					isStarted,
-					productionCounter,
-					tick,
-					tickFragment,
-					tradeScanned,
-					war,
-					turnBasedTimeout,
-					ID,
-					query = query
-				)
-			) {
-				LOGGER.info("Updated Game: $ID - $name")
-				return true
-			}
+	fun select(ID: Long): Game? = Util.query(description = "Select Game by ID: $ID") {
+		select {
+			id eq ID
+		}.orderBy(startTimeCol, SortOrder.DESC).limit(1).firstOrNull()?.parse()
+	}
+
+	fun selectLatest(): Game? = Util.query(description = "Select Latest Game") {
+		selectAll().orderBy(startTimeCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+	}
+
+	fun search(name: String = ""): List<Game> = Util.query(description = "Search for Games with name: $name") {
+		select {
+			nameCol like "%$name%"
+		}.orderBy(startTimeCol to SortOrder.DESC).map {
+			it.parse()
 		}
-		LOGGER.info("Game: $ID doesn't exist")
-		return false
 	}
 
-	fun delete(ID: Long) {
-		throw NotImplementedException(message = "This Functionality hasn't been implemented yet. Feel free to make a pull request and add it.")
+	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Insert Game") {
+		try {
+			insert {
+				it[id] = EntityID(ID, GameTable)
+				it[nameCol] = update.name
+				it[totalStarsCol] = update.totalStars
+				it[victoryStarsCol] = update.victoryStars
+				it[adminCol] = update.admin
+				it[fleetSpeedCol] = update.fleetSpeed
+				it[isTurnBasedCol] = update.turnBased == 1
+				it[productionRateCol] = update.productionRate
+				it[tickRateCol] = update.tickRate
+				it[tradeCostCol] = update.tradeCost
+				it[startTimeCol] =
+					LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault())
+						.toJodaDateTime()
+				it[productionCol] = update.production
+				it[isGameOverCol] = update.gameOver == 1
+				it[isPausedCol] = update.isPaused
+				it[isStartedCol] = update.isStarted
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = update.turnBasedTimeout
+			}
+			TeamTable.insert(gameID = ID, name = "Free For All")
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
 	}
 
-	fun select(ID: Long): Game? {
-		val query = "SELECT * FROM $tableName WHERE id = ? LIMIT 1;"
-		return search(ID, query = query).firstOrNull()
+	fun update(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Update Game") {
+		try {
+			update({ id eq ID }) {
+				it[startTimeCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault()
+				).toJodaDateTime()
+				it[productionCol] = update.production
+				it[isGameOverCol] = update.gameOver == 1
+				it[isPausedCol] = update.isPaused
+				it[isStartedCol] = update.isStarted
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = update.turnBasedTimeout
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
 	}
 
-	fun search(name: String = ""): List<Game> {
-		val query = "SELECT * FROM $tableName WHERE name LIKE ? ORDER BY startTime DESC;"
-		return search("%$name%", query = query)
-	}
+	private fun ResultRow.parse() = Game(
+		ID = this[id].value,
+		name = this[nameCol],
+		totalStars = this[totalStarsCol],
+		victoryStars = this[victoryStarsCol],
+		admin = this[adminCol],
+		fleetSpeed = this[fleetSpeedCol],
+		isTurnBased = this[isTurnBasedCol],
+		productionRate = this[productionRateCol],
+		tickRate = this[tickRateCol],
+		tradeCost = this[tradeCostCol],
+		startTime = this[startTimeCol].toJavaDateTime(),
+		production = this[productionCol],
+		isGameOver = this[isGameOverCol],
+		isPaused = this[isPausedCol],
+		isStarted = this[isStartedCol],
+		productionCounter = this[productionCounterCol],
+		tick = this[tickCol],
+		tickFragment = this[tickFragmentCol],
+		tradeScanned = this[tradeScannedCol],
+		war = this[warCol],
+		turnBasedTimeout = this[turnBasedTimeoutCol]
+	)
 }

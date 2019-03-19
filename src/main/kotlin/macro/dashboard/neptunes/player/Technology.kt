@@ -1,8 +1,6 @@
-package macro.dashboard.neptunes.technology
+package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
-import macro.dashboard.neptunes.player.Turn
-import macro.dashboard.neptunes.player.TurnTable
 
 /**
  * Created by Macro303 on 2019-Mar-08.

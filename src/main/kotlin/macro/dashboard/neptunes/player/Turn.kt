@@ -1,8 +1,6 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
-import macro.dashboard.neptunes.technology.Technology
-import macro.dashboard.neptunes.technology.TechnologyTable
 
 /**
  * Created by Macro303 on 2019-Mar-04.

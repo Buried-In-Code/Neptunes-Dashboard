@@ -25,9 +25,10 @@ import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Server.LOGGER
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.player.TurnTable
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.player.TechnologyTable
+import macro.dashboard.neptunes.player.TurnTable
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.Level
@@ -40,14 +41,6 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
-		checkDatabase()
-		testNewTables()
-	}
-
-	private fun testNewTables() {
-		val game = GameTable.select(ID = CONFIG.games.keys.first())!!
-		val player = PlayerTable.select(gameID = game.ID, alias = "Macro303")!!
-		val turn = TurnTable.selectLatest(playerID = player.ID)!!
 	}
 
 	private fun loggerColours() {
@@ -61,7 +54,11 @@ object Server {
 
 	private fun checkDatabase() {
 		Util.query(description = "Check All Tables Exist") {
+			GameTable.exists()
+			PlayerTable.exists()
+			TurnTable.exists()
 			TeamTable.exists()
+			TechnologyTable.exists()
 		}
 	}
 
@@ -179,7 +176,7 @@ fun Application.module() {
 			teamRoutes()
 		}
 		get(path = "/players/{alias}") {
-			val gameID = GameTable.searchAll().firstOrNull()?.ID ?: throw UnknownException(message = "Game Not Found")
+			val gameID = GameTable.selectLatest()?.ID ?: throw UnknownException(message = "Game Not Found")
 			val alias = call.parameters["alias"] ?: "%"
 			val player = PlayerTable.select(gameID = gameID, alias = alias)
 				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
@@ -192,8 +189,9 @@ fun Application.module() {
 			)
 		}
 		get(path = "/teams/{name}") {
+			val gameID = GameTable.selectLatest()?.ID ?: throw UnknownException(message = "Game Not Found")
 			val name = call.parameters["name"] ?: "%"
-			val team = TeamTable.search(name = name).firstOrNull()
+			val team = TeamTable.select(gameID = gameID, name = name)
 				?: throw NotFoundException(message = "No Team was found with the given name '$name'")
 			call.respond(
 				message = FreeMarkerContent(

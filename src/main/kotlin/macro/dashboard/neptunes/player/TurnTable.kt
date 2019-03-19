@@ -1,137 +1,106 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.NotImplementedException
-import macro.dashboard.neptunes.Table
+import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.backend.PlayerUpdate
 import org.apache.logging.log4j.LogManager
-import java.sql.ResultSet
-import java.sql.SQLException
+import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.jetbrains.exposed.sql.*
 
 /**
- * Created by Macro303 on 2019-Mar-19.
+ * Created by Macro303 on 2019-Mar-04.
  */
-object TurnTable : Table<Turn>(tableName = "Turn") {
+object TurnTable : IntIdTable(name = "Turn") {
+	private val playerCol: Column<EntityID<Int>> = reference(
+		name = "playerID",
+		foreign = PlayerTable,
+		onUpdate = ReferenceOption.CASCADE,
+		onDelete = ReferenceOption.CASCADE
+	)
+	private val tickCol: Column<Int> = integer(name = "tick")
+	private val economyCol: Column<Int> = integer(name = "economy")
+	private val industryCol: Column<Int> = integer(name = "industry")
+	private val scienceCol: Column<Int> = integer(name = "science")
+	private val starsCol: Column<Int> = integer(name = "stars")
+	private val fleetCol: Column<Int> = integer(name = "fleet")
+	private val shipsCol: Column<Int> = integer(name = "ships")
+	private val isActiveCol: Column<Boolean> = bool(name = "isActive")
+
 	private val LOGGER = LogManager.getLogger()
 
 	init {
-		if (!checkExists())
-			createTable()
-	}
-
-	@Throws(SQLException::class)
-	override fun parse(result: ResultSet): Turn {
-		val ID = result.getInt("id")
-		val playerID = result.getInt("playerID")
-		val tick = result.getInt("tick")
-		val economy = result.getInt("economy")
-		val industry = result.getInt("industry")
-		val science = result.getInt("science")
-		val stars = result.getInt("stars")
-		val fleet = result.getInt("fleet")
-		val ships = result.getInt("ships")
-		val isActive = result.getBoolean("isActive")
-		return Turn(
-			ID = ID,
-			playerID = playerID,
-			tick = tick,
-			economy = economy,
-			industry = industry,
-			science = science,
-			stars = stars,
-			fleet = fleet,
-			ships = ships,
-			isActive = isActive
-		)
-	}
-
-	override fun createTable() {
-		val query = "CREATE TABLE $tableName(" +
-				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
-				"playerID INTEGER NOT NULL REFERENCES ${PlayerTable.tableName}(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-				"tick INTEGER NOT NULL, " +
-				"economy INTEGER NOT NULL, " +
-				"industry INTEGER NOT NULL, " +
-				"science INTEGER NOT NULL, " +
-				"stars INTEGER NOT NULL, " +
-				"fleet INTEGER NOT NULL, " +
-				"ships INTEGER NOT NULL, " +
-				"isActive BOOLEAN NOT NULL" +
-				"UNIQUE(playerID, tick));"
-		insert(query = query)
-	}
-
-	fun insert(
-		playerID: Int,
-		tick: Int,
-		economy: Int,
-		industry: Int,
-		science: Int,
-		stars: Int,
-		fleet: Int,
-		ships: Int,
-		isActive: Boolean
-	): Boolean {
-		if (select(playerID = playerID, tick = tick) == null) {
-			val query =
-				"INSERT INTO $tableName(playerID, tick, economy, industry, science, stars, fleet, ships, isActive) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);"
-			if (insert(playerID, tick, economy, industry, science, stars, fleet, ships, isActive, query = query)) {
-				LOGGER.info("Added Turn: $playerID - $tick")
-				return true
-			}
+		Util.query(description = "Create Turn table") {
+			uniqueIndex(tickCol, playerCol)
+			SchemaUtils.create(this)
 		}
-		LOGGER.info("Turn: $playerID - $tick already exists")
-		return false
 	}
 
-	fun update(
-		ID: Int,
-		playerID: Int,
-		tick: Int,
-		economy: Int,
-		industry: Int,
-		science: Int,
-		stars: Int,
-		fleet: Int,
-		ships: Int,
-		isActive: Boolean
-	): Boolean {
-		if (select(ID = ID) != null) {
-			val query =
-				"UPDATE $tableName SET economy = ?, industry = ?, science = ?, stars = ?, fleet = ?, ships = ?, isActive = ? WHERE ID = ?;"
-			if (update(economy, industry, science, stars, fleet, ships, isActive, ID, query = query)) {
-				LOGGER.info("Updated Turn: $playerID - $tick")
-				return true
-			}
+	fun select(ID: Int): Turn? = Util.query(description = "Select Turn by ID: $ID") {
+		select {
+			id eq ID
+		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+	}
+
+	fun select(playerID: Int, tick: Int): Turn? =
+		Util.query(description = "Select Turn by Player: $playerID and Tick: $tick") {
+			select {
+				playerCol eq playerID and (tickCol eq tick)
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
 		}
-		LOGGER.info("Turn: $playerID - $tick doesn't exist")
-		return false
+
+	fun selectLatest(playerID: Int): Turn? =
+		Util.query(description = "Search for Latest Turn by Player: $playerID") {
+			select {
+				playerCol eq playerID
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+		}
+
+	fun searchByTick(tick: Int): List<Turn> = Util.query(description = "Search for Turns at Tick: $tick") {
+		select {
+			tickCol eq tick
+		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).map {
+			it.parse()
+		}
 	}
 
-	fun delete(ID: Int) {
-		throw NotImplementedException(message = "This Functionality hasn't been implemented yet. Feel free to make a pull request and add it.")
+	fun searchByPlayer(playerID: Int): List<Turn> = Util.query(description = "Search for Turns by Player: $playerID") {
+		select {
+			playerCol eq playerID
+		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).map {
+			it.parse()
+		}
 	}
 
-	fun select(ID: Int): Turn? {
-		val query = "SELECT * FROM $tableName WHERE id = ? LIMIT 1;"
-		return search(ID, query = query).firstOrNull()
+	fun insert(playerID: Int, tick: Int, update: PlayerUpdate): Boolean = Util.query(description = "Insert Turn") {
+		try {
+			insert {
+				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+				it[tickCol] = tick
+				it[economyCol] = update.economy
+				it[industryCol] = update.industry
+				it[scienceCol] = update.science
+				it[starsCol] = update.stars
+				it[fleetCol] = update.fleet
+				it[shipsCol] = update.ships
+				it[isActiveCol] = update.conceded == 0
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
 	}
 
-	fun select(playerID: Int, tick: Int): Turn? {
-		val query = "SELECT * FROM $tableName WHERE playerID = ? AND tick = ? LIMIT 1;"
-		return search(playerID, tick, query = query).firstOrNull()
-	}
-
-	fun selectLatest(playerID: Int): Turn?{
-		val query = "SELECT * FROM $tableName WHERE playerID = ? ORDER BY tick DESC LIMIT 1;"
-		return search(playerID, query = query).firstOrNull()
-	}
-
-	fun searchByPlayer(playerID: Int): List<Turn> {
-		val query = "SELECT * FROM $tableName WHERE playerID = ? ORDER BY tick DESC;"
-		return search(playerID, query = query)
-	}
-
-	fun searchByTick(tick: Int): List<Turn> {
-		val query = "SELECT * FROM $tableName WHERE tick = ? ORDER BY playerID ASC;"
-		return search(tick, query = query)
-	}
+	private fun ResultRow.parse(): Turn = Turn(
+		ID = this[id].value,
+		playerID = this[playerCol].value,
+		tick = this[tickCol],
+		economy = this[economyCol],
+		industry = this[industryCol],
+		science = this[scienceCol],
+		stars = this[starsCol],
+		fleet = this[fleetCol],
+		ships = this[shipsCol],
+		isActive = this[isActiveCol]
+	)
 }
