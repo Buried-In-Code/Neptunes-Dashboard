@@ -8,9 +8,9 @@ import io.ktor.routing.get
 import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.backend.Neptunes
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 
 /**

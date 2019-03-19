@@ -3,7 +3,9 @@ package macro.dashboard.neptunes
 /**
  * Created by Macro303 on 2019-Feb-13.
  */
-data class GeneralException(override val message: String = "Something happened check the logs, contact the devs, call the wizard") : RuntimeException()
+data class GeneralException(override val message: String = "Something happened check the logs, contact the devs, call the wizard") :
+	RuntimeException()
+
 data class UnknownException(override val message: String) : RuntimeException()
 
 data class BadRequestException(override val message: String) : RuntimeException()

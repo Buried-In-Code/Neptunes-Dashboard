@@ -44,7 +44,7 @@ data class Game(
 			"isPaused" to isPaused,
 			"isStarted" to isStarted,
 			"tick" to tick,
-			"players" to PlayerTable.search(gameID = ID).size,
+			"players" to PlayerTable.searchByGame(gameID = ID).size,
 			"teams" to TeamTable.search(gameID = ID).filterNot { it.players.isEmpty() }.size
 		).toMutableMap()
 		return output.toSortedMap()

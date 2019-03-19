@@ -1,109 +1,116 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.GeneralException
-import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.PlayerUpdate
+import macro.dashboard.neptunes.NotImplementedException
+import macro.dashboard.neptunes.Table
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.*
+import java.sql.ResultSet
+import java.sql.SQLException
 
 /**
- * Created by Macro303 on 2019-Feb-11.
+ * Created by Macro303 on 2019-Mar-19.
  */
-object PlayerTable : IntIdTable(name = "Player") {
-	private val gameCol: Column<EntityID<Long>> = reference(
-		name = "gameID",
-		foreign = GameTable,
-		onUpdate = ReferenceOption.CASCADE,
-		onDelete = ReferenceOption.CASCADE
-	)
-	private val teamCol: Column<EntityID<Int>> = reference(
-		name = "teamID",
-		foreign = TeamTable,
-		onUpdate = ReferenceOption.CASCADE,
-		onDelete = ReferenceOption.CASCADE
-	)
-	private val aliasCol: Column<String> = text(name = "alias")
-	private val nameCol: Column<String?> = text(name = "name").nullable()
-
+object PlayerTable : Table<Player>(tableName = "Player") {
 	private val LOGGER = LogManager.getLogger()
 
 	init {
-		Util.query(description = "Create Player table") {
-			uniqueIndex(gameCol, aliasCol)
-			SchemaUtils.create(this)
-		}
+		if (!checkExists())
+			createTable()
 	}
 
-	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
-		select {
-			id eq ID
-		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-			it.parse()
-		}.firstOrNull()
+	@Throws(SQLException::class)
+	override fun parse(result: ResultSet): Player {
+		val ID = result.getInt("id")
+		val gameID = result.getLong("gameID")
+		val teamID = result.getInt("teamID")
+		val alias = result.getString("alias")
+		val name = result.getString("name")
+		return Player(
+			ID = ID,
+			gameID = gameID,
+			teamID = teamID,
+			alias = alias,
+			name = name
+		)
 	}
 
-	fun search(gameID: Long? = null, alias: String = ""): List<Player> =
-		Util.query(description = "Search for Players from Game: $gameID with alias: $alias") {
-			val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
-			select {
-				gameCol eq temp and (aliasCol like "%$alias%")
-			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-				it.parse()
+	override fun createTable() {
+		val query = "CREATE TABLE $tableName(" +
+				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, " +
+				"gameID BIGINT NOT NULL REFERENCES ${GameTable.tableName}(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+				"teamID INTEGER NOT NULL REFERENCES ${TeamTable.tableName}(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+				"alias TEXT NOT NULL, " +
+				"name TEXT, " +
+				"UNIQUE(gameID, alias))"
+		insert(query = query)
+	}
+
+	fun insert(
+		gameID: Long,
+		teamID: Int,
+		alias: String,
+		name: String? = null
+	): Boolean {
+		if (select(gameID = gameID, alias = alias) == null) {
+			val query =
+				"INSERT INTO $tableName(gameID, teamID, alias, name) VALUES(?, ?, ?, ?)"
+			if (insert(gameID, teamID, alias, name, query = query)) {
+				LOGGER.info("Added Player: $gameID - $alias")
+				return true
 			}
 		}
-
-	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
-		select {
-			teamCol eq teamID
-		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-			it.parse()
-		}
+		LOGGER.info("Player: $gameID - $alias already exists")
+		return false
 	}
 
-	fun insert(gameID: Long, update: PlayerUpdate): Boolean = Util.query(description = "Insert Player") {
-		val teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID
-			?: throw GeneralException()
-		try {
-			insert {
-				it[gameCol] = EntityID(id = gameID, table = GameTable)
-				it[aliasCol] = update.alias
-				it[teamCol] = EntityID(id = teamID, table = TeamTable)
+	fun update(
+		ID: Int,
+		gameID: Long,
+		teamID: Int,
+		alias: String,
+		name: String? = null
+	): Boolean {
+		if (select(ID = ID) != null) {
+			val query =
+				"UPDATE $tableName SET teamID = ?, name = ? WHERE ID = ?"
+			if (update(teamID, name, ID, query = query)) {
+				LOGGER.info("Updated Player: $gameID - $alias")
+				return true
 			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
 		}
+		LOGGER.info("Player: $gameID - $alias doesn't exist")
+		return false
 	}
 
-	fun update(ID: Int, teamID: Int, name: String?) = Util.query(description = "Update Player") {
-		try {
-			update({ id eq ID }) {
-				it[teamCol] = EntityID(id = teamID, table = TeamTable)
-				it[nameCol] = name
-			}
-		} catch (esqle: ExposedSQLException) {
-		}
+	fun delete(ID: Int) {
+		throw NotImplementedException(message = "This Functionality hasn't been implemented yet. Feel free to make a pull request and add it.")
 	}
 
-	private fun ResultRow.parse(): Player = Player(
-		ID = this[id].value,
-		gameID = this[gameCol].value,
-		teamID = this[teamCol].value,
-		name = this[nameCol],
-		alias = this[aliasCol]
-	)
+	fun select(ID: Int): Player? {
+		val query = "SELECT * FROM $tableName WHERE id = ?"
+		return search(ID, query = query).firstOrNull()
+	}
+
+	fun select(gameID: Long, alias: String): Player? {
+		val query = "SELECT * FROM $tableName WHERE gameID = ? AND alias LIKE ?"
+		return search(gameID, alias, query = query).firstOrNull()
+	}
+
+	fun searchByGame(gameID: Long): List<Player> {
+		val query = "SELECT * FROM $tableName WHERE gameID = ?"
+		return search(gameID, query = query)
+	}
+
+	fun searchByTeam(teamID: Int): List<Player> {
+		val query = "SELECT * FROM $tableName WHERE teamID = ?"
+		return search(teamID, query = query)
+	}
 
 	fun Player.update(
 		teamID: Int = this.teamID,
 		name: String? = this.name
-	) {
-		this.teamID = teamID
-		this.name = name
-		PlayerTable.update(ID = this.ID, teamID = this.teamID, name = this.name)
+	){
+		PlayerTable.update(ID = this.ID, gameID = this.gameID, teamID = teamID, alias = this.alias, name = name)
 	}
 }

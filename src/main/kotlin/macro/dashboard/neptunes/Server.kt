@@ -21,9 +21,8 @@ import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Server.LOGGER
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
-import macro.dashboard.neptunes.config.ConfigController.settingRoutes
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
@@ -42,6 +41,12 @@ object Server {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
 		checkDatabase()
+		testNewTables()
+	}
+
+	private fun testNewTables() {
+		val game = GameTable.select(ID = CONFIG.games.keys.first())!!
+		val player = PlayerTable.select(gameID = game.ID, alias = "Macro303")!!
 	}
 
 	private fun loggerColours() {
@@ -55,9 +60,7 @@ object Server {
 
 	private fun checkDatabase() {
 		Util.query(description = "Check All Tables Exist") {
-			GameTable.exists()
 			TeamTable.exists()
-			PlayerTable.exists()
 			TurnTable.exists()
 		}
 	}
@@ -174,11 +177,11 @@ fun Application.module() {
 			gameRoutes()
 			playerRoutes()
 			teamRoutes()
-			settingRoutes()
 		}
 		get(path = "/players/{alias}") {
+			val gameID = GameTable.searchAll().firstOrNull()?.ID ?: throw UnknownException(message = "Game Not Found")
 			val alias = call.parameters["alias"] ?: "%"
-			val player = PlayerTable.search(alias = alias).firstOrNull()
+			val player = PlayerTable.select(gameID = gameID, alias = alias)
 				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
 			call.respond(
 				message = FreeMarkerContent(

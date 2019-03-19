@@ -6,8 +6,12 @@ import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TurnTable
+import macro.dashboard.neptunes.team.TeamTable
 import macro.dashboard.neptunes.technology.TechnologyTable
 import org.apache.logging.log4j.LogManager
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 /**
  * Created by Macro303 on 2019-Feb-26.
@@ -20,13 +24,61 @@ object Neptunes {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
 			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
-			val valid = GameTable.insert(ID = gameID, update = game)
+			val valid = GameTable.insert(
+				ID = gameID,
+				name = game.name,
+				totalStars = game.totalStars,
+				victoryStars = game.victoryStars,
+				admin = game.admin,
+				fleetSpeed = game.fleetSpeed,
+				isTurnBased = game.turnBased == 1,
+				productionRate = game.productionRate,
+				tickRate = game.tickRate,
+				tradeCost = game.tradeCost,
+				startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(game.startTime), ZoneId.systemDefault()),
+				production = game.production,
+				isGameOver = game.gameOver == 1,
+				isPaused = game.isPaused,
+				isStarted = game.isStarted,
+				productionCounter = game.productionCounter,
+				tick = game.tick,
+				tickFragment = game.tickFragment,
+				tradeScanned = game.tradeScanned,
+				war = game.war,
+				turnBasedTimeout = game.turnBasedTimeout
+			)
 			if (!valid)
-				GameTable.update(ID = gameID, update = game)
+				GameTable.update(
+					ID = gameID,
+					name = game.name,
+					totalStars = game.totalStars,
+					victoryStars = game.victoryStars,
+					admin = game.admin,
+					fleetSpeed = game.fleetSpeed,
+					isTurnBased = game.turnBased == 1,
+					productionRate = game.productionRate,
+					tickRate = game.tickRate,
+					tradeCost = game.tradeCost,
+					startTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(game.startTime), ZoneId.systemDefault()),
+					production = game.production,
+					isGameOver = game.gameOver == 1,
+					isPaused = game.isPaused,
+					isStarted = game.isStarted,
+					productionCounter = game.productionCounter,
+					tick = game.tick,
+					tickFragment = game.tickFragment,
+					tradeScanned = game.tradeScanned,
+					war = game.war,
+					turnBasedTimeout = game.turnBasedTimeout
+				)
 			game.players.values.forEach { update ->
 				if (update.alias.isNotBlank()) {
-					PlayerTable.insert(gameID = gameID, update = update)
-					val player = PlayerTable.search(gameID = gameID, alias = update.alias).firstOrNull()
+					PlayerTable.insert(
+						gameID = gameID,
+						teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID ?: throw GeneralException(),
+						alias = update.alias
+					)
+					val player = PlayerTable.select(gameID = gameID, alias = update.alias)
 						?: throw GeneralException()
 					TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
 					val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()

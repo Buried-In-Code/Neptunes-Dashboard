@@ -10,6 +10,8 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.NotFoundException
+import macro.dashboard.neptunes.UnknownException
+import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable.update
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
@@ -23,9 +25,10 @@ internal object PlayerController {
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull()
+				val gameID = call.parameters["gameID"]?.toLongOrNull() ?: GameTable.searchAll().firstOrNull()?.ID
+				?: throw UnknownException(message = "Game Not Found")
 				val alias = call.request.queryParameters["alias"] ?: ""
-				val players = PlayerTable.search(gameID = gameID, alias = alias)
+				val players = PlayerTable.searchByGame(gameID = gameID)
 				call.respond(
 					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
 					status = HttpStatusCode.OK
@@ -52,7 +55,7 @@ internal object PlayerController {
 					throw BadRequestException(message = "name is required")
 				var player = PlayerTable.select(ID = ID)
 					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
-				val team = if(!request.team.isNullOrBlank())
+				val team = if (!request.team.isNullOrBlank())
 					TeamTable.search(gameID = player.gameID, name = request.team).firstOrNull()
 				else
 					null

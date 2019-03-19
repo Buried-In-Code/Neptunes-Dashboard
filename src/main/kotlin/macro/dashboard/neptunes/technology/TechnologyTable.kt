@@ -2,7 +2,6 @@ package macro.dashboard.neptunes.technology
 
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.TechUpdate
-import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TurnTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
@@ -16,7 +15,7 @@ import org.jetbrains.exposed.sql.*
 object TechnologyTable : IntIdTable(name = "Technology") {
 	private val turnCol = reference(
 		name = "turnID",
-		foreign = PlayerTable,
+		foreign = TurnTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)

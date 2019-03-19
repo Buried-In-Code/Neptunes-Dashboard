@@ -15,29 +15,29 @@ data class Team(
 	var name: String
 ) {
 
-	val game: Game by lazy{
+	val game: Game by lazy {
 		GameTable.select(ID = gameID) ?: throw GeneralException()
 	}
-	val players: List<Player> by lazy{
+	val players: List<Player> by lazy {
 		PlayerTable.searchByTeam(teamID = ID)
 	}
 
-	val totalEconomy: Int by lazy{
+	val totalEconomy: Int by lazy {
 		players.sumBy { it.latestTurn.economy }
 	}
-	val totalIndustry: Int by lazy{
+	val totalIndustry: Int by lazy {
 		players.sumBy { it.latestTurn.industry }
 	}
-	val totalScience: Int by lazy{
+	val totalScience: Int by lazy {
 		players.sumBy { it.latestTurn.science }
 	}
-	val totalStars: Int by lazy{
+	val totalStars: Int by lazy {
 		players.sumBy { it.latestTurn.stars }
 	}
-	val totalFleet: Int by lazy{
+	val totalFleet: Int by lazy {
 		players.sumBy { it.latestTurn.fleet }
 	}
-	val totalShips: Int by lazy{
+	val totalShips: Int by lazy {
 		players.sumBy { it.latestTurn.ships }
 	}
 

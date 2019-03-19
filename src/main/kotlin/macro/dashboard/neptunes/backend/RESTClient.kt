@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.backend
 
 import com.mashape.unirest.http.Unirest
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import org.apache.http.HttpHost
 import org.apache.logging.log4j.LogManager
 import khttp.post as httpPost

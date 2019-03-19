@@ -22,7 +22,7 @@
             <AppenderRef ref="Console"/>
             <AppenderRef ref="rollingFile"/>
         </Root>
-        <Logger name="Exposed" level="info" additivity="false">
+        <Logger name="Exposed" level="INFO" additivity="false">
         </Logger>
     </Loggers>
 </Configuration>

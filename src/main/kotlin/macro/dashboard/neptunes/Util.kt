@@ -3,7 +3,7 @@ package macro.dashboard.neptunes
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger

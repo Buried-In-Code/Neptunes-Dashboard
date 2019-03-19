@@ -12,12 +12,13 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Mar-04.
  */
 object TurnTable : IntIdTable(name = "Turn") {
-	private val playerCol: Column<EntityID<Int>> = reference(
+	private val playerCol = integer(name = "playerID")
+	/*private val playerCol: Column<EntityID<Int>> = reference(
 		name = "playerID",
 		foreign = PlayerTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
-	)
+	)*/
 	private val tickCol: Column<Int> = integer(name = "tick")
 	private val economyCol: Column<Int> = integer(name = "economy")
 	private val industryCol: Column<Int> = integer(name = "industry")
@@ -81,7 +82,8 @@ object TurnTable : IntIdTable(name = "Turn") {
 	fun insert(playerID: Int, tick: Int, update: PlayerUpdate): Boolean = Util.query(description = "Insert Turn") {
 		try {
 			insert {
-				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+//				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+				it[playerCol] = playerID
 				it[tickCol] = tick
 				it[economyCol] = update.economy
 				it[industryCol] = update.industry
@@ -99,7 +101,8 @@ object TurnTable : IntIdTable(name = "Turn") {
 
 	private fun ResultRow.parse(): Turn = Turn(
 		ID = this[id].value,
-		playerID = this[playerCol].value,
+//		playerID = this[playerCol].value,
+		playerID = this[playerCol],
 		tick = this[tickCol],
 		economy = this[economyCol],
 		industry = this[industryCol],
