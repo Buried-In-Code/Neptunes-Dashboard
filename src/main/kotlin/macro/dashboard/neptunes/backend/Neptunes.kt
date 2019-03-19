@@ -75,12 +75,23 @@ object Neptunes {
 				if (update.alias.isNotBlank()) {
 					PlayerTable.insert(
 						gameID = gameID,
-						teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID ?: throw GeneralException(),
+						teamID = TeamTable.search(gameID = gameID, name = "Free For All").firstOrNull()?.ID
+							?: throw GeneralException(),
 						alias = update.alias
 					)
 					val player = PlayerTable.select(gameID = gameID, alias = update.alias)
 						?: throw GeneralException()
-					TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
+					TurnTable.insert(
+						playerID = player.ID,
+						tick = game.tick,
+						economy = update.economy,
+						industry = update.industry,
+						science = update.science,
+						stars = update.stars,
+						fleet = update.fleet,
+						ships = update.ships,
+						isActive = update.conceded == 0
+					)
 					val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
 					update.tech.forEach { name, tech ->
 						TechnologyTable.insert(turnID = turn.ID, name = name, update = tech)

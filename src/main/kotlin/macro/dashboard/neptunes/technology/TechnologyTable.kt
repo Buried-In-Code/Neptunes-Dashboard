@@ -2,7 +2,6 @@ package macro.dashboard.neptunes.technology
 
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.TechUpdate
-import macro.dashboard.neptunes.player.TurnTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -13,12 +12,13 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Mar-08.
  */
 object TechnologyTable : IntIdTable(name = "Technology") {
-	private val turnCol = reference(
+	private val turnCol = integer(name = "turnID")
+	/*private val turnCol = reference(
 		name = "turnID",
 		foreign = TurnTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
-	)
+	)*/
 	private val nameCol = text(name = "name")
 	private val valueCol = double(name = "value")
 	private val levelCol = integer(name = "level")
@@ -51,7 +51,8 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	fun insert(turnID: Int, name: String, update: TechUpdate): Boolean = Util.query(description = "Insert Tech") {
 		try {
 			insert {
-				it[turnCol] = EntityID(id = turnID, table = TurnTable)
+//				it[turnCol] = EntityID(id = turnID, table = TurnTable)
+				it[turnCol] = turnID
 				it[nameCol] = name
 				it[valueCol] = update.value
 				it[levelCol] = update.level
@@ -64,7 +65,8 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 
 	private fun ResultRow.parse(): Technology = Technology(
 		ID = this[id].value,
-		turnID = this[turnCol].value,
+//		turnID = this[turnCol].value,
+		turnID = this[turnCol],
 		name = this[nameCol],
 		value = this[valueCol],
 		level = this[levelCol]

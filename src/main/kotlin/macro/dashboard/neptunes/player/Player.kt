@@ -27,7 +27,7 @@ data class Player(
 		TurnTable.searchByPlayer(playerID = ID)
 	}
 	val latestTurn: Turn by lazy {
-		TurnTable.searchLatestByPlayer(playerID = ID) ?: throw GeneralException()
+		TurnTable.selectLatest(playerID = ID) ?: throw GeneralException()
 	}
 
 	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean = true): Map<String, Any?> {

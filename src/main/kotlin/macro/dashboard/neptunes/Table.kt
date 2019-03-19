@@ -75,8 +75,6 @@ abstract class Table<T> protected constructor(val tableName: String) {
 				try {
 					connection.prepareStatement(query).use { statement ->
 						values.forEachIndexed { index, value ->
-							LOGGER.debug("Index: $index")
-							LOGGER.debug("Value: $value")
 							statement.setObject(index + 1, value)
 						}
 						statement.executeUpdate()

@@ -91,7 +91,7 @@ object GameTable : Table<Game>(tableName = "Game") {
 				"tickFragment INTEGER NOT NULL, " +
 				"tradeScanned INTEGER NOT NULL, " +
 				"war INTEGER NOT NULL, " +
-				"turnBasedTimeout BIGINT NOT NULL)"
+				"turnBasedTimeout BIGINT NOT NULL);"
 		insert(query = query)
 	}
 
@@ -120,7 +120,7 @@ object GameTable : Table<Game>(tableName = "Game") {
 	): Boolean {
 		if (select(ID = ID) == null) {
 			val query =
-				"INSERT INTO $tableName(id, name, totalStars, victoryStars, admin, fleetSpeed, isTurnBased, productionRate, tickRate, tradeCost, startTime, production, isGameOver, isPaused, isStarted, productionCounter, tick, tickFragment, tradeScanned, war, turnBasedTimeout) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+				"INSERT INTO $tableName(id, name, totalStars, victoryStars, admin, fleetSpeed, isTurnBased, productionRate, tickRate, tradeCost, startTime, production, isGameOver, isPaused, isStarted, productionCounter, tick, tickFragment, tradeScanned, war, turnBasedTimeout) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 			if (insert(
 					ID,
 					name,
@@ -179,7 +179,7 @@ object GameTable : Table<Game>(tableName = "Game") {
 	): Boolean {
 		if (select(ID = ID) != null) {
 			val query =
-				"UPDATE $tableName SET name = ?, totalStars = ?, victoryStars = ?, admin = ?, fleetSpeed = ?, isTurnBased = ?, productionRate = ?, tickRate = ?, tradeCost = ?, startTime = ?, production = ?, isGameOver = ?, isPaused = ?, isStarted = ?, productionCounter = ?, tick = ?, tickFragment = ?, tradeScanned = ?, war = ?, turnBasedTimeout = ? WHERE ID = ?"
+				"UPDATE $tableName SET name = ?, totalStars = ?, victoryStars = ?, admin = ?, fleetSpeed = ?, isTurnBased = ?, productionRate = ?, tickRate = ?, tradeCost = ?, startTime = ?, production = ?, isGameOver = ?, isPaused = ?, isStarted = ?, productionCounter = ?, tick = ?, tickFragment = ?, tradeScanned = ?, war = ?, turnBasedTimeout = ? WHERE ID = ?;"
 			if (update(
 					name,
 					totalStars,
@@ -218,12 +218,12 @@ object GameTable : Table<Game>(tableName = "Game") {
 	}
 
 	fun select(ID: Long): Game? {
-		val query = "SELECT * FROM $tableName WHERE id = ?"
+		val query = "SELECT * FROM $tableName WHERE id = ? LIMIT 1;"
 		return search(ID, query = query).firstOrNull()
 	}
 
 	fun search(name: String = ""): List<Game> {
-		val query = "SELECT * FROM $tableName WHERE name LIKE ?"
+		val query = "SELECT * FROM $tableName WHERE name LIKE ? ORDER BY startTime DESC;"
 		return search("%$name%", query = query)
 	}
 }

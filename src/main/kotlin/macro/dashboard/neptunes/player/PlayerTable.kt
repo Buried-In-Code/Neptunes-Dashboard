@@ -42,7 +42,7 @@ object PlayerTable : Table<Player>(tableName = "Player") {
 				"teamID INTEGER NOT NULL REFERENCES ${TeamTable.tableName}(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
 				"alias TEXT NOT NULL, " +
 				"name TEXT, " +
-				"UNIQUE(gameID, alias))"
+				"UNIQUE(gameID, alias));"
 		insert(query = query)
 	}
 
@@ -54,7 +54,7 @@ object PlayerTable : Table<Player>(tableName = "Player") {
 	): Boolean {
 		if (select(gameID = gameID, alias = alias) == null) {
 			val query =
-				"INSERT INTO $tableName(gameID, teamID, alias, name) VALUES(?, ?, ?, ?)"
+				"INSERT INTO $tableName(gameID, teamID, alias, name) VALUES(?, ?, ?, ?);"
 			if (insert(gameID, teamID, alias, name, query = query)) {
 				LOGGER.info("Added Player: $gameID - $alias")
 				return true
@@ -73,7 +73,7 @@ object PlayerTable : Table<Player>(tableName = "Player") {
 	): Boolean {
 		if (select(ID = ID) != null) {
 			val query =
-				"UPDATE $tableName SET teamID = ?, name = ? WHERE ID = ?"
+				"UPDATE $tableName SET teamID = ?, name = ? WHERE ID = ?;"
 			if (update(teamID, name, ID, query = query)) {
 				LOGGER.info("Updated Player: $gameID - $alias")
 				return true
@@ -88,22 +88,22 @@ object PlayerTable : Table<Player>(tableName = "Player") {
 	}
 
 	fun select(ID: Int): Player? {
-		val query = "SELECT * FROM $tableName WHERE id = ?"
+		val query = "SELECT * FROM $tableName WHERE id = ? LIMIT 1;"
 		return search(ID, query = query).firstOrNull()
 	}
 
 	fun select(gameID: Long, alias: String): Player? {
-		val query = "SELECT * FROM $tableName WHERE gameID = ? AND alias LIKE ?"
+		val query = "SELECT * FROM $tableName WHERE gameID = ? AND alias LIKE ? LIMIT 1;"
 		return search(gameID, alias, query = query).firstOrNull()
 	}
 
 	fun searchByGame(gameID: Long): List<Player> {
-		val query = "SELECT * FROM $tableName WHERE gameID = ?"
+		val query = "SELECT * FROM $tableName WHERE gameID = ? ORDER BY teamID ASC, alias ASC;"
 		return search(gameID, query = query)
 	}
 
 	fun searchByTeam(teamID: Int): List<Player> {
-		val query = "SELECT * FROM $tableName WHERE teamID = ?"
+		val query = "SELECT * FROM $tableName WHERE teamID = ? ORDER By gameID ASC, alias ASC;"
 		return search(teamID, query = query)
 	}
 
