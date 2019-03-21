@@ -18,7 +18,7 @@
 				<div class="content">
 					<div class="header">Total Stars</div>
 					<div class="description">
-						<b>Total:</b> ${totalStars}<br />
+						<b>Total:</b> ${totalStars}<br/>
 						<b>Average:</b> ${totalStars/players?size}
 					</div>
 				</div>
@@ -27,7 +27,7 @@
 				<div class="content">
 					<div class="header">Total Ships</div>
 					<div class="description">
-						<b>Total:</b> ${totalShips}<br />
+						<b>Total:</b> ${totalShips}<br/>
 						<b>Average:</b> ${totalShips/players?size}
 					</div>
 				</div>
@@ -36,7 +36,7 @@
 				<div class="content">
 					<div class="header">Total Fleet</div>
 					<div class="description">
-						<b>Total:</b> ${totalFleet}<br />
+						<b>Total:</b> ${totalFleet}<br/>
 						<b>Average:</b> ${totalFleet/players?size}
 					</div>
 				</div>
@@ -45,7 +45,7 @@
 				<div class="content">
 					<div class="header">Total Economy</div>
 					<div class="description">
-						<b>Total:</b> ${totalEconomy}<br />
+						<b>Total:</b> ${totalEconomy}<br/>
 						<b>Average:</b> ${totalEconomy/players?size}
 					</div>
 				</div>
@@ -54,7 +54,7 @@
 				<div class="content">
 					<div class="header">Total Industry</div>
 					<div class="description">
-						<b>Total:</b> ${totalIndustry}<br />
+						<b>Total:</b> ${totalIndustry}<br/>
 						<b>Average:</b> ${totalIndustry/players?size}
 					</div>
 				</div>
@@ -63,7 +63,7 @@
 				<div class="content">
 					<div class="header">Total Science</div>
 					<div class="description">
-						<b>Total:</b> ${totalScience}<br />
+						<b>Total:</b> ${totalScience}<br/>
 						<b>Average:</b> ${totalScience/players?size}
 					</div>
 				</div>

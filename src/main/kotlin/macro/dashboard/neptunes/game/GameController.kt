@@ -57,7 +57,7 @@ internal object GameController {
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					Neptunes.getGame(gameID = game.ID, code = CONFIG.games[game.ID] ?: "")
 					game = GameTable.select(ID = param)
-						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
+							?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					call.respond(
 						message = game.toOutput(),
 						status = HttpStatusCode.OK

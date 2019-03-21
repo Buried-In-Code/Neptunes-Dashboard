@@ -79,8 +79,8 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tickRateCol] = update.tickRate
 				it[tradeCostCol] = update.tradeCost
 				it[startTimeCol] =
-					LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault())
-						.toJodaDateTime()
+						LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault())
+							.toJodaDateTime()
 				it[productionCol] = update.production
 				it[isGameOverCol] = update.gameOver == 1
 				it[isPausedCol] = update.isPaused
