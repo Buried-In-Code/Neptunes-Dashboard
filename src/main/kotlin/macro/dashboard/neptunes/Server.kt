@@ -183,7 +183,7 @@ fun Application.module() {
 			call.respond(
 				message = FreeMarkerContent(
 					template = "Player.ftl",
-					model = player.toOutput(showGame = true, showTeam = true, showTurns = false)
+					model = player.toOutput(showGame = true, showTeam = true, showTurns = true)
 				),
 				status = HttpStatusCode.OK
 			)
@@ -215,7 +215,7 @@ fun Application.module() {
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/players", resource = "static/players.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
-			resource(remotePath = "/documentation", resource = "static/documentation.html")
+			resource(remotePath = "/documentation", resource = "static/Neptunes-Dashboard.yaml")
 			resource(remotePath = "/about", resource = "static/about.html")
 		}
 	}

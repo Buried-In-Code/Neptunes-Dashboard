@@ -19,7 +19,6 @@
 			<th>Team</th>
 			<th>Stars</th>
 			<th>Ships</th>
-			<th>Fleet</th>
 			<th>Economy</th>
 			<th>Industry</th>
 			<th>Science</th>
@@ -31,6 +30,7 @@
 		<tr>
 			<th>Alias</th>
 			<th>Name</th>
+			<th>Team</th>
 			<th>Scanning</th>
 			<th>Hyperspace</th>
 			<th>Terraforming</th>
@@ -69,7 +69,6 @@ $(document).ready(function(){
 			{ "data" : "team" },
 			{ "data" : "turns.stars", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.ships", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.fleet", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.economy", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.industry", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.science", render: $.fn.dataTable.render.number( ',' ) }
@@ -93,6 +92,7 @@ $(document).ready(function(){
 		"columns" : [
 			{ "data" : "alias" },
 			{ "data" : "name" },
+			{ "data" : "team" },
 			{ "data" : "turns.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.tech.hyperspace", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.tech.terraforming", render: $.fn.dataTable.render.number( ',' ) },

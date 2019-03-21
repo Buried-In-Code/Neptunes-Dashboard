@@ -11,68 +11,129 @@
 <body>
 <div id="navbar"></div>
 <div class="ui container">
-	<div class="ui inverted container segment opacity">
-		<h1 class="ui center aligned header">${alias}</h1>
+	<div class="ui inverted segment opacity">
+		<h4 class="ui horizontal divider header">User</h4>
+		<div class="ui three stackable cards">
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Alias</div>
+					<div class="description">${alias}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Name</div>
+					<div class="description">${name!""}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Team</div>
+					<div class="description">${team.name}</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="ui four stackable cards">
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Name</div>
-				<div class="description">${name!""}</div>
+	<div class="ui inverted segment opacity">
+		<h4 class="ui horizontal divider header">Stats</h4>
+		<div class="ui four stackable cards">
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Stars</div>
+					<div class="description">${turns[0].stars}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Ships</div>
+					<div class="description">${turns[0].ships}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Fleet</div>
+					<div class="description">${turns[0].fleet}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Economy</div>
+					<div class="description">${turns[0].economy}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">$ Per Turn</div>
+					<div class="description"><i>${turns[0].economyPerTurn}</i></div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Industry</div>
+					<div class="description">${turns[0].industry}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Ships Per Turn</div>
+					<div class="description"><i>${turns[0].industryPerTurn}</i></div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Science</div>
+					<div class="description">${turns[0].science}</div>
+				</div>
 			</div>
 		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Team</div>
-				<div class="description">${team.name}</div>
-			</div>
+		<div class="chart-container">
+			<canvas height="200" id="statsLine" width="600"></canvas>
 		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Stars</div>
-				<div class="description">${turns.stars}</div>
+	</div>
+	<div class="ui inverted segment opacity">
+		<h4 class="ui horizontal divider header">Research</h4>
+		<div class="ui four stackable cards">
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Scanning</div>
+					<div class="description">${turns[0].tech.scanning}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Ships</div>
-				<div class="description">${turns.ships}</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Hyperspace Range</div>
+					<div class="description">${turns[0].tech.hyperspace}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Fleet</div>
-				<div class="description">${turns.fleet}</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Terraforming</div>
+					<div class="description">${turns[0].tech.terraforming}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Economy</div>
-				<div class="description">${turns.economy}</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Experimentation</div>
+					<div class="description">${turns[0].tech.experimentation}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">$ Per Turn</div>
-				<div class="description"><i>${turns.economyPerTurn}</i></div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Weapons</div>
+					<div class="description">${turns[0].tech.weapons}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Industry</div>
-				<div class="description">${turns.industry}</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Banking</div>
+					<div class="description">${turns[0].tech.banking}</div>
+				</div>
 			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Ships Per Turn</div>
-				<div class="description"><i>${turns.industryPerTurn}</i></div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Science</div>
-				<div class="description">${turns.science}</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Manufacturing</div>
+					<div class="description">${turns[0].tech.manufacturing}</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -87,6 +148,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
+	createStatsLine(${ID});
 });
 </script>
 </body>

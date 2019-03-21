@@ -188,3 +188,78 @@ function createPieGraph(labels, data){
 		}
 	});
 }
+
+function createStatsLine(ID){
+ 	$.ajax({
+ 	    url: "/api/players/" + ID,
+ 	    type: 'GET',
+ 	    contentType: 'application/json',
+ 	    dataType: 'json',
+ 	    success: function (data) {
+			var turnLabels = [];
+			var starData = [];
+			var economyData = [];
+			var industryData = [];
+			var scienceData = [];
+			var turns = data.turns.reverse()
+			for(count = 0; count < turns.length; count++){
+				var turn = turns[count];
+				turnLabels.push("Turn " + turn.tick/12);
+				starData.push(turn.stars);
+				economyData.push(turn.economy);
+				industryData.push(turn.industry);
+				scienceData.push(turn.science);
+			}
+			var dataset = [{
+				label: 'Stars',
+				fill: false,
+				backgroundColor: 'rgba(255,0,0,0.5)',
+				borderColor: 'rgba(255,0,0,1)',
+				data: starData
+			},{
+				label: 'Economy',
+				fill: false,
+				backgroundColor: 'rgba(255,215,0,0.5)',
+				borderColor: 'rgba(255,215,0,1)',
+				data: economyData
+			},{
+				label: 'Industry',
+				fill: false,
+				backgroundColor: 'rgba(0,128,0,0.5)',
+				borderColor: 'rgba(0,128,0,1)',
+				data: industryData
+			},{
+				label: 'Science',
+				fill: false,
+				backgroundColor: 'rgba(0,191,255,0.5)',
+				borderColor: 'rgba(0,191,255,1)',
+				data: scienceData
+			}];
+			createLineGraph("statsLine", turnLabels, dataset)
+ 	    },
+ 	    error: function(xhr, status, error){
+ 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+ 	    }
+ 	});
+}
+
+function createLineGraph(name, labels, dataset){
+	var ctx = document.getElementById(name);
+	var pieGraph = new Chart(ctx, {
+		type: 'line',
+		data: {
+            labels: labels,
+            datasets: dataset
+        },
+        options: {
+            legend: {
+                labels: {
+                    fontColor: "white",
+                    fontSize: 14
+                }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+	});
+}
