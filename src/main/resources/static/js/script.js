@@ -1,3 +1,35 @@
+function getBackgroundColour(index){
+	var colours = [
+		'rgba(255,0,0,0.5)',
+		'rgba(255,215,0,0.5)',
+		'rgba(0,128,0,0.5)',
+		'rgba(0,191,255,0.5)',
+		'rgba(128,0,128,0.5)',
+		'rgba(128,128,128,0.5)',
+		'rgba(160,82,45,0.5)'
+	]
+	while(index > colours.length){
+		index = index - colours.length;
+	}
+	return colours[index];
+}
+
+function getBorderColour(index){
+	var colours = [
+		'rgba(255,0,0,1)',
+		'rgba(255,215,0,1)',
+		'rgba(0,128,0,1)',
+		'rgba(0,191,255,1)',
+		'rgba(128,0,128,1)',
+		'rgba(128,128,128,1)',
+		'rgba(160,82,45,1)'
+	]
+	while(index > colours.length){
+		index = index - colours.length;
+	}
+	return colours[index];
+}
+
 function getGame(){
 	var gameStars = 700;
 	$.ajax({
@@ -43,45 +75,16 @@ function getAllTeamStars(totalStars){
             }else{
 				var teamLabels = [];
 				var teamData = [];
-				teamLabels.push("Stars Left");
-				teamData.push(1);
-				var starCount = 0;
-				for(count = 0; count < data.length; count++){
-					var team = data[count];
+				for(const team of data){
 					teamLabels.push(team.name);
 					var teamStars = 0;
-					for(playerCount = 0; playerCount < team.players.length; playerCount++){
-						var player = team.players[playerCount];
+					for(const player of team.players){
 						teamStars += player.turns[0].stars;
 					}
 					teamData.push(teamStars);
-					starCount += teamStars;
 				}
-				teamData[0] = totalStars - starCount;
 				createPieGraph(teamLabels, teamData);
 			}
- 	    },
- 	    error: function(xhr, status, error){
- 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
- 	    }
- 	});
-}
-
-function getTeamStars(ID){
- 	$.ajax({
- 	    url: "/api/teams/" + ID,
- 	    type: 'GET',
- 	    contentType: 'application/json',
- 	    dataType: 'json',
- 	    success: function (data) {
-			var playerLabels = [];
-			var playerData = [];
-			for(count = 0; count < data.players.length; count++){
-				var player = data.players[count];
-				playerLabels.push(player.alias);
-				playerData.push(player.turns[0].stars);
-			}
-			createPieGraph(playerLabels, playerData);
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -92,17 +95,151 @@ function getTeamStars(ID){
 function getAllPlayerStars(totalStars, data){
 	var playerLabels = [];
 	var playerData = [];
-	playerLabels.push("Stars Left");
-	playerData.push(1);
-	var starCount = 0;
 	for(count = 0; count < data.length; count++){
 		var player = data[count];
 		playerLabels.push(player.alias);
 		playerData.push(player.turns[0].stars);
-		starCount += player.turns[0].stars;
 	}
-	playerData[0] = totalStars - starCount;
 	createPieGraph(playerLabels, playerData);
+}
+
+function createPlayerStatsLine(ID){
+ 	$.ajax({
+ 	    url: "/api/players/" + ID,
+ 	    type: 'GET',
+ 	    contentType: 'application/json',
+ 	    dataType: 'json',
+ 	    success: function (data) {
+			var turnLabels = [];
+			var starData = [];
+			var economyData = [];
+			var industryData = [];
+			var scienceData = [];
+			var turns = data.turns.reverse()
+			for(const turn of turns){
+				turnLabels.push("Turn " + turn.tick/12);
+				starData.push(turn.stars);
+				economyData.push(turn.economy);
+				industryData.push(turn.industry);
+				scienceData.push(turn.science);
+			}
+			var dataset = [{
+				label: 'Stars',
+				fill: false,
+				backgroundColor: getBackgroundColour(0),
+				borderColor: getBorderColour(0),
+				data: starData,
+				steppedLine: false
+			},{
+				label: 'Economy',
+				fill: false,
+				backgroundColor: getBackgroundColour(1),
+				borderColor: getBorderColour(1),
+				data: economyData,
+				steppedLine: false
+			},{
+				label: 'Industry',
+				fill: false,
+				backgroundColor: getBackgroundColour(2),
+				borderColor: getBorderColour(2),
+				data: industryData,
+				steppedLine: false
+			},{
+				label: 'Science',
+				fill: false,
+				backgroundColor: getBackgroundColour(3),
+				borderColor: getBorderColour(3),
+				data: scienceData,
+				steppedLine: false
+			}];
+			createLineGraph("statsLine", turnLabels, dataset);
+ 	    },
+ 	    error: function(xhr, status, error){
+ 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+ 	    }
+ 	});
+}
+
+function createTeamStatLines(ID){
+ 	$.ajax({
+ 	    url: "/api/teams/" + ID,
+ 	    type: 'GET',
+ 	    contentType: 'application/json',
+ 	    dataType: 'json',
+ 	    success: function (data) {
+			var turnLabels = [];
+			var starSet = [];
+			var shipSet = [];
+			var economySet = [];
+			var industrySet = [];
+			var scienceSet = [];
+			for(const player of data.players){
+				var starData = [];
+				var shipData = [];
+				var economyData = [];
+				var industryData = [];
+				var scienceData = [];
+				for(const turn of player.turns.reverse()){
+					if(count == 0){
+						turnLabels.push("Turn " + turn.tick/12);
+					}
+					starData.push(turn.stars);
+					shipData.push(turn.ships);
+					economyData.push(turn.economy);
+					industryData.push(turn.industry);
+					scienceData.push(turn.science);
+				}
+				starSet.push({
+					label: player.alias + " (" + player.name + ")",
+					fill: false,
+					backgroundColor: getBackgroundColour(count),
+					borderColor: getBorderColour(count),
+					data: starData,
+					steppedLine: false
+				});
+				shipSet.push({
+					label: player.alias + " (" + player.name + ")",
+					fill: false,
+					backgroundColor: getBackgroundColour(count),
+					borderColor: getBorderColour(count),
+					data: shipData,
+					steppedLine: false
+				});
+				economySet.push({
+					label: player.alias + " (" + player.name + ")",
+					fill: false,
+					backgroundColor: getBackgroundColour(count),
+					borderColor: getBorderColour(count),
+					data: economyData,
+					steppedLine: false
+				});
+				industrySet.push({
+					label: player.alias + " (" + player.name + ")",
+					fill: false,
+					backgroundColor: getBackgroundColour(count),
+					borderColor: getBorderColour(count),
+					data: industryData,
+					steppedLine: false
+				});
+				scienceSet.push({
+					label: player.alias + " (" + player.name + ")",
+					fill: false,
+					backgroundColor: getBackgroundColour(count),
+					borderColor: getBorderColour(count),
+					data: scienceData,
+					steppedLine: false
+				});
+			}
+			createLineGraph("starLine", turnLabels, starSet);
+			createLineGraph("shipLine", turnLabels, shipSet);
+			createLineGraph("economyLine", turnLabels, economySet);
+			createLineGraph("industryLine", turnLabels, industrySet);
+			createLineGraph("scienceLine", turnLabels, scienceSet);
+ 	    },
+ 	    error: function(xhr, status, error){
+ 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+ 	    }
+ 	});
 }
 
 function createPieGraph(labels, data){
@@ -187,60 +324,6 @@ function createPieGraph(labels, data){
 			maintainAspectRatio: false
 		}
 	});
-}
-
-function createStatsLine(ID){
- 	$.ajax({
- 	    url: "/api/players/" + ID,
- 	    type: 'GET',
- 	    contentType: 'application/json',
- 	    dataType: 'json',
- 	    success: function (data) {
-			var turnLabels = [];
-			var starData = [];
-			var economyData = [];
-			var industryData = [];
-			var scienceData = [];
-			var turns = data.turns.reverse()
-			for(count = 0; count < turns.length; count++){
-				var turn = turns[count];
-				turnLabels.push("Turn " + turn.tick/12);
-				starData.push(turn.stars);
-				economyData.push(turn.economy);
-				industryData.push(turn.industry);
-				scienceData.push(turn.science);
-			}
-			var dataset = [{
-				label: 'Stars',
-				fill: false,
-				backgroundColor: 'rgba(255,0,0,0.5)',
-				borderColor: 'rgba(255,0,0,1)',
-				data: starData
-			},{
-				label: 'Economy',
-				fill: false,
-				backgroundColor: 'rgba(255,215,0,0.5)',
-				borderColor: 'rgba(255,215,0,1)',
-				data: economyData
-			},{
-				label: 'Industry',
-				fill: false,
-				backgroundColor: 'rgba(0,128,0,0.5)',
-				borderColor: 'rgba(0,128,0,1)',
-				data: industryData
-			},{
-				label: 'Science',
-				fill: false,
-				backgroundColor: 'rgba(0,191,255,0.5)',
-				borderColor: 'rgba(0,191,255,1)',
-				data: scienceData
-			}];
-			createLineGraph("statsLine", turnLabels, dataset)
- 	    },
- 	    error: function(xhr, status, error){
- 	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
- 	    }
- 	});
 }
 
 function createLineGraph(name, labels, dataset){

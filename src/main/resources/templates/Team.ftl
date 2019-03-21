@@ -11,68 +11,85 @@
 <body>
 <div id="navbar"></div>
 <div class="ui container">
-	<div class="ui inverted container segment opacity">
-		<h1 class="ui center aligned header">${name}</h1>
-	</div>
-	<div class="ui four stackable cards">
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Stars</div>
-				<div class="description"><b>Total:</b> ${totalStars}</div>
-				<div class="extra content"><b>Average:</b> ${totalStars/players?size}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Ships</div>
-				<div class="description"><b>Total:</b> ${totalShips}</div>
-				<div class="extra content"><b>Average:</b> ${totalShips/players?size}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Fleet</div>
-				<div class="description"><b>Total:</b> ${totalFleet}</div>
-				<div class="extra content"><b>Average:</b> ${totalFleet/players?size}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Economy</div>
-				<div class="description"><b>Total:</b> ${totalEconomy}</div>
-				<div class="extra content"><b>Average:</b> ${totalEconomy/players?size}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Industry</div>
-				<div class="description"><b>Total:</b> ${totalIndustry}</div>
-				<div class="extra content"><b>Average:</b> ${totalIndustry/players?size}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Total Science</div>
-				<div class="description"><b>Total:</b> ${totalScience}</div>
-				<div class="extra content"><b>Average:</b> ${totalScience/players?size}</div>
-			</div>
-		</div>
-		<#list players as player>
+	<div class="ui inverted segment opacity">
+		<h1 class="ui horizontal divider header">${name}</h1>
+		<div class="ui three stackable cards">
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">${player.alias} (${player.name!""})</div>
+					<div class="header">Total Stars</div>
 					<div class="description">
-						<b>Stars:</b> ${player.turns[0].stars}</br>
-						<b>Ships:</b> ${player.turns[0].ships}
+						<b>Total:</b> ${totalStars}<br />
+						<b>Average:</b> ${totalStars/players?size}
 					</div>
 				</div>
 			</div>
-		</#list>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Total Ships</div>
+					<div class="description">
+						<b>Total:</b> ${totalShips}<br />
+						<b>Average:</b> ${totalShips/players?size}
+					</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Total Fleet</div>
+					<div class="description">
+						<b>Total:</b> ${totalFleet}<br />
+						<b>Average:</b> ${totalFleet/players?size}
+					</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Total Economy</div>
+					<div class="description">
+						<b>Total:</b> ${totalEconomy}<br />
+						<b>Average:</b> ${totalEconomy/players?size}
+					</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Total Industry</div>
+					<div class="description">
+						<b>Total:</b> ${totalIndustry}<br />
+						<b>Average:</b> ${totalIndustry/players?size}
+					</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Total Science</div>
+					<div class="description">
+						<b>Total:</b> ${totalScience}<br />
+						<b>Average:</b> ${totalScience/players?size}
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="ui inverted container segment opacity">
-		<div class="ui center aligned large header">Star Distribution</div>
+	<div class="ui inverted segment opacity">
+		<h4 class="ui horizontal divider header">Stars</h4>
 		<div class="chart-container">
-			<canvas height="400" id="winPie" width="600"></canvas>
+			<canvas height="200" id="starLine" width="600"></canvas>
+		</div>
+		<h4 class="ui horizontal divider header">Ships</h4>
+		<div class="chart-container">
+			<canvas height="200" id="shipLine" width="600"></canvas>
+		</div>
+		<h4 class="ui horizontal divider header">Economy</h4>
+		<div class="chart-container">
+			<canvas height="200" id="economyLine" width="600"></canvas>
+		</div>
+		<h4 class="ui horizontal divider header">Industry</h4>
+		<div class="chart-container">
+			<canvas height="200" id="industryLine" width="600"></canvas>
+		</div>
+		<h4 class="ui horizontal divider header">Science</h4>
+		<div class="chart-container">
+			<canvas height="200" id="scienceLine" width="600"></canvas>
 		</div>
 	</div>
 </div>
@@ -86,7 +103,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	getTeamStars(${ID});
+	createTeamStatLines(${ID});
 });
 </script>
 </body>

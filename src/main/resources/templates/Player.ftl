@@ -148,7 +148,7 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	createStatsLine(${ID});
+	createPlayerStatsLine(${ID});
 });
 </script>
 </body>
