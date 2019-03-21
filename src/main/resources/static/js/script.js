@@ -173,7 +173,8 @@ function createTeamStatLines(ID){
 			var economySet = [];
 			var industrySet = [];
 			var scienceSet = [];
-			for(const player of data.players){
+			for(count = 0; count < data.players.length; count++){
+				var player = data.players[count];
 				var starData = [];
 				var shipData = [];
 				var economyData = [];
