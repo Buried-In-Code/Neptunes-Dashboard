@@ -12,20 +12,20 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Mar-04.
  */
 object TurnTable : IntIdTable(name = "Turn") {
-	private val playerCol: Column<EntityID<Int>> = reference(
+	private val playerCol = reference(
 		name = "playerID",
 		foreign = PlayerTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val tickCol: Column<Int> = integer(name = "tick")
-	private val economyCol: Column<Int> = integer(name = "economy")
-	private val industryCol: Column<Int> = integer(name = "industry")
-	private val scienceCol: Column<Int> = integer(name = "science")
-	private val starsCol: Column<Int> = integer(name = "stars")
-	private val fleetCol: Column<Int> = integer(name = "fleet")
-	private val shipsCol: Column<Int> = integer(name = "ships")
-	private val isActiveCol: Column<Boolean> = bool(name = "isActive")
+	private val tickCol = integer(name = "tick")
+	private val economyCol = integer(name = "economy")
+	private val industryCol = integer(name = "industry")
+	private val scienceCol = integer(name = "science")
+	private val starsCol = integer(name = "stars")
+	private val fleetCol = integer(name = "fleet")
+	private val shipsCol = integer(name = "ships")
+	private val isActiveCol = bool(name = "isActive")
 
 	private val LOGGER = LogManager.getLogger()
 
@@ -39,21 +39,21 @@ object TurnTable : IntIdTable(name = "Turn") {
 	fun select(ID: Int): Turn? = Util.query(description = "Select Turn by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+		}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
 	fun select(playerID: Int, tick: Int): Turn? =
 		Util.query(description = "Select Turn by Player: $playerID and Tick: $tick") {
 			select {
 				playerCol eq playerID and (tickCol eq tick)
-			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 		}
 
 	fun selectLatest(playerID: Int): Turn? =
 		Util.query(description = "Search for Latest Turn by Player: $playerID") {
 			select {
 				playerCol eq playerID
-			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+			}.orderBy(playerCol to SortOrder.ASC, tickCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 		}
 
 	fun searchByTick(tick: Int): List<Turn> = Util.query(description = "Search for Turns at Tick: $tick") {

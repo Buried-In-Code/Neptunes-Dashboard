@@ -13,13 +13,13 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Feb-11.
  */
 object TeamTable : IntIdTable(name = "Team") {
-	private val gameCol: Column<EntityID<Long>> = reference(
+	private val gameCol = reference(
 		name = "gameID",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val nameCol: Column<String> = text(name = "name")
+	private val nameCol = text(name = "name")
 
 	private val LOGGER = LogManager.getLogger()
 
@@ -33,14 +33,14 @@ object TeamTable : IntIdTable(name = "Team") {
 	fun select(ID: Int): Team? = Util.query(description = "Select Team by ID") {
 		select {
 			id eq ID
-		}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
+		}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 	}
 
 	fun select(gameID: Long, name: String): Team? =
 		Util.query(description = "Select Team by Game: $gameID and Name: $name") {
 			select {
 				gameCol eq gameID and (nameCol like name)
-			}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
+			}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 		}
 
 	fun searchByGame(gameID: Long): List<Team> =
@@ -86,6 +86,6 @@ object TeamTable : IntIdTable(name = "Team") {
 		name: String = this.name
 	) {
 		this.name = name
-		TeamTable.update(ID = this.ID, name = this.name)
+		TeamTable.update(ID = this.ID, name = name)
 	}
 }

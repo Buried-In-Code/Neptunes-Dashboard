@@ -34,14 +34,14 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	fun select(ID: Int): Technology? = Util.query(description = "Select Tech by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
+		}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 	}
 
 	fun select(turnID: Int, name: String): Technology? =
 		Util.query(description = "Select Tech by Turn: $turnID and name: $name") {
 			select {
 				turnCol eq turnID and (nameCol like name)
-			}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(1).firstOrNull()?.parse()
+			}.orderBy(turnCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 		}
 
 	fun searchByTurn(turnID: Int): List<Technology> = Util.query(description = "Search for Techs at Turn: $turnID") {

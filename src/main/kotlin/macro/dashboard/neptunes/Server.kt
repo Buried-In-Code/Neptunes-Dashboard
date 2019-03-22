@@ -41,6 +41,7 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
+		checkDatabase()
 	}
 
 	private fun loggerColours() {
@@ -222,7 +223,7 @@ fun Application.module() {
 }
 
 suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level.ERROR) {
-	if (request.local.uri.startsWith("/api") || request.contentType() == ContentType.Application.Json)
+	if (request.local.uri.startsWith(prefix = "/api") || request.contentType() == ContentType.Application.Json)
 		respond(message = error, status = error.code)
 	else
 		respond(

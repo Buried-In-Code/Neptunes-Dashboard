@@ -22,8 +22,9 @@ internal object TeamController {
 	fun Route.teamRoutes() {
 		route(path = "/{gameID}/teams") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
-				?: throw UnknownException(message = "Game Not Found")
+				val gameID = call.parameters["gameID"]?.toLongOrNull()
+					?: GameTable.selectLatest()?.ID
+					?: throw UnknownException(message = "Game Not Found")
 				val name = call.request.queryParameters["name"] ?: "%"
 				val teams = TeamTable.searchByGame(gameID = gameID)
 				call.respond(
@@ -38,8 +39,9 @@ internal object TeamController {
 			}
 			post {
 				val gameID =
-					call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
-					?: throw UnknownException(message = "Game Not Found")
+					call.parameters["gameID"]?.toLongOrNull()
+						?: GameTable.selectLatest()?.ID
+						?: throw UnknownException(message = "Game Not Found")
 				val request = call.receiveOrNull<TeamRequest>()
 					?: throw BadRequestException(message = "A body is required")
 				if (request.name == "")
@@ -49,7 +51,7 @@ internal object TeamController {
 					throw ConflictException(message = "A Team with the given Name: '${request.name}' already exists")
 				TeamTable.insert(gameID = gameID, name = request.name)
 				found = TeamTable.select(gameID = gameID, name = request.name)
-						?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
+					?: throw UnknownException(message = "Something has gone Wrong read the logs, call the wizard")
 				call.respond(
 					message = found.toOutput(showGame = true, showPlayers = true),
 					status = HttpStatusCode.Created

@@ -15,20 +15,20 @@ import org.jetbrains.exposed.sql.*
  * Created by Macro303 on 2019-Feb-11.
  */
 object PlayerTable : IntIdTable(name = "Player") {
-	private val gameCol: Column<EntityID<Long>> = reference(
+	private val gameCol = reference(
 		name = "gameID",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val teamCol: Column<EntityID<Int>> = reference(
+	private val teamCol = reference(
 		name = "teamID",
 		foreign = TeamTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val aliasCol: Column<String> = text(name = "alias")
-	private val nameCol: Column<String?> = text(name = "name").nullable()
+	private val aliasCol = text(name = "alias")
+	private val nameCol = text(name = "name").nullable()
 
 	private val LOGGER = LogManager.getLogger()
 
@@ -42,15 +42,15 @@ object PlayerTable : IntIdTable(name = "Player") {
 	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(1).firstOrNull()
-			?.parse()
+		}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
+			.firstOrNull()?.parse()
 	}
 
 	fun select(gameID: Long, alias: String): Player? =
 		Util.query(description = "Select Player by Game ID: $gameID and Alias: $alias") {
 			select {
 				gameCol eq gameID and (aliasCol like alias)
-			}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(1)
+			}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
 				.firstOrNull()?.parse()
 		}
 
@@ -107,8 +107,6 @@ object PlayerTable : IntIdTable(name = "Player") {
 		teamID: Int = this.teamID,
 		name: String? = this.name
 	) {
-		this.teamID = teamID
-		this.name = name
-		PlayerTable.update(ID = this.ID, teamID = this.teamID, name = this.name)
+		PlayerTable.update(ID = this.ID, teamID = teamID, name = name)
 	}
 }

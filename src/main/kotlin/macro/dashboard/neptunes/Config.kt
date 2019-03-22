@@ -34,7 +34,7 @@ class Config internal constructor(
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
 	val games: Map<Long, String> = games ?: mapOf(1L to "Key")
 
-	fun toMap(): Map<*, *> {
+	fun toMap(): Map<String, Any?> {
 		val data = mapOf(
 			"Database File" to databaseFile.path,
 			"Server" to mapOf(

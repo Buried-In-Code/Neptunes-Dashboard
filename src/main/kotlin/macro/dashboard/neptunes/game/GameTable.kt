@@ -50,11 +50,11 @@ object GameTable : LongIdTable(name = "Game") {
 	fun select(ID: Long): Game? = Util.query(description = "Select Game by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(startTimeCol, SortOrder.DESC).limit(1).firstOrNull()?.parse()
+		}.orderBy(startTimeCol, SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
 	fun selectLatest(): Game? = Util.query(description = "Select Latest Game") {
-		selectAll().orderBy(startTimeCol to SortOrder.DESC).limit(1).firstOrNull()?.parse()
+		selectAll().orderBy(startTimeCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
 	fun search(name: String = ""): List<Game> = Util.query(description = "Search for Games with name: $name") {
@@ -78,9 +78,9 @@ object GameTable : LongIdTable(name = "Game") {
 				it[productionRateCol] = update.productionRate
 				it[tickRateCol] = update.tickRate
 				it[tradeCostCol] = update.tradeCost
-				it[startTimeCol] =
-						LocalDateTime.ofInstant(Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault())
-							.toJodaDateTime()
+				it[startTimeCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.startTime), ZoneId.systemDefault()
+				).toJodaDateTime()
 				it[productionCol] = update.production
 				it[isGameOverCol] = update.gameOver == 1
 				it[isPausedCol] = update.isPaused

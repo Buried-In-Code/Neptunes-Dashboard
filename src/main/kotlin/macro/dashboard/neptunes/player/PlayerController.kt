@@ -25,8 +25,9 @@ internal object PlayerController {
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull() ?: GameTable.selectLatest()?.ID
-				?: throw UnknownException(message = "Game Not Found")
+				val gameID = call.parameters["gameID"]?.toLongOrNull()
+					?: GameTable.selectLatest()?.ID
+					?: throw UnknownException(message = "Game Not Found")
 				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.searchByGame(gameID = gameID)
 				call.respond(
@@ -49,8 +50,8 @@ internal object PlayerController {
 			put {
 				val ID = call.parameters["ID"]?.toIntOrNull()
 					?: throw BadRequestException(message = "Invalid ID")
-				val request =
-					call.receiveOrNull<PlayerRequest>() ?: throw BadRequestException(message = "A body is required")
+				val request = call.receiveOrNull<PlayerRequest>()
+					?: throw BadRequestException(message = "A body is required")
 				if (request.name == "")
 					throw BadRequestException(message = "name is required")
 				var player = PlayerTable.select(ID = ID)
@@ -61,7 +62,7 @@ internal object PlayerController {
 					null
 				player.update(name = request.name, teamID = team?.ID ?: player.teamID)
 				player = PlayerTable.select(ID = ID)
-						?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
+					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				call.respond(
 					message = player.toOutput(showGame = true, showTeam = true),
 					status = HttpStatusCode.OK
