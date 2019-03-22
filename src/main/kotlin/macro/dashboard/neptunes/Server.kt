@@ -202,12 +202,6 @@ fun Application.module() {
 				status = HttpStatusCode.OK
 			)
 		}
-		get(path = "/history") {
-			throw NotImplementedException()
-		}
-		get(path = "/settings") {
-			throw NotImplementedException()
-		}
 		static {
 			resources(resourcePackage = "static/images")
 			resources(resourcePackage = "static/css")
