@@ -52,7 +52,8 @@ $(document).ready(function(){
 			{ "data" : "totalEconomy", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "totalIndustry", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "totalScience", render: $.fn.dataTable.render.number( ',' ) }
-		]
+		],
+		"order": [[1, "desc"], [2, "desc"]]
 	});
 	$('#stats tbody').on('click', 'tr', function () {
         var data = stats_table.row( this ).data();
