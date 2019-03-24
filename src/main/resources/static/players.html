@@ -20,7 +20,9 @@
 			<th>Stars</th>
 			<th>Ships</th>
 			<th>Economy</th>
+			<th>$/Turn</th>
 			<th>Industry</th>
+			<th>Ships/Turn</th>
 			<th>Science</th>
 		</tr>
 		</thead>
@@ -70,7 +72,9 @@ $(document).ready(function(){
 			{ "data" : "turns.stars", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.ships", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.economy", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.economyPerTurn", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "turns.industry", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "turns.industryPerTurn", render: $.fn.dataTable.render.number( ',', '.', 2 ) },
 			{ "data" : "turns.science", render: $.fn.dataTable.render.number( ',' ) }
 		]
 	});

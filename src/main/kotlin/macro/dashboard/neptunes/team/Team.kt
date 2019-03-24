@@ -25,8 +25,14 @@ data class Team(
 	val totalEconomy: Int by lazy {
 		players.sumBy { it.latestTurn.economy }
 	}
+	val totalEconomyPerTurn: Double by lazy{
+		players.sumByDouble { it.latestTurn.economyPerTurn }
+	}
 	val totalIndustry: Int by lazy {
 		players.sumBy { it.latestTurn.industry }
+	}
+	val totalIndustryPerTurn: Double by lazy{
+		players.sumByDouble { it.latestTurn.industryPerTurn }
 	}
 	val totalScience: Int by lazy {
 		players.sumBy { it.latestTurn.science }
@@ -48,7 +54,9 @@ data class Team(
 			"game" to gameID,
 			"players" to players.map { it.ID },
 			"totalEconomy" to totalEconomy,
+			"totalEconomyPerTurn" to totalEconomyPerTurn,
 			"totalIndustry" to totalIndustry,
+			"totalIndustryPerTurn" to totalIndustryPerTurn,
 			"totalScience" to totalScience,
 			"totalStars" to totalStars,
 			"totalFleet" to totalFleet,

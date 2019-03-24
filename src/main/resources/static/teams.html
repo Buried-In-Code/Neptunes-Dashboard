@@ -18,7 +18,9 @@
 			<th>Total Stars</th>
 			<th>Total Ships</th>
 			<th>Total Economy</th>
+			<th>$/Turn</th>
 			<th>Total Industry</th>
+			<th>Ships/Turn</th>
 			<th>Total Science</th>
 		</tr>
 		</thead>
@@ -50,7 +52,9 @@ $(document).ready(function(){
 			{ "data" : "totalStars", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "totalShips", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "totalEconomy", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalEconomyPerTurn", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "totalIndustry", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "totalIndustryPerTurn", render: $.fn.dataTable.render.number( ',', '.', 2 ) },
 			{ "data" : "totalScience", render: $.fn.dataTable.render.number( ',' ) }
 		],
 		"order": [[1, "desc"], [2, "desc"]]

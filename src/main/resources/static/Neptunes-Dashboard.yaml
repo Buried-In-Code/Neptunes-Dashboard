@@ -420,8 +420,12 @@ components:
             type: integer
         totalEconomy:
           type: integer
+        totalEconomyPerTurn:
+          type: number
         totalIndustry:
           type: integer
+        totalIndustryPerTurn:
+          type: number
         totalScience:
           type: integer
         totalStars:
