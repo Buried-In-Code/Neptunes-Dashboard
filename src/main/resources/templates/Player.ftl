@@ -64,7 +64,7 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">$ Per Turn</div>
-					<div class="description"><i>${turns[0].economyPerTurn}</i></div>
+					<div class="description">${turns[0].economyPerTurn}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
@@ -76,7 +76,7 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Ships Per Turn</div>
-					<div class="description"><i>${turns[0].industryPerTurn}</i></div>
+					<div class="description">${turns[0].industryPerTurn}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
