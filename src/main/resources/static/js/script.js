@@ -39,7 +39,7 @@ function getGame(){
 	    contentType: 'application/json',
 	    dataType: 'json',
 	    success: function (data) {
-	        document.getElementById("gameName").innerHTML = data.name;
+	        document.getElementById("gameName").innerHTML = '<a href="https://np.ironhelmet.com/game/' + data.ID + '">' + data.name + '</a>';
 	        if(data.isStarted){
 	            document.getElementById("gameStarted").innerHTML = data.startTime;
             }else{
