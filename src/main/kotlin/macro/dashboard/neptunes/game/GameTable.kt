@@ -37,7 +37,7 @@ object GameTable : LongIdTable(name = "Game") {
 	private val tickFragmentCol = integer(name = "tickFragment")
 	private val tradeScannedCol = integer(name = "tradeScanned")
 	private val warCol = integer(name = "war")
-	private val turnBasedTimeoutCol = long(name = "turnBasedTimeout")
+	private val turnBasedTimeoutCol = datetime(name = "turnBasedTimeout")
 
 	private val LOGGER = LogManager.getLogger()
 
@@ -90,7 +90,9 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tickFragmentCol] = update.tickFragment
 				it[tradeScannedCol] = update.tradeScanned
 				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = update.turnBasedTimeout
+				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.systemDefault()
+				).toJodaDateTime()
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
 			true
@@ -114,7 +116,9 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tickFragmentCol] = update.tickFragment
 				it[tradeScannedCol] = update.tradeScanned
 				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = update.turnBasedTimeout
+				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.systemDefault()
+				).toJodaDateTime()
 			}
 			true
 		} catch (esqle: ExposedSQLException) {
@@ -143,6 +147,6 @@ object GameTable : LongIdTable(name = "Game") {
 		tickFragment = this[tickFragmentCol],
 		tradeScanned = this[tradeScannedCol],
 		war = this[warCol],
-		turnBasedTimeout = this[turnBasedTimeoutCol]
+		turnTimeout = this[turnBasedTimeoutCol].toJavaDateTime()
 	)
 }

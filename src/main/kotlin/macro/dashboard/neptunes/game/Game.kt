@@ -29,7 +29,7 @@ data class Game(
 	var tickFragment: Int,
 	var tradeScanned: Int,
 	var war: Int,
-	var turnBasedTimeout: Long
+	var turnTimeout: LocalDateTime
 ) {
 
 	fun toOutput(): Map<String, Any?> {
@@ -44,6 +44,7 @@ data class Game(
 			"isPaused" to isPaused,
 			"isStarted" to isStarted,
 			"tick" to tick,
+			"turnTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
 			"players" to PlayerTable.searchByGame(gameID = ID).size,
 			"teams" to TeamTable.searchByGame(gameID = ID).filterNot { it.players.isEmpty() }.size
 		).toMutableMap()
