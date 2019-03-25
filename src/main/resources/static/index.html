@@ -11,56 +11,61 @@
 <body>
 <div id="navbar"></div>
 <div class="ui container">
-	<div class="ui inverted container segment opacity">
-		<h1 class="ui center aligned header">Welcome to Neptune's Dashboard</h1>
-		<p><i>Put Welcome message here</i></p>
+	<div class="ui inverted segment opacity">
+		<h1 class="ui horizontal divider header">Welcome to Neptune's Dashboard</h1>
+		<div class="ui four stackable cards">
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Name</div>
+					<div class="description" id="gameName">{{Game Name}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Started</div>
+					<div class="description" id="gameStarted">{{Game Started}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Paused</div>
+					<div class="description" id="gamePaused">{{Game Paused}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header"># of Players</div>
+					<div class="description" id="gamePlayers">{{Game Players}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header"># of Teams</div>
+					<div class="description" id="gameTeams">{{Game Teams}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Stars to Win</div>
+					<div class="description" id="gameStars">{{Game Victory}}/{{Game Total}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Turn #</div>
+					<div class="description" id="gameTurn">{{Game Turn}}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Hours between Turns</div>
+					<div class="description" id="gameProductions">{{Game Productions}}</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="ui four stackable cards">
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Name</div>
-				<div class="description" id="gameName">{{Game Name}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Started</div>
-				<div class="description" id="gameStarted">{{Game Started}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Paused</div>
-				<div class="description" id="gamePaused">{{Game Paused}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header"># of Players</div>
-				<div class="description" id="gamePlayers">{{Game Players}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header"># of Teams</div>
-				<div class="description" id="gameTeams">{{Game Teams}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Stars to Win</div>
-				<div class="description" id="gameStars">{{Game Victory}}/{{Game Total}}</div>
-			</div>
-		</div>
-		<div class="ui orange card opacity">
-			<div class="content">
-				<div class="header">Turn #</div>
-				<div class="description" id="gameTurn">{{Game Turn}}</div>
-			</div>
-		</div>
-	</div>
 	<div class="ui inverted container segment opacity">
-		<div class="ui center aligned large header">Star Distribution</div>
+		<h2 class="ui horizontal divider header">Stars</h2>
 		<div class="chart-container">
 			<canvas height="400" id="winPie" width="600"></canvas>
 		</div>

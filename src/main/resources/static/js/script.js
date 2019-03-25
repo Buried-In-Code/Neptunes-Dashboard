@@ -54,6 +54,7 @@ function getGame(){
             }else{
                 document.getElementById("gameTurn").innerHTML = data.tick / 12;
             }
+            document.getElementById("gameProductions").innerHTML = data.productionRate
 	        gameStars = data.totalStars;
 	    },
 	    error: function(xhr, status, error){
