@@ -51,7 +51,7 @@ data class Turn(
 		economy * 10 + banking.value * 75
 	}
 	val industryPerTurn: Double by lazy {
-		industry * (manufacturing.value + 5) / (player.game.productionRate / 2)
+		industry * (manufacturing.value + 5) / 2
 	}
 
 	fun toOutput(): Map<String, Any?> {
