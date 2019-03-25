@@ -79,7 +79,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tickRateCol] = update.tickRate
 				it[tradeCostCol] = update.tradeCost
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("NST")
+					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 				it[productionCol] = update.production
 				it[isGameOverCol] = update.gameOver == 1
@@ -91,7 +91,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tradeScannedCol] = update.tradeScanned
 				it[warCol] = update.war
 				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("NST")
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
@@ -105,7 +105,7 @@ object GameTable : LongIdTable(name = "Game") {
 		try {
 			update({ id eq ID }) {
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("NST")
+					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 				it[productionCol] = update.production
 				it[isGameOverCol] = update.gameOver == 1
@@ -117,7 +117,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[tradeScannedCol] = update.tradeScanned
 				it[warCol] = update.war
 				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("NST")
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 			}
 			true
