@@ -25,7 +25,6 @@ internal object TeamController {
 				val gameID = call.parameters["gameID"]?.toLongOrNull()
 					?: GameTable.selectLatest()?.ID
 					?: throw UnknownException(message = "Game Not Found")
-				val name = call.request.queryParameters["name"] ?: "%"
 				val teams = TeamTable.searchByGame(gameID = gameID)
 				call.respond(
 					message = teams.filterNot { it.players.isEmpty() }.map {

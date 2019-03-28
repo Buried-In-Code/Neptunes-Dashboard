@@ -132,11 +132,6 @@ paths:
           required: true
           schema:
             type: number
-        - name: alias
-          in: query
-          description: Filter by alias
-          schema:
-            type: string
       responses:
         200:
           description: Success
@@ -230,11 +225,6 @@ paths:
           required: true
           schema:
             type: number
-        - name: name
-          in: query
-          description: Filter by name
-          schema:
-            type: string
       responses:
         200:
           description: Success

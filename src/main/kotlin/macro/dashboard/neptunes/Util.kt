@@ -44,16 +44,6 @@ object Util {
 		return transaction
 	}
 
-	@Throws(JsonSyntaxException::class)
-	internal fun String.JsonToMap(): Map<String, Any> {
-		if (this.isBlank()) return emptyMap()
-		val type = object : TypeToken<Map<String, Any>>() {
-		}.type
-		return GSON.fromJson(this, type) ?: emptyMap()
-	}
-
-	internal fun Any?.toJSON(): String = GSON.toJson(this)
-
 	internal fun DateTime.toJavaDateTime(): LocalDateTime {
 		val jodaString = this.toString(JODA_FORMATTER)
 		return LocalDateTime.parse(jodaString, JAVA_FORMATTER)

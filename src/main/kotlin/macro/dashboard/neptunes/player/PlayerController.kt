@@ -28,7 +28,6 @@ internal object PlayerController {
 				val gameID = call.parameters["gameID"]?.toLongOrNull()
 					?: GameTable.selectLatest()?.ID
 					?: throw UnknownException(message = "Game Not Found")
-				val alias = call.request.queryParameters["alias"] ?: ""
 				val players = PlayerTable.searchByGame(gameID = gameID)
 				call.respond(
 					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
