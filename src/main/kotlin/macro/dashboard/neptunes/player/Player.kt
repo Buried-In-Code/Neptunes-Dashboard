@@ -5,6 +5,7 @@ import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -46,5 +47,9 @@ data class Player(
 		if (showTurns)
 			output["turns"] = turns.map { it.toOutput() }
 		return output.toSortedMap()
+	}
+
+	companion object {
+		private val LOGGER = LogManager.getLogger()
 	}
 }

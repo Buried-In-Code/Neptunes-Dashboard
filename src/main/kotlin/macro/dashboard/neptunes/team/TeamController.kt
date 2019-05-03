@@ -26,6 +26,7 @@ internal object TeamController {
 					?: GameTable.selectLatest()?.ID
 					?: throw UnknownException(message = "Game Not Found")
 				val teams = TeamTable.searchByGame(gameID = gameID)
+				LOGGER.info("Teams: ${teams.filterNot { it.players.isEmpty() }.map { it.toOutput(showGame = false, showPlayers = true) }}")
 				call.respond(
 					message = teams.filterNot { it.players.isEmpty() }.map {
 						it.toOutput(

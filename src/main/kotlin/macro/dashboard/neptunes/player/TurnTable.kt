@@ -1,7 +1,8 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.PlayerUpdate
+import macro.dashboard.neptunes.backend.ProteusPlayer
+import macro.dashboard.neptunes.backend.TritonPlayer
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -72,7 +73,26 @@ object TurnTable : IntIdTable(name = "Turn") {
 		}
 	}
 
-	fun insert(playerID: Int, tick: Int, update: PlayerUpdate): Boolean = Util.query(description = "Insert Turn") {
+	fun insert(playerID: Int, tick: Int, update: TritonPlayer): Boolean = Util.query(description = "Insert Triton Turn") {
+		try {
+			insert {
+				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+				it[tickCol] = tick
+				it[economyCol] = update.economy
+				it[industryCol] = update.industry
+				it[scienceCol] = update.science
+				it[starsCol] = update.stars
+				it[fleetCol] = update.fleet
+				it[shipsCol] = update.ships
+				it[isActiveCol] = update.conceded == 0
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun insert(playerID: Int, tick: Int, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Turn") {
 		try {
 			insert {
 				it[playerCol] = EntityID(id = playerID, table = PlayerTable)

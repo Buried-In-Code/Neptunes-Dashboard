@@ -3,14 +3,13 @@ package macro.dashboard.neptunes.game
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.routing.Route
-import io.ktor.routing.get
-import io.ktor.routing.put
-import io.ktor.routing.route
+import io.ktor.routing.*
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.Config.Companion.CONFIG
+import macro.dashboard.neptunes.ConflictException
 import macro.dashboard.neptunes.NotFoundException
-import macro.dashboard.neptunes.backend.Neptunes
+import macro.dashboard.neptunes.backend.Proteus
+import macro.dashboard.neptunes.backend.Triton
 import org.apache.logging.log4j.LogManager
 
 /**
@@ -55,11 +54,31 @@ internal object GameController {
 						?: throw BadRequestException(message = "Invalid ID")
 					var game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
-					Neptunes.getGame(gameID = game.ID, code = CONFIG.games[game.ID] ?: "")
+					if (Triton.getGame(gameID = game.ID, code = CONFIG.games[param] ?: "") != true) {
+						LOGGER.info("Unable to parse trying again as Proteus")
+						Proteus.getGame(gameID = game.ID, code = CONFIG.games[param] ?: "")
+					}
 					game = GameTable.select(ID = param)
 						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
 					call.respond(
 						message = game.toOutput(),
+						status = HttpStatusCode.OK
+					)
+				}
+				post {
+					val param: Long = call.parameters["ID"]?.toLongOrNull()
+						?: throw BadRequestException(message = "Invalid ID")
+					var game = GameTable.select(ID = param)
+					if (game != null)
+						throw ConflictException(message = "Game with the given ID `$param` already exists")
+					if (Triton.getGame(gameID = param, code = CONFIG.games[param] ?: "") != true) {
+						LOGGER.info("Unable to parse trying again as Proteus")
+						Proteus.getGame(gameID = param, code = CONFIG.games[param] ?: "")
+					}
+					game = GameTable.select(ID = param)
+						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
+					call.respond(
+						message = game!!.toOutput(),
 						status = HttpStatusCode.OK
 					)
 				}

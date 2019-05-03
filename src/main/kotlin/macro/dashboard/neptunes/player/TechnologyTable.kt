@@ -1,7 +1,8 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.TechUpdate
+import macro.dashboard.neptunes.backend.ProteusTech
+import macro.dashboard.neptunes.backend.TritonTech
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -52,7 +53,21 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 		}
 	}
 
-	fun insert(turnID: Int, name: String, update: TechUpdate): Boolean = Util.query(description = "Insert Tech") {
+	fun insert(turnID: Int, name: String, update: TritonTech): Boolean = Util.query(description = "Insert Triton Tech") {
+		try {
+			insert {
+				it[turnCol] = EntityID(id = turnID, table = TurnTable)
+				it[nameCol] = name
+				it[valueCol] = update.value
+				it[levelCol] = update.level
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun insert(turnID: Int, name: String, update: ProteusTech): Boolean = Util.query(description = "Insert Proteus Tech") {
 		try {
 			insert {
 				it[turnCol] = EntityID(id = turnID, table = TurnTable)

@@ -2,7 +2,8 @@ package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.PlayerUpdate
+import macro.dashboard.neptunes.backend.ProteusPlayer
+import macro.dashboard.neptunes.backend.TritonPlayer
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
@@ -70,7 +71,22 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun insert(gameID: Long, update: PlayerUpdate): Boolean = Util.query(description = "Insert Player") {
+	fun insert(gameID: Long, update: TritonPlayer): Boolean = Util.query(description = "Insert Triton Player") {
+		val teamID = TeamTable.select(gameID = gameID, name = "Free For All")?.ID
+			?: throw GeneralException()
+		try {
+			insert {
+				it[gameCol] = EntityID(id = gameID, table = GameTable)
+				it[aliasCol] = update.alias
+				it[teamCol] = EntityID(id = teamID, table = TeamTable)
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
 		val teamID = TeamTable.select(gameID = gameID, name = "Free For All")?.ID
 			?: throw GeneralException()
 		try {

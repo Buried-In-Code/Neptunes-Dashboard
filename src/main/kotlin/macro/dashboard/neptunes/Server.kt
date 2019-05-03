@@ -42,6 +42,12 @@ object Server {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
 		checkDatabase()
+		CONFIG.games.onEach {
+			LOGGER.info("Game found in Config File: ${it.key}")
+		}
+		GameTable.search().onEach {
+			LOGGER.info("Game found in Database: ${it.ID}")
+		}
 	}
 
 	private fun loggerColours() {

@@ -5,6 +5,7 @@ import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -47,8 +48,8 @@ data class Team(
 		players.sumBy { it.latestTurn.ships }
 	}
 
-	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any> {
-		val output = mapOf(
+	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any?> {
+		val output = mapOf<String, Any?>(
 			"ID" to ID,
 			"name" to name,
 			"game" to gameID,
@@ -67,5 +68,9 @@ data class Team(
 		if (showPlayers)
 			output["players"] = players.map { it.toOutput(showGame = false, showTeam = false) }
 		return output.toSortedMap()
+	}
+
+	companion object {
+		private val LOGGER = LogManager.getLogger()
 	}
 }

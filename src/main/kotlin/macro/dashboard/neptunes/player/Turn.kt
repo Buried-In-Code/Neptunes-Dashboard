@@ -1,6 +1,7 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
+import org.apache.logging.log4j.LogManager
 
 /**
  * Created by Macro303 on 2019-Mar-04.
@@ -31,8 +32,8 @@ data class Turn(
 	val hyperspace: Technology by lazy {
 		technology.first { it.name == "propulsion" }
 	}
-	val terraforming: Technology by lazy {
-		technology.first { it.name == "terraforming" }
+	val terraforming: Technology? by lazy {
+		technology.firstOrNull { it.name == "terraforming" }
 	}
 	val experimentation: Technology by lazy {
 		technology.first { it.name == "research" }
@@ -55,7 +56,7 @@ data class Turn(
 	}
 
 	fun toOutput(): Map<String, Any?> {
-		val output = mapOf(
+		val output = mapOf<String, Any?>(
 			"tick" to tick,
 			"player" to playerID,
 			"economy" to economy,
@@ -70,7 +71,7 @@ data class Turn(
 			"tech" to mapOf(
 				"scanning" to scanning.level,
 				"hyperspace" to hyperspace.level,
-				"terraforming" to terraforming.level,
+				"terraforming" to (terraforming?.level ?: 0),
 				"experimentation" to experimentation.level,
 				"weapons" to weapons.level,
 				"banking" to banking.level,
@@ -78,5 +79,9 @@ data class Turn(
 			).toSortedMap()
 		).toMutableMap()
 		return output.toSortedMap()
+	}
+
+	companion object {
+		private val LOGGER = LogManager.getLogger()
 	}
 }

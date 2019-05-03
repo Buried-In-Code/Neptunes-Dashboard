@@ -3,7 +3,8 @@ package macro.dashboard.neptunes.game
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
-import macro.dashboard.neptunes.backend.GameUpdate
+import macro.dashboard.neptunes.backend.ProteusGame
+import macro.dashboard.neptunes.backend.TritonGame
 import macro.dashboard.neptunes.team.TeamTable
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
@@ -65,7 +66,7 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun insert(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Insert Game") {
+	fun insert(ID: Long, update: TritonGame): Boolean = Util.query(description = "Insert Triton Game") {
 		try {
 			insert {
 				it[id] = EntityID(ID, GameTable)
@@ -101,7 +102,68 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun update(ID: Long, update: GameUpdate): Boolean = Util.query(description = "Update Game") {
+	fun insert(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Insert Proteus Game") {
+		try {
+			insert {
+				it[id] = EntityID(ID, GameTable)
+				it[nameCol] = update.name
+				it[totalStarsCol] = update.totalStars
+				it[victoryStarsCol] = update.victoryStars
+				it[adminCol] = update.admin
+				it[fleetSpeedCol] = update.fleetSpeed
+				it[isTurnBasedCol] = update.turnBased == 1
+				it[productionRateCol] = update.productionRate
+				it[tickRateCol] = update.tickRate
+				it[tradeCostCol] = update.tradeCost
+				it[startTimeCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
+				).toJodaDateTime()
+				it[productionCol] = update.production
+				it[isGameOverCol] = update.gameOver == 1
+				it[isPausedCol] = update.isPaused
+				it[isStartedCol] = update.isStarted
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
+				).toJodaDateTime()
+			}
+			TeamTable.insert(gameID = ID, name = "Free For All")
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun update(ID: Long, update: TritonGame): Boolean = Util.query(description = "Update Triton Game") {
+		try {
+			update({ id eq ID }) {
+				it[startTimeCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
+				).toJodaDateTime()
+				it[productionCol] = update.production
+				it[isGameOverCol] = update.gameOver == 1
+				it[isPausedCol] = update.isPaused
+				it[isStartedCol] = update.isStarted
+				it[productionCounterCol] = update.productionCounter
+				it[tickCol] = update.tick
+				it[tickFragmentCol] = update.tickFragment
+				it[tradeScannedCol] = update.tradeScanned
+				it[warCol] = update.war
+				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
+				).toJodaDateTime()
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun update(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Update Proteus Game") {
 		try {
 			update({ id eq ID }) {
 				it[startTimeCol] = LocalDateTime.ofInstant(

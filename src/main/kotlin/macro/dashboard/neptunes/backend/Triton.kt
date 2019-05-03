@@ -12,13 +12,16 @@ import org.apache.logging.log4j.LogManager
 /**
  * Created by Macro303 on 2019-Feb-26.
  */
-object Neptunes {
+object Triton {
 	private val LOGGER = LogManager.getLogger()
 
-	fun getGame(gameID: Long, code: String) {
+	@Suppress("UNCHECKED_CAST")
+	fun getGame(gameID: Long, code: String): Boolean? {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
-			val game = Util.GSON.fromJson<GameUpdate>(response["Response"].toString(), GameUpdate::class.java)
+			if(response["Response"].toString().contains("fleet_price"))
+				return false
+			val game = Util.GSON.fromJson<TritonGame>(response["Response"].toString(), TritonGame::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
 			if (!valid)
 				GameTable.update(ID = gameID, update = game)
@@ -29,16 +32,18 @@ object Neptunes {
 						?: throw GeneralException()
 					TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
 					val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
-					update.tech.forEach { name, tech ->
-						TechnologyTable.insert(turnID = turn.ID, name = name, update = tech)
+					update.tech.forEach {
+						TechnologyTable.insert(turnID = turn.ID, name = it.key, update = it.value)
 					}
 				}
 			}
+			return true
 		}
+		return null
 	}
 }
 
-data class GameUpdate(
+data class TritonGame(
 	//fleets
 	@SerializedName(value = "fleet_speed")
 	val fleetSpeed: Double,
@@ -78,12 +83,12 @@ data class GameUpdate(
 	@SerializedName(value = "turn_based")
 	val turnBased: Int,
 	val war: Int,
-	val players: Map<String, PlayerUpdate>,
+	val players: Map<String, TritonPlayer>,
 	@SerializedName(value = "turn_based_time_out")
 	val turnBasedTimeout: Long
 )
 
-data class PlayerUpdate(
+data class TritonPlayer(
 	@SerializedName(value = "total_industry")
 	val industry: Int,
 	val regard: Int,
@@ -99,7 +104,7 @@ data class PlayerUpdate(
 	@SerializedName(value = "total_strength")
 	val ships: Int,
 	val alias: String,
-	val tech: Map<String, TechUpdate>,
+	val tech: Map<String, TritonTech>,
 	val avatar: Int,
 	val conceded: Int,
 	val ready: Int,
@@ -111,7 +116,7 @@ data class PlayerUpdate(
 	val karma: Int
 )
 
-data class TechUpdate(
+data class TritonTech(
 	val value: Double,
 	val level: Int
 )

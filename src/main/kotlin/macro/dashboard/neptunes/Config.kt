@@ -22,7 +22,7 @@ class Config internal constructor(
 	games: Map<Long, String>? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
-		null -> File("Neptunes-Dashboard.db")
+		null -> File("Triton-Dashboard.db")
 		else -> File(databaseFile)
 	}
 	val serverAddress: String = serverAddress ?: "localhost"
