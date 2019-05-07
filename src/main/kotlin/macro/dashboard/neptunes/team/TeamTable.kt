@@ -3,11 +3,11 @@ package macro.dashboard.neptunes.team
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Feb-11.
@@ -21,7 +21,7 @@ object TeamTable : IntIdTable(name = "Team") {
 	)
 	private val nameCol = text(name = "name")
 
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
 		Util.query(description = "Create Team table") {
@@ -53,7 +53,7 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 
 	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
-		val temp = gameID ?: GameTable.search().firstOrNull()?.ID ?: throw GeneralException()
+		val temp = gameID ?: GameTable.selectLatest()?.ID ?: throw GeneralException()
 		try {
 			insert {
 				it[gameCol] = EntityID(temp, GameTable)

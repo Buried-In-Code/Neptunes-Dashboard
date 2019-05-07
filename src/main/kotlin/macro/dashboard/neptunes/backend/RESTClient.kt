@@ -3,15 +3,17 @@ package macro.dashboard.neptunes.backend
 import com.mashape.unirest.http.Unirest
 import macro.dashboard.neptunes.Config.Companion.CONFIG
 import org.apache.http.HttpHost
-import org.apache.logging.log4j.LogManager
+import org.json.JSONException
+import org.slf4j.LoggerFactory
 import khttp.post as httpPost
 
 /**
  * Created by Macro303 on 2019-Feb-26.
  */
 object RESTClient {
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	private val HEADERS = mapOf(
+		"Accept" to "application/json",
 		"Content-Type" to "application/json",
 		"User-Agent" to "Neptune's Dashboard"
 	)
@@ -35,10 +37,17 @@ object RESTClient {
 			)
 		)
 		LOGGER.info("KHttp - $url: ${response.statusCode}")
-		return mapOf(
-			"Code" to response.statusCode,
-			"Response" to response.jsonObject["scanning_data"].toString()
-		)
+		return try {
+			mapOf(
+				"Code" to response.statusCode,
+				"Response" to response.jsonObject["scanning_data"].toString()
+			)
+		} catch (je: JSONException) {
+			mapOf(
+				"Code" to response.statusCode,
+				"Response" to response.jsonObject
+			)
+		}
 	}
 
 	private fun unirestRequest(url: String, gameID: Long, code: String): Map<String, Any> {
@@ -51,9 +60,16 @@ object RESTClient {
 			.body("--$boundary\r\nContent-Disposition: form-data; name=\"api_version\"\r\n\r\n0.1\r\n--$boundary\r\nContent-Disposition: form-data; name=\"game_number\"\r\n\r\n$gameID\r\n--$boundary\r\nContent-Disposition: form-data; name=\"code\"\r\n\r\n$code\r\n--$boundary--")
 			.asJson()
 		LOGGER.info("Unirest - $url: ${response.status}")
-		return mapOf(
-			"Code" to response.status,
-			"Response" to response.body.`object`["scanning_data"].toString()
-		)
+		return try {
+			mapOf(
+				"Code" to response.status,
+				"Response" to response.body.`object`["scanning_data"].toString()
+			)
+		} catch (je: JSONException) {
+			mapOf(
+				"Code" to response.status,
+				"Response" to response.body.`object`
+			)
+		}
 	}
 }

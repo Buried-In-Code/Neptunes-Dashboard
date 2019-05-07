@@ -17,12 +17,14 @@ import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
+import io.ktor.routing.accept
 import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.Server.LOGGER
+import macro.dashboard.neptunes.backend.Proteus
+import macro.dashboard.neptunes.backend.Triton
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
@@ -31,23 +33,20 @@ import macro.dashboard.neptunes.player.TechnologyTable
 import macro.dashboard.neptunes.player.TurnTable
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.exists
+import org.slf4j.LoggerFactory
+import org.slf4j.event.Level
+import kotlin.system.exitProcess
 
 object Server {
-	internal val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		loggerColours()
 		checkDatabase()
-		CONFIG.games.onEach {
-			LOGGER.info("Game found in Config File: ${it.key}")
-		}
-		GameTable.search().onEach {
-			LOGGER.info("Game found in Database: ${it.ID}")
-		}
+		checkConfigGames()
+		cleanupFinishedGames()
 	}
 
 	private fun loggerColours() {
@@ -56,7 +55,6 @@ object Server {
 		LOGGER.info("INFO is Visible")
 		LOGGER.warn("WARN is Visible")
 		LOGGER.error("ERROR is Visible")
-		LOGGER.fatal("FATAL is Visible")
 	}
 
 	private fun checkDatabase() {
@@ -66,6 +64,34 @@ object Server {
 			TurnTable.exists()
 			TeamTable.exists()
 			TechnologyTable.exists()
+		}
+	}
+
+	private fun checkConfigGames() {
+		if (CONFIG.games.isEmpty()) {
+			LOGGER.error("There are no games in the Config.yaml, please add a game and restart")
+			exitProcess(status = 1)
+		}
+		CONFIG.games.onEach {
+			val game = GameTable.select(ID = it.key)
+			if (game == null) {
+				if (Triton.getGame(gameID = it.key, code = it.value) != true)
+					if (Proteus.getGame(gameID = it.key, code = it.value) != true) {
+						LOGGER.error("Failed Game Load: ${it.key} - ${it.value}")
+						return@onEach
+					}
+				LOGGER.info("New Game Loaded: ${it.key}")
+			}
+		}
+	}
+
+	private fun cleanupFinishedGames() {
+		GameTable.searchAll().onEach {
+			if (!it.isGameOver)
+				return@onEach
+			PlayerTable.searchByGame(gameID = it.ID).onEach {
+				//TODO Delete turn except latest
+			}
 		}
 	}
 
@@ -81,6 +107,9 @@ object Server {
 }
 
 fun Application.module() {
+	install(CallLogging) {
+		level = Level.INFO
+	}
 	install(ContentNegotiation) {
 		gson {
 			setPrettyPrinting()
@@ -89,7 +118,7 @@ fun Application.module() {
 		}
 	}
 	install(DefaultHeaders) {
-		header(name = HttpHeaders.Server, value = "Ktor-BIT269")
+		header(name = HttpHeaders.Server, value = "Neptunes-Dashboard")
 		header(name = "Developer", value = "Macro303")
 		header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
 	}
@@ -108,7 +137,7 @@ fun Application.module() {
 				message = it.message ?: "",
 				cause = it
 			)
-			call.respond(error = error, logLevel = Level.FATAL)
+			call.respond(error = error, logLevel = Level.ERROR)
 		}
 		exception<BadRequestException> {
 			val error = ErrorMessage(
@@ -124,15 +153,7 @@ fun Application.module() {
 				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
 				message = it.message
 			)
-			call.respond(error = error)
-		}
-		exception<NotFoundException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.NotFound,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.message
-			)
-			call.respond(error = error, logLevel = Level.WARN)
+			call.respond(error = error, logLevel = Level.ERROR)
 		}
 		exception<ConflictException> {
 			val error = ErrorMessage(
@@ -158,32 +179,37 @@ fun Application.module() {
 			)
 			call.respond(error = error, logLevel = Level.WARN)
 		}
+		status(HttpStatusCode.NotAcceptable) {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotAcceptable,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = "Invalid Accept Header"
+			)
+			call.respond(error = error, logLevel = Level.WARN)
+		}
 	}
 	intercept(ApplicationCallPipeline.Monitoring) {
-		LOGGER.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")
-	}
-	intercept(ApplicationCallPipeline.Fallback) {
-		val statusCode = call.response.status() ?: HttpStatusCode.NotFound
-		val logMessage = "$statusCode: ${call.request.httpMethod.value} - ${call.request.uri}"
-		if (statusCode.value < 400)
-			LOGGER.info(logMessage)
+		application.log.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Accept: ${call.request.accept()}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")
 	}
 	install(Routing) {
-		trace { LOGGER.trace(it.buildText()) }
+		trace { application.log.trace(it.buildText()) }
 		route(path = "/api") {
 			intercept(ApplicationCallPipeline.Features) {
-				if (call.request.contentType() != ContentType.Application.Json)
-					throw BadRequestException(message = "The API requires the use of the header 'Content-Type' as 'application/json'")
-				val authorization = call.request.header(name = "Authorization")
-				if (call.request.httpMethod != HttpMethod.Get && authorization != "Basic VXNlcm5hbWU6UGFzc3dvcmQ=")
-					throw UnauthorizedException(message = "You are not Authorized to use this endpoint")
+				if (call.request.httpMethod != HttpMethod.Get) {
+					val authorization = call.request.header(name = "Authorization")
+					application.log.debug("Authorization Check => ${authorization != "Basic QWRtaW46QWRtaW4="}")
+					if (authorization != "Basic QWRtaW46QWRtaW4=")
+						throw UnauthorizedException(message = "You are not Authorized to use this endpoint")
+				}
 			}
-			gameRoutes()
-			playerRoutes()
-			teamRoutes()
+			accept(ContentType.Application.Json) {
+				gameRoutes()
+				playerRoutes()
+				teamRoutes()
+			}
 		}
 		get(path = "/players/{alias}") {
-			val gameID = GameTable.selectLatest()?.ID ?: throw UnknownException(message = "Game Not Found")
+			val gameID = GameTable.selectLatest().ID
 			val alias = call.parameters["alias"] ?: "%"
 			val player = PlayerTable.select(gameID = gameID, alias = alias)
 				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
@@ -196,7 +222,7 @@ fun Application.module() {
 			)
 		}
 		get(path = "/teams/{name}") {
-			val gameID = GameTable.selectLatest()?.ID ?: throw UnknownException(message = "Game Not Found")
+			val gameID = GameTable.selectLatest().ID
 			val name = call.parameters["name"] ?: "%"
 			val team = TeamTable.select(gameID = gameID, name = name)
 				?: throw NotFoundException(message = "No Team was found with the given name '$name'")
@@ -222,8 +248,8 @@ fun Application.module() {
 	}
 }
 
-suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level.ERROR) {
-	if (request.local.uri.startsWith(prefix = "/api") || request.contentType() == ContentType.Application.Json)
+suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level) {
+	if (request.local.uri.startsWith(prefix = "/api"))
 		respond(message = error, status = error.code)
 	else
 		respond(
@@ -231,8 +257,8 @@ suspend fun ApplicationCall.respond(error: ErrorMessage, logLevel: Level = Level
 			status = error.code
 		)
 	when (logLevel) {
-		Level.WARN -> LOGGER.warn("${error.code}: ${request.httpMethod.value} - ${request.uri}")
-		Level.ERROR -> LOGGER.error("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
-		Level.FATAL -> LOGGER.fatal("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
+		Level.WARN -> application.log.warn("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
+		Level.ERROR -> application.log.error("${error.code}: ${request.httpMethod.value} - ${request.uri} - ${error.message}")
+		else -> application.log.info("${error.code}: ${request.httpMethod.value} - ${request.uri}")
 	}
 }

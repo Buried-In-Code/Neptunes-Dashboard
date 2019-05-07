@@ -6,11 +6,11 @@ import macro.dashboard.neptunes.backend.ProteusPlayer
 import macro.dashboard.neptunes.backend.TritonPlayer
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Feb-11.
@@ -31,7 +31,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 	private val aliasCol = text(name = "alias")
 	private val nameCol = text(name = "name").nullable()
 
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
 		Util.query(description = "Create Player table") {

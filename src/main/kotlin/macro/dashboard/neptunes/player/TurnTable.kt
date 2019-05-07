@@ -3,11 +3,11 @@ package macro.dashboard.neptunes.player
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusPlayer
 import macro.dashboard.neptunes.backend.TritonPlayer
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Mar-04.
@@ -28,7 +28,7 @@ object TurnTable : IntIdTable(name = "Turn") {
 	private val shipsCol = integer(name = "ships")
 	private val isActiveCol = bool(name = "isActive")
 
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
 		Util.query(description = "Create Turn table") {
@@ -73,43 +73,45 @@ object TurnTable : IntIdTable(name = "Turn") {
 		}
 	}
 
-	fun insert(playerID: Int, tick: Int, update: TritonPlayer): Boolean = Util.query(description = "Insert Triton Turn") {
-		try {
-			insert {
-				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
-				it[tickCol] = tick
-				it[economyCol] = update.economy
-				it[industryCol] = update.industry
-				it[scienceCol] = update.science
-				it[starsCol] = update.stars
-				it[fleetCol] = update.fleet
-				it[shipsCol] = update.ships
-				it[isActiveCol] = update.conceded == 0
+	fun insert(playerID: Int, tick: Int, update: TritonPlayer): Boolean =
+		Util.query(description = "Insert Triton Turn") {
+			try {
+				insert {
+					it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+					it[tickCol] = tick
+					it[economyCol] = update.economy
+					it[industryCol] = update.industry
+					it[scienceCol] = update.science
+					it[starsCol] = update.stars
+					it[fleetCol] = update.fleet
+					it[shipsCol] = update.ships
+					it[isActiveCol] = update.conceded == 0
+				}
+				true
+			} catch (esqle: ExposedSQLException) {
+				false
 			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
 		}
-	}
 
-	fun insert(playerID: Int, tick: Int, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Turn") {
-		try {
-			insert {
-				it[playerCol] = EntityID(id = playerID, table = PlayerTable)
-				it[tickCol] = tick
-				it[economyCol] = update.economy
-				it[industryCol] = update.industry
-				it[scienceCol] = update.science
-				it[starsCol] = update.stars
-				it[fleetCol] = update.fleet
-				it[shipsCol] = update.ships
-				it[isActiveCol] = update.conceded == 0
+	fun insert(playerID: Int, tick: Int, update: ProteusPlayer): Boolean =
+		Util.query(description = "Insert Proteus Turn") {
+			try {
+				insert {
+					it[playerCol] = EntityID(id = playerID, table = PlayerTable)
+					it[tickCol] = tick
+					it[economyCol] = update.economy
+					it[industryCol] = update.industry
+					it[scienceCol] = update.science
+					it[starsCol] = update.stars
+					it[fleetCol] = update.fleet
+					it[shipsCol] = update.ships
+					it[isActiveCol] = update.conceded == 0
+				}
+				true
+			} catch (esqle: ExposedSQLException) {
+				false
 			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
 		}
-	}
 
 	private fun ResultRow.parse(): Turn = Turn(
 		ID = this[id].value,

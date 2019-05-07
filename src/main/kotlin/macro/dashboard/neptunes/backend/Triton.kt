@@ -7,19 +7,19 @@ import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TechnologyTable
 import macro.dashboard.neptunes.player.TurnTable
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Feb-26.
  */
 object Triton {
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	@Suppress("UNCHECKED_CAST")
 	fun getGame(gameID: Long, code: String): Boolean? {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
-			if(response["Response"].toString().contains("fleet_price"))
+			if (response["Response"].toString().contains("fleet_price"))
 				return false
 			val game = Util.GSON.fromJson<TritonGame>(response["Response"].toString(), TritonGame::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
@@ -49,8 +49,7 @@ data class TritonGame(
 	val fleetSpeed: Double,
 	@SerializedName(value = "paused")
 	val isPaused: Boolean,
-	@SerializedName(value = "productions")
-	val production: Int,
+	val productions: Int,
 	@SerializedName(value = "tick_fragment")
 	val tickFragment: Int,
 	val now: Long,

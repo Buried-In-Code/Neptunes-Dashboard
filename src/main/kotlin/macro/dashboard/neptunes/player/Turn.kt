@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Mar-04.
@@ -82,6 +82,6 @@ data class Turn(
 	}
 
 	companion object {
-		private val LOGGER = LogManager.getLogger()
+		private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	}
 }

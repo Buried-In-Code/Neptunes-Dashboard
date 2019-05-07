@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes
 
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -51,7 +51,7 @@ class Config internal constructor(
 	}
 
 	companion object {
-		private val LOGGER = LogManager.getLogger()
+		private val LOGGER = LoggerFactory.getLogger(this::class.java)
 		private val CONFIG_FILE: File = File("config.yaml")
 		private val options: DumperOptions by lazy {
 			val options = DumperOptions()

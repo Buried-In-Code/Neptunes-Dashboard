@@ -1,16 +1,14 @@
 package macro.dashboard.neptunes
 
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +18,7 @@ import java.time.temporal.ChronoUnit
  * Created by Macro303 on 2018-Nov-12.
  */
 object Util {
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	private const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
 	internal val GSON = GsonBuilder()

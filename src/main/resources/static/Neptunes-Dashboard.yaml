@@ -1,9 +1,9 @@
-openapi: 3.0.1
+openapi: 3.0.2
 info:
   title: Neptune's Dashboard
   contact:
     email: JonahJ@datacom.co.nz
-  version: "2"
+  version: "2.1"
 servers:
   - url: https://neptunes-dashboard.bitcloud.nz
 tags:
@@ -14,16 +14,16 @@ tags:
   - name: Team
     description: Team Information
 paths:
-  /api/game:
+  /api/games:
     get:
       tags:
         - Game
-      summary: Gets All Games
-      operationId: getGames
+      summary: Get All Games
       parameters:
-        - name: name
-          in: query
-          description: Filter by name
+        - name: Accept
+          in: header
+          description: Accept Header
+          required: true
           schema:
             type: string
       responses:
@@ -45,8 +45,7 @@ paths:
     get:
       tags:
         - Game
-      summary: Get Latest Game
-      operationId: getLatestGame
+      summary: Get Latest Game by Start Time
       responses:
         200:
           description: Success
@@ -60,16 +59,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/games/{ID}:
+  /api/games/{gameID}:
     get:
       tags:
         - Game
       summary: Get Game by ID
-      operationId: getGameByID
       parameters:
-        - name: ID
+        - name: gameID
           in: path
-          description: ID of Game to return
+          description: ID of Game
           required: true
           schema:
             type: number
@@ -90,11 +88,10 @@ paths:
       tags:
         - Game
       summary: Update Game
-      operationId: updateGame
       parameters:
-        - name: ID
+        - name: gameID
           in: path
-          description: ID of Game to update
+          description: ID of Game
           required: true
           schema:
             type: number
@@ -123,8 +120,7 @@ paths:
     get:
       tags:
         - Player
-      summary: Gets All Players from Game with ID or latest Game
-      operationId: getPlayers
+      summary: Gets All Players from Game with ID
       parameters:
         - name: gameID
           in: path
@@ -147,16 +143,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /api/players/{ID}:
+  /api/players/{playerID}:
     get:
       tags:
         - Player
       summary: Get Player by ID
-      operationId: getPlayerByID
       parameters:
-        - name: ID
+        - name: playerID
           in: path
-          description: ID of Player to return
+          description: ID of Player
           required: true
           schema:
             type: number
@@ -177,11 +172,10 @@ paths:
       tags:
         - Player
       summary: Update Player
-      operationId: updatePlayer
       parameters:
-        - name: ID
+        - name: playerID
           in: path
-          description: ID of Player to update
+          description: ID of Player
           required: true
           schema:
             type: number

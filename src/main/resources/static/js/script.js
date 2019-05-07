@@ -36,16 +36,19 @@ function getGame(){
 		async: false,
 	    url: '/api/games/latest',
 	    type: 'GET',
-	    contentType: 'application/json',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
 	    dataType: 'json',
 	    success: function (data) {
 	        document.getElementById("gameName").innerHTML = '<a href="https://np.ironhelmet.com/game/' + data.ID + '">' + data.name + '</a>';
+	        document.getElementById("gameType").innerHTML = data.gameType
 	        if(data.isStarted){
 	            document.getElementById("gameStarted").innerHTML = data.startTime;
             }else{
                 document.getElementById("gameStarted").innerHTML = "false";
             }
-	        document.getElementById("gamePaused").innerHTML = data.isPaused;
 	        document.getElementById("gamePlayers").innerHTML = data.players;
 	        document.getElementById("gameTeams").innerHTML = data.teams;
 	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
@@ -54,7 +57,11 @@ function getGame(){
             }else{
                 document.getElementById("gameTurn").innerHTML = data.tick / 12;
             }
-            document.getElementById("gameTurnTime").innerHTML = data.turnTimeout;
+	        if(data.isPaused){
+	            document.getElementById("gameState").innerHTML = "Paused"
+            }else{
+                document.getElementById("gameState").innerHTML = data.turnTimeout;
+            }
 	        gameStars = data.totalStars;
 	    },
 	    error: function(xhr, status, error){
@@ -68,7 +75,10 @@ function getAllTeamStars(totalStars){
  	$.ajax({
  	    url: "/api/latest/teams",
  	    type: 'GET',
- 	    contentType: 'application/json',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
  	    dataType: 'json',
  	    success: function (data) {
 	        if(data.length <= 1){
@@ -108,7 +118,10 @@ function createPlayerStatsLine(ID){
  	$.ajax({
  	    url: "/api/players/" + ID,
  	    type: 'GET',
- 	    contentType: 'application/json',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
  	    dataType: 'json',
  	    success: function (data) {
 			var turnLabels = [];
@@ -165,7 +178,10 @@ function createTeamStatLines(ID){
  	$.ajax({
  	    url: "/api/teams/" + ID,
  	    type: 'GET',
- 	    contentType: 'application/json',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
  	    dataType: 'json',
  	    success: function (data) {
 			var turnLabels = [];

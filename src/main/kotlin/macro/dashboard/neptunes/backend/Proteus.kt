@@ -7,17 +7,20 @@ import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TechnologyTable
 import macro.dashboard.neptunes.player.TurnTable
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Feb-26.
  */
 object Proteus {
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
-	fun getGame(gameID: Long, code: String) {
+	@Suppress("UNCHECKED_CAST")
+	fun getGame(gameID: Long, code: String): Boolean? {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
+			if (!response["Response"].toString().contains("fleet_price"))
+				return false
 			val game = Util.GSON.fromJson<ProteusGame>(response["Response"].toString(), ProteusGame::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
 			if (!valid)
@@ -34,7 +37,9 @@ object Proteus {
 					}
 				}
 			}
+			return true
 		}
+		return null
 	}
 }
 
@@ -44,8 +49,7 @@ data class ProteusGame(
 	val fleetSpeed: Double,
 	@SerializedName(value = "paused")
 	val isPaused: Boolean,
-	@SerializedName(value = "productions")
-	val production: Int,
+	val productions: Int,
 	@SerializedName(value = "fleet_price")
 	val fleetPrice: Int,
 	@SerializedName(value = "tick_fragment")

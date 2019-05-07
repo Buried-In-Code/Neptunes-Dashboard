@@ -1,6 +1,7 @@
 package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.GeneralException
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Mar-08.
@@ -26,5 +27,9 @@ data class Technology(
 			"level" to level
 		).toMutableMap()
 		return output.toSortedMap()
+	}
+
+	companion object {
+		private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	}
 }

@@ -10,24 +10,23 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.NotFoundException
-import macro.dashboard.neptunes.UnknownException
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable.update
 import macro.dashboard.neptunes.team.TeamTable
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-16.
  */
 internal object PlayerController {
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	fun Route.playerRoutes() {
 		route(path = "/{gameID}/players") {
 			get {
 				val gameID = call.parameters["gameID"]?.toLongOrNull()
 					?: GameTable.selectLatest()?.ID
-					?: throw UnknownException(message = "Game Not Found")
+					?: throw NotFoundException(message = "Game Not Found")
 				val players = PlayerTable.searchByGame(gameID = gameID)
 				call.respond(
 					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },

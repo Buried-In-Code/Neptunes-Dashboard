@@ -5,7 +5,7 @@ import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
-import org.apache.logging.log4j.LogManager
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -71,6 +71,6 @@ data class Team(
 	}
 
 	companion object {
-		private val LOGGER = LogManager.getLogger()
+		private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	}
 }

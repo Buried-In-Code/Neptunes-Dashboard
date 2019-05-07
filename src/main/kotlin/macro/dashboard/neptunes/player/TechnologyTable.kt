@@ -3,11 +3,11 @@ package macro.dashboard.neptunes.player
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusTech
 import macro.dashboard.neptunes.backend.TritonTech
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
+import org.slf4j.LoggerFactory
 
 /**
  * Created by Macro303 on 2019-Mar-08.
@@ -23,7 +23,7 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 	private val valueCol = double(name = "value")
 	private val levelCol = integer(name = "level")
 
-	private val LOGGER = LogManager.getLogger()
+	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
 		Util.query(description = "Create Tech table") {
@@ -53,33 +53,35 @@ object TechnologyTable : IntIdTable(name = "Technology") {
 		}
 	}
 
-	fun insert(turnID: Int, name: String, update: TritonTech): Boolean = Util.query(description = "Insert Triton Tech") {
-		try {
-			insert {
-				it[turnCol] = EntityID(id = turnID, table = TurnTable)
-				it[nameCol] = name
-				it[valueCol] = update.value
-				it[levelCol] = update.level
+	fun insert(turnID: Int, name: String, update: TritonTech): Boolean =
+		Util.query(description = "Insert Triton Tech") {
+			try {
+				insert {
+					it[turnCol] = EntityID(id = turnID, table = TurnTable)
+					it[nameCol] = name
+					it[valueCol] = update.value
+					it[levelCol] = update.level
+				}
+				true
+			} catch (esqle: ExposedSQLException) {
+				false
 			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
 		}
-	}
 
-	fun insert(turnID: Int, name: String, update: ProteusTech): Boolean = Util.query(description = "Insert Proteus Tech") {
-		try {
-			insert {
-				it[turnCol] = EntityID(id = turnID, table = TurnTable)
-				it[nameCol] = name
-				it[valueCol] = update.value
-				it[levelCol] = update.level
+	fun insert(turnID: Int, name: String, update: ProteusTech): Boolean =
+		Util.query(description = "Insert Proteus Tech") {
+			try {
+				insert {
+					it[turnCol] = EntityID(id = turnID, table = TurnTable)
+					it[nameCol] = name
+					it[valueCol] = update.value
+					it[levelCol] = update.level
+				}
+				true
+			} catch (esqle: ExposedSQLException) {
+				false
 			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
 		}
-	}
 
 	private fun ResultRow.parse(): Technology =
 		Technology(

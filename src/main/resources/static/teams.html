@@ -11,20 +11,23 @@
 <body>
 <div id="navbar"></div>
 <div class="ui container">
-	<table class="ui single line selectable inverted table opacity" id="stats">
-		<thead>
-		<tr>
-			<th>Name</th>
-			<th>Total Stars</th>
-			<th>Total Ships</th>
-			<th>Total Economy</th>
-			<th>$/Turn</th>
-			<th>Total Industry</th>
-			<th>Ships/Turn</th>
-			<th>Total Science</th>
-		</tr>
-		</thead>
-	</table>
+	<div class="ui inverted container segment opacity">
+		<h2 class="ui horizontal divider yellow header">Stats</h2>
+		<table class="ui single line selectable inverted table opacity" id="stats">
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Total Stars</th>
+				<th>Total Ships</th>
+				<th>Total Economy</th>
+				<th>$/Turn</th>
+				<th>Total Industry</th>
+				<th>Ships/Turn</th>
+				<th>Total Science</th>
+			</tr>
+			</thead>
+		</table>
+	</div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" type="text/javascript"></script>
@@ -46,7 +49,6 @@ $(document).ready(function(){
 			dataSrc : ''
 		},
 		"paging": false,
-		"searching": false,
 		"columns" : [
 			{ "data" : "name" },
 			{ "data" : "totalStars", render: $.fn.dataTable.render.number( ',' ) },
