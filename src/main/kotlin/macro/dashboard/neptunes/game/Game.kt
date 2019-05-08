@@ -34,7 +34,7 @@ data class Game(
 	var turnTimeout: LocalDateTime
 ) {
 
-	fun toOutput(): Map<String, Any?> {
+	fun toOutput(showInner: Boolean = true): Map<String, Any?> {
 		val output = mapOf(
 			"ID" to ID,
 			"gameType" to gameType,
@@ -46,11 +46,13 @@ data class Game(
 			"isGameOver" to isGameOver,
 			"isPaused" to isPaused,
 			"isStarted" to isStarted,
-			"tick" to tick,
+			"productions" to productions,
 			"turnTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
 			"players" to PlayerTable.searchByGame(gameID = ID).size,
 			"teams" to TeamTable.searchByGame(gameID = ID).filterNot { it.players.isEmpty() }.size
 		).toMutableMap()
+		if (showInner)
+			output["games"] = GameTable.searchAll().map { it.toOutput(showInner = false) }
 		return output.toSortedMap()
 	}
 

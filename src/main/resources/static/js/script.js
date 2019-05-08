@@ -8,7 +8,7 @@ function getBackgroundColour(index){
 		'rgba(128,128,128,0.5)',
 		'rgba(160,82,45,0.5)'
 	]
-	while(index > colours.length){
+	while(index >= colours.length){
 		index = index - colours.length;
 	}
 	return colours[index];
@@ -24,56 +24,20 @@ function getBorderColour(index){
 		'rgba(128,128,128,1)',
 		'rgba(160,82,45,1)'
 	]
-	while(index > colours.length){
+	while(index >= colours.length){
 		index = index - colours.length;
 	}
 	return colours[index];
 }
 
-function getGame(){
-	var gameStars = 700;
-	$.ajax({
-		async: false,
-	    url: '/api/games/latest',
-	    type: 'GET',
-	    headers: {
-	        accept: 'application/json',
-	        contentType: 'application/json'
-	    },
-	    dataType: 'json',
-	    success: function (data) {
-	        document.getElementById("gameName").innerHTML = '<a href="https://np.ironhelmet.com/game/' + data.ID + '">' + data.name + '</a>';
-	        document.getElementById("gameType").innerHTML = data.gameType
-	        if(data.isStarted){
-	            document.getElementById("gameStarted").innerHTML = data.startTime;
-            }else{
-                document.getElementById("gameStarted").innerHTML = "false";
-            }
-	        document.getElementById("gamePlayers").innerHTML = data.players;
-	        document.getElementById("gameTeams").innerHTML = data.teams;
-	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
-	        if(data.tick == 0){
-	            document.getElementById("gameTurn").innerHTML = 0;
-            }else{
-                document.getElementById("gameTurn").innerHTML = data.tick / 12;
-            }
-	        if(data.isPaused){
-	            document.getElementById("gameState").innerHTML = "Paused"
-            }else{
-                document.getElementById("gameState").innerHTML = data.turnTimeout;
-            }
-	        gameStars = data.totalStars;
-	    },
-	    error: function(xhr, status, error){
-	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
-	    }
-	});
-	return gameStars;
+function updateLink(linkID, post){
+	var gameID = window.location.pathname.split("/")[2];
+	document.getElementById(linkID).href = '/games/' + gameID + post
 }
 
-function getAllTeamStars(totalStars){
+function getAllTeamStars(gameID, totalStars){
  	$.ajax({
- 	    url: "/api/latest/teams",
+ 	    url: "/api/" + gameID + "/teams",
  	    type: 'GET',
 	    headers: {
 	        accept: 'application/json',
@@ -108,7 +72,10 @@ function getAllPlayerStars(totalStars, data){
 	var playerData = [];
 	for(count = 0; count < data.length; count++){
 		var player = data[count];
-		playerLabels.push(player.alias);
+		if(player.name == null)
+			playerLabels.push(player.alias);
+		else
+			playerLabels.push(player.alias + " (" + player.name + ")");
 		playerData.push(player.turns[0].stars);
 	}
 	createPieGraph(playerLabels, playerData);
@@ -131,7 +98,7 @@ function createPlayerStatsLine(ID){
 			var scienceData = [];
 			var turns = data.turns.reverse()
 			for(const turn of turns){
-				turnLabels.push("Turn " + turn.tick/12);
+				turnLabels.push("Turn " + turn.tick/24);
 				starData.push(turn.stars);
 				economyData.push(turn.economy);
 				industryData.push(turn.industry);
@@ -199,7 +166,7 @@ function createTeamStatLines(ID){
 				var scienceData = [];
 				for(const turn of player.turns.reverse()){
 					if(count == 0){
-						turnLabels.push("Turn " + turn.tick/12);
+						turnLabels.push("Turn " + turn.tick/24);
 					}
 					starData.push(turn.stars);
 					shipData.push(turn.ships);
@@ -207,8 +174,12 @@ function createTeamStatLines(ID){
 					industryData.push(turn.industry);
 					scienceData.push(turn.science);
 				}
+				if(player.name == null)
+					var playerLabel = player.alias
+				else
+					var playerLabel = player.alias + " (" + player.name + ")"
 				starSet.push({
-					label: player.alias + " (" + player.name + ")",
+					label: playerLabel,
 					fill: false,
 					backgroundColor: getBackgroundColour(count),
 					borderColor: getBorderColour(count),
@@ -216,7 +187,7 @@ function createTeamStatLines(ID){
 					steppedLine: false
 				});
 				shipSet.push({
-					label: player.alias + " (" + player.name + ")",
+					label: playerLabel,
 					fill: false,
 					backgroundColor: getBackgroundColour(count),
 					borderColor: getBorderColour(count),
@@ -224,7 +195,7 @@ function createTeamStatLines(ID){
 					steppedLine: false
 				});
 				economySet.push({
-					label: player.alias + " (" + player.name + ")",
+					label: playerLabel,
 					fill: false,
 					backgroundColor: getBackgroundColour(count),
 					borderColor: getBorderColour(count),
@@ -232,7 +203,7 @@ function createTeamStatLines(ID){
 					steppedLine: false
 				});
 				industrySet.push({
-					label: player.alias + " (" + player.name + ")",
+					label: playerLabel,
 					fill: false,
 					backgroundColor: getBackgroundColour(count),
 					borderColor: getBorderColour(count),
@@ -240,7 +211,7 @@ function createTeamStatLines(ID){
 					steppedLine: false
 				});
 				scienceSet.push({
-					label: player.alias + " (" + player.name + ")",
+					label: playerLabel,
 					fill: false,
 					backgroundColor: getBackgroundColour(count),
 					borderColor: getBorderColour(count),

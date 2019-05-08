@@ -10,12 +10,12 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
 import io.ktor.http.content.resources
 import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
+import io.ktor.response.respondRedirect
 import io.ktor.routing.Routing
 import io.ktor.routing.accept
 import io.ktor.routing.get
@@ -25,12 +25,15 @@ import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.backend.Proteus
 import macro.dashboard.neptunes.backend.Triton
+import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameController.gameRoutes
 import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TechnologyTable
 import macro.dashboard.neptunes.player.TurnTable
+import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.sql.exists
@@ -208,40 +211,91 @@ fun Application.module() {
 				teamRoutes()
 			}
 		}
-		get(path = "/players/{alias}") {
-			val gameID = GameTable.selectLatest().ID
-			val alias = call.parameters["alias"] ?: "%"
-			val player = PlayerTable.select(gameID = gameID, alias = alias)
-				?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Player.ftl",
-					model = player.toOutput(showGame = true, showTeam = true, showTurns = true)
-				),
-				status = HttpStatusCode.OK
-			)
+		route(path = "/games/{game-ID}") {
+			fun ApplicationCall.getGame(): Game {
+				val gameID = parameters["game-ID"]?.toLongOrNull()
+				return GameTable.select(ID = gameID ?: -1)
+					?: throw NotFoundException(message = "No Game was found with the given ID '$gameID'")
+			}
+			get {
+				call.respond(
+					message = FreeMarkerContent(
+						template = "Game.ftl",
+						model = call.getGame().toOutput()
+					),
+					status = HttpStatusCode.OK
+				)
+			}
+			route(path = "/players") {
+				route(path = "/{alias}") {
+					fun ApplicationCall.getPlayer(): Player {
+						val gameID = getGame().ID
+						val alias = parameters["alias"]
+						return PlayerTable.select(gameID = gameID, alias = alias ?: "%")
+							?: throw NotFoundException(message = "No Player was found with the given alias '$alias'")
+					}
+					get {
+						call.respond(
+							message = FreeMarkerContent(
+								template = "Player.ftl",
+								model = call.getPlayer().toOutput(showGame = true, showTeam = true, showTurns = true)
+							),
+							status = HttpStatusCode.OK
+						)
+					}
+				}
+			}
+			route(path = "/teams") {
+				route(path = "/{name}") {
+					fun ApplicationCall.getTeam(): Team {
+						val gameID = getGame().ID
+						val name = parameters["name"]
+						return TeamTable.select(gameID = gameID, name = name ?: "%")
+							?: throw NotFoundException(message = "No Team was found with the given name '$name'")
+					}
+					get {
+						call.respond(
+							message = FreeMarkerContent(
+								template = "Team.ftl",
+								model = call.getTeam().toOutput(showGame = true, showPlayers = true)
+							),
+							status = HttpStatusCode.OK
+						)
+					}
+				}
+			}
 		}
-		get(path = "/teams/{name}") {
+		get(path = "/") {
 			val gameID = GameTable.selectLatest().ID
-			val name = call.parameters["name"] ?: "%"
-			val team = TeamTable.select(gameID = gameID, name = name)
-				?: throw NotFoundException(message = "No Team was found with the given name '$name'")
-			call.respond(
-				message = FreeMarkerContent(
-					template = "Team.ftl",
-					model = team.toOutput(showGame = true, showPlayers = true)
-				),
-				status = HttpStatusCode.OK
-			)
+			call.respondRedirect("/games/$gameID")
+		}
+		get(path = "/games/undefined") {
+			val gameID = GameTable.selectLatest().ID
+			call.respondRedirect("/games/$gameID")
+		}
+		get(path = "/players") {
+			val gameID = GameTable.selectLatest().ID
+			call.respondRedirect("/games/$gameID/players")
+		}
+		get(path = "/games/undefined/players") {
+			val gameID = GameTable.selectLatest().ID
+			call.respondRedirect("/games/$gameID/players")
+		}
+		get(path = "/teams") {
+			val gameID = GameTable.selectLatest().ID
+			call.respondRedirect("/games/$gameID/teams")
+		}
+		get(path = "/games/undefined/teams") {
+			val gameID = GameTable.selectLatest().ID
+			call.respondRedirect("/games/$gameID/teams")
 		}
 		static {
 			resources(resourcePackage = "static/images")
 			resources(resourcePackage = "static/css")
 			resources(resourcePackage = "static/js")
-			defaultResource(resource = "static/index.html")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
-			resource(remotePath = "/players", resource = "static/players.html")
-			resource(remotePath = "/teams", resource = "static/teams.html")
+			resource(remotePath = "/games/{game-ID}/players", resource = "static/players.html")
+			resource(remotePath = "/games/{game-ID}/teams", resource = "static/teams.html")
 			resource(remotePath = "/documentation.yaml", resource = "static/Neptunes-Dashboard.yaml")
 			resource(remotePath = "/about", resource = "static/about.html")
 		}

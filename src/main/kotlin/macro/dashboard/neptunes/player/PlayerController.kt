@@ -1,5 +1,6 @@
 package macro.dashboard.neptunes.player
 
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receiveOrNull
@@ -10,6 +11,7 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.NotFoundException
+import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable.update
 import macro.dashboard.neptunes.team.TeamTable
@@ -22,45 +24,46 @@ internal object PlayerController {
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	fun Route.playerRoutes() {
-		route(path = "/{gameID}/players") {
+		fun ApplicationCall.getGame(): Game {
+			val gameID = parameters["game-ID"]?.toLongOrNull()
+			return GameTable.select(ID = gameID ?: -1)
+				?: throw NotFoundException(message = "No Game was found with the given ID '$gameID'")
+		}
+		route(path = "/{game-ID}/players") {
 			get {
-				val gameID = call.parameters["gameID"]?.toLongOrNull()
-					?: GameTable.selectLatest()?.ID
-					?: throw NotFoundException(message = "Game Not Found")
-				val players = PlayerTable.searchByGame(gameID = gameID)
+				val alias = call.request.queryParameters["alias"] ?: ""
+				val players = PlayerTable.searchByGame(gameID = call.getGame().ID).filter { it.alias.contains(alias, ignoreCase = true) }
 				call.respond(
 					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
 					status = HttpStatusCode.OK
 				)
 			}
 		}
-		route(path = "/players/{ID}") {
+		route(path = "/players/{player-ID}") {
+			fun ApplicationCall.getPlayer(): Player {
+				val playerID = parameters["player-ID"]?.toIntOrNull()
+				return PlayerTable.select(ID = playerID ?: -1)
+					?: throw NotFoundException(message = "No Player was found with the given ID '$playerID'")
+			}
 			get {
-				val ID = call.parameters["ID"]?.toIntOrNull()
-					?: throw BadRequestException(message = "Invalid ID")
-				val player = PlayerTable.select(ID = ID)
-					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
 				call.respond(
-					message = player.toOutput(showGame = true, showTeam = true),
+					message = call.getPlayer().toOutput(showGame = true, showTeam = true),
 					status = HttpStatusCode.OK
 				)
 			}
 			put {
-				val ID = call.parameters["ID"]?.toIntOrNull()
-					?: throw BadRequestException(message = "Invalid ID")
 				val request = call.receiveOrNull<PlayerRequest>()
 					?: throw BadRequestException(message = "A body is required")
 				if (request.name == "")
 					throw BadRequestException(message = "name is required")
-				var player = PlayerTable.select(ID = ID)
-					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
+				var player = call.getPlayer()
 				val team = if (!request.team.isNullOrBlank())
 					TeamTable.select(gameID = player.gameID, name = request.team)
 				else
 					null
 				player.update(name = request.name, teamID = team?.ID ?: player.teamID)
-				player = PlayerTable.select(ID = ID)
-					?: throw NotFoundException(message = "No Player was found with the given ID '$ID'")
+				player = PlayerTable.select(ID = player.ID)
+					?: throw NotFoundException(message = "No Player was found with the given ID '${player.ID}'")
 				call.respond(
 					message = player.toOutput(showGame = true, showTeam = true),
 					status = HttpStatusCode.OK

@@ -17,49 +17,61 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Name</div>
-					<div class="description" id="gameName">{{Game Name}}</div>
+					<div class="description">
+						<a href="https://np.ironhelmet.com/game/${ID?c}">${name}</a>
+					</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Type</div>
-					<div class="description" id="gameType">{{Game Type}}</div>
+					<div class="description">${gameType}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Started</div>
-					<div class="description" id="gameStarted">{{Game Started}}</div>
+					<#if isStarted>
+						<div class="description">${startTime}</div>
+					<#else>
+						<div class="description">false</div>
+					</#if>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header"># of Players</div>
-					<div class="description" id="gamePlayers">{{Game Players}}</div>
+					<div class="description">${players}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header"># of Teams</div>
-					<div class="description" id="gameTeams">{{Game Teams}}</div>
+					<div class="description">${teams}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Stars to Win</div>
-					<div class="description" id="gameStars">{{Game Victory}}/{{Game Total}}</div>
+					<div class="description">${victoryStars}/${totalStars}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Turn #</div>
-					<div class="description" id="gameTurn">{{Game Turn}}</div>
+					<div class="header">Cycles</div>
+					<div class="description">${productions}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Next Turn</div>
-					<div class="description" id="gameState">{{Game State}}</div>
+					<#if isPaused>
+						<div class="description">Paused</div>
+					<#elseif isGameOver>
+						<div class="description">Game Ended</div>
+					<#else>
+						<div class="description">${turnTimeout}</div>
+					</#if>
 				</div>
 			</div>
 		</div>
@@ -81,8 +93,9 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	var totalStars = getGame();
-	getAllTeamStars(totalStars);
+	console.log("GameID: " + ${ID?c});
+	getAllTeamStars(${ID?c}, ${totalStars});
+	$('#gameSelection').dropdown();
 });
 </script>
 </body>
