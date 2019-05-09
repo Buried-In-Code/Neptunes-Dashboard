@@ -32,7 +32,7 @@ data class Game(
 	val name: String,
 	val isTurnBased: Boolean,
 	var war: Int,
-	var turnTimeout: LocalDateTime
+	var cycleTimeout: LocalDateTime
 ) {
 	fun toOutput(): Map<String, Any?> {
 		val output = mapOf(
@@ -47,7 +47,7 @@ data class Game(
 			"isPaused" to isPaused,
 			"isStarted" to isStarted,
 			"cycles" to tick / CONFIG.gameCycle,
-			"turnTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
+			"cycleTimeout" to cycleTimeout.format(Util.JAVA_FORMATTER),
 			"playerCount" to PlayerTable.search().size,
 			"teamCount" to TeamTable.search().filterNot { it.players.isEmpty() }.size
 		).toMutableMap()

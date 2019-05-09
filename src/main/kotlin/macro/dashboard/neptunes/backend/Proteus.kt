@@ -7,7 +7,7 @@ import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TechnologyTable
-import macro.dashboard.neptunes.player.TurnTable
+import macro.dashboard.neptunes.player.CycleTable
 import org.slf4j.LoggerFactory
 
 /**
@@ -31,11 +31,11 @@ object Proteus {
 					PlayerTable.insert(gameID = gameID, update = update)
 					val player = PlayerTable.select(alias = update.alias)
 						?: throw GeneralException()
-					TurnTable.insert(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle, update = update)
-					val turn = TurnTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
+					CycleTable.insert(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle, update = update)
+					val cycle = CycleTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
 						?: throw GeneralException()
 					update.tech.forEach {
-						TechnologyTable.insert(turnID = turn.ID, name = it.key, update = it.value)
+						TechnologyTable.insert(cycleID = cycle.ID, name = it.key, update = it.value)
 					}
 				}
 			}
@@ -88,7 +88,7 @@ data class ProteusGame(
 	val war: Int,
 	val players: Map<String, ProteusPlayer>,
 	@SerializedName(value = "turn_based_time_out")
-	val turnBasedTimeout: Long
+	val cycleTimeout: Long
 )
 
 data class ProteusPlayer(

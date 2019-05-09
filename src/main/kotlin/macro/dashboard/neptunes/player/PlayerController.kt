@@ -27,7 +27,7 @@ internal object PlayerController {
 				val players = PlayerTable.search()
 					.filter { it.alias.contains(alias, ignoreCase = true) }
 				call.respond(
-					message = players.map { it.toOutput(showGame = false, showTeam = false, showTurns = false) },
+					message = players.map { it.toOutput(showGame = false, showTeam = false, showCycles = false) },
 					status = HttpStatusCode.OK
 				)
 			}

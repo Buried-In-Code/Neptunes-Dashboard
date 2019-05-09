@@ -40,7 +40,7 @@ object GameTable : LongIdTable(name = "Game") {
 	private val nameCol = text(name = "name")
 	private val isTurnBasedCol = bool(name = "isTurnBased")
 	private val warCol = integer(name = "war")
-	private val turnBasedTimeoutCol = datetime(name = "turnBasedTimeout")
+	private val cycleTimeoutCol = datetime(name = "turnBasedTimeout")
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
@@ -90,8 +90,8 @@ object GameTable : LongIdTable(name = "Game") {
 				it[nameCol] = update.name
 				it[isTurnBasedCol] = update.turnBased == 1
 				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
+				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.cycleTimeout), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
@@ -115,8 +115,8 @@ object GameTable : LongIdTable(name = "Game") {
 				it[productionCounterCol] = update.productionCounter
 				it[tickCol] = update.tick
 				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
+				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(update.cycleTimeout), ZoneId.of("Pacific/Auckland")
 				).toJodaDateTime()
 			}
 			true
@@ -147,6 +147,6 @@ object GameTable : LongIdTable(name = "Game") {
 		name = this[nameCol],
 		isTurnBased = this[isTurnBasedCol],
 		war = this[warCol],
-		turnTimeout = this[turnBasedTimeoutCol].toJavaDateTime()
+		cycleTimeout = this[cycleTimeoutCol].toJavaDateTime()
 	)
 }

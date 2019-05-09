@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by Macro303 on 2019-Mar-04.
  */
-object TurnTable : IntIdTable(name = "Turn") {
+object CycleTable : IntIdTable(name = "Turn") {
 	private val playerCol = reference(
 		name = "playerID",
 		foreign = PlayerTable,
@@ -30,33 +30,33 @@ object TurnTable : IntIdTable(name = "Turn") {
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	init {
-		Util.query(description = "Create Turn table") {
+		Util.query(description = "Create Cycle table") {
 			uniqueIndex(cycleCol, playerCol)
 			SchemaUtils.create(this)
 		}
 	}
 
-	fun select(ID: Int): Turn? = Util.query(description = "Select Turn by ID: $ID") {
+	fun select(ID: Int): Cycle? = Util.query(description = "Select Cycle by ID: $ID") {
 		select {
 			id eq ID
 		}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun select(playerID: Int, cycle: Int): Turn? =
-		Util.query(description = "Select Turn by Player: $playerID and Cycle: $cycle") {
+	fun select(playerID: Int, cycle: Int): Cycle? =
+		Util.query(description = "Select Cycle by Player: $playerID and Cycle: $cycle") {
 			select {
 				playerCol eq playerID and (cycleCol eq cycle)
 			}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 		}
 
-	fun selectLatest(playerID: Int): Turn? =
-		Util.query(description = "Search for Latest Turn by Player: $playerID") {
+	fun selectLatest(playerID: Int): Cycle? =
+		Util.query(description = "Search for Latest Cycle by Player: $playerID") {
 			select {
 				playerCol eq playerID
 			}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 		}
 
-	fun searchByPlayer(playerID: Int): List<Turn> = Util.query(description = "Search for Turns by Player: $playerID") {
+	fun searchByPlayer(playerID: Int): List<Cycle> = Util.query(description = "Search for Cycles by Player: $playerID") {
 		select {
 			playerCol eq playerID
 		}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).map {
@@ -65,7 +65,7 @@ object TurnTable : IntIdTable(name = "Turn") {
 	}
 
 	fun insert(playerID: Int, cycle: Int, update: ProteusPlayer): Boolean =
-		Util.query(description = "Insert Proteus Turn") {
+		Util.query(description = "Insert Proteus Cycle") {
 			try {
 				insert {
 					it[playerCol] = EntityID(id = playerID, table = PlayerTable)
@@ -84,7 +84,7 @@ object TurnTable : IntIdTable(name = "Turn") {
 			}
 		}
 
-	private fun ResultRow.parse(): Turn = Turn(
+	private fun ResultRow.parse(): Cycle = Cycle(
 		ID = this[id].value,
 		playerID = this[playerCol].value,
 		cycle = this[cycleCol],

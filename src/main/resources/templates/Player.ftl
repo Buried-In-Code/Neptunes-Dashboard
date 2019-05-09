@@ -40,49 +40,49 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Stars</div>
-					<div class="description">${turns[0].stars}</div>
+					<div class="description">${cycles[0].stars}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Ships</div>
-					<div class="description">${turns[0].ships}</div>
+					<div class="description">${cycles[0].ships}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Economy</div>
-					<div class="description">${turns[0].economy}</div>
+					<div class="description">${cycles[0].economy}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">$ Per Turn</div>
-					<div class="description">${turns[0].economyPerTurn}</div>
+					<div class="header">$ Per Cycle</div>
+					<div class="description">${cycles[0].economyPerCycle}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Industry</div>
-					<div class="description">${turns[0].industry}</div>
+					<div class="description">${cycles[0].industry}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Ships Per Turn</div>
-					<div class="description">${turns[0].industryPerTurn}</div>
+					<div class="header">Ships Per Cycle</div>
+					<div class="description">${cycles[0].industryPerCycle}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Science</div>
-					<div class="description">${turns[0].science}</div>
+					<div class="description">${cycles[0].science}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Science Per Turn</div>
-					<div class="description">${turns[0].sciencePerTurn}</div>
+					<div class="header">Science Per Cycle</div>
+					<div class="description">${cycles[0].sciencePerCycle}</div>
 				</div>
 			</div>
 		</div>
@@ -96,37 +96,37 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Scanning</div>
-					<div class="description">${turns[0].tech.scanning}</div>
+					<div class="description">${cycles[0].tech.scanning}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Hyperspace Range</div>
-					<div class="description">${turns[0].tech.hyperspace}</div>
+					<div class="description">${cycles[0].tech.hyperspace}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Experimentation</div>
-					<div class="description">${turns[0].tech.experimentation}</div>
+					<div class="description">${cycles[0].tech.experimentation}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Weapons</div>
-					<div class="description">${turns[0].tech.weapons}</div>
+					<div class="description">${cycles[0].tech.weapons}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Banking</div>
-					<div class="description">${turns[0].tech.banking}</div>
+					<div class="description">${cycles[0].tech.banking}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Manufacturing</div>
-					<div class="description">${turns[0].tech.manufacturing}</div>
+					<div class="description">${cycles[0].tech.manufacturing}</div>
 				</div>
 			</div>
 		</div>

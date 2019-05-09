@@ -76,11 +76,11 @@ function getGame(){
 	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
 	        document.getElementById("gameCycles").innerHTML = data.cycles;
 	        if(data.isPaused){
-	            document.getElementById("gameTurn").innerHTML = "Paused";
+	            document.getElementById("gameState").innerHTML = "Paused";
 	        }else if(data.isGameOver){
-	            document.getElementById("gameTurn").innerHTML = "Game Ended";
+	            document.getElementById("gameState").innerHTML = "Game Ended";
 	        }else{
-	            document.getElementById("gameTurn").innerHTML = data.turnTimeout;
+	            document.getElementById("gameState").innerHTML = data.cycleTimeout;
 	        }
 	        gameStars = data.totalStars;
 	    },
@@ -110,7 +110,7 @@ function getAllTeamStars(gameID, totalStars){
 					teamLabels.push(team.name);
 					var teamStars = 0;
 					for(const player of team.players){
-						teamStars += player.turns[0].stars;
+						teamStars += player.cycles[0].stars;
 					}
 					teamData.push(teamStars);
 				}
@@ -132,7 +132,7 @@ function getAllPlayerStars(totalStars, data){
 			playerLabels.push(player.alias);
 		else
 			playerLabels.push(player.alias + " (" + player.name + ")");
-		playerData.push(player.turns[0].stars);
+		playerData.push(player.cycles[0].stars);
 	}
 	createPieGraph(playerLabels, playerData);
 }
@@ -147,18 +147,18 @@ function createPlayerStatsLine(ID){
 	    },
  	    dataType: 'json',
  	    success: function (data) {
-			var turnLabels = ["Cycle 0"];
+			var cycleLabels = ["Cycle 0"];
 			var starData = [0];
 			var economyData = [0];
 			var industryData = [0];
 			var scienceData = [0];
-			var turns = data.turns.reverse()
-			for(const turn of turns){
-				turnLabels.push("Cycle " + turn.cycle);
-				starData.push(turn.stars);
-				economyData.push(turn.economy);
-				industryData.push(turn.industry);
-				scienceData.push(turn.science);
+			var cycles = data.cycles.reverse()
+			for(const cycle of cycles){
+				cycleLabels.push("Cycle " + cycle.cycle);
+				starData.push(cycle.stars);
+				economyData.push(cycle.economy);
+				industryData.push(cycle.industry);
+				scienceData.push(cycle.science);
 			}
 			var dataset = [{
 				label: 'Stars',
@@ -189,7 +189,7 @@ function createPlayerStatsLine(ID){
 				data: scienceData,
 				steppedLine: false
 			}];
-			createLineGraph("statsLine", turnLabels, dataset);
+			createLineGraph("statsLine", cycleLabels, dataset);
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -207,7 +207,7 @@ function createTeamStatLines(ID){
 	    },
  	    dataType: 'json',
  	    success: function (data) {
-			var turnLabels = ["Cycle 0"];
+			var cycleLabels = ["Cycle 0"];
 			var starSet = [];
 			var shipSet = [];
 			var economySet = [];
@@ -220,15 +220,15 @@ function createTeamStatLines(ID){
 				var economyData = [0];
 				var industryData = [0];
 				var scienceData = [0];
-				for(const turn of player.turns.reverse()){
+				for(const cycle of player.cycles.reverse()){
 					if(count == 0){
-						turnLabels.push("Cycle " + turn.cycle);
+						cycleLabels.push("Cycle " + cycle.cycle);
 					}
-					starData.push(turn.stars);
-					shipData.push(turn.ships);
-					economyData.push(turn.economy);
-					industryData.push(turn.industry);
-					scienceData.push(turn.science);
+					starData.push(cycle.stars);
+					shipData.push(cycle.ships);
+					economyData.push(cycle.economy);
+					industryData.push(cycle.industry);
+					scienceData.push(cycle.science);
 				}
 				if(player.name == null)
 					var playerLabel = player.alias
@@ -275,11 +275,11 @@ function createTeamStatLines(ID){
 					steppedLine: false
 				});
 			}
-			createLineGraph("starLine", turnLabels, starSet);
-			createLineGraph("shipLine", turnLabels, shipSet);
-			createLineGraph("economyLine", turnLabels, economySet);
-			createLineGraph("industryLine", turnLabels, industrySet);
-			createLineGraph("scienceLine", turnLabels, scienceSet);
+			createLineGraph("starLine", cycleLabels, starSet);
+			createLineGraph("shipLine", cycleLabels, shipSet);
+			createLineGraph("economyLine", cycleLabels, economySet);
+			createLineGraph("industryLine", cycleLabels, industrySet);
+			createLineGraph("scienceLine", cycleLabels, scienceSet);
  	    },
  	    error: function(xhr, status, error){
  	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);

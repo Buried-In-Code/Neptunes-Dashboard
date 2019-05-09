@@ -8,7 +8,6 @@ import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.defaultResource
 import io.ktor.http.content.resource
@@ -30,7 +29,7 @@ import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerController.playerRoutes
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.player.TechnologyTable
-import macro.dashboard.neptunes.player.TurnTable
+import macro.dashboard.neptunes.player.CycleTable
 import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamController.teamRoutes
 import macro.dashboard.neptunes.team.TeamTable
@@ -60,7 +59,7 @@ object Server {
 		Util.query(description = "Check All Tables Exist") {
 			GameTable.exists()
 			PlayerTable.exists()
-			TurnTable.exists()
+			CycleTable.exists()
 			TeamTable.exists()
 			TechnologyTable.exists()
 		}
@@ -192,7 +191,7 @@ fun Application.module() {
 				call.respond(
 					message = FreeMarkerContent(
 						template = "Player.ftl",
-						model = call.getPlayer().toOutput(showGame = true, showTeam = true, showTurns = true)
+						model = call.getPlayer().toOutput(showGame = true, showTeam = true, showCycles = true)
 					),
 					status = HttpStatusCode.OK
 				)

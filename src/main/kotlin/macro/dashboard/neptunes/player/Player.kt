@@ -23,28 +23,28 @@ data class Player(
 	val team: Team by lazy {
 		TeamTable.select(ID = teamID) ?: throw GeneralException()
 	}
-	val turns: List<Turn> by lazy {
-		TurnTable.searchByPlayer(playerID = ID)
+	val cycles: List<Cycle> by lazy {
+		CycleTable.searchByPlayer(playerID = ID)
 	}
-	val latestTurn: Turn by lazy {
-		TurnTable.selectLatest(playerID = ID) ?: throw GeneralException()
+	val latestCycle: Cycle by lazy {
+		CycleTable.selectLatest(playerID = ID) ?: throw GeneralException()
 	}
 
-	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean = true): Map<String, Any?> {
+	fun toOutput(showGame: Boolean, showTeam: Boolean, showCycles: Boolean = true): Map<String, Any?> {
 		val output = mapOf(
 			"ID" to ID,
 			"alias" to alias,
 			"name" to name,
 			"game" to gameID,
 			"team" to team.name,
-			"turns" to latestTurn.toOutput()
+			"cycles" to latestCycle.toOutput()
 		).toMutableMap()
 		if (showGame)
 			output["game"] = game.toOutput()
 		if (showTeam)
 			output["team"] = team.toOutput(showGame = false, showPlayers = false)
-		if (showTurns)
-			output["turns"] = turns.map { it.toOutput() }
+		if (showCycles)
+			output["cycles"] = cycles.map { it.toOutput() }
 		return output.toSortedMap()
 	}
 

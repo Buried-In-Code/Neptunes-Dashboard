@@ -22,11 +22,11 @@
 				<th>Stars</th>
 				<th>Ships</th>
 				<th>Economy</th>
-				<th>$/Turn</th>
+				<th>$/Cycle</th>
 				<th>Industry</th>
-				<th>Ships/Turn</th>
+				<th>Ships/Cycle</th>
 				<th>Science</th>
-				<th>Sci/Turn</th>
+				<th>Sci/Cycle</th>
 			</tr>
 			</thead>
 		</table>
@@ -74,14 +74,14 @@ $(document).ready(function(){
 			{ "data" : "alias" },
 			{ "data" : "name" },
 			{ "data" : "team" },
-			{ "data" : "turns.stars", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.ships", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.economy", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.economyPerTurn", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.industry", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.industryPerTurn", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.science", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.sciencePerTurn", render: $.fn.dataTable.render.number( ',' ) }
+			{ "data" : "cycles.stars", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.ships", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.economy", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.economyPerCycle", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.industry", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.industryPerCycle", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.science", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.sciencePerCycle", render: $.fn.dataTable.render.number( ',' ) }
 		],
 		"order": [[3, "desc"], [4, "desc"]]
 	});
@@ -103,12 +103,12 @@ $(document).ready(function(){
 			{ "data" : "alias" },
 			{ "data" : "name" },
 			{ "data" : "team" },
-			{ "data" : "turns.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.tech.hyperspace", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.tech.experimentation", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.tech.weapons", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.tech.banking", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "turns.tech.manufacturing", render: $.fn.dataTable.render.number( ',' ) }
+			{ "data" : "cycles.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.hyperspace", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.experimentation", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.weapons", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.banking", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.manufacturing", render: $.fn.dataTable.render.number( ',' ) }
 		],
 		"order": [[0, "asc"]]
 	});

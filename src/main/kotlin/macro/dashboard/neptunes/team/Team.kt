@@ -1,6 +1,5 @@
 package macro.dashboard.neptunes.team
 
-import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.Player
@@ -23,31 +22,31 @@ data class Team(
 	}
 
 	val totalEconomy by lazy {
-		players.sumBy { it.latestTurn.economy }
+		players.sumBy { it.latestCycle.economy }
 	}
-	val totalEconomyPerTurn by lazy {
-		players.sumBy { it.latestTurn.economyPerTurn }
+	val totalEconomyPerCycle by lazy {
+		players.sumBy { it.latestCycle.economyPerCycle }
 	}
 	val totalIndustry by lazy {
-		players.sumBy { it.latestTurn.industry }
+		players.sumBy { it.latestCycle.industry }
 	}
-	val totalIndustryPerTurn by lazy {
-		players.sumBy { it.latestTurn.industryPerTurn }
+	val totalIndustryPerCycle by lazy {
+		players.sumBy { it.latestCycle.industryPerCycle }
 	}
 	val totalScience by lazy {
-		players.sumBy { it.latestTurn.science }
+		players.sumBy { it.latestCycle.science }
 	}
-	val totalSciencePerTurn by lazy {
-		players.sumBy { it.latestTurn.sciencePerTurn }
+	val totalSciencePerCycle by lazy {
+		players.sumBy { it.latestCycle.sciencePerCycle }
 	}
 	val totalStars by lazy {
-		players.sumBy { it.latestTurn.stars }
+		players.sumBy { it.latestCycle.stars }
 	}
 	val totalFleet by lazy {
-		players.sumBy { it.latestTurn.fleet }
+		players.sumBy { it.latestCycle.fleet }
 	}
 	val totalShips by lazy {
-		players.sumBy { it.latestTurn.ships }
+		players.sumBy { it.latestCycle.ships }
 	}
 
 	fun toOutput(showGame: Boolean, showPlayers: Boolean): Map<String, Any?> {
@@ -57,11 +56,11 @@ data class Team(
 			"game" to gameID,
 			"players" to players.map { it.ID },
 			"totalEconomy" to totalEconomy,
-			"totalEconomyPerTurn" to totalEconomyPerTurn,
+			"totalEconomyPerCycle" to totalEconomyPerCycle,
 			"totalIndustry" to totalIndustry,
-			"totalIndustryPerTurn" to totalIndustryPerTurn,
+			"totalIndustryPerCycle" to totalIndustryPerCycle,
 			"totalScience" to totalScience,
-			"totalSciencePerTurn" to totalSciencePerTurn,
+			"totalSciencePerCycle" to totalSciencePerCycle,
 			"totalStars" to totalStars,
 			"totalFleet" to totalFleet,
 			"totalShips" to totalShips

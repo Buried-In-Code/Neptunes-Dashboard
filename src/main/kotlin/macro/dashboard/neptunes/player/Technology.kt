@@ -8,20 +8,20 @@ import org.slf4j.LoggerFactory
  */
 data class Technology(
 	val ID: Int,
-	val turnID: Int,
+	val cycleID: Int,
 	val name: String,
 	val value: Double,
 	val level: Int
 ) {
 
-	val turn: Turn by lazy {
-		TurnTable.select(ID = turnID) ?: throw GeneralException()
+	val cycle by lazy {
+		CycleTable.select(ID = cycleID) ?: throw GeneralException()
 	}
 
 	fun toOutput(): Map<String, Any?> {
 		val output = mapOf(
 			"ID" to ID,
-			"turn" to turnID,
+			"cycle" to cycleID,
 			"name" to name,
 			"value" to value,
 			"level" to level

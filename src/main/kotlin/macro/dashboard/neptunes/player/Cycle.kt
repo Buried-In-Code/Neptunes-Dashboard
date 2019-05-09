@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by Macro303 on 2019-Mar-04.
  */
-data class Turn(
+data class Cycle(
 	val ID: Int,
 	val playerID: Int,
 	val cycle: Int,
@@ -24,7 +24,7 @@ data class Turn(
 		PlayerTable.select(ID = playerID) ?: throw GeneralException()
 	}
 	val technology: List<Technology> by lazy {
-		TechnologyTable.searchByTurn(turnID = ID)
+		TechnologyTable.searchByCycle(cycleID = ID)
 	}
 
 	val scanning: Technology by lazy {
@@ -46,13 +46,13 @@ data class Turn(
 		technology.first { it.name == "manufacturing" }
 	}
 
-	val economyPerTurn by lazy {
+	val economyPerCycle by lazy {
 		economy * banking.level * CONFIG.gameCycle
 	}
-	val industryPerTurn by lazy {
+	val industryPerCycle by lazy {
 		industry * manufacturing.level * CONFIG.gameCycle
 	}
-	val sciencePerTurn by lazy {
+	val sciencePerCycle by lazy {
 		science * experimentation.level * CONFIG.gameCycle
 	}
 
@@ -67,9 +67,9 @@ data class Turn(
 			"fleet" to fleet,
 			"ships" to ships,
 			"isActive" to isActive,
-			"economyPerTurn" to economyPerTurn,
-			"industryPerTurn" to industryPerTurn,
-			"sciencePerTurn" to sciencePerTurn,
+			"economyPerCycle" to economyPerCycle,
+			"industryPerCycle" to industryPerCycle,
+			"sciencePerCycle" to sciencePerCycle,
 			"tech" to mapOf(
 				"scanning" to scanning.level,
 				"hyperspace" to hyperspace.level,
