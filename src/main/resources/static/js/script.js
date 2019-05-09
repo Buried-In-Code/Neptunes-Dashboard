@@ -30,13 +30,38 @@ function getBorderColour(index){
 	return colours[index];
 }
 
+function update(){
+	document.getElementById("updateButton").className = "ui loading inverted blue button";
+	$.ajax({
+		async: true,
+	    url: '/api/game',
+	    type: 'PUT',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
+	    dataType: 'json',
+	    success: function (data) {
+			document.getElementById("updateButton").className = "ui inverted blue button";
+	        location.reload(true);
+	    },
+	    error: function(xhr, status, error){
+			document.getElementById("updateButton").className = "ui inverted blue button";
+	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+	    }
+	});
+}
+
 function getGame(){
 	var gameStars = 700;
 	$.ajax({
 		async: false,
 	    url: '/api/game',
 	    type: 'GET',
-	    contentType: 'application/json',
+	    headers: {
+	        accept: 'application/json',
+	        contentType: 'application/json'
+	    },
 	    dataType: 'json',
 	    success: function (data) {
 	        document.getElementById("gameName").innerHTML = '<a href="https://np.ironhelmet.com/game/' + data.ID + '">' + data.name + '</a>';

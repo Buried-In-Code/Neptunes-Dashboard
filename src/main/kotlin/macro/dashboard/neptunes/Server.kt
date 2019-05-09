@@ -176,14 +176,6 @@ fun Application.module() {
 	install(Routing) {
 		trace { application.log.trace(it.buildText()) }
 		route(path = "/api") {
-			intercept(ApplicationCallPipeline.Features) {
-				if (call.request.httpMethod != HttpMethod.Get) {
-					val authorization = call.request.header(name = "Authorization")
-					application.log.debug("Authorization Check => ${authorization != "Basic QWRtaW46QWRtaW4="}")
-					if (authorization != "Basic QWRtaW46QWRtaW4=")
-						throw UnauthorizedException(message = "You are not Authorized to use this endpoint")
-				}
-			}
 			accept(ContentType.Application.Json) {
 				gameRoutes()
 				playerRoutes()
