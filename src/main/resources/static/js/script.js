@@ -122,11 +122,11 @@ function createPlayerStatsLine(ID){
 	    },
  	    dataType: 'json',
  	    success: function (data) {
-			var turnLabels = [];
-			var starData = [];
-			var economyData = [];
-			var industryData = [];
-			var scienceData = [];
+			var turnLabels = ["Cycle 0"];
+			var starData = [0];
+			var economyData = [0];
+			var industryData = [0];
+			var scienceData = [0];
 			var turns = data.turns.reverse()
 			for(const turn of turns){
 				turnLabels.push("Cycle " + turn.cycle);
@@ -182,7 +182,7 @@ function createTeamStatLines(ID){
 	    },
  	    dataType: 'json',
  	    success: function (data) {
-			var turnLabels = [];
+			var turnLabels = ["Cycle 0"];
 			var starSet = [];
 			var shipSet = [];
 			var economySet = [];
@@ -190,11 +190,11 @@ function createTeamStatLines(ID){
 			var scienceSet = [];
 			for(count = 0; count < data.players.length; count++){
 				var player = data.players[count];
-				var starData = [];
-				var shipData = [];
-				var economyData = [];
-				var industryData = [];
-				var scienceData = [];
+				var starData = [0];
+				var shipData = [0];
+				var economyData = [0];
+				var industryData = [0];
+				var scienceData = [0];
 				for(const turn of player.turns.reverse()){
 					if(count == 0){
 						turnLabels.push("Cycle " + turn.cycle);
