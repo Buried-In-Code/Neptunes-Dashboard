@@ -34,15 +34,6 @@
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Total Fleet</div>
-					<div class="description">
-						<b>Total:</b> ${totalFleet}<br/>
-						<b>Average:</b> ${totalFleet/players?size}
-					</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
 					<div class="header">Total Economy</div>
 					<div class="description">
 						<b>Total:</b> ${totalEconomy}<br/>

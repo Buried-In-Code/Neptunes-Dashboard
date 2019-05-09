@@ -39,11 +39,10 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	var gameID = window.location.pathname.split("/")[2];
 	var stats_table = $('#stats').DataTable({
 		"processing" : true,
 		"ajax" : {
-			"url" : "/api/" + gameID + "/teams",
+			"url" : "/api/teams",
 			type: 'GET',
 			contentType: 'application/json',
 			dataType: 'json',
@@ -64,7 +63,7 @@ $(document).ready(function(){
 	});
 	$('#stats tbody').on('click', 'tr', function () {
         var data = stats_table.row( this ).data();
-        window.location.href = '/games/' + gameID + '/teams/' + data.name;
+        window.location.href = '/teams/' + data.name;
     } );
 });
 </script>

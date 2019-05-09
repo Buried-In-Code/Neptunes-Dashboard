@@ -9,9 +9,7 @@ import io.ktor.routing.put
 import io.ktor.routing.route
 import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.backend.Proteus
-import macro.dashboard.neptunes.backend.Triton
 import org.slf4j.LoggerFactory
 
 /**
@@ -21,48 +19,23 @@ internal object GameController {
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	fun Route.gameRoutes() {
-		route(path = "/games") {
+		route(path = "/game") {
 			get {
-				val games = GameTable.searchAll()
 				call.respond(
-					message = games.map { it.toOutput() },
+					message = GameTable.select().toOutput(),
 					status = HttpStatusCode.OK
 				)
 			}
-			get(path = "/latest") {
-				val game = GameTable.selectLatest()
+			put {
+				val game = GameTable.select()
+				when (game.gameType) {
+					"Proteus" -> Proteus.getGame(gameID = CONFIG.gameID, code = CONFIG.gameCode)
+					else -> throw BadRequestException(message = "Invalid Game Type => ${game.gameType} `${game.ID}`")
+				}
 				call.respond(
-					message = game.toOutput(),
+					message = GameTable.select().toOutput(),
 					status = HttpStatusCode.OK
 				)
-			}
-			route(path = "/{ID}") {
-				get {
-					val param: Long = call.parameters["ID"]?.toLongOrNull()
-						?: throw BadRequestException(message = "Invalid ID")
-					val game = GameTable.select(ID = param)
-						?: throw BadRequestException(message = "No Game was found with the given ID '$param'")
-					call.respond(
-						message = game.toOutput(),
-						status = HttpStatusCode.OK
-					)
-				}
-				put {
-					val param: Long = call.parameters["ID"]?.toLongOrNull()
-						?: throw BadRequestException(message = "Invalid ID")
-					var game = GameTable.select(ID = param)
-						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
-					when (game.gameType) {
-						"Triton" -> Triton.getGame(gameID = game.ID, code = CONFIG.games[param] ?: "")
-						"Proteus" -> Proteus.getGame(gameID = game.ID, code = CONFIG.games[param] ?: "")
-					}
-					game = GameTable.select(ID = param)
-						?: throw NotFoundException(message = "No Game was found with the given ID '$param'")
-					call.respond(
-						message = game.toOutput(),
-						status = HttpStatusCode.OK
-					)
-				}
 			}
 		}
 	}

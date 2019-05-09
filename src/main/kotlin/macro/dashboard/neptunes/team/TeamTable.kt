@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes.team
 
-import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
 import org.jetbrains.exposed.dao.EntityID
@@ -33,27 +33,25 @@ object TeamTable : IntIdTable(name = "Team") {
 	fun select(ID: Int): Team? = Util.query(description = "Select Team by ID") {
 		select {
 			id eq ID
-		}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
+		}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun select(gameID: Long, name: String): Team? =
-		Util.query(description = "Select Team by Game: $gameID and Name: $name") {
+	fun select(name: String): Team? =
+		Util.query(description = "Select Team by Name: $name") {
 			select {
-				gameCol eq gameID and (nameCol like name)
-			}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
+				nameCol like name
+			}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 		}
 
-	fun searchByGame(gameID: Long): List<Team> =
-		Util.query(description = "Search for Teams from Game: $gameID") {
-			select {
-				gameCol eq gameID
-			}.orderBy(gameCol to SortOrder.ASC, nameCol to SortOrder.ASC).map {
+	fun search(): List<Team> =
+		Util.query(description = "Search for Teams") {
+			selectAll().orderBy(nameCol to SortOrder.ASC).map {
 				it.parse()
 			}
 		}
 
 	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
-		val temp = gameID ?: GameTable.selectLatest()?.ID ?: throw GeneralException()
+		val temp = gameID ?: CONFIG.gameID
 		try {
 			insert {
 				it[gameCol] = EntityID(temp, GameTable)
@@ -81,11 +79,4 @@ object TeamTable : IntIdTable(name = "Team") {
 		gameID = this[gameCol].value,
 		name = this[nameCol]
 	)
-
-	fun Team.update(
-		name: String = this.name
-	) {
-		this.name = name
-		TeamTable.update(ID = this.ID, name = name)
-	}
 }

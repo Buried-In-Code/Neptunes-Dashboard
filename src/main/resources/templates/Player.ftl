@@ -51,12 +51,6 @@
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Fleet</div>
-					<div class="description">${turns[0].fleet}</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
 					<div class="header">Economy</div>
 					<div class="description">${turns[0].economy}</div>
 				</div>
@@ -85,6 +79,12 @@
 					<div class="description">${turns[0].science}</div>
 				</div>
 			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Science Per Turn</div>
+					<div class="description">${turns[0].sciencePerTurn}</div>
+				</div>
+			</div>
 		</div>
 		<div class="chart-container">
 			<canvas height="200" id="statsLine" width="600"></canvas>
@@ -103,12 +103,6 @@
 				<div class="content">
 					<div class="header">Hyperspace Range</div>
 					<div class="description">${turns[0].tech.hyperspace}</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
-					<div class="header">Terraforming</div>
-					<div class="description">${turns[0].tech.terraforming}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">

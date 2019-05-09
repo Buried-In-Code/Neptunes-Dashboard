@@ -1,5 +1,6 @@
 package macro.dashboard.neptunes.player
 
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.GeneralException
 import org.slf4j.LoggerFactory
 
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory
 data class Turn(
 	val ID: Int,
 	val playerID: Int,
-	val tick: Int,
+	val cycle: Int,
 	var economy: Int,
 	var industry: Int,
 	var science: Int,
@@ -32,9 +33,6 @@ data class Turn(
 	val hyperspace: Technology by lazy {
 		technology.first { it.name == "propulsion" }
 	}
-	val terraforming: Technology? by lazy {
-		technology.firstOrNull { it.name == "terraforming" }
-	}
 	val experimentation: Technology by lazy {
 		technology.first { it.name == "research" }
 	}
@@ -48,16 +46,19 @@ data class Turn(
 		technology.first { it.name == "manufacturing" }
 	}
 
-	val economyPerTurn: Double by lazy {
-		economy * 10 + banking.value * 75
+	val economyPerTurn by lazy {
+		economy * banking.level * CONFIG.gameCycle
 	}
-	val industryPerTurn: Double by lazy {
-		industry * (manufacturing.value + 5) / 2
+	val industryPerTurn by lazy {
+		industry * manufacturing.level * CONFIG.gameCycle
+	}
+	val sciencePerTurn by lazy {
+		science * experimentation.level * CONFIG.gameCycle
 	}
 
 	fun toOutput(): Map<String, Any?> {
 		val output = mapOf<String, Any?>(
-			"tick" to tick,
+			"cycle" to cycle,
 			"player" to playerID,
 			"economy" to economy,
 			"industry" to industry,
@@ -68,10 +69,10 @@ data class Turn(
 			"isActive" to isActive,
 			"economyPerTurn" to economyPerTurn,
 			"industryPerTurn" to industryPerTurn,
+			"sciencePerTurn" to sciencePerTurn,
 			"tech" to mapOf(
 				"scanning" to scanning.level,
 				"hyperspace" to hyperspace.level,
-				"terraforming" to (terraforming?.level ?: 0),
 				"experimentation" to experimentation.level,
 				"weapons" to weapons.level,
 				"banking" to banking.level,

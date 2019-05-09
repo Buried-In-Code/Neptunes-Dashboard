@@ -1,10 +1,11 @@
 package macro.dashboard.neptunes.game
 
+import macro.dashboard.neptunes.Config.Companion.CONFIG
+import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
 import macro.dashboard.neptunes.backend.ProteusGame
-import macro.dashboard.neptunes.backend.TritonGame
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongIdTable
@@ -49,8 +50,8 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun searchAll(): List<Game> = Util.query(description = "Select All Games") {
-		selectAll().orderBy(startTimeCol to SortOrder.DESC).map {
+	fun searchAll(): List<Game> = Util.query(description = "Select all Games"){
+		selectAll().orderBy(startTimeCol, SortOrder.DESC).map{
 			it.parse()
 		}
 	}
@@ -61,46 +62,7 @@ object GameTable : LongIdTable(name = "Game") {
 		}.orderBy(startTimeCol, SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun selectLatest(): Game = Util.query(description = "Select Latest Game") {
-		selectAll().orderBy(startTimeCol to SortOrder.DESC).limit(n = 1).first().parse()
-	}
-
-	fun insert(ID: Long, update: TritonGame): Boolean = Util.query(description = "Insert Triton Game") {
-		try {
-			insert {
-				it[id] = EntityID(ID, GameTable)
-				it[gameTypeCol] = "Triton"
-				it[fleetSpeedCol] = update.fleetSpeed
-				it[isPausedCol] = update.isPaused
-				it[productionsCol] = update.productions
-				it[fleetPriceCol] = null
-				it[tickFragmentCol] = update.tickFragment
-				it[tickRateCol] = update.tickRate
-				it[productionRateCol] = update.productionRate
-				it[victoryStarsCol] = update.victoryStars
-				it[isGameOverCol] = update.gameOver == 1
-				it[isStartedCol] = update.isStarted
-				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
-				).toJodaDateTime()
-				it[totalStarsCol] = update.totalStars
-				it[productionCounterCol] = update.productionCounter
-				it[isTradeScannedCol] = update.tradeScanned == 1
-				it[tickCol] = update.tick
-				it[tradeCostCol] = update.tradeCost
-				it[nameCol] = update.name
-				it[isTurnBasedCol] = update.turnBased == 1
-				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
-				).toJodaDateTime()
-			}
-			TeamTable.insert(gameID = ID, name = "Free For All")
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
-		}
-	}
+	fun select(): Game = select(ID = CONFIG.gameID) ?: throw NotFoundException(message = "No Game was found with the ID => ${CONFIG.gameID}")
 
 	fun insert(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Insert Proteus Game") {
 		try {
@@ -139,33 +101,9 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun update(ID: Long, update: TritonGame): Boolean = Util.query(description = "Update Triton Game") {
+	fun update(update: ProteusGame): Boolean = Util.query(description = "Update Proteus Game") {
 		try {
-			update({ id eq ID }) {
-				it[isPausedCol] = update.isPaused
-				it[productionsCol] = update.productions
-				it[tickFragmentCol] = update.tickFragment
-				it[isGameOverCol] = update.gameOver == 1
-				it[isStartedCol] = update.isStarted
-				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
-				).toJodaDateTime()
-				it[productionCounterCol] = update.productionCounter
-				it[tickCol] = update.tick
-				it[warCol] = update.war
-				it[turnBasedTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.turnBasedTimeout), ZoneId.of("Pacific/Auckland")
-				).toJodaDateTime()
-			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
-		}
-	}
-
-	fun update(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Update Proteus Game") {
-		try {
-			update({ id eq ID }) {
+			update({ id eq CONFIG.gameID }) {
 				it[isPausedCol] = update.isPaused
 				it[productionsCol] = update.productions
 				it[tickFragmentCol] = update.tickFragment

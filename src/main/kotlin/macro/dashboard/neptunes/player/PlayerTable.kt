@@ -3,7 +3,6 @@ package macro.dashboard.neptunes.player
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusPlayer
-import macro.dashboard.neptunes.backend.TritonPlayer
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.dao.EntityID
@@ -43,22 +42,20 @@ object PlayerTable : IntIdTable(name = "Player") {
 	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
 		select {
 			id eq ID
-		}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
+		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
 			.firstOrNull()?.parse()
 	}
 
-	fun select(gameID: Long, alias: String): Player? =
-		Util.query(description = "Select Player by Game ID: $gameID and Alias: $alias") {
+	fun select(alias: String): Player? =
+		Util.query(description = "Select Player by Alias: $alias") {
 			select {
-				gameCol eq gameID and (aliasCol like alias)
-			}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
+				aliasCol like alias
+			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
 				.firstOrNull()?.parse()
 		}
 
-	fun searchByGame(gameID: Long): List<Player> = Util.query(description = "Search for Players from Game: $gameID") {
-		select {
-			gameCol eq gameID
-		}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
+	fun search(): List<Player> = Util.query(description = "Search for Players") {
+		selectAll().orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
 			it.parse()
 		}
 	}
@@ -66,28 +63,13 @@ object PlayerTable : IntIdTable(name = "Player") {
 	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
 		select {
 			teamCol eq teamID
-		}.orderBy(gameCol to SortOrder.ASC, teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
+		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
 			it.parse()
 		}
 	}
 
-	fun insert(gameID: Long, update: TritonPlayer): Boolean = Util.query(description = "Insert Triton Player") {
-		val teamID = TeamTable.select(gameID = gameID, name = "Free For All")?.ID
-			?: throw GeneralException()
-		try {
-			insert {
-				it[gameCol] = EntityID(id = gameID, table = GameTable)
-				it[aliasCol] = update.alias
-				it[teamCol] = EntityID(id = teamID, table = TeamTable)
-			}
-			true
-		} catch (esqle: ExposedSQLException) {
-			false
-		}
-	}
-
 	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
-		val teamID = TeamTable.select(gameID = gameID, name = "Free For All")?.ID
+		val teamID = TeamTable.select(name = "Free For All")?.ID
 			?: throw GeneralException()
 		try {
 			insert {
@@ -118,11 +100,4 @@ object PlayerTable : IntIdTable(name = "Player") {
 		name = this[nameCol],
 		alias = this[aliasCol]
 	)
-
-	fun Player.update(
-		teamID: Int = this.teamID,
-		name: String? = this.name
-	) {
-		PlayerTable.update(ID = this.ID, teamID = teamID, name = name)
-	}
 }

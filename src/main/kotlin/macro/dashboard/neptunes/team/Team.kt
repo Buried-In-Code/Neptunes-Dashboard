@@ -15,36 +15,38 @@ data class Team(
 	val gameID: Long,
 	var name: String
 ) {
-
 	val game: Game by lazy {
-		GameTable.select(ID = gameID) ?: throw GeneralException()
+		GameTable.select()
 	}
 	val players: List<Player> by lazy {
 		PlayerTable.searchByTeam(teamID = ID)
 	}
 
-	val totalEconomy: Int by lazy {
+	val totalEconomy by lazy {
 		players.sumBy { it.latestTurn.economy }
 	}
-	val totalEconomyPerTurn: Double by lazy {
-		players.sumByDouble { it.latestTurn.economyPerTurn }
+	val totalEconomyPerTurn by lazy {
+		players.sumBy { it.latestTurn.economyPerTurn }
 	}
-	val totalIndustry: Int by lazy {
+	val totalIndustry by lazy {
 		players.sumBy { it.latestTurn.industry }
 	}
-	val totalIndustryPerTurn: Double by lazy {
-		players.sumByDouble { it.latestTurn.industryPerTurn }
+	val totalIndustryPerTurn by lazy {
+		players.sumBy { it.latestTurn.industryPerTurn }
 	}
-	val totalScience: Int by lazy {
+	val totalScience by lazy {
 		players.sumBy { it.latestTurn.science }
 	}
-	val totalStars: Int by lazy {
+	val totalSciencePerTurn by lazy {
+		players.sumBy { it.latestTurn.sciencePerTurn }
+	}
+	val totalStars by lazy {
 		players.sumBy { it.latestTurn.stars }
 	}
-	val totalFleet: Int by lazy {
+	val totalFleet by lazy {
 		players.sumBy { it.latestTurn.fleet }
 	}
-	val totalShips: Int by lazy {
+	val totalShips by lazy {
 		players.sumBy { it.latestTurn.ships }
 	}
 
@@ -59,6 +61,7 @@ data class Team(
 			"totalIndustry" to totalIndustry,
 			"totalIndustryPerTurn" to totalIndustryPerTurn,
 			"totalScience" to totalScience,
+			"totalSciencePerTurn" to totalSciencePerTurn,
 			"totalStars" to totalStars,
 			"totalFleet" to totalFleet,
 			"totalShips" to totalShips

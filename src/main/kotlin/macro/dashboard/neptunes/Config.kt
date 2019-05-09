@@ -19,7 +19,9 @@ class Config internal constructor(
 	serverPort: Int? = null,
 	val proxyHostname: String? = null,
 	val proxyPort: Int? = null,
-	games: Map<Long, String>? = null
+	gameID: Long? = null,
+	gameCode: String? = null,
+	gameCycle: Int? = null
 ) {
 	var databaseFile: File = when (databaseFile) {
 		null -> File("Triton-Dashboard.db")
@@ -32,7 +34,9 @@ class Config internal constructor(
 			null
 		else
 			Proxy(Proxy.Type.HTTP, InetSocketAddress(proxyHostname, proxyPort))
-	val games: Map<Long, String> = games ?: mapOf(1L to "Key")
+	val gameID: Long = gameID ?: 1L
+	val gameCode: String = gameCode ?: "Code"
+	val gameCycle: Int = gameCycle ?: 1
 
 	fun toMap(): Map<String, Any?> {
 		val data = mapOf(
@@ -45,7 +49,11 @@ class Config internal constructor(
 				"Host Name" to proxyHostname,
 				"Port" to proxyPort
 			),
-			"Games" to games.toSortedMap()
+			"Game" to mapOf(
+				"ID" to gameID,
+				"Code" to gameCode,
+				"Cycle Timer" to gameCycle
+			).toSortedMap()
 		)
 		return data.toSortedMap()
 	}
@@ -97,14 +105,18 @@ class Config internal constructor(
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
 			val proxyPort = (data["Proxy"] as Map<String, Any?>?)?.get("Port") as Int?
-			val games = data["Games"] as Map<Long, String>?
+			val gameID = (data["Game"] as Map<String, Any?>?)?.get("ID") as Long?
+			val gameCode = (data["Game"] as Map<String, Any?>?)?.get("Code") as String?
+			val gameCycle = (data["Game"] as Map<String, Any?>?)?.get("Cycle Timer") as Int?
 			return Config(
 				databaseFile = databaseFile,
 				serverAddress = serverAddress,
 				serverPort = serverPort,
 				proxyHostname = proxyHostname,
 				proxyPort = proxyPort,
-				games = games
+				gameID = gameID,
+				gameCode = gameCode,
+				gameCycle = gameCycle
 			)
 		}
 	}

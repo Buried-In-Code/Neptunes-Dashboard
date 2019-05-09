@@ -1,5 +1,6 @@
 package macro.dashboard.neptunes.game
 
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.team.TeamTable
@@ -33,8 +34,7 @@ data class Game(
 	var war: Int,
 	var turnTimeout: LocalDateTime
 ) {
-
-	fun toOutput(showInner: Boolean = true): Map<String, Any?> {
+	fun toOutput(): Map<String, Any?> {
 		val output = mapOf(
 			"ID" to ID,
 			"gameType" to gameType,
@@ -46,13 +46,11 @@ data class Game(
 			"isGameOver" to isGameOver,
 			"isPaused" to isPaused,
 			"isStarted" to isStarted,
-			"productions" to productions,
+			"cycles" to tick / CONFIG.gameCycle,
 			"turnTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
-			"players" to PlayerTable.searchByGame(gameID = ID).size,
-			"teams" to TeamTable.searchByGame(gameID = ID).filterNot { it.players.isEmpty() }.size
+			"playerCount" to PlayerTable.search().size,
+			"teamCount" to TeamTable.search().filterNot { it.players.isEmpty() }.size
 		).toMutableMap()
-		if (showInner)
-			output["games"] = GameTable.searchAll().map { it.toOutput(showInner = false) }
 		return output.toSortedMap()
 	}
 

@@ -30,14 +30,45 @@ function getBorderColour(index){
 	return colours[index];
 }
 
-function updateLink(linkID, post){
-	var gameID = window.location.pathname.split("/")[2];
-	document.getElementById(linkID).href = '/games/' + gameID + post
+function getGame(){
+	var gameStars = 700;
+	$.ajax({
+		async: false,
+	    url: '/api/game',
+	    type: 'GET',
+	    contentType: 'application/json',
+	    dataType: 'json',
+	    success: function (data) {
+	        document.getElementById("gameName").innerHTML = '<a href="https://np.ironhelmet.com/game/' + data.ID + '">' + data.name + '</a>';
+	        document.getElementById("gameType").innerHTML = data.gameType;
+	        if(data.isStarted){
+	            document.getElementById("gameStarted").innerHTML = data.startTime;
+            }else{
+                document.getElementById("gameStarted").innerHTML = "false";
+            }
+	        document.getElementById("playerCount").innerHTML = data.playerCount;
+	        document.getElementById("teamCount").innerHTML = data.teamCount;
+	        document.getElementById("gameStars").innerHTML = data.victoryStars + "/" + data.totalStars;
+	        document.getElementById("gameCycles").innerHTML = data.cycles;
+	        if(data.isPaused){
+	            document.getElementById("gameTurn").innerHTML = "Paused";
+	        }else if(data.isGameOver){
+	            document.getElementById("gameTurn").innerHTML = "Game Ended";
+	        }else{
+	            document.getElementById("gameTurn").innerHTML = data.turnTimeout;
+	        }
+	        gameStars = data.totalStars;
+	    },
+	    error: function(xhr, status, error){
+	        alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+	    }
+	});
+	return gameStars;
 }
 
 function getAllTeamStars(gameID, totalStars){
  	$.ajax({
- 	    url: "/api/" + gameID + "/teams",
+ 	    url: "/api/teams",
  	    type: 'GET',
 	    headers: {
 	        accept: 'application/json',
@@ -98,7 +129,7 @@ function createPlayerStatsLine(ID){
 			var scienceData = [];
 			var turns = data.turns.reverse()
 			for(const turn of turns){
-				turnLabels.push("Turn " + turn.tick/24);
+				turnLabels.push("Cycle " + turn.cycle);
 				starData.push(turn.stars);
 				economyData.push(turn.economy);
 				industryData.push(turn.industry);
@@ -166,7 +197,7 @@ function createTeamStatLines(ID){
 				var scienceData = [];
 				for(const turn of player.turns.reverse()){
 					if(count == 0){
-						turnLabels.push("Turn " + turn.tick/24);
+						turnLabels.push("Cycle " + turn.cycle);
 					}
 					starData.push(turn.stars);
 					shipData.push(turn.ships);

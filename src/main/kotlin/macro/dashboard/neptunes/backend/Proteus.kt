@@ -1,6 +1,7 @@
 package macro.dashboard.neptunes.backend
 
 import com.google.gson.annotations.SerializedName
+import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
@@ -24,14 +25,15 @@ object Proteus {
 			val game = Util.GSON.fromJson<ProteusGame>(response["Response"].toString(), ProteusGame::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
 			if (!valid)
-				GameTable.update(ID = gameID, update = game)
+				GameTable.update(update = game)
 			game.players.values.forEach { update ->
 				if (update.alias.isNotBlank()) {
 					PlayerTable.insert(gameID = gameID, update = update)
-					val player = PlayerTable.select(gameID = gameID, alias = update.alias)
+					val player = PlayerTable.select(alias = update.alias)
 						?: throw GeneralException()
-					TurnTable.insert(playerID = player.ID, tick = game.tick, update = update)
-					val turn = TurnTable.select(playerID = player.ID, tick = game.tick) ?: throw GeneralException()
+					TurnTable.insert(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle, update = update)
+					val turn = TurnTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
+						?: throw GeneralException()
 					update.tech.forEach {
 						TechnologyTable.insert(turnID = turn.ID, name = it.key, update = it.value)
 					}

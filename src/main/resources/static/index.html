@@ -17,61 +17,49 @@
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Name</div>
-					<div class="description">
-						<a href="https://np.ironhelmet.com/game/${ID?c}">${name}</a>
-					</div>
+					<div class="description" id="gameName"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Type</div>
-					<div class="description">${gameType}</div>
+					<div class="description" id="gameType"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Started</div>
-					<#if isStarted>
-						<div class="description">${startTime}</div>
-					<#else>
-						<div class="description">false</div>
-					</#if>
+					<div class="description" id="gameStarted"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header"># of Players</div>
-					<div class="description">${players}</div>
+					<div class="description" id="playerCount"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header"># of Teams</div>
-					<div class="description">${teams}</div>
+					<div class="description" id="teamCount"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Stars to Win</div>
-					<div class="description">${victoryStars}/${totalStars}</div>
+					<div class="description" id="gameStars"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Cycles</div>
-					<div class="description">${productions}</div>
+					<div class="description" id="gameCycles"></div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
 				<div class="content">
 					<div class="header">Next Turn</div>
-					<#if isPaused>
-						<div class="description">Paused</div>
-					<#elseif isGameOver>
-						<div class="description">Game Ended</div>
-					<#else>
-						<div class="description">${turnTimeout}</div>
-					</#if>
+					<div class="description" id="gameTurn"></div>
 				</div>
 			</div>
 		</div>
@@ -93,9 +81,8 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");
-	console.log("GameID: " + ${ID?c});
-	getAllTeamStars(${ID?c}, ${totalStars});
-	$('#gameSelection').dropdown();
+	var totalStars = getGame();
+	getAllTeamStars(totalStars);
 });
 </script>
 </body>

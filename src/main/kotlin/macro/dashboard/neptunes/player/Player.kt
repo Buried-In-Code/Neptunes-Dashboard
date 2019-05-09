@@ -17,9 +17,8 @@ data class Player(
 	val alias: String,
 	var name: String? = null
 ) {
-
 	val game: Game by lazy {
-		GameTable.select(ID = gameID) ?: throw GeneralException()
+		GameTable.select()
 	}
 	val team: Team by lazy {
 		TeamTable.select(ID = teamID) ?: throw GeneralException()
