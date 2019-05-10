@@ -1,7 +1,8 @@
-package macro.dashboard.neptunes.player
+package macro.dashboard.neptunes.cycle
 
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusPlayer
+import macro.dashboard.neptunes.player.PlayerTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
@@ -19,13 +20,19 @@ object CycleTable : IntIdTable(name = "Turn") {
 		onDelete = ReferenceOption.CASCADE
 	)
 	private val cycleCol = integer(name = "cycle")
-	private val economyCol = integer(name = "economy")
-	private val industryCol = integer(name = "industry")
-	private val scienceCol = integer(name = "science")
+	private val economyCol = integer(name = "economy").default(0)
+	private val industryCol = integer(name = "industry").default(0)
+	private val scienceCol = integer(name = "science").default(0)
 	private val starsCol = integer(name = "stars")
 	private val fleetCol = integer(name = "fleet")
 	private val shipsCol = integer(name = "ships")
 	private val isActiveCol = bool(name = "isActive")
+	private val scanningCol = integer(name = "scanning").default(0)
+	private val hyperspaceCol = integer(name = "hyperspace").default(0)
+	private val experimentationCol = integer(name = "experimentation").default(0)
+	private val weaponsCol = integer(name = "weapons").default(0)
+	private val bankingCol = integer(name = "banking").default(0)
+	private val manufacturingCol = integer(name = "manufacturing").default(0)
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
@@ -56,13 +63,14 @@ object CycleTable : IntIdTable(name = "Turn") {
 			}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 		}
 
-	fun searchByPlayer(playerID: Int): List<Cycle> = Util.query(description = "Search for Cycles by Player: $playerID") {
-		select {
-			playerCol eq playerID
-		}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).map {
-			it.parse()
+	fun searchByPlayer(playerID: Int): List<Cycle> =
+		Util.query(description = "Search for Cycles by Player: $playerID") {
+			select {
+				playerCol eq playerID
+			}.orderBy(playerCol to SortOrder.ASC, cycleCol to SortOrder.DESC).map {
+				it.parse()
+			}
 		}
-	}
 
 	fun insert(playerID: Int, cycle: Int, update: ProteusPlayer): Boolean =
 		Util.query(description = "Insert Proteus Cycle") {
@@ -77,6 +85,12 @@ object CycleTable : IntIdTable(name = "Turn") {
 					it[fleetCol] = update.fleet
 					it[shipsCol] = update.ships
 					it[isActiveCol] = update.conceded == 0
+					it[scanningCol] = update.tech["Scanning"]?.level ?: 0
+					it[hyperspaceCol] = update.tech["Hyperspace"]?.level ?: 0
+					it[experimentationCol] = update.tech["Experimentation"]?.level ?: 0
+					it[weaponsCol] = update.tech["Weapons"]?.level ?: 0
+					it[bankingCol] = update.tech["Banking"]?.level ?: 0
+					it[manufacturingCol] = update.tech["Manufacturing"]?.level ?: 0
 				}
 				true
 			} catch (esqle: ExposedSQLException) {
@@ -94,6 +108,12 @@ object CycleTable : IntIdTable(name = "Turn") {
 		stars = this[starsCol],
 		fleet = this[fleetCol],
 		ships = this[shipsCol],
-		isActive = this[isActiveCol]
+		isActive = this[isActiveCol],
+		scanning = this[scanningCol],
+		hyperspace = this[hyperspaceCol],
+		experimentation = this[experimentationCol],
+		weapons = this[weaponsCol],
+		banking = this[bankingCol],
+		manufacturing = this[manufacturingCol]
 	)
 }

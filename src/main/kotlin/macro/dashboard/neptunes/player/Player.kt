@@ -1,6 +1,8 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.GeneralException
+import io.javalin.http.InternalServerErrorResponse
+import macro.dashboard.neptunes.cycle.Cycle
+import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.Team
@@ -21,13 +23,13 @@ data class Player(
 		GameTable.select()
 	}
 	val team: Team by lazy {
-		TeamTable.select(ID = teamID) ?: throw GeneralException()
+		TeamTable.select(ID = teamID) ?: throw InternalServerErrorResponse("Unable to Find Team => $teamID")
 	}
 	val cycles: List<Cycle> by lazy {
 		CycleTable.searchByPlayer(playerID = ID)
 	}
 	val latestCycle: Cycle by lazy {
-		CycleTable.selectLatest(playerID = ID) ?: throw GeneralException()
+		CycleTable.selectLatest(playerID = ID) ?: throw throw InternalServerErrorResponse("Unable to Find Cycle => $ID")
 	}
 
 	fun toOutput(showGame: Boolean, showTeam: Boolean, showCycles: Boolean = true): Map<String, Any?> {

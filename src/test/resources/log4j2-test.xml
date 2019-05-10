@@ -23,5 +23,7 @@
 		</Root>
 		<Logger name="Exposed" level="INFO" additivity="false">
 		</Logger>
+		<Logger name="org.eclipse.jetty" level="INFO" additivity="false">
+		</Logger>
 	</Loggers>
 </Configuration>

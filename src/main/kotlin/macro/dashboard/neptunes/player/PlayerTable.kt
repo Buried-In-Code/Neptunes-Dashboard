@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.GeneralException
+import io.javalin.http.InternalServerErrorResponse
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusPlayer
 import macro.dashboard.neptunes.game.GameTable
@@ -70,7 +70,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 
 	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
 		val teamID = TeamTable.select(name = "Free For All")?.ID
-			?: throw GeneralException()
+			?: throw InternalServerErrorResponse("Unable to Find Team => Free For All")
 		try {
 			insert {
 				it[gameCol] = EntityID(id = gameID, table = GameTable)

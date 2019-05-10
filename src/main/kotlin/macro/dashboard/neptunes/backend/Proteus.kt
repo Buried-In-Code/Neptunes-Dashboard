@@ -1,13 +1,12 @@
 package macro.dashboard.neptunes.backend
 
 import com.google.gson.annotations.SerializedName
+import io.javalin.http.InternalServerErrorResponse
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.player.TechnologyTable
-import macro.dashboard.neptunes.player.CycleTable
 import org.slf4j.LoggerFactory
 
 /**
@@ -30,13 +29,10 @@ object Proteus {
 				if (update.alias.isNotBlank()) {
 					PlayerTable.insert(gameID = gameID, update = update)
 					val player = PlayerTable.select(alias = update.alias)
-						?: throw GeneralException()
+						?: throw InternalServerErrorResponse("Unable to Find Player => ${update.alias}")
 					CycleTable.insert(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle, update = update)
-					val cycle = CycleTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
-						?: throw GeneralException()
-					update.tech.forEach {
-						TechnologyTable.insert(cycleID = cycle.ID, name = it.key, update = it.value)
-					}
+					CycleTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
+						?: throw InternalServerErrorResponse("Unable to Find Cycle => ${player.ID}, ${game.tick / CONFIG.gameCycle}")
 				}
 			}
 			return true

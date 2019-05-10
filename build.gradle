@@ -35,16 +35,18 @@ application {
 
 dependencies {
 	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "$kotlinVersion"
-	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
-	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktorVersion"
-	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktorVersion"
+	implementation group: 'io.javalin', name: 'javalin', version: "3.0.0.ALPHA0"
+	implementation group: 'com.github.salomonbrys.kotson', name: 'kotson', version: "2.5.0"
+//	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
+//	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktorVersion"
+//	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktorVersion"
 	implementation group: 'org.yaml', name: 'snakeyaml', version: "1.24"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed', version: "0.13.6"
 	implementation group: 'khttp', name: 'khttp', version: "0.1.0"
 	implementation group: 'com.mashape.unirest', name: 'unirest-java', version: "1.4.9"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "$loggerVersion"
 	runtimeOnly group: 'org.xerial', name: 'sqlite-jdbc', version: "3.27.2.1"
-	testImplementation group: 'io.ktor', name: 'ktor-server-test-host', version: "$ktorVersion"
+//	testImplementation group: 'io.ktor', name: 'ktor-server-test-host', version: "$ktorVersion"
 }
 
 compileJava {

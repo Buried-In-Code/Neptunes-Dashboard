@@ -1,15 +1,6 @@
 package macro.dashboard.neptunes.team
 
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.request.receiveOrNull
-import io.ktor.response.respond
-import io.ktor.routing.*
-import macro.dashboard.neptunes.BadRequestException
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.ConflictException
-import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.team.TeamTable.update
 import org.slf4j.LoggerFactory
 
@@ -19,7 +10,7 @@ import org.slf4j.LoggerFactory
 internal object TeamController {
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
-	fun Route.teamRoutes() {
+	/*fun Route.teamRoutes() {
 		route(path = "/teams") {
 			get {
 				val name = call.request.queryParameters["name"] ?: ""
@@ -80,7 +71,7 @@ internal object TeamController {
 				}
 			}
 		}
-	}
+	}*/
 }
 
 class TeamRequest(val name: String)
