@@ -1,9 +1,5 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.team.TeamTable
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
@@ -34,26 +30,6 @@ data class Game(
 	var war: Int,
 	var cycleTimeout: LocalDateTime
 ) {
-	fun toOutput(): Map<String, Any?> {
-		val output = mapOf(
-			"ID" to ID,
-			"gameType" to gameType,
-			"name" to name,
-			"totalStars" to totalStars,
-			"victoryStars" to victoryStars,
-			"productionRate" to productionRate,
-			"startTime" to startTime.format(Util.JAVA_FORMATTER),
-			"isGameOver" to isGameOver,
-			"isPaused" to isPaused,
-			"isStarted" to isStarted,
-			"cycles" to tick / CONFIG.gameCycle,
-			"cycleTimeout" to cycleTimeout.format(Util.JAVA_FORMATTER),
-			"playerCount" to PlayerTable.search().size,
-			"teamCount" to TeamTable.search().filterNot { it.players.isEmpty() }.size
-		).toMutableMap()
-		return output.toSortedMap()
-	}
-
 	companion object {
 		private val LOGGER = LoggerFactory.getLogger(this::class.java)
 	}

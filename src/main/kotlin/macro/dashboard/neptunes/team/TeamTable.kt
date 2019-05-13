@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory
  * Created by Macro303 on 2019-Feb-11.
  */
 object TeamTable : IntIdTable(name = "Team") {
-	private val gameCol = reference(
+	val gameCol = reference(
 		name = "gameID",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val nameCol = text(name = "name")
+	val nameCol = text(name = "name")
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 

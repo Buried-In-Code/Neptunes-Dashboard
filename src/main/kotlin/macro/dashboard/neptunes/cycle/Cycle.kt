@@ -1,9 +1,6 @@
 package macro.dashboard.neptunes.cycle
 
-import io.javalin.http.InternalServerErrorResponse
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.player.Player
-import macro.dashboard.neptunes.player.PlayerTable
 import org.slf4j.LoggerFactory
 
 /**
@@ -27,33 +24,19 @@ data class Cycle(
 	var banking: Int,
 	var manufacturing: Int
 ) {
-	val player: Player by lazy {
-		PlayerTable.select(ID = playerID) ?: throw InternalServerErrorResponse("Unable to Find Player => $playerID")
-	}
+	val economyPerCycle = economy * banking * CONFIG.gameCycle
+	val industryPerCycle = industry * manufacturing * CONFIG.gameCycle
+	val sciencePerCycle = science * experimentation * CONFIG.gameCycle
 
-	val economyPerCycle by lazy {
-		economy * banking * CONFIG.gameCycle
-	}
-	val industryPerCycle by lazy {
-		industry * manufacturing * CONFIG.gameCycle
-	}
-	val sciencePerCycle by lazy {
-		science * experimentation * CONFIG.gameCycle
-	}
-
-	fun toOutput(): Map<String, Any?> {
-		val output = mapOf<String, Any?>(
-			"cycle" to cycle,
-			"player" to playerID,
-			"economy" to economy,
-			"industry" to industry,
-			"science" to science,
+	fun toMap(): Map<String, Any?> {
+		return mapOf(
 			"stars" to stars,
-			"fleet" to fleet,
 			"ships" to ships,
-			"isActive" to isActive,
+			"economy" to economy,
 			"economyPerCycle" to economyPerCycle,
+			"industry" to industry,
 			"industryPerCycle" to industryPerCycle,
+			"science" to science,
 			"sciencePerCycle" to sciencePerCycle,
 			"tech" to mapOf(
 				"scanning" to scanning,
@@ -63,8 +46,7 @@ data class Cycle(
 				"banking" to banking,
 				"manufacturing" to manufacturing
 			).toSortedMap()
-		).toMutableMap()
-		return output.toSortedMap()
+		).toSortedMap()
 	}
 
 	companion object {

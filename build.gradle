@@ -37,6 +37,7 @@ dependencies {
 	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: "$kotlinVersion"
 	implementation group: 'io.javalin', name: 'javalin', version: "3.0.0.ALPHA0"
 	implementation group: 'com.github.salomonbrys.kotson', name: 'kotson', version: "2.5.0"
+	implementation group: 'org.freemarker', name: 'freemarker', version: "2.3.28"
 //	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
 //	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktorVersion"
 //	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktorVersion"

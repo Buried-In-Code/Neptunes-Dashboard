@@ -15,21 +15,35 @@ object PlayerHandler {
 		return ctx.pathParam("player-id").toIntOrNull() ?: throw BadRequestResponse("Invalid Player ID")
 	}
 
+	private fun getTeamQuery(ctx: Context): String{
+		return ctx.queryParam("team") ?: "%"
+	}
+
+	private fun getNameQuery(ctx: Context): String{
+		return ctx.queryParam("name") ?: "%"
+	}
+
+	private fun getAliasQuery(ctx: Context): String{
+		return ctx.queryParam("alias") ?: "%"
+	}
+
 	internal fun getPlayers(ctx: Context) {
-		val player = PlayerTable.search()
-		ctx.json(player)
+		val team = getTeamQuery(ctx = ctx)
+		val name = getNameQuery(ctx = ctx)
+		val alias = getAliasQuery(ctx = ctx)
+		val players = PlayerTable.search(team = team, name = name, alias = alias)
+		ctx.json(players.map { it.toMap() })
 	}
 
 	internal fun getPlayer(ctx: Context) {
 		val playerID = getPlayerParam(ctx)
 		val player = PlayerTable.select(ID = playerID) ?: throw NotFoundResponse("No Player with ID => $playerID")
-		ctx.json(player)
+		ctx.json(player.toMap())
 	}
 
 	internal fun updatePlayer(ctx: Context) {
 		val playerID = getPlayerParam(ctx)
-		val successful = false
-		throw NotFoundResponse("Not Yet Implemented")
-		ctx.status(if (successful) 204 else 500)
+		ctx.json(mapOf("Result" to "Not Yet Implemented"))
+		ctx.status(202)
 	}
 }

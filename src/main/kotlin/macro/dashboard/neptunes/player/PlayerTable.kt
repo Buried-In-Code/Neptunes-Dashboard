@@ -15,20 +15,20 @@ import org.slf4j.LoggerFactory
  * Created by Macro303 on 2019-Feb-11.
  */
 object PlayerTable : IntIdTable(name = "Player") {
-	private val gameCol = reference(
+	val gameCol = reference(
 		name = "gameID",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val teamCol = reference(
+	val teamCol = reference(
 		name = "teamID",
 		foreign = TeamTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val aliasCol = text(name = "alias")
-	private val nameCol = text(name = "name").nullable()
+	val aliasCol = text(name = "alias")
+	val nameCol = text(name = "name").nullable()
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
@@ -59,6 +59,15 @@ object PlayerTable : IntIdTable(name = "Player") {
 			it.parse()
 		}
 	}
+
+	fun search(team: String, name: String, alias: String): List<Player> =
+		Util.query(description = "Search for Players by Team => $team by Alias => $alias") {
+			(PlayerTable innerJoin TeamTable).select {
+				TeamTable.nameCol like team and (aliasCol like alias)
+			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
+				it.parse()
+			}
+		}
 
 	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
 		select {

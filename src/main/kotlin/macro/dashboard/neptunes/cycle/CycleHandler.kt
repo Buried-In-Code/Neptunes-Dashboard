@@ -22,13 +22,13 @@ object CycleHandler {
 	internal fun getCycles(ctx: Context){
 		val playerID = getPlayerParam(ctx = ctx)
 		val cycles = CycleTable.searchByPlayer(playerID = playerID)
-		ctx.json(cycles)
+		ctx.json(cycles.map { it.toMap() })
 	}
 
 	internal fun getCycle(ctx: Context){
 		val playerID = getPlayerParam(ctx = ctx)
 		val cycleNum = getCycleParam(ctx = ctx)
 		val cycle = CycleTable.select(playerID = playerID, cycle = cycleNum) ?: throw NotFoundResponse("No Cycle Found with Player ID => $playerID at Cycle => $cycleNum")
-		ctx.json(cycle)
+		ctx.json(cycle.toMap())
 	}
 }

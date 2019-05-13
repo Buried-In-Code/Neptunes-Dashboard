@@ -3,21 +3,23 @@ package macro.dashboard.neptunes
 import io.javalin.Javalin
 import io.javalin.core.security.Role
 import io.javalin.core.security.SecurityUtil.roles
-import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import io.javalin.http.UnauthorizedResponse
 import io.javalin.plugin.json.FromJsonMapper
 import io.javalin.plugin.json.JavalinJson
 import io.javalin.plugin.json.ToJsonMapper
+import io.javalin.plugin.rendering.JavalinRenderer
+import io.javalin.plugin.rendering.template.JavalinFreemarker
 import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Server.SecurityRole.*
 import macro.dashboard.neptunes.backend.Proteus
 import macro.dashboard.neptunes.cycle.CycleHandler
+import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.game.GameHandler
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.player.PlayerHandler
 import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.team.TeamHandler
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.sql.exists
 import org.slf4j.LoggerFactory
@@ -87,8 +89,9 @@ object Server {
 					throw UnauthorizedResponse("Invalid Access Level")
 			}
 			it.defaultContentType = "application/json"
+			it.addStaticFiles("/static")
 		}.start(CONFIG.serverPort).apply {
-			exception(Exception::class.java) { e, _ -> LOGGER.error("Exception Occured", e) }
+			exception(Exception::class.java) { e, _ -> LOGGER.error("Exception Occurred", e) }
 			get("/api/game", GameHandler::getGame, roles(EVERYONE, DEVELOPER, ADMIN))
 			put("/api/game", GameHandler::updateGame, roles(DEVELOPER, ADMIN))
 			get("/api/players", PlayerHandler::getPlayers, roles(EVERYONE, DEVELOPER, ADMIN))
@@ -96,20 +99,21 @@ object Server {
 			put("/api/players/:player-id", PlayerHandler::updatePlayer, roles(DEVELOPER, ADMIN))
 			get("/api/players/:player-id/cycles", CycleHandler::getCycles, roles(EVERYONE, DEVELOPER, ADMIN))
 			get("/api/players/:player-id/cycles/:cycle", CycleHandler::getCycle, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/teams", { ctx ->
-				ctx.json(TeamTable.search().map { it.toOutput(showGame = false, showPlayers = false) })
+			get("/api/teams", TeamHandler::getTeams, roles(EVERYONE, DEVELOPER, ADMIN))
+			get("/api/teams/:team-id", TeamHandler::getTeam, roles(EVERYONE, DEVELOPER, ADMIN))
+			post("/api/teams", TeamHandler::addTeam, roles(DEVELOPER, ADMIN))
+			put("/api/teams/:team-id", TeamHandler::updateTeam, roles(DEVELOPER, ADMIN))
+
+			get("/players/:player-id", { ctx ->
+				val playerID = ctx.pathParam("player-id").toIntOrNull() ?: -1
+				val player = PlayerTable.select(ID = playerID)!!
+				ctx.render("/templates/Player.ftl", player.toMap())
 			}, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/teams/:team-id", { ctx ->
-				val teamID = ctx.pathParam("team-id").toIntOrNull() ?: throw BadRequestResponse()
-				ctx.json(TeamTable.select(ID = teamID)?: emptyMap<String, Any?>())
+			get("/teams/:team-id", { ctx ->
+				val teamID = ctx.pathParam("team-id").toIntOrNull() ?: -1
+				val team = TeamTable.select(ID = teamID)!!
+				ctx.render("/templates/Team.ftl", team.toMap())
 			}, roles(EVERYONE, DEVELOPER, ADMIN))
-			post("/api/teams", { ctx ->
-				ctx.status(201)
-			}, roles(DEVELOPER, ADMIN))
-			put("/api/teams/:team-id", { ctx ->
-				val teamID = ctx.pathParam("team-id").toIntOrNull() ?: throw BadRequestResponse()
-				ctx.status(204)
-			}, roles(DEVELOPER, ADMIN))
 		}
 	}
 

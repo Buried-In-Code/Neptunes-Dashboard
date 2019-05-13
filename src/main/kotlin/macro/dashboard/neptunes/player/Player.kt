@@ -1,11 +1,6 @@
 package macro.dashboard.neptunes.player
 
-import io.javalin.http.InternalServerErrorResponse
-import macro.dashboard.neptunes.cycle.Cycle
 import macro.dashboard.neptunes.cycle.CycleTable
-import macro.dashboard.neptunes.game.Game
-import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
 import org.slf4j.LoggerFactory
 
@@ -19,35 +14,18 @@ data class Player(
 	val alias: String,
 	var name: String? = null
 ) {
-	val game: Game by lazy {
-		GameTable.select()
-	}
-	val team: Team by lazy {
-		TeamTable.select(ID = teamID) ?: throw InternalServerErrorResponse("Unable to Find Team => $teamID")
-	}
-	val cycles: List<Cycle> by lazy {
-		CycleTable.searchByPlayer(playerID = ID)
-	}
-	val latestCycle: Cycle by lazy {
-		CycleTable.selectLatest(playerID = ID) ?: throw throw InternalServerErrorResponse("Unable to Find Cycle => $ID")
-	}
+	fun getTeam() = TeamTable.select(ID = teamID)
+	fun getCycles() = CycleTable.searchByPlayer(playerID = ID)
+	fun getLatestCycle() = CycleTable.selectLatest(playerID = ID)
 
-	fun toOutput(showGame: Boolean, showTeam: Boolean, showCycles: Boolean = true): Map<String, Any?> {
-		val output = mapOf(
+	fun toMap(): Map<String, Any?> {
+		return mapOf(
 			"ID" to ID,
-			"alias" to alias,
 			"name" to name,
-			"game" to gameID,
-			"team" to team.name,
-			"cycles" to latestCycle.toOutput()
-		).toMutableMap()
-		if (showGame)
-			output["game"] = game.toOutput()
-		if (showTeam)
-			output["team"] = team.toOutput(showGame = false, showPlayers = false)
-		if (showCycles)
-			output["cycles"] = cycles.map { it.toOutput() }
-		return output.toSortedMap()
+			"alias" to alias,
+			"team" to (getTeam()?.name ?: ""),
+			"cycles" to getCycles().map { it.toMap() }
+		).toSortedMap()
 	}
 
 	companion object {

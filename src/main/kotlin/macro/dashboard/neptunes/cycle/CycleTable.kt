@@ -13,26 +13,26 @@ import org.slf4j.LoggerFactory
  * Created by Macro303 on 2019-Mar-04.
  */
 object CycleTable : IntIdTable(name = "Turn") {
-	private val playerCol = reference(
+	val playerCol = reference(
 		name = "playerID",
 		foreign = PlayerTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	private val cycleCol = integer(name = "cycle")
-	private val economyCol = integer(name = "economy").default(0)
-	private val industryCol = integer(name = "industry").default(0)
-	private val scienceCol = integer(name = "science").default(0)
-	private val starsCol = integer(name = "stars")
-	private val fleetCol = integer(name = "fleet")
-	private val shipsCol = integer(name = "ships")
-	private val isActiveCol = bool(name = "isActive")
-	private val scanningCol = integer(name = "scanning").default(0)
-	private val hyperspaceCol = integer(name = "hyperspace").default(0)
-	private val experimentationCol = integer(name = "experimentation").default(0)
-	private val weaponsCol = integer(name = "weapons").default(0)
-	private val bankingCol = integer(name = "banking").default(0)
-	private val manufacturingCol = integer(name = "manufacturing").default(0)
+	val cycleCol = integer(name = "cycle")
+	val economyCol = integer(name = "economy").default(0)
+	val industryCol = integer(name = "industry").default(0)
+	val scienceCol = integer(name = "science").default(0)
+	val starsCol = integer(name = "stars")
+	val fleetCol = integer(name = "fleet")
+	val shipsCol = integer(name = "ships")
+	val isActiveCol = bool(name = "isActive")
+	val scanningCol = integer(name = "scanning").default(0)
+	val hyperspaceCol = integer(name = "hyperspace").default(0)
+	val experimentationCol = integer(name = "experimentation").default(0)
+	val weaponsCol = integer(name = "weapons").default(0)
+	val bankingCol = integer(name = "banking").default(0)
+	val manufacturingCol = integer(name = "manufacturing").default(0)
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
@@ -85,12 +85,12 @@ object CycleTable : IntIdTable(name = "Turn") {
 					it[fleetCol] = update.fleet
 					it[shipsCol] = update.ships
 					it[isActiveCol] = update.conceded == 0
-					it[scanningCol] = update.tech["Scanning"]?.level ?: 0
-					it[hyperspaceCol] = update.tech["Hyperspace"]?.level ?: 0
-					it[experimentationCol] = update.tech["Experimentation"]?.level ?: 0
-					it[weaponsCol] = update.tech["Weapons"]?.level ?: 0
-					it[bankingCol] = update.tech["Banking"]?.level ?: 0
-					it[manufacturingCol] = update.tech["Manufacturing"]?.level ?: 0
+					it[scanningCol] = update.tech["scanning"]?.level ?: 0
+					it[hyperspaceCol] = update.tech["propulsion"]?.level ?: 0
+					it[experimentationCol] = update.tech["research"]?.level ?: 0
+					it[weaponsCol] = update.tech["weapons"]?.level ?: 0
+					it[bankingCol] = update.tech["banking"]?.level ?: 0
+					it[manufacturingCol] = update.tech["manufacturing"]?.level ?: 0
 				}
 				true
 			} catch (esqle: ExposedSQLException) {
