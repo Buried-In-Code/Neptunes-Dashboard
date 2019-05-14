@@ -17,12 +17,12 @@ data class Cycle(
 	var fleet: Int,
 	var ships: Int,
 	var isActive: Boolean,
-	var scanning: Int,
-	var hyperspace: Int,
-	var experimentation: Int,
 	var weapons: Int,
+	var range: Int,
+	var scanning: Int,
 	var banking: Int,
-	var manufacturing: Int
+	var manufacturing: Int,
+	var experimentation: Int
 ) {
 	val economyPerCycle = economy * banking * CONFIG.gameCycle
 	val industryPerCycle = industry * manufacturing * CONFIG.gameCycle
@@ -40,7 +40,7 @@ data class Cycle(
 			"sciencePerCycle" to sciencePerCycle,
 			"tech" to mapOf(
 				"scanning" to scanning,
-				"hyperspace" to hyperspace,
+				"range" to range,
 				"experimentation" to experimentation,
 				"weapons" to weapons,
 				"banking" to banking,

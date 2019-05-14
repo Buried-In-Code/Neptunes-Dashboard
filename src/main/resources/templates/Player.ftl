@@ -95,26 +95,20 @@
 		<div class="ui four stackable cards">
 			<div class="ui orange card opacity">
 				<div class="content">
-					<div class="header">Scanning</div>
-					<div class="description">${cycles[0].tech.scanning!""}</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
-					<div class="header">Hyperspace Range</div>
-					<div class="description">${cycles[0].tech.hyperspace!""}</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
-					<div class="header">Experimentation</div>
-					<div class="description">${cycles[0].tech.experimentation!""}</div>
-				</div>
-			</div>
-			<div class="ui orange card opacity">
-				<div class="content">
 					<div class="header">Weapons</div>
 					<div class="description">${cycles[0].tech.weapons!""}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Range</div>
+					<div class="description">${cycles[0].tech.range!""}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Scanning</div>
+					<div class="description">${cycles[0].tech.scanning!""}</div>
 				</div>
 			</div>
 			<div class="ui orange card opacity">
@@ -127,6 +121,12 @@
 				<div class="content">
 					<div class="header">Manufacturing</div>
 					<div class="description">${cycles[0].tech.manufacturing!""}</div>
+				</div>
+			</div>
+			<div class="ui orange card opacity">
+				<div class="content">
+					<div class="header">Experimentation</div>
+					<div class="description">${cycles[0].tech.experimentation!""}</div>
 				</div>
 			</div>
 		</div>

@@ -27,12 +27,12 @@ object CycleTable : IntIdTable(name = "Turn") {
 	val fleetCol = integer(name = "fleet")
 	val shipsCol = integer(name = "ships")
 	val isActiveCol = bool(name = "isActive")
-	val scanningCol = integer(name = "scanning").default(0)
-	val hyperspaceCol = integer(name = "hyperspace").default(0)
-	val experimentationCol = integer(name = "experimentation").default(0)
 	val weaponsCol = integer(name = "weapons").default(0)
+	val rangeCol = integer(name = "hyperspace").default(0)
+	val scanningCol = integer(name = "scanning").default(0)
 	val bankingCol = integer(name = "banking").default(0)
 	val manufacturingCol = integer(name = "manufacturing").default(0)
+	val experimentationCol = integer(name = "experimentation").default(0)
 
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
@@ -85,12 +85,12 @@ object CycleTable : IntIdTable(name = "Turn") {
 					it[fleetCol] = update.fleet
 					it[shipsCol] = update.ships
 					it[isActiveCol] = update.conceded == 0
-					it[scanningCol] = update.tech["scanning"]?.level ?: 0
-					it[hyperspaceCol] = update.tech["propulsion"]?.level ?: 0
-					it[experimentationCol] = update.tech["research"]?.level ?: 0
 					it[weaponsCol] = update.tech["weapons"]?.level ?: 0
+					it[rangeCol] = update.tech["propulsion"]?.level ?: 0
+					it[scanningCol] = update.tech["scanning"]?.level ?: 0
 					it[bankingCol] = update.tech["banking"]?.level ?: 0
 					it[manufacturingCol] = update.tech["manufacturing"]?.level ?: 0
+					it[experimentationCol] = update.tech["research"]?.level ?: 0
 				}
 				true
 			} catch (esqle: ExposedSQLException) {
@@ -109,11 +109,11 @@ object CycleTable : IntIdTable(name = "Turn") {
 		fleet = this[fleetCol],
 		ships = this[shipsCol],
 		isActive = this[isActiveCol],
-		scanning = this[scanningCol],
-		hyperspace = this[hyperspaceCol],
-		experimentation = this[experimentationCol],
 		weapons = this[weaponsCol],
+		range = this[rangeCol],
+		scanning = this[scanningCol],
 		banking = this[bankingCol],
-		manufacturing = this[manufacturingCol]
+		manufacturing = this[manufacturingCol],
+		experimentation = this[experimentationCol]
 	)
 }

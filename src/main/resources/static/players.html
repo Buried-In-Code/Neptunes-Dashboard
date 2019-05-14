@@ -39,12 +39,12 @@
 				<th>Alias</th>
 				<th>Name</th>
 				<th>Team</th>
-				<th>Scanning</th>
-				<th>Hyperspace</th>
-				<th>Experimentation</th>
 				<th>Weapons</th>
+				<th>Range</th>
+				<th>Scanning</th>
 				<th>Banking</th>
 				<th>Manufacturing</th>
+				<th>Experimentation</th>
 			</tr>
 			</thead>
 		</table>
@@ -103,12 +103,12 @@ $(document).ready(function(){
 			{ "data" : "alias" },
 			{ "data" : "name" },
 			{ "data" : "team" },
-			{ "data" : "cycles.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.hyperspace", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.experimentation", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "cycles.tech.weapons", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.range", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
 			{ "data" : "cycles.tech.banking", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.manufacturing", render: $.fn.dataTable.render.number( ',' ) }
+			{ "data" : "cycles.tech.manufacturing", render: $.fn.dataTable.render.number( ',' ) },
+			{ "data" : "cycles.tech.experimentation", render: $.fn.dataTable.render.number( ',' ) }
 		],
 		"order": [[0, "asc"]]
 	});
