@@ -1,8 +1,8 @@
 package macro.dashboard.neptunes.backend
 
 import com.google.gson.annotations.SerializedName
-import io.javalin.http.InternalServerErrorResponse
 import macro.dashboard.neptunes.Config.Companion.CONFIG
+import macro.dashboard.neptunes.InternalServerErrorResponse
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.game.GameTable
@@ -16,28 +16,22 @@ object Proteus {
 	private val LOGGER = LoggerFactory.getLogger(this::class.java)
 
 	@Suppress("UNCHECKED_CAST")
-	fun getGame(gameID: Long, code: String): Boolean? {
+	fun getGame(gameID: Long, code: String) {
 		val response = RESTClient.postRequest(url = "https://np.ironhelmet.com/api", gameID = gameID, code = code)
 		if (response["Code"] == 200) {
 			if (!response["Response"].toString().contains("fleet_price"))
-				return false
+				throw InternalServerErrorResponse(message = "Invalid response from backend")
 			val game = Util.GSON.fromJson<ProteusGame>(response["Response"].toString(), ProteusGame::class.java)
 			val valid = GameTable.insert(ID = gameID, update = game)
 			if (!valid)
 				GameTable.update(update = game)
-			game.players.values.forEach { update ->
-				if (update.alias.isNotBlank()) {
-					PlayerTable.insert(gameID = gameID, update = update)
-					val player = PlayerTable.select(alias = update.alias)
-						?: throw InternalServerErrorResponse("Unable to Find Player => ${update.alias}")
-					CycleTable.insert(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle, update = update)
-					CycleTable.select(playerID = player.ID, cycle = game.tick / CONFIG.gameCycle)
-						?: throw InternalServerErrorResponse("Unable to Find Cycle => ${player.ID}, ${game.tick / CONFIG.gameCycle}")
-				}
+			game.players.values.filter { it.alias.isNotBlank() }.forEach {
+				PlayerTable.insert(gameID = gameID, update = it)
+				PlayerTable.select(alias = it.alias)?.apply {
+					CycleTable.insert(playerID = this.ID, cycle = game.tick / CONFIG.gameCycle, update = it)
+				} ?: throw InternalServerErrorResponse(message = "Unable to Find Player => ${it.alias}")
 			}
-			return true
 		}
-		return null
 	}
 }
 

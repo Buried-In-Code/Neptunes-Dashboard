@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes.player
 
-import io.javalin.http.InternalServerErrorResponse
+import macro.dashboard.neptunes.InternalServerErrorResponse
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.backend.ProteusPlayer
 import macro.dashboard.neptunes.game.GameTable
@@ -54,12 +54,6 @@ object PlayerTable : IntIdTable(name = "Player") {
 				.firstOrNull()?.parse()
 		}
 
-	fun search(): List<Player> = Util.query(description = "Search for Players") {
-		selectAll().orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-			it.parse()
-		}
-	}
-
 	fun search(team: String, name: String, alias: String): List<Player> =
 		Util.query(description = "Search for Players by Team => $team by Alias => $alias") {
 			(PlayerTable innerJoin TeamTable).select {
@@ -78,7 +72,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 	}
 
 	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
-		val teamID = TeamTable.select(name = "Free For All")?.ID
+		val teamID = TeamTable.search(name = "Free For All").firstOrNull()?.ID
 			?: throw InternalServerErrorResponse("Unable to Find Team => Free For All")
 		try {
 			insert {

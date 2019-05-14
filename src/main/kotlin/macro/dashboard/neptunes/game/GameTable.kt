@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.game
 
-import io.javalin.http.NotFoundResponse
 import macro.dashboard.neptunes.Config.Companion.CONFIG
+import macro.dashboard.neptunes.NotFoundResponse
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
@@ -50,8 +50,8 @@ object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun searchAll(): List<Game> = Util.query(description = "Select all Games"){
-		selectAll().orderBy(startTimeCol, SortOrder.DESC).map{
+	fun searchAll(): List<Game> = Util.query(description = "Select all Games") {
+		selectAll().orderBy(startTimeCol, SortOrder.DESC).map {
 			it.parse()
 		}
 	}
@@ -62,7 +62,8 @@ object GameTable : LongIdTable(name = "Game") {
 		}.orderBy(startTimeCol, SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun select(): Game = select(ID = CONFIG.gameID) ?: throw NotFoundResponse(message = "No Game was found with the ID => ${CONFIG.gameID}")
+	fun select(): Game = select(ID = CONFIG.gameID)
+		?: throw NotFoundResponse(message = "No Game was found with the ID => ${CONFIG.gameID}")
 
 	fun insert(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Insert Proteus Game") {
 		try {

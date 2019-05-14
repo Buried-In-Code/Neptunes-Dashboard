@@ -1,25 +1,28 @@
 package macro.dashboard.neptunes
 
-import io.javalin.Javalin
-import io.javalin.core.security.Role
-import io.javalin.core.security.SecurityUtil.roles
-import io.javalin.http.Context
-import io.javalin.http.UnauthorizedResponse
-import io.javalin.plugin.json.FromJsonMapper
-import io.javalin.plugin.json.JavalinJson
-import io.javalin.plugin.json.ToJsonMapper
-import io.javalin.plugin.rendering.JavalinRenderer
-import io.javalin.plugin.rendering.template.JavalinFreemarker
+import freemarker.cache.ClassTemplateLoader
+import io.ktor.application.*
+import io.ktor.features.*
+import io.ktor.freemarker.FreeMarker
+import io.ktor.gson.gson
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.*
+import io.ktor.response.respond
+import io.ktor.routing.Routing
+import io.ktor.routing.route
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.Server.SecurityRole.*
 import macro.dashboard.neptunes.backend.Proteus
-import macro.dashboard.neptunes.cycle.CycleHandler
+import macro.dashboard.neptunes.cycle.CycleRouter
 import macro.dashboard.neptunes.cycle.CycleTable
-import macro.dashboard.neptunes.game.GameHandler
+import macro.dashboard.neptunes.game.GameRouter
 import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.player.PlayerHandler
+import macro.dashboard.neptunes.player.PlayerRouter
 import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.team.TeamHandler
+import macro.dashboard.neptunes.team.TeamRouter
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.sql.exists
 import org.slf4j.LoggerFactory
@@ -54,76 +57,115 @@ object Server {
 	private fun checkConfigGames() {
 		val game = GameTable.select(ID = CONFIG.gameID)
 		if (game == null) {
-			when (Proteus.getGame(gameID = CONFIG.gameID, code = CONFIG.gameCode)) {
-				true -> LOGGER.info("New Game Loaded => ${CONFIG.gameID}")
-				false -> LOGGER.error("Invalid Game Type => ${CONFIG.gameID}")
-				else -> LOGGER.error("Failed Game Load: ${CONFIG.gameID} => ${CONFIG.gameCode}")
+			try {
+				Proteus.getGame(gameID = CONFIG.gameID, code = CONFIG.gameCode)
+				LOGGER.info("New Game Loaded => ${CONFIG.gameID}")
+			} catch (iser: InternalServerErrorResponse) {
+				LOGGER.error("Failed Game Load: ${CONFIG.gameID} => ${CONFIG.gameCode}")
 			}
 		}
 	}
 
 	@JvmStatic
 	fun main(args: Array<String>) {
-		JavalinJson.fromJsonMapper = object : FromJsonMapper {
-			override fun <T> map(json: String, targetClass: Class<T>): T {
-				return Util.GSON.fromJson(json, targetClass)
-			}
-		}
-		JavalinJson.toJsonMapper = object : ToJsonMapper {
-			override fun map(obj: Any): String {
-				return Util.GSON.toJson(obj)
-			}
-		}
-		Javalin.create {
-			it.showJavalinBanner = false
-			it.requestLogger { ctx, timeMs ->
-				LOGGER.info("${ctx.protocol()} ${ctx.method()} ${ctx.path()} took $timeMs ms")
-				LOGGER.debug("${ctx.fullUrl()} >> Accept: ${ctx.header("Accept")}, Host: ${ctx.host()}, IP: ${ctx.ip()}")
-			}
-			it.accessManager { handler, ctx, roles ->
-				val userRole = getRole(ctx = ctx)
-				LOGGER.debug("User Access Level: $userRole")
-				if (roles.contains(userRole))
-					handler.handle(ctx)
-				else
-					throw UnauthorizedResponse("Invalid Access Level")
-			}
-			it.defaultContentType = "application/json"
-			it.addStaticFiles("/static")
-		}.start(CONFIG.serverPort).apply {
-			exception(Exception::class.java) { e, _ -> LOGGER.error("Exception Occurred", e) }
-			get("/api/game", GameHandler::getGame, roles(EVERYONE, DEVELOPER, ADMIN))
-			put("/api/game", GameHandler::updateGame, roles(DEVELOPER, ADMIN))
-			get("/api/players", PlayerHandler::getPlayers, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/players/:player-id", PlayerHandler::getPlayer, roles(EVERYONE, DEVELOPER, ADMIN))
-			put("/api/players/:player-id", PlayerHandler::updatePlayer, roles(DEVELOPER, ADMIN))
-			get("/api/players/:player-id/cycles", CycleHandler::getCycles, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/players/:player-id/cycles/:cycle", CycleHandler::getCycle, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/teams", TeamHandler::getTeams, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/api/teams/:team-id", TeamHandler::getTeam, roles(EVERYONE, DEVELOPER, ADMIN))
-			post("/api/teams", TeamHandler::addTeam, roles(DEVELOPER, ADMIN))
-			put("/api/teams/:team-id", TeamHandler::updateTeam, roles(DEVELOPER, ADMIN))
+		embeddedServer(
+			Netty,
+			port = CONFIG.serverPort,
+			host = CONFIG.serverAddress,
+			module = Application::module
+		).apply { start(wait = true) }
+	}
+}
 
-			get("/players/:player-id", { ctx ->
-				val playerID = ctx.pathParam("player-id").toIntOrNull() ?: -1
-				val player = PlayerTable.select(ID = playerID)!!
-				ctx.render("/templates/Player.ftl", player.toMap())
-			}, roles(EVERYONE, DEVELOPER, ADMIN))
-			get("/teams/:team-id", { ctx ->
-				val teamID = ctx.pathParam("team-id").toIntOrNull() ?: -1
-				val team = TeamTable.select(ID = teamID)!!
-				ctx.render("/templates/Team.ftl", team.toMap())
-			}, roles(EVERYONE, DEVELOPER, ADMIN))
+fun Application.module() {
+	install(ContentNegotiation) {
+		gson {
+			setPrettyPrinting()
+			disableHtmlEscaping()
+			serializeNulls()
 		}
 	}
-
-	private fun getRole(ctx: Context): Role {
-		return EVERYONE
+	install(DefaultHeaders) {
+		header(name = "Developer", value = "Macro303")
+		header(name = HttpHeaders.Server, value = "Neptunes-Dashboard")
+		header(name = HttpHeaders.AcceptLanguage, value = "en-NZ")
+		header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
 	}
+	install(Compression)
+	install(ConditionalHeaders)
+	install(AutoHeadResponse)
+	install(XForwardedHeaderSupport)
+	install(FreeMarker) {
+		templateLoader = ClassTemplateLoader(this::class.java, "/templates")
+	}
+	install(StatusPages) {
+		exception<HttpResponseException> {
+			call.respond(error = it)
+		}
+		status(HttpStatusCode.NotFound) {
+			call.respond(error = NotFoundResponse())
+		}
+	}
+	install(Routing) {
+		intercept(ApplicationCallPipeline.Setup) {
+			application.log.debug("==> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Accept: ${call.request.accept()}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}")
+		}
+		trace {
+			application.log.trace(it.buildText())
+		}
+		route(path = "/api") {
+			route(path = "/game") {
+				GameRouter.getGame(route = this)
+				GameRouter.updateGame(route = this)
+			}
+			route(path = "/players") {
+				PlayerRouter.getPlayers(route = this)
+				route(path = "/{player-id}") {
+					PlayerRouter.getPlayer(route = this)
+					PlayerRouter.updatePlayer(route = this)
+					route(path = "/cycles") {
+						CycleRouter.getCycles(route = this)
+						route(path = "/{cycle}") {
+							CycleRouter.getCycle(route = this)
+						}
+					}
+				}
+			}
+			route(path = "/teams") {
+				TeamRouter.getTeams(route = this)
+				TeamRouter.addTeam(route = this)
+				route(path = "/{team-id}") {
+					TeamRouter.getTeam(route = this)
+					TeamRouter.updateTeam(route = this)
+				}
+			}
+		}
+		intercept(ApplicationCallPipeline.Fallback) {
+			application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+		}
+	}
+}
 
-	internal enum class SecurityRole : Role {
-		EVERYONE,
-		DEVELOPER,
-		ADMIN
+suspend fun ApplicationCall.respond(error: HttpResponseException) {
+	if (request.local.uri.startsWith(prefix = "/api") || request.accept()?.contains(ContentType.Application.Json.toString()) == true)
+		respond(
+			message = mapOf(
+				"message" to error.message,
+				"status" to error.status
+			),
+			status = error.status
+		)
+	else
+		respond(
+			message = error.message ?: "",
+			status = error.status
+		)
+	when {
+		error.status.value < 100 -> application.log.error("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
+		error.status.value in (100 until 200) -> application.log.info("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
+		error.status.value in (200 until 300) -> application.log.info("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri}")
+		error.status.value in (300 until 400) -> application.log.warn("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
+		error.status.value in (400 until 500) -> application.log.warn("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
+		error.status.value >= 500 -> application.log.error("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
 	}
 }

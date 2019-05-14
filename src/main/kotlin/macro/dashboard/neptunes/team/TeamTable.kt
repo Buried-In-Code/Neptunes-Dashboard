@@ -36,19 +36,13 @@ object TeamTable : IntIdTable(name = "Team") {
 		}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun select(name: String): Team? =
-		Util.query(description = "Select Team by Name: $name") {
-			select {
-				nameCol like name
-			}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
+	fun search(name: String): List<Team> = Util.query(description = "Search for Teams by Name => $name") {
+		TeamTable.select {
+			nameCol like name
+		}.orderBy(nameCol to SortOrder.ASC).map {
+			it.parse()
 		}
-
-	fun search(): List<Team> =
-		Util.query(description = "Search for Teams") {
-			selectAll().orderBy(nameCol to SortOrder.ASC).map {
-				it.parse()
-			}
-		}
+	}
 
 	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
 		val temp = gameID ?: CONFIG.gameID
