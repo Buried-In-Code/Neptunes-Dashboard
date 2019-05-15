@@ -81,7 +81,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[isGameOverCol] = update.gameOver == 1
 				it[isStartedCol] = update.isStarted
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
+					Instant.ofEpochMilli(update.startTime), CONFIG.zoneId
 				).toJodaDateTime()
 				it[totalStarsCol] = update.totalStars
 				it[productionCounterCol] = update.productionCounter
@@ -92,7 +92,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[isTurnBasedCol] = update.turnBased == 1
 				it[warCol] = update.war
 				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.cycleTimeout), ZoneId.of("Pacific/Auckland")
+					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.zoneId
 				).toJodaDateTime()
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
@@ -111,13 +111,13 @@ object GameTable : LongIdTable(name = "Game") {
 				it[isGameOverCol] = update.gameOver == 1
 				it[isStartedCol] = update.isStarted
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), ZoneId.of("Pacific/Auckland")
+					Instant.ofEpochMilli(update.startTime), CONFIG.zoneId
 				).toJodaDateTime()
 				it[productionCounterCol] = update.productionCounter
 				it[tickCol] = update.tick
 				it[warCol] = update.war
 				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.cycleTimeout), ZoneId.of("Pacific/Auckland")
+					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.zoneId
 				).toJodaDateTime()
 			}
 			true

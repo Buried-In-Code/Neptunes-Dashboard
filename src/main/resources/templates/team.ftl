@@ -6,7 +6,7 @@
 	<meta content="width=device-width, initial-scale=1" name="viewport">
 	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet" type="text/css">
 	<link href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.css" rel="stylesheet" type="text/css"/>
-	<link href="/css/styles.css" rel="stylesheet" type="text/css">
+	<link href="/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <div id="navbar"></div>
@@ -18,8 +18,8 @@
 				<div class="content">
 					<div class="header">Total Stars</div>
 					<div class="description">
-						<b>Total:</b> ${totalStars}<br/>
-						<b>Average:</b> ${totalStars/players?size}
+						<b>Total:</b> ${cycles.stars}<br/>
+						<b>Average:</b> ${cycles.stars/players?size}
 					</div>
 				</div>
 			</div>
@@ -27,8 +27,8 @@
 				<div class="content">
 					<div class="header">Total Ships</div>
 					<div class="description">
-						<b>Total:</b> ${totalShips}<br/>
-						<b>Average:</b> ${totalShips/players?size}
+						<b>Total:</b> ${cycles.ships}<br/>
+						<b>Average:</b> ${cycles.ships/players?size}
 					</div>
 				</div>
 			</div>
@@ -36,8 +36,8 @@
 				<div class="content">
 					<div class="header">Total Economy</div>
 					<div class="description">
-						<b>Total:</b> ${totalEconomy}<br/>
-						<b>Average:</b> ${totalEconomy/players?size}
+						<b>Total:</b> ${cycles.economy}<br/>
+						<b>Average:</b> ${cycles.economy/players?size}
 					</div>
 				</div>
 			</div>
@@ -45,8 +45,8 @@
 				<div class="content">
 					<div class="header">Total Industry</div>
 					<div class="description">
-						<b>Total:</b> ${totalIndustry}<br/>
-						<b>Average:</b> ${totalIndustry/players?size}
+						<b>Total:</b> ${cycles.industry}<br/>
+						<b>Average:</b> ${cycles.industry/players?size}
 					</div>
 				</div>
 			</div>
@@ -54,8 +54,8 @@
 				<div class="content">
 					<div class="header">Total Science</div>
 					<div class="description">
-						<b>Total:</b> ${totalScience}<br/>
-						<b>Average:</b> ${totalScience/players?size}
+						<b>Total:</b> ${cycles.science}<br/>
+						<b>Average:</b> ${cycles.science/players?size}
 					</div>
 				</div>
 			</div>
@@ -90,7 +90,7 @@
 <script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
-<script src="/js/script.js" type="text/javascript"></script>
+<script src="/script.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	$("#navbar").load("/navbar.html");

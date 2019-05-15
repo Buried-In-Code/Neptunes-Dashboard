@@ -39,6 +39,10 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
+	fun count(): Int = Util.query(description = "Count # of Players"){
+		selectAll().count()
+	}
+
 	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
 		select {
 			id eq ID
@@ -46,15 +50,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 			.firstOrNull()?.parse()
 	}
 
-	fun select(alias: String): Player? =
-		Util.query(description = "Select Player by Alias: $alias") {
-			select {
-				aliasCol like alias
-			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
-				.firstOrNull()?.parse()
-		}
-
-	fun search(team: String, name: String, alias: String): List<Player> =
+	fun search(team: String = "%", name: String = "%", alias: String = "%"): List<Player> =
 		Util.query(description = "Search for Players by Team => $team by Alias => $alias") {
 			(PlayerTable innerJoin TeamTable).select {
 				TeamTable.nameCol like team and (aliasCol like alias)
@@ -62,14 +58,6 @@ object PlayerTable : IntIdTable(name = "Player") {
 				it.parse()
 			}
 		}
-
-	fun searchByTeam(teamID: Int): List<Player> = Util.query(description = "Search for Players in team: $teamID") {
-		select {
-			teamCol eq teamID
-		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-			it.parse()
-		}
-	}
 
 	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
 		val teamID = TeamTable.search(name = "Free For All").firstOrNull()?.ID

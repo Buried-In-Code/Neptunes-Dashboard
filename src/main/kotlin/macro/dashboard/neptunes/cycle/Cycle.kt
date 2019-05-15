@@ -30,7 +30,7 @@ data class Cycle(
 
 	fun toMap(): Map<String, Any?> {
 		return mapOf(
-			"cycke" to cycle,
+			"cycle" to cycle,
 			"stars" to stars,
 			"ships" to ships,
 			"economy" to economy,

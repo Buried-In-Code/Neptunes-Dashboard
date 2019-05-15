@@ -27,7 +27,7 @@ object Proteus {
 				GameTable.update(update = game)
 			game.players.values.filter { it.alias.isNotBlank() }.forEach {
 				PlayerTable.insert(gameID = gameID, update = it)
-				PlayerTable.select(alias = it.alias)?.apply {
+				PlayerTable.search(alias = it.alias).firstOrNull()?.apply {
 					CycleTable.insert(playerID = this.ID, cycle = game.tick / CONFIG.gameCycle, update = it)
 				} ?: throw InternalServerErrorResponse(message = "Unable to Find Player => ${it.alias}")
 			}

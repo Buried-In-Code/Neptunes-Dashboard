@@ -30,13 +30,17 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 	}
 
+	fun count(): Int = Util.query(description = "Count # of Teams") {
+		selectAll().count()
+	}
+
 	fun select(ID: Int): Team? = Util.query(description = "Select Team by ID") {
 		select {
 			id eq ID
 		}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun search(name: String): List<Team> = Util.query(description = "Search for Teams by Name => $name") {
+	fun search(name: String = "%"): List<Team> = Util.query(description = "Search for Teams by Name => $name") {
 		TeamTable.select {
 			nameCol like name
 		}.orderBy(nameCol to SortOrder.ASC).map {

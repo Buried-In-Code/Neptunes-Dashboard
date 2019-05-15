@@ -14,17 +14,24 @@ data class Player(
 	val alias: String,
 	var name: String? = null
 ) {
-	fun getTeam() = TeamTable.select(ID = teamID)
-	fun getCycles() = CycleTable.searchByPlayer(playerID = ID)
-	fun getLatestCycle() = CycleTable.selectLatest(playerID = ID)
+	val team by lazy {
+		TeamTable.select(ID = teamID)
+	}
+	val cycles by lazy {
+		CycleTable.searchByPlayer(playerID = ID)
+	}
+	val latestCycle by lazy {
+		CycleTable.selectLatest(playerID = ID)
+	}
 
-	fun toMap(): Map<String, Any?> {
+	fun toMap(showLatestCycle: Boolean = false): Map<String, Any?> {
 		return mapOf(
 			"ID" to ID,
 			"name" to name,
 			"alias" to alias,
-			"team" to (getTeam()?.name ?: ""),
-			"cycles" to getCycles().map { it.toMap() }
+			"team" to (team?.name ?: ""),
+			"cycles" to (if (showLatestCycle) latestCycle?.toMap()
+				?: emptyMap<String, Any?>() else cycles.map { it.toMap() })
 		).toSortedMap()
 	}
 

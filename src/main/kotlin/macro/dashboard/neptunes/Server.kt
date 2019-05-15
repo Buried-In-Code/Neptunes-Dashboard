@@ -4,10 +4,15 @@ import freemarker.cache.ClassTemplateLoader
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
@@ -91,10 +96,8 @@ fun Application.module() {
 		header(name = HttpHeaders.AcceptLanguage, value = "en-NZ")
 		header(name = HttpHeaders.ContentLanguage, value = "en-NZ")
 	}
-	install(Compression)
 	install(ConditionalHeaders)
 	install(AutoHeadResponse)
-	install(XForwardedHeaderSupport)
 	install(FreeMarker) {
 		templateLoader = ClassTemplateLoader(this::class.java, "/templates")
 	}
@@ -140,25 +143,51 @@ fun Application.module() {
 				}
 			}
 		}
+		route(path = "/players/{alias}") {
+			PlayerRouter.displayPlayer(route = this)
+		}
+		route(path = "/teams/{name}") {
+			TeamRouter.displayTeam(route = this)
+		}
+		static {
+			resources(resourcePackage = "static/images")
+			resources(resourcePackage = "static/css")
+			resources(resourcePackage = "static/js")
+			defaultResource(resource = "/static/index.html")
+			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
+			resource(remotePath = "/players", resource = "static/players.html")
+			resource(remotePath = "/teams", resource = "static/teams.html")
+			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
+			resource(remotePath = "/about", resource = "static/about.html")
+		}
 		intercept(ApplicationCallPipeline.Fallback) {
-			application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+			if (call.response.status() != null)
+				application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
 		}
 	}
 }
 
 suspend fun ApplicationCall.respond(error: HttpResponseException) {
-	if (request.local.uri.startsWith(prefix = "/api") || request.accept()?.contains(ContentType.Application.Json.toString()) == true)
+	if (request.local.uri.startsWith(prefix = "/api")) {
+		if (request.accept()?.contains(ContentType.Application.Json.toString()) == true)
+			respond(
+				message = mapOf(
+					"message" to error.message,
+					"status" to error.status
+				),
+				status = error.status
+			)
+		else
+			respond(
+				message = error.message ?: "",
+				status = error.status
+			)
+	} else
 		respond(
-			message = mapOf(
-				"message" to error.message,
-				"status" to error.status
-			),
-			status = error.status
-		)
-	else
-		respond(
-			message = error.message ?: "",
-			status = error.status
+			message = FreeMarkerContent(
+				template = "error.ftl",
+				model = error.toMap()
+			)
 		)
 	when {
 		error.status.value < 100 -> application.log.error("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")

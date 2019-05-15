@@ -9,6 +9,7 @@ import java.io.FileWriter
 import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.time.ZoneId
 
 /**
  * Created by Macro303 on 2018-Nov-23.
@@ -21,12 +22,10 @@ class Config internal constructor(
 	val proxyPort: Int? = null,
 	gameID: Long? = null,
 	gameCode: String? = null,
-	gameCycle: Int? = null
+	gameCycle: Int? = null,
+	zoneId: String? = null
 ) {
-	var databaseFile: File = when (databaseFile) {
-		null -> File("Triton-Dashboard.db")
-		else -> File(databaseFile)
-	}
+	val databaseFile: File = File(databaseFile ?: "Neptunes-Dashboard.db")
 	val serverAddress: String = serverAddress ?: "localhost"
 	val serverPort: Int = serverPort ?: 5505
 	val proxy: Proxy?
@@ -37,10 +36,12 @@ class Config internal constructor(
 	val gameID: Long = gameID ?: 1L
 	val gameCode: String = gameCode ?: "Code"
 	val gameCycle: Int = gameCycle ?: 1
+	val zoneId: ZoneId = ZoneId.of(zoneId ?: "Pacific/Auckland")
 
 	fun toMap(): Map<String, Any?> {
 		val data = mapOf(
 			"Database File" to databaseFile.path,
+			"Time Zone" to zoneId.id,
 			"Server" to mapOf(
 				"Address" to serverAddress,
 				"Port" to serverPort
@@ -101,6 +102,7 @@ class Config internal constructor(
 		@Suppress("UNCHECKED_CAST")
 		private fun fromMap(data: Map<String, Any?>): Config {
 			val databaseFile = data["Database File"] as String?
+			val zoneId = data["Time Zone"] as String?
 			val serverAddress = (data["Server"] as Map<String, Any?>?)?.get("Address") as String?
 			val serverPort = (data["Server"] as Map<String, Any?>?)?.get("Port") as Int?
 			val proxyHostname = (data["Proxy"] as Map<String, Any?>?)?.get("Host Name") as String?
@@ -116,7 +118,8 @@ class Config internal constructor(
 				proxyPort = proxyPort,
 				gameID = gameID,
 				gameCode = gameCode,
-				gameCycle = gameCycle
+				gameCycle = gameCycle,
+				zoneId = zoneId
 			)
 		}
 	}

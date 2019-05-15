@@ -2,6 +2,7 @@ package macro.dashboard.neptunes.team
 
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
+import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
@@ -21,6 +22,9 @@ object TeamRouter {
 
 	private fun ApplicationCall.getTeamID() = parameters["team-id"]?.toIntOrNull()
 		?: throw BadRequestResponse("Invalid Team ID")
+
+	private fun ApplicationCall.getTeamName() = parameters["name"]
+		?: throw BadRequestResponse("Invalid Team Name")
 
 	private fun ApplicationCall.getNameQuery() = request.queryParameters["name"] ?: "%"
 
@@ -56,6 +60,21 @@ object TeamRouter {
 		route.put {
 			val teamID = call.getTeamID()
 			throw NotYetImplementedResponse()
+		}
+	}
+
+	internal fun displayTeam(route: Route) {
+		route.get {
+			val teamName = call.getTeamName()
+			val team = TeamTable.search(name = teamName).firstOrNull()
+				?: throw NotFoundResponse("No Team with Name => $teamName")
+			call.respond(
+				message = FreeMarkerContent(
+					template = "team.ftl",
+					model = team.toMap(showPlayers = true, showLatestCycle = false)
+				),
+				status = HttpStatusCode.OK
+			)
 		}
 	}
 }

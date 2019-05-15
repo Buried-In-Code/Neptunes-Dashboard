@@ -20,7 +20,7 @@ object GameRouter {
 		route.get {
 			val game = GameTable.select()
 			call.respond(
-				message = game,
+				message = game.toMap(),
 				status = HttpStatusCode.OK
 			)
 		}
