@@ -11,13 +11,12 @@ _Currently only supports **Proteus**_
  - JDK 1.8
  - Gradle 5.4
  - [kotlin-stdlib-jdk8: 1.3.31](https://kotlinlang.org/)
- - [ktor-server-netty: 1.2.0-rc2](https://ktor.io/)
- - [ktor-gson: 1.2.0-rc2](https://ktor.io/)
- - [ktor-freemarker: 1.2.0-rc2](https://ktor.io/)
+ - [ktor-server-netty: 1.2.0](https://ktor.io/)
+ - [ktor-gson: 1.2.0](https://ktor.io/)
+ - [ktor-freemarker: 1.2.0](https://ktor.io/)
  - [snakeyaml: 1.24](https://bitbucket.org/asomov/snakeyaml)
  - [exposed: 0.13.6](https://github.com/JetBrains/Exposed)
  - [khttp: 0.1.0](https://khttp.readthedocs.io/en/latest/)
  - [unirest-java: 1.4.9](http://unirest.io/java.html)
  - [log4j-slf4j-impl: 2.11.2 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.27.2.1 (Runtime)](https://github.com/xerial/sqlite-jdbc)
- - [ktor-server-test-host: 1.2.0-rc2 (Test)](https://ktor.io/)
