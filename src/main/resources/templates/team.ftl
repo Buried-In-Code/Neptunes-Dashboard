@@ -92,10 +92,10 @@
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
 <script src="/script.js" type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-	$("#navbar").load("/navbar.html");
-	createTeamStatLines(${ID});
-});
+	$(document).ready(function () {
+		$("#navbar").load("/navbar.html");
+		createTeamStatLines(${ID});
+	});
 </script>
 </body>
 </html>

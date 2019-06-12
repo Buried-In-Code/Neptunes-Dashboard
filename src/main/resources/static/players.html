@@ -58,61 +58,61 @@
 <script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
 <script src="/script.js" type="text/javascript"></script>
 <script type="text/javascript">
-$(document).ready(function(){
-	$("#navbar").load("/navbar.html");
-	var stats_table = $('#stats').DataTable({
-		"processing" : true,
-		"ajax" : {
-			"url" : "/api/players",
-			type: 'GET',
-			contentType: 'application/json',
-			dataType: 'json',
-			dataSrc : ''
-		},
-		"paging": false,
-		"columns" : [
-			{ "data" : "alias" },
-			{ "data" : "name" },
-			{ "data" : "team" },
-			{ "data" : "cycles.stars", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.ships", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.economy", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.economyPerCycle", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.industry", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.industryPerCycle", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.science", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.sciencePerCycle", render: $.fn.dataTable.render.number( ',' ) }
-		],
-		"order": [[3, "desc"], [4, "desc"]]
+	$(document).ready(function () {
+		$("#navbar").load("/navbar.html");
+		var stats_table = $('#stats').DataTable({
+			"processing": true,
+			"ajax": {
+				"url": "/api/players",
+				type: 'GET',
+				contentType: 'application/json',
+				dataType: 'json',
+				dataSrc: ''
+			},
+			"paging": false,
+			"columns": [
+				{"data": "alias"},
+				{"data": "name"},
+				{"data": "team"},
+				{"data": "cycles.stars", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.ships", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.economy", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.economyPerCycle", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.industry", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.industryPerCycle", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.science", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.sciencePerCycle", render: $.fn.dataTable.render.number(',')}
+			],
+			"order": [[3, "desc"], [4, "desc"]]
+		});
+		$('#stats tbody').on('click', 'tr', function () {
+			var data = stats_table.row(this).data();
+			window.location.href = '/players/' + data.alias;
+		});
+		var tech_table = $('#tech').DataTable({
+			"processing": true,
+			"ajax": {
+				"url": "/api/players",
+				type: 'GET',
+				contentType: 'application/json',
+				dataType: 'json',
+				dataSrc: ''
+			},
+			"paging": false,
+			"columns": [
+				{"data": "alias"},
+				{"data": "name"},
+				{"data": "team"},
+				{"data": "cycles.tech.weapons", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.tech.range", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.tech.scanning", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.tech.banking", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.tech.manufacturing", render: $.fn.dataTable.render.number(',')},
+				{"data": "cycles.tech.experimentation", render: $.fn.dataTable.render.number(',')}
+			],
+			"order": [[0, "asc"]]
+		});
 	});
-	$('#stats tbody').on('click', 'tr', function () {
-        var data = stats_table.row( this ).data();
-        window.location.href = '/players/' + data.alias;
-    });
-	var tech_table = $('#tech').DataTable({
-		"processing" : true,
-		"ajax" : {
-			"url" : "/api/players",
-			type: 'GET',
-			contentType: 'application/json',
-			dataType: 'json',
-			dataSrc : ''
-		},
-		"paging": false,
-		"columns" : [
-			{ "data" : "alias" },
-			{ "data" : "name" },
-			{ "data" : "team" },
-			{ "data" : "cycles.tech.weapons", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.range", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.scanning", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.banking", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.manufacturing", render: $.fn.dataTable.render.number( ',' ) },
-			{ "data" : "cycles.tech.experimentation", render: $.fn.dataTable.render.number( ',' ) }
-		],
-		"order": [[0, "asc"]]
-	});
-});
 </script>
 </body>
 </html>

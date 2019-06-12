@@ -39,7 +39,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun count(): Int = Util.query(description = "Count # of Players"){
+	fun count(): Int = Util.query(description = "Count # of Players") {
 		selectAll().count()
 	}
 

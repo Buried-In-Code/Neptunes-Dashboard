@@ -6,7 +6,8 @@
 			               pattern="[%highlight{%d{yyyy-MMM-dd HH:mm:ss:SSS}}{FATAL=Magenta, ERROR=Red, WARN=Yellow, INFO=White, DEBUG=Green, TRACE=Blue}] [%highlight{%-5level}{FATAL=Magenta, ERROR=Red, WARN=Yellow, INFO=White, DEBUG=Green, TRACE=Blue}] {%style{%c}{Cyan}} - %highlight{%msg%n%throwable}{FATAL=Magenta, ERROR=Red, WARN=Yellow, INFO=White, DEBUG=Green, TRACE=Blue}"/>
 			<ThresholdFilter level="DEBUG"/>
 		</Console>
-		<RollingFile name="rollingFile" fileName="logs/neptunes-dashboard-test.log" filePattern="logs/neptunes-dashboard-test.log"
+		<RollingFile name="rollingFile" fileName="logs/neptunes-dashboard-test.log"
+		             filePattern="logs/neptunes-dashboard-test.log"
 		             ignoreExceptions="false">
 			<PatternLayout pattern="[%d{yyyy-MMM-dd HH:mm:ss:SSS}] [%-5level] {%c} - %msg%n%throwable"/>
 			<ThresholdFilter level="TRACE"/>
