@@ -37,17 +37,17 @@ object Server {
 
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
-		loggerColours()
+		checkLogLevels()
 		checkDatabase()
 		checkConfigGames()
 	}
 
-	private fun loggerColours() {
-		LOGGER.trace("TRACE is Visible")
-		LOGGER.debug("DEBUG is Visible")
-		LOGGER.info("INFO is Visible")
-		LOGGER.warn("WARN is Visible")
-		LOGGER.error("ERROR is Visible")
+	private fun checkLogLevels() {
+		LOGGER.trace("TRACE | is Visible")
+		LOGGER.debug("DEBUG | is Visible")
+		LOGGER.info("INFO  | is Visible")
+		LOGGER.warn("WARN  | is Visible")
+		LOGGER.error("ERROR | is Visible")
 	}
 
 	private fun checkDatabase() {
