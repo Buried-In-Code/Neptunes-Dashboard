@@ -1,4 +1,4 @@
-<img src="https://github.com/Macro303/Assets/blob/master/Neptunes-Dashboard/logo.png" align="left" width="120" height="115" alt="Neptune's Dashboard Logo"/>
+<img src="https://github.com/Macro303/Neptunes-Dashboard/blob/master/src/main/resources/static/images/logo.png" align="left" width="120" height="115" alt="Neptune's Dashboard Logo"/>
 
 # Neptune's Dashboard
 [![Version](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=version)](https://github.com/Macro303/Neptunes-Dashboard/releases)
