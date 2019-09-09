@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory
  * Last Updated by Macro303 on 2019-May-13
  */
 object TeamRouter {
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(TeamRouter::class.java)
 
 	private fun ApplicationCall.getTeamID() = parameters["team-id"]?.toIntOrNull()
 		?: throw BadRequestResponse("Invalid Team ID")

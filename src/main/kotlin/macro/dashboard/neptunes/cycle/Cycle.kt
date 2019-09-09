@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes.cycle
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.slf4j.LoggerFactory
 
 /**
@@ -24,9 +24,9 @@ data class Cycle(
 	var manufacturing: Int,
 	var experimentation: Int
 ) {
-	val economyPerCycle = economy * banking * CONFIG.gameCycle
-	val industryPerCycle = industry * manufacturing * CONFIG.gameCycle
-	val sciencePerCycle = science * experimentation * CONFIG.gameCycle
+	val economyPerCycle = economy * banking * CONFIG.game.cycle
+	val industryPerCycle = industry * manufacturing * CONFIG.game.cycle
+	val sciencePerCycle = science * experimentation * CONFIG.game.cycle
 
 	fun toMap(): Map<String, Any?> {
 		return mapOf(
@@ -51,6 +51,6 @@ data class Cycle(
 	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(this::class.java)
+		private val LOGGER = LoggerFactory.getLogger(Cycle::class.java)
 	}
 }

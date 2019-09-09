@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory
  * Last Updated by Macro303 on 2019-May-10
  */
 object PlayerRouter {
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(PlayerRouter::class.java)
 
 	private fun ApplicationCall.getPlayerID() = parameters["player-id"]?.toIntOrNull()
 		?: throw BadRequestResponse("Invalid Player ID")

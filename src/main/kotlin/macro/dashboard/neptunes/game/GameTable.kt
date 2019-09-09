@@ -1,11 +1,11 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.NotFoundResponse
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
-import macro.dashboard.neptunes.backend.ProteusGame
+import macro.dashboard.neptunes.ProteusGame
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongIdTable
@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object GameTable : LongIdTable(name = "Game") {
+internal object GameTable : LongIdTable(name = "Game") {
 	val gameTypeCol = text(name = "gameType").default("Triton")
 	val fleetSpeedCol = double(name = "fleetSpeed")
 	val isPausedCol = bool(name = "isPaused")
@@ -41,7 +41,7 @@ object GameTable : LongIdTable(name = "Game") {
 	val warCol = integer(name = "war")
 	val cycleTimeoutCol = datetime(name = "turnBasedTimeout")
 
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(GameTable::class.java)
 
 	init {
 		Util.query(description = "Create Game table") {
@@ -61,8 +61,8 @@ object GameTable : LongIdTable(name = "Game") {
 		}.orderBy(startTimeCol, SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
 	}
 
-	fun select(): Game = select(ID = CONFIG.gameID)
-		?: throw NotFoundResponse(message = "No Game was found with the ID => ${CONFIG.gameID}")
+	fun select(): Game = select(ID = CONFIG.game.id)
+		?: throw NotFoundResponse(message = "No Game was found with the ID => ${CONFIG.game.id}")
 
 	fun insert(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Insert Proteus Game") {
 		try {
@@ -80,7 +80,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[isGameOverCol] = update.gameOver == 1
 				it[isStartedCol] = update.isStarted
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), CONFIG.zoneId
+					Instant.ofEpochMilli(update.startTime), CONFIG.getZone()
 				).toJodaDateTime()
 				it[totalStarsCol] = update.totalStars
 				it[productionCounterCol] = update.productionCounter
@@ -91,7 +91,7 @@ object GameTable : LongIdTable(name = "Game") {
 				it[isTurnBasedCol] = update.turnBased == 1
 				it[warCol] = update.war
 				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.zoneId
+					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.getZone()
 				).toJodaDateTime()
 			}
 			TeamTable.insert(gameID = ID, name = "Free For All")
@@ -103,20 +103,20 @@ object GameTable : LongIdTable(name = "Game") {
 
 	fun update(update: ProteusGame): Boolean = Util.query(description = "Update Proteus Game") {
 		try {
-			update({ id eq CONFIG.gameID }) {
+			update({ id eq CONFIG.game.id }) {
 				it[isPausedCol] = update.isPaused
 				it[productionsCol] = update.productions
 				it[tickFragmentCol] = update.tickFragment
 				it[isGameOverCol] = update.gameOver == 1
 				it[isStartedCol] = update.isStarted
 				it[startTimeCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.startTime), CONFIG.zoneId
+					Instant.ofEpochMilli(update.startTime), CONFIG.getZone()
 				).toJodaDateTime()
 				it[productionCounterCol] = update.productionCounter
 				it[tickCol] = update.tick
 				it[warCol] = update.war
 				it[cycleTimeoutCol] = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.zoneId
+					Instant.ofEpochMilli(update.cycleTimeout), CONFIG.getZone()
 				).toJodaDateTime()
 			}
 			true

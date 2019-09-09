@@ -2,7 +2,7 @@ package macro.dashboard.neptunes.player
 
 import macro.dashboard.neptunes.InternalServerErrorResponse
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.ProteusPlayer
+import macro.dashboard.neptunes.ProteusPlayer
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.jetbrains.exposed.dao.EntityID
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object PlayerTable : IntIdTable(name = "Player") {
+internal object PlayerTable : IntIdTable(name = "Player") {
 	val gameCol = reference(
 		name = "gameID",
 		foreign = GameTable,
@@ -30,7 +30,7 @@ object PlayerTable : IntIdTable(name = "Player") {
 	val aliasCol = text(name = "alias")
 	val nameCol = text(name = "name").nullable()
 
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(PlayerTable::class.java)
 
 	init {
 		Util.query(description = "Create Player table") {

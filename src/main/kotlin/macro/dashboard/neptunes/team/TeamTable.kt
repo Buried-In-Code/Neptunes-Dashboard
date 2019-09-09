@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.team
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.game.GameTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -21,7 +21,7 @@ object TeamTable : IntIdTable(name = "Team") {
 	)
 	val nameCol = text(name = "name")
 
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(TeamTable::class.java)
 
 	init {
 		Util.query(description = "Create Team table") {
@@ -49,7 +49,7 @@ object TeamTable : IntIdTable(name = "Team") {
 	}
 
 	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
-		val temp = gameID ?: CONFIG.gameID
+		val temp = gameID ?: CONFIG.game.id
 		try {
 			insert {
 				it[gameCol] = EntityID(temp, GameTable)

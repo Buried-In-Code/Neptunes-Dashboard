@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
 import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.slf4j.LoggerFactory
@@ -58,13 +58,13 @@ data class Game(
 			"isTurnBased" to isTurnBased,
 			"war" to war,
 			"cycleTimeout" to cycleTimeout.format(Util.JAVA_FORMATTER),
-			"cycles" to tick / CONFIG.gameCycle,
+			"cycles" to tick / CONFIG.game.cycle,
 			"playerCount" to PlayerTable.count(),
 			"teamCount" to TeamTable.count()
 		).toSortedMap()
 	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(this::class.java)
+		private val LOGGER = LoggerFactory.getLogger(Game::class.java)
 	}
 }

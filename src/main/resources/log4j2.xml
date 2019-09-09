@@ -5,13 +5,9 @@
 			<PatternLayout disableAnsi="false"
 			               pattern="[%highlight{%d{yyyy-MMM-dd HH:mm:ss:SSS}}{FATAL=Magenta,INFO=WHITE}] [%highlight{%-5level}{FATAL=Magenta,INFO=WHITE}] {%style{%c}{Blue}} - %highlight{%msg%n%throwable}{FATAL=Magenta,INFO=WHITE}"/>
 		</Console>
-		<RollingFile name="File" fileName="logs/Neptunes_Dashboard.log" filePattern="logs/Neptunes_Dashboard-%i.log">
+		<File name="File" fileName="logs/Neptunes_Dashboard.log">
 			<PatternLayout pattern="[%d{yyyy-MMM-dd HH:mm:ss:SSS}] [%-5level] {%c} - %msg%n%throwable"/>
-			<Policies>
-				<SizeBasedTriggeringPolicy size="5MB"/>
-			</Policies>
-			<DefaultRolloverStrategy max="5"/>
-		</RollingFile>
+		</File>
 	</Appenders>
 	<Loggers>
 		<Root level="TRACE">

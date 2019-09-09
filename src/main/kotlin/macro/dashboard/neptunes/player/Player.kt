@@ -36,6 +36,6 @@ data class Player(
 	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(this::class.java)
+		private val LOGGER = LoggerFactory.getLogger(Player::class.java)
 	}
 }

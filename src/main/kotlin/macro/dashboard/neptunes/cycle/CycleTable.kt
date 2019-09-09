@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.cycle
 
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.backend.ProteusPlayer
+import macro.dashboard.neptunes.ProteusPlayer
 import macro.dashboard.neptunes.player.PlayerTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntIdTable
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by Macro303 on 2019-Mar-04.
  */
-object CycleTable : IntIdTable(name = "Turn") {
+internal object CycleTable : IntIdTable(name = "Turn") {
 	val playerCol = reference(
 		name = "playerID",
 		foreign = PlayerTable,
@@ -34,7 +34,7 @@ object CycleTable : IntIdTable(name = "Turn") {
 	val manufacturingCol = integer(name = "manufacturing").default(0)
 	val experimentationCol = integer(name = "experimentation").default(0)
 
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(CycleTable::class.java)
 
 	init {
 		Util.query(description = "Create Cycle table") {

@@ -19,8 +19,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.backend.Proteus
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.cycle.CycleRouter
 import macro.dashboard.neptunes.cycle.CycleTable
 import macro.dashboard.neptunes.game.GameRouter
@@ -33,7 +32,7 @@ import org.jetbrains.exposed.sql.exists
 import org.slf4j.LoggerFactory
 
 object Server {
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
+	private val LOGGER = LoggerFactory.getLogger(Server::class.java)
 
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
@@ -60,13 +59,13 @@ object Server {
 	}
 
 	private fun checkConfigGames() {
-		val game = GameTable.select(ID = CONFIG.gameID)
+		val game = GameTable.select(ID = CONFIG.game.id)
 		if (game == null) {
 			try {
-				Proteus.getGame(gameID = CONFIG.gameID, code = CONFIG.gameCode)
-				LOGGER.info("New Game Loaded => ${CONFIG.gameID}")
+				Proteus.getGame(gameID = CONFIG.game.id, code = CONFIG.game.code)
+				LOGGER.info("New Game Loaded => ${CONFIG.game.id}")
 			} catch (iser: InternalServerErrorResponse) {
-				LOGGER.error("Failed Game Load: ${CONFIG.gameID} => ${CONFIG.gameCode}")
+				LOGGER.error("Failed Game Load: ${CONFIG.game.id} => ${CONFIG.game.code}")
 			}
 		}
 	}
@@ -75,8 +74,8 @@ object Server {
 	fun main(args: Array<String>) {
 		embeddedServer(
 			Netty,
-			port = CONFIG.serverPort,
-			host = CONFIG.serverAddress,
+			port = CONFIG.server.port ?: 5505,
+			host = CONFIG.server.hostName ?: "localhost",
 			module = Application::module
 		).apply { start(wait = true) }
 	}
