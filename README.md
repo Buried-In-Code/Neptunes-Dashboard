@@ -1,4 +1,4 @@
-<img src="https://github.com/Macro303/Neptunes-Dashboard/blob/master/src/main/resources/static/images/logo.png" align="left" width="120" height="115" alt="Neptune's Dashboard Logo"/>
+<img src="https://github.com/Macro303/Neptunes-Dashboard/blob/master/logo.png" align="left" width="128" height="128" alt="Neptune's Dashboard Logo"/>
 
 # Neptune's Dashboard
 [![Version](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=version)](https://github.com/Macro303/Neptunes-Dashboard/releases)
@@ -11,15 +11,16 @@ Pulls game information for Neptune's Pride and attempts to display it in a simpl
 _Currently only supports **Proteus**_
 
 ## Built Using
- - [JDK: 11](https://www.oracle.com/technetwork/java/javase/downloads/index.html)
- - [Gradle: 5.6.2](https://gradle.org/)
- - [kotlin-stdlib-jdk8: 1.3.50](https://kotlinlang.org/)
- - [ktor-server-netty: 1.2.4](https://github.com/ktorio/ktor)
- - [ktor-gson: 1.2.4](https://github.com/ktorio/ktor)
- - [ktor-freemarker: 1.2.4](https://github.com/ktorio/ktor)
+ - JDK: 11
+ - [Gradle: 6.0.1](https://gradle.org/)
+ - [kotlin-stdlib-jdk8: 1.3.60](https://kotlinlang.org/)
  - [snakeyaml: 1.25](https://bitbucket.org/asomov/snakeyaml)
- - [exposed: 0.17.3](https://github.com/JetBrains/Exposed)
- - [unirest-java: 1.4.9](http://unirest.io/java.html)
+ - [unirest-java: 3.1.04](https://github.com/Kong/unirest-java)
+ - [ktor-server-netty: 1.3.0-beta-1](https://ktor.io/)
+ - [ktor-gson: 1.3.0-beta-1](https://ktor.io/)
+ - [ktor-freemarker: 1.3.0-beta-1](https://ktor.io/)
+ - [exposed: 0.17.7](https://github.com/JetBrains/Exposed)
+ - [log4j-api: 2.12.1](https://logging.apache.org/log4j/2.x/)
  - [log4j-slf4j-impl: 2.12.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.28.0 (Runtime)](https://github.com/xerial/sqlite-jdbc)
  

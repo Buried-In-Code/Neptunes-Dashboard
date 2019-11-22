@@ -390,3 +390,46 @@ function createLineGraph(name, labels, dataset) {
 		}
 	});
 }
+
+function loadContributors(){
+	$.ajax({
+		async: false,
+		url: '/api/contributors',
+		type: 'GET',
+		headers: {
+			accept: 'application/json',
+			contentType: 'application/json'
+		},
+		dataType: 'json',
+		success: function (data) {
+			for (let contributor of data) {
+				let column = contributorToHTML(contributor);
+				document.getElementById('contributor-grid').appendChild(column);
+			}
+		},
+		error: function (xhr, status, error) {
+			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+		}
+	});
+}
+
+function contributorToHTML(item){
+	let column = document.createElement('div');
+	column.className = 'column is-one-third';
+	column.innerHTML = '<div class="card">' +
+		'<div class="card-content">' +
+		'<div class="media">' +
+		'<div class="media-left">' +
+		'<figure class="image is-128x128">' +
+		`<img alt="${item.Title} Avatar" class="is-rounded" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${item.Title}&size=512&bold=true&background=4682B4&color=FFF'" src="/avatar-${item.Image}">` +
+		'</figure>' +
+		'</div>' +
+		'<div class="media-content">' +
+		`<p class="title is-4">${item.Title}</p>` +
+		`<p class="subtitle is-6">${item.Role}</p>` +
+		'</div>' +
+		'</div>' +
+		'</div>' +
+		'</div>';
+	return column
+}

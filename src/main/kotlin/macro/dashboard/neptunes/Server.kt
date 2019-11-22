@@ -149,15 +149,15 @@ fun Application.module() {
 			TeamRouter.displayTeam(route = this)
 		}
 		static {
+			defaultResource(resource = "/static/index.html")
 			resources(resourcePackage = "static/images")
 			resources(resourcePackage = "static/css")
 			resources(resourcePackage = "static/js")
-			defaultResource(resource = "/static/index.html")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/players", resource = "static/players.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
-			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
 			resource(remotePath = "/about", resource = "static/about.html")
+			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
 		}
 		intercept(ApplicationCallPipeline.Fallback) {
 			if (call.response.status() != null)

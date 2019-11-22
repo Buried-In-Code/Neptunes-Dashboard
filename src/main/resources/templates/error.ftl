@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Neptune's Dashboard</title>
-	<meta charset="utf-8">
+	<meta charset="UTF-8">
+	<meta content="Macro303" name="author">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet" type="text/css">
-	<link href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.css" rel="stylesheet" type="text/css"/>
-	<link href="/styles.css" rel="stylesheet" type="text/css">
+	<title>Neptune's Dashboard - Exception</title>
+	<link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
+	<link href="/style.css" rel="stylesheet"/>
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
-<body>
-<div id="navbar"></div>
-<div class="ui container">
-	<div class="ui negative big message">
-		<div class="header">${status}</div>
-		<p>${message}</p>
+<body class="has-navbar-fixed-top">
+<nav class="navbar is-dark is-fixed-top" id="navbar"></nav>
+<section class="section is-medium">
+	<div class="container has-text-centered">
+		<article class="message is-danger is-large">
+			<div class="message-header">${code}: ${request}</div>
+			<div class="message-body">${message}</div>
+		</article>
 	</div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" type="text/javascript"></script>
-<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js" type="text/javascript"></script>
-<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.js" type="text/javascript"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
-<script src="/script.js" type="text/javascript"></script>
+</section>
+<footer class="footer">
+	<div class="content has-text-centered">
+		<a href="https://bulma.io">
+			<img alt="Made with Bulma" height="24" src="https://bulma.io/images/made-with-bulma--dark.png" width="128">
+		</a>
+	</div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="/script.js"></script>
 <script type="text/javascript">
 	$(document).ready(function () {
 		$("#navbar").load("/navbar.html");

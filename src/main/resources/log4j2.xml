@@ -5,7 +5,7 @@
 			<PatternLayout disableAnsi="false"
 			               pattern="[%highlight{%d{yyyy-MMM-dd HH:mm:ss:SSS}}{FATAL=Magenta,INFO=WHITE}] [%highlight{%-5level}{FATAL=Magenta,INFO=WHITE}] {%style{%c}{Blue}} - %highlight{%msg%n%throwable}{FATAL=Magenta,INFO=WHITE}"/>
 		</Console>
-		<File name="File" fileName="logs/Neptunes_Dashboard.log">
+		<File name="File" fileName="logs/Neptunes-Dashboard.log">
 			<PatternLayout pattern="[%d{yyyy-MMM-dd HH:mm:ss:SSS}] [%-5level] {%c} - %msg%n%throwable"/>
 		</File>
 	</Appenders>
@@ -14,11 +14,5 @@
 			<AppenderRef ref="Console" level="INFO"/>
 			<AppenderRef ref="File" level="DEBUG"/>
 		</Root>
-		<Logger name="Exposed" level="INFO" additivity="false">
-		</Logger>
-		<Logger name="org.eclipse.jetty" level="INFO" additivity="false">
-		</Logger>
-		<Logger name="io.netty" level="INFO" additivity="false">
-		</Logger>
 	</Loggers>
 </Configuration>

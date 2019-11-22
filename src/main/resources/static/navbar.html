@@ -1,23 +1,56 @@
-<header class="ui inverted stackable top fixed menu">
-	<div class="ui container">
-		<h4 class="ui orange inverted header item">
-			Neptune's Dashboard
-		</h4>
-		<a class="item" href="/">
-			<i class="home icon"></i>Home
-		</a>
-		<a class="item" href="/players">
-			<i class="user icon"></i>Players
-		</a>
-		<a class="item" href="/teams">
-			<i class="users icon"></i>Teams
-		</a>
-		<a class="item" download href="/Neptunes-Dashboard.yaml">
-			<i class="book icon"></i>Documentation
-		</a>
-		<a class="item" href="/about">
-			<i class="info circle icon"></i>About
-		</a>
-		<button class="ui inverted blue button" id="updateButton" onclick="update();">Update</button>
+<div class="container">
+	<div class="navbar-brand">
+			<span class="navbar-item">
+				<img alt="" src="/logo.png">
+				Neptune's Dashboard
+			</span>
+		<span class="navbar-burger burger" data-target="navbarMenuHero">
+				<span></span>
+				<span></span>
+				<span></span>
+			</span>
 	</div>
-</header>
+	<div class="navbar-menu" id="navbarMenuHero">
+		<div class="navbar-end">
+			<a class="navbar-item" href="/">
+					<span class="icon">
+						<i class="fas fa-home"></i>
+					</span>
+				<span>Home</span>
+			</a>
+			<a class="navbar-item" href="/players">
+					<span class="icon">
+						<i class="fas fa-user"></i>
+					</span>
+				<span>Players</span>
+			</a>
+			<a class="navbar-item" href="/teams">
+					<span class="icon">
+						<i class="fas fa-users"></i>
+					</span>
+				<span>Teams</span>
+			</a>
+			<a class="navbar-item" download href="/Neptunes-Dashboard.yaml">
+					<span class="icon">
+						<i class="fas fa-book"></i>
+					</span>
+				<span>Documentation</span>
+			</a>
+			<a class="navbar-item" href="/about">
+					<span class="icon">
+						<i class="fas fa-info-circle"></i>
+					</span>
+				<span>About</span>
+			</a>
+			<button class="button is-info is-rounded is-outlined" id="updateButton" onclick="update();">Update</button>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$(".navbar-burger").click(function () {
+			$(".navbar-burger").toggleClass("is-active");
+			$(".navbar-menu").toggleClass("is-active");
+		});
+	});
+</script>
