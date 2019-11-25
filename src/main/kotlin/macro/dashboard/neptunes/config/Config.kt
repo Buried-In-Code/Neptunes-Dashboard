@@ -1,5 +1,6 @@
 package macro.dashboard.neptunes.config
 
+import org.apache.logging.log4j.LogManager
 import org.slf4j.LoggerFactory
 import org.yaml.snakeyaml.DumperOptions
 import org.yaml.snakeyaml.Yaml
@@ -11,26 +12,27 @@ import java.time.ZoneId
 /**
  * Created by Macro303 on 2018-Nov-23.
  */
-internal class Config {
-	var server: Connection = Connection().apply {
-		hostName = "localhost"
-		port = 5505
-	}
+class Config {
+	var server: Connection = Connection("localhost", 5505)
 	var proxy: Connection = Connection()
-	var game: Game = Game()
-	var timeZone: String = "Pacific/Auckland"
+	var game: GameSettings = GameSettings()
 
-	fun getZone(): ZoneId = ZoneId.of(timeZone)
+	fun saveConfig(): Config {
+		Files.newBufferedWriter(Paths.get("config.yaml")).use {
+			it.write(YAML.dumpAsMap(this))
+		}
+		return this
+	}
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Config::class.java)
+		private val LOGGER = LogManager.getLogger(Config::class.java)
 		private val YAML: Yaml by lazy {
 			val options = DumperOptions()
 			options.defaultFlowStyle = DumperOptions.FlowStyle.FLOW
 			options.isPrettyFlow = true
 			Yaml(options)
 		}
-		var CONFIG = loadConfig()
+		var CONFIG: Config = loadConfig()
 
 		fun loadConfig(): Config {
 			val temp = File("config.yaml")
@@ -40,16 +42,5 @@ internal class Config {
 				YAML.loadAs(it, Config::class.java)
 			}.saveConfig()
 		}
-	}
-
-	fun saveConfig(): Config {
-		Files.newBufferedWriter(Paths.get("config.yaml")).use {
-			it.write(YAML.dumpAsMap(this))
-		}
-		return this
-	}
-
-	override fun toString(): String {
-		return "Config(server=$server, proxy=$proxy, game=$game, timeZone='$timeZone')"
 	}
 }

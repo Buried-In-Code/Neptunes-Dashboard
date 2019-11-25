@@ -1,7 +1,7 @@
 package macro.dashboard.neptunes.game
 
+import macro.dashboard.neptunes.ISendable
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.team.TeamTable
 import org.slf4j.LoggerFactory
@@ -12,11 +12,9 @@ import java.time.LocalDateTime
  */
 data class Game(
 	val ID: Long,
-	val gameType: String,
 	val fleetSpeed: Double,
 	var isPaused: Boolean,
 	var productions: Int,
-	val fleetPrice: Int?,
 	var tickFragment: Int,
 	val tickRate: Int,
 	val productionRate: Int,
@@ -32,8 +30,19 @@ data class Game(
 	val name: String,
 	val isTurnBased: Boolean,
 	var war: Int,
-	var cycleTimeout: LocalDateTime
-) {
+	var turnTimeout: LocalDateTime,
+	val fleetPrice: Int? = null,
+	val gameType: String = "Triton"
+) : ISendable {
+	override fun toJson(full: Boolean): Map<String, Any?> {
+		val output = mutableMapOf<String, Any?>(
+			"Name" to name
+		)
+		if (full) {
+			output["ID"] to ID
+		}
+		return output.toSortedMap()
+	}
 
 	fun toMap(): Map<String, Any?> {
 		return mapOf(
@@ -57,8 +66,8 @@ data class Game(
 			"name" to name,
 			"isTurnBased" to isTurnBased,
 			"war" to war,
-			"cycleTimeout" to cycleTimeout.format(Util.JAVA_FORMATTER),
-			"cycles" to tick / CONFIG.game.cycle,
+			"cycleTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
+//			"cycles" to tick / CONFIG.game.cycle,
 			"playerCount" to PlayerTable.count(),
 			"teamCount" to TeamTable.count()
 		).toSortedMap()
