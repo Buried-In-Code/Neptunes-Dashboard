@@ -1,72 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Neptune's Dashboard</title>
-	<meta charset="utf-8">
+	<meta charset="UTF-8">
+	<meta content="Macro303" name="author">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
-	<link href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" rel="stylesheet" type="text/css">
-	<link href="https://cdn.datatables.net/1.10.18/css/dataTables.semanticui.css" rel="stylesheet" type="text/css"/>
-	<link href="/styles.css" rel="stylesheet" type="text/css">
+	<title>Neptune's Dashboard</title>
+	<link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
+	<link href="/style.css" rel="stylesheet"/>
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
-<body>
-<div id="navbar"></div>
-<div class="ui container">
-	<div class="ui inverted container segment opacity">
-		<h2 class="ui horizontal divider yellow header">Stats</h2>
-		<table class="ui single line selectable inverted table opacity" id="stats">
-			<thead>
-			<tr>
-				<th>Name</th>
-				<th>Total Stars</th>
-				<th>Total Ships</th>
-				<th>Total Economy</th>
-				<th>$/Cycle</th>
-				<th>Total Industry</th>
-				<th>Ships/Cycle</th>
-				<th>Total Science</th>
-				<th>Sci/Cycle</th>
-			</tr>
-			</thead>
-		</table>
+<body class="has-navbar-fixed-top">
+<nav class="navbar is-dark is-fixed-top" id="navbar"></nav>
+<section class="section is-medium">
+	<div class="container has-text-centered">
+		<h3 class="title is-3">Stats</h3>
+		<div class="table-container">
+			<table class="table is-striped is-fullwidth is-hoverable">
+				<thead>
+				<tr>
+					<th>Name</th>
+					<th><abbr title="Total Stars">Stars</abbr></th>
+					<th><abbr title="Total Ships">Ships</abbr></th>
+					<th><abbr title="Total Economy">Econo</abbr></th>
+					<th><abbr title="Economy Per Cycle">Money/Cycle</abbr></th>
+					<th><abbr title="Total Industry">Indus</abbr></th>
+					<th><abbr title="Industry Per Cycle">Ships/Cycle</abbr></th>
+					<th><abbr title="Total Science">Scien</abbr></th>
+					<th><abbr title="Science Per Cycle">Sci/Cycle</abbr></th>
+				</tr>
+				</thead>
+				<tbody id="team-stats-table">
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js" type="text/javascript"></script>
-<script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.js" type="text/javascript"></script>
-<script src="https://cdn.datatables.net/1.10.18/js/dataTables.semanticui.js" type="text/javascript"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
-<script src="/script.js" type="text/javascript"></script>
+</section>
+<footer class="footer">
+	<div class="content has-text-centered">
+		<a href="https://bulma.io">
+			<img alt="Made with Bulma" height="24" src="https://bulma.io/images/made-with-bulma--dark.png" width="128">
+		</a>
+	</div>
+</footer>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="/script.js"></script>
 <script type="text/javascript">
 	$(document).ready(function () {
 		$("#navbar").load("/navbar.html");
-		var stats_table = $('#stats').DataTable({
-			"processing": true,
-			"ajax": {
-				"url": "/api/teams",
-				type: 'GET',
-				contentType: 'application/json',
-				dataType: 'json',
-				dataSrc: ''
-			},
-			"paging": false,
-			"columns": [
-				{"data": "name"},
-				{"data": "cycles.stars", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.ships", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.economy", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.economyPerCycle", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.industry", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.industryPerCycle", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.science", render: $.fn.dataTable.render.number(',')},
-				{"data": "cycles.sciencePerCycle", render: $.fn.dataTable.render.number(',')}
-			],
-			"order": [[1, "desc"], [2, "desc"]]
-		});
-		$('#stats tbody').on('click', 'tr', function () {
-			var data = stats_table.row(this).data();
-			window.location.href = '/teams/' + data.name;
-		});
+		loadTeams();
 	});
 </script>
 </body>

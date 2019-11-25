@@ -29,10 +29,10 @@ object Proteus {
 				PlayerTable.insert(gameID = gameID, update = it)
 				PlayerTable.search(alias = it.alias).firstOrNull()?.apply {
 					CycleTable.insert(playerID = this.ID, cycle = gameObject.tick / CONFIG.game.cycle, update = it)
-				} ?: throw InternalServerErrorResponse(message = "Unable to Find Player => ${it.alias}")
+				} ?: throw NotFoundException(message = "Unable to Find Player => ${it.alias}")
 			}
 		}catch (jse: JsonSyntaxException){
-			throw InternalServerErrorResponse(message = "Invalid response from Backend")
+			throw GeneralException(message = "Invalid response from Backend")
 		}
 	}
 }

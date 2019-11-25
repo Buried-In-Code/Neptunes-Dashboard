@@ -13,9 +13,10 @@
 <nav class="navbar is-dark is-fixed-top" id="navbar"></nav>
 <section class="section is-medium">
 	<div class="container has-text-centered">
-		<h3 class="title is-3">Contributors</h3>
-		<div class="columns is-centered is-multiline" id="contributor-grid"></div>
-		<p>You can also contribute by creating issues, submitting feature requests or pull requests in the <a href="https://github.com/Macro303/Neptunes-Dashboard">GitHub Repo</a></p>
+		<article class="message is-danger is-large">
+			<div class="message-header">${code}: ${request}</div>
+			<div class="message-body">${message}</div>
+		</article>
 	</div>
 </section>
 <footer class="footer">
@@ -30,7 +31,6 @@
 <script type="text/javascript">
 	$(document).ready(function () {
 		$("#navbar").load("/navbar.html");
-		loadContributors()
 	});
 </script>
 </body>

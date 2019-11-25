@@ -16,6 +16,7 @@ import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
+import io.ktor.routing.get
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -64,7 +65,7 @@ object Server {
 			try {
 				Proteus.getGame(gameID = CONFIG.game.id, code = CONFIG.game.code)
 				LOGGER.info("New Game Loaded => ${CONFIG.game.id}")
-			} catch (iser: InternalServerErrorResponse) {
+			} catch (iser: GeneralException) {
 				LOGGER.error("Failed Game Load: ${CONFIG.game.id} => ${CONFIG.game.code}")
 			}
 		}
@@ -101,11 +102,62 @@ fun Application.module() {
 		templateLoader = ClassTemplateLoader(this::class.java, "/templates")
 	}
 	install(StatusPages) {
-		exception<HttpResponseException> {
-			call.respond(error = it)
+		exception<Throwable> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.InternalServerError,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message ?: "",
+				cause = it
+			)
+			call.respond(error = error)
+		}
+		exception<BadRequestException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.BadRequest,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message
+			)
+			call.respond(error = error)
+		}
+		exception<UnauthorizedException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.Unauthorized,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message
+			)
+			call.respond(error = error)
+		}
+		exception<ConflictException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.Conflict,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message
+			)
+			call.respond(error = error)
+		}
+		exception<NotImplementedException> {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotImplemented,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = it.message
+			)
+			call.respond(error = error)
 		}
 		status(HttpStatusCode.NotFound) {
-			call.respond(error = NotFoundResponse())
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotFound,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = "Unable to Find Endpoint"
+			)
+			call.respond(error = error)
+		}
+		status(HttpStatusCode.NotAcceptable) {
+			val error = ErrorMessage(
+				code = HttpStatusCode.NotAcceptable,
+				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
+				message = "Invalid Accept Header"
+			)
+			call.respond(error = error)
 		}
 	}
 	install(Routing) {
@@ -122,7 +174,7 @@ fun Application.module() {
 			}
 			route(path = "/players") {
 				PlayerRouter.getPlayers(route = this)
-				route(path = "/{player-id}") {
+				route(path = "/{alias}") {
 					PlayerRouter.getPlayer(route = this)
 					PlayerRouter.updatePlayer(route = this)
 					route(path = "/cycles") {
@@ -136,18 +188,45 @@ fun Application.module() {
 			route(path = "/teams") {
 				TeamRouter.getTeams(route = this)
 				TeamRouter.addTeam(route = this)
-				route(path = "/{team-id}") {
+				route(path = "/{name}") {
 					TeamRouter.getTeam(route = this)
 					TeamRouter.updateTeam(route = this)
 				}
 			}
+			route("/contributors") {
+				get {
+					val contributors = listOf(
+						mapOf<String, Any?>(
+							"Title" to "Macro303",
+							"Image" to "macro303.png",
+							"Role" to "Creator and Maintainer"
+						).toSortedMap(),
+						mapOf<String, Any?>(
+							"Title" to "Miss. T",
+							"Image" to "misst.jpg",
+							"Role" to "Supporter and Loving Fiance"
+						).toSortedMap(),
+						mapOf<String, Any?>(
+							"Title" to "Rocky",
+							"Image" to "rocky.png",
+							"Role" to "Quality Tester"
+						).toSortedMap(),
+						mapOf<String, Any?>(
+							"Title" to "Img Bot App",
+							"Image" to "imgbotapp.png",
+							"Role" to "Image Processor"
+						).toSortedMap()
+					)
+					call.respond(contributors)
+				}
+			}
 		}
-		route(path = "/players/{alias}") {
+		/*route(path = "/players/{alias}") {
 			PlayerRouter.displayPlayer(route = this)
 		}
 		route(path = "/teams/{name}") {
 			TeamRouter.displayTeam(route = this)
-		}
+		}*/
 		static {
 			defaultResource(resource = "/static/index.html")
 			resources(resourcePackage = "static/images")
@@ -155,7 +234,9 @@ fun Application.module() {
 			resources(resourcePackage = "static/js")
 			resource(remotePath = "/navbar.html", resource = "static/navbar.html")
 			resource(remotePath = "/players", resource = "static/players.html")
+			resource(remotePath = "/players/{alias}", resource = "static/player.html")
 			resource(remotePath = "/teams", resource = "static/teams.html")
+			resource(remotePath = "/teams/{name}", resource = "static/team.html")
 			resource(remotePath = "/about", resource = "static/about.html")
 			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
 		}
@@ -166,34 +247,20 @@ fun Application.module() {
 	}
 }
 
-suspend fun ApplicationCall.respond(error: HttpResponseException) {
-	if (request.local.uri.startsWith(prefix = "/api")) {
-		if (request.accept()?.contains(ContentType.Application.Json.toString()) == true)
-			respond(
-				message = mapOf(
-					"message" to error.message,
-					"status" to error.status
-				),
-				status = error.status
-			)
-		else
-			respond(
-				message = error.message ?: "",
-				status = error.status
-			)
-	} else
+suspend fun ApplicationCall.respond(error: ErrorMessage) {
+	if (request.local.uri.startsWith("/api"))
+		respond(message = error, status = error.code)
+	else
 		respond(
-			message = FreeMarkerContent(
-				template = "error.ftl",
-				model = error.toMap()
-			)
+			message = FreeMarkerContent(template = "exception.ftl", model = error),
+			status = error.code
 		)
 	when {
-		error.status.value < 100 -> application.log.error("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
-		error.status.value in (100 until 200) -> application.log.info("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
-		error.status.value in (200 until 300) -> application.log.info("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri}")
-		error.status.value in (300 until 400) -> application.log.warn("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
-		error.status.value in (400 until 500) -> application.log.warn("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
-		error.status.value >= 500 -> application.log.error("${request.httpMethod.value.padEnd(4)}: ${error.status} - ${request.uri} => ${error.message}")
+		error.code.value < 100 -> application.log.error("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri} => ${error.message}")
+		error.code.value in (100 until 200) -> application.log.info("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri} => ${error.message}")
+		error.code.value in (200 until 300) -> application.log.info("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri}")
+		error.code.value in (300 until 400) -> application.log.debug("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri} => ${error.message}")
+		error.code.value in (400 until 500) -> application.log.warn("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri} => ${error.message}")
+		error.code.value >= 500 -> application.log.error("${request.httpMethod.value.padEnd(6)}: ${error.code} - ${request.uri} => ${error.message}")
 	}
 }

@@ -1,9 +1,8 @@
 package macro.dashboard.neptunes
 
 import com.google.gson.GsonBuilder
-import com.mashape.unirest.http.ObjectMapper
-import com.mashape.unirest.http.Unirest
-import com.mashape.unirest.http.exceptions.UnirestException
+import kong.unirest.Unirest
+import kong.unirest.UnirestException
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
@@ -39,17 +38,9 @@ object Util {
 	)
 
 	init {
-		if (CONFIG.proxy.getHttpHost() != null)
-			Unirest.setProxy(CONFIG.proxy.getHttpHost()!!)
-		Unirest.setObjectMapper(object : ObjectMapper {
-			override fun <T> readValue(value: String, valueType: Class<T>): T {
-				return GSON.fromJson(value, valueType)
-			}
-
-			override fun writeValue(value: Any): String {
-				return GSON.toJson(value)
-			}
-		})
+		Unirest.config().enableCookieManagement(false)
+		if(CONFIG.proxy.hostName != null && CONFIG.proxy.port != null)
+			Unirest.config().proxy(CONFIG.proxy.hostName, CONFIG.proxy.port!!)
 	}
 
 	internal fun <T> query(description: String, block: () -> T): T {

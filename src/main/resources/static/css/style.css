@@ -1,0 +1,7 @@
+html, body, .footer {
+	background-color: grey;
+}
+
+.card, .box {
+	box-shadow: none;
+}

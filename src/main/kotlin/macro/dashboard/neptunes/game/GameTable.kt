@@ -1,6 +1,6 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.NotFoundResponse
+import macro.dashboard.neptunes.NotFoundException
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
@@ -62,7 +62,7 @@ internal object GameTable : LongIdTable(name = "Game") {
 	}
 
 	fun select(): Game = select(ID = CONFIG.game.id)
-		?: throw NotFoundResponse(message = "No Game was found with the ID => ${CONFIG.game.id}")
+		?: throw NotFoundException(message = "No Game was found with the ID => ${CONFIG.game.id}")
 
 	fun insert(ID: Long, update: ProteusGame): Boolean = Util.query(description = "Insert Proteus Game") {
 		try {

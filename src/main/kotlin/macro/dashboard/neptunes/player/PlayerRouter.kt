@@ -8,9 +8,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import io.ktor.routing.put
-import macro.dashboard.neptunes.BadRequestResponse
-import macro.dashboard.neptunes.NotFoundResponse
-import macro.dashboard.neptunes.NotYetImplementedResponse
+import macro.dashboard.neptunes.BadRequestException
+import macro.dashboard.neptunes.NotFoundException
+import macro.dashboard.neptunes.NotImplementedException
 import org.slf4j.LoggerFactory
 
 /**
@@ -20,10 +20,10 @@ object PlayerRouter {
 	private val LOGGER = LoggerFactory.getLogger(PlayerRouter::class.java)
 
 	private fun ApplicationCall.getPlayerID() = parameters["player-id"]?.toIntOrNull()
-		?: throw BadRequestResponse("Invalid Player ID")
+		?: throw BadRequestException("Invalid Player ID")
 
 	private fun ApplicationCall.getPlayerAlias() = parameters["alias"]
-		?: throw BadRequestResponse("Invalid Player Alias")
+		?: throw BadRequestException("Invalid Player Alias")
 
 	private fun ApplicationCall.getTeamQuery() = request.queryParameters["team"] ?: "%"
 	private fun ApplicationCall.getNameQuery() = request.queryParameters["name"] ?: "%"
@@ -44,8 +44,8 @@ object PlayerRouter {
 
 	internal fun getPlayer(route: Route) {
 		route.get {
-			val playerID = call.getPlayerID()
-			val player = PlayerTable.select(ID = playerID) ?: throw NotFoundResponse("No Player with ID => $playerID")
+			val playerAlias = call.getPlayerAlias()
+			val player = PlayerTable.search(alias = playerAlias).firstOrNull() ?: throw NotFoundException("No Player with Alias => $playerAlias")
 			call.respond(
 				message = player.toMap(),
 				status = HttpStatusCode.OK
@@ -56,7 +56,7 @@ object PlayerRouter {
 	internal fun updatePlayer(route: Route) {
 		route.put {
 			val playerID = call.getPlayerID()
-			throw NotYetImplementedResponse()
+			throw NotImplementedException()
 		}
 	}
 
@@ -64,7 +64,7 @@ object PlayerRouter {
 		route.get {
 			val playerAlias = call.getPlayerAlias()
 			val player = PlayerTable.search(alias = playerAlias).firstOrNull()
-				?: throw NotFoundResponse("No Player with Alias => $playerAlias")
+				?: throw NotFoundException("No Player with Alias => $playerAlias")
 			call.respond(
 				message = FreeMarkerContent(
 					template = "player.ftl",
