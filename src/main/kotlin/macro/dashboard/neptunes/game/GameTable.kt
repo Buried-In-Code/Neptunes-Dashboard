@@ -3,13 +3,11 @@ package macro.dashboard.neptunes.game
 import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.Util.toJavaDateTime
 import macro.dashboard.neptunes.Util.toJodaDateTime
-import macro.dashboard.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.LongIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
-import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
 
 /**
  * Created by Macro303 on 2019-Feb-11.
@@ -39,7 +37,7 @@ internal object GameTable : LongIdTable(name = "Game") {
 
 	val gameTypeCol = text(name = "gameType").default("Triton")
 
-	private val LOGGER = LoggerFactory.getLogger(GameTable::class.java)
+	private val LOGGER = LogManager.getLogger(GameTable::class.java)
 
 	init {
 		Util.query(description = "Create Game table") {
@@ -47,62 +45,67 @@ internal object GameTable : LongIdTable(name = "Game") {
 		}
 	}
 
-	fun select(ID: Long): Game? = Util.query(description = "Select Game by ID: $ID") {
+	fun select(gameId: Long): Game? = Util.query(description = "Select Game by GameId: $gameId") {
 		select {
-			id eq ID
-		}.orderBy(startTimeCol, SortOrder.DESC).limit(n = 1).firstOrNull()?.parse()
+			id eq gameId
+		}.limit(1).firstOrNull()?.parse()
 	}
 
-	fun insert(
-		ID: Long,
-		fleetSpeed: Double,
-		isPaused: Boolean,
-		productions: Int,
-		tickFragment: Int,
-		tickRate: Int,
-		productionRate: Int,
-		victoryStars: Int,
-		isGameOver: Boolean,
-		isStarted: Boolean,
-		startTime: LocalDateTime,
-		totalStars: Int,
-		productionCounter: Int,
-		isTradeScanned: Boolean,
-		tick: Int,
-		tradeCost: Int,
-		name: String,
-		isTurnBased: Boolean,
-		war: Int,
-		turnTimeout: LocalDateTime,
-		fleetPrice: Int? = null,
-		gameType: String = "Triton"
-	): Boolean = Util.query(description = "Insert Game") {
+	fun insert(item: Game): Boolean = Util.query(description = "Insert Game") {
 		try {
 			insert {
-				it[id] = EntityID(ID, GameTable)
-				it[fleetSpeedCol] = fleetSpeed
-				it[isPausedCol] = isPaused
-				it[productionsCol] = productions
-				it[tickFragmentCol] = tickFragment
-				it[tickRateCol] = tickRate
-				it[productionRateCol] = productionRate
-				it[victoryStarsCol] = victoryStars
-				it[isGameOverCol] = isGameOver
-				it[isStartedCol] = isStarted
-				it[startTimeCol] = startTime.toJodaDateTime()
-				it[totalStarsCol] = totalStars
-				it[productionCounterCol] = productionCounter
-				it[isTradeScannedCol] = isTradeScanned
-				it[tickCol] = tick
-				it[tradeCostCol] = tradeCost
-				it[nameCol] = name
-				it[isTurnBasedCol] = isTurnBased
-				it[warCol] = war
-				it[turnTimeoutCol] = turnTimeout.toJodaDateTime()
-				it[fleetPriceCol] = fleetPrice
-				it[gameTypeCol] = gameType
+				it[id] = EntityID(item.ID, GameTable)
+				it[fleetSpeedCol] = item.fleetSpeed
+				it[isPausedCol] = item.isPaused
+				it[productionsCol] = item.productions
+				it[tickFragmentCol] = item.tickFragment
+				it[tickRateCol] = item.tickRate
+				it[productionRateCol] = item.productionRate
+				it[victoryStarsCol] = item.victoryStars
+				it[isGameOverCol] = item.isGameOver
+				it[isStartedCol] = item.isStarted
+				it[startTimeCol] = item.startTime.toJodaDateTime()
+				it[totalStarsCol] = item.totalStars
+				it[productionCounterCol] = item.productionCounter
+				it[isTradeScannedCol] = item.isTradeScanned
+				it[tickCol] = item.tick
+				it[tradeCostCol] = item.tradeCost
+				it[nameCol] = item.name
+				it[isTurnBasedCol] = item.isTurnBased
+				it[warCol] = item.war
+				it[turnTimeoutCol] = item.turnTimeout.toJodaDateTime()
+				it[fleetPriceCol] = item.fleetPrice
+				it[gameTypeCol] = item.gameType
 			}
-			TeamTable.insert(gameID = ID, name = "Free For All")
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun update(item: Game): Boolean = Util.query(description = "Update Game") {
+		try {
+			update({ id eq item.ID }) {
+				it[isPausedCol] = item.isPaused
+				it[productionsCol] = item.productions
+				it[tickFragmentCol] = item.tickFragment
+				it[isGameOverCol] = item.isGameOver
+				it[isStartedCol] = item.isStarted
+				it[startTimeCol] = item.startTime.toJodaDateTime()
+				it[productionCounterCol] = item.productionCounter
+				it[tickCol] = item.tick
+				it[warCol] = item.war
+				it[turnTimeoutCol] = item.turnTimeout.toJodaDateTime()
+			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun delete(item: Game): Boolean = Util.query(description = "Delete Game") {
+		try {
+			deleteWhere { id eq item.ID }
 			true
 		} catch (esqle: ExposedSQLException) {
 			false

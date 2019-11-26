@@ -6,7 +6,6 @@ import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
 import io.ktor.freemarker.FreeMarkerContent
 import io.ktor.gson.gson
-import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.defaultResource
@@ -17,23 +16,26 @@ import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
+import io.ktor.routing.put
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.util.KtorExperimentalAPI
 import macro.dashboard.neptunes.config.Config.Companion.CONFIG
-import macro.dashboard.neptunes.cycle.CycleRouter
-import macro.dashboard.neptunes.cycle.CycleTable
+import macro.dashboard.neptunes.tick.TickRouter
+import macro.dashboard.neptunes.tick.TickTable
+import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.game.GameRouter
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerRouter
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.team.TeamRouter
 import macro.dashboard.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.exists
-import org.slf4j.LoggerFactory
 
 object Server {
-	private val LOGGER = LoggerFactory.getLogger(Server::class.java)
+	private val LOGGER = LogManager.getLogger(Server::class.java)
 
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
@@ -54,23 +56,21 @@ object Server {
 		Util.query(description = "Check All Tables Exist") {
 			GameTable.exists()
 			PlayerTable.exists()
-			CycleTable.exists()
+			TickTable.exists()
 			TeamTable.exists()
 		}
 	}
 
 	private fun checkConfigGames() {
-		val game = GameTable.select(ID = CONFIG.game.id)
-		if (game == null) {
-			try {
-				Proteus.getGame(gameID = CONFIG.game.id, code = CONFIG.game.code)
-				LOGGER.info("New Game Loaded => ${CONFIG.game.id}")
-			} catch (iser: GeneralException) {
-				LOGGER.error("Failed Game Load: ${CONFIG.game.id} => ${CONFIG.game.code}")
-			}
-		}
+		CONFIG.game.gameId ?: return
+		CONFIG.game.code ?: return
+		GameTable.select(gameId = CONFIG.game.gameId!!) ?: Triton.getGame(
+			gameId = CONFIG.game.gameId!!,
+			code = CONFIG.game.code!!
+		)
 	}
 
+	@KtorExperimentalAPI
 	@JvmStatic
 	fun main(args: Array<String>) {
 		embeddedServer(
@@ -82,6 +82,7 @@ object Server {
 	}
 }
 
+@KtorExperimentalAPI
 fun Application.module() {
 	install(ContentNegotiation) {
 		gson {
@@ -111,54 +112,6 @@ fun Application.module() {
 			)
 			call.respond(error = error)
 		}
-		exception<BadRequestException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.BadRequest,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.message
-			)
-			call.respond(error = error)
-		}
-		exception<UnauthorizedException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.Unauthorized,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.message
-			)
-			call.respond(error = error)
-		}
-		exception<ConflictException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.Conflict,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.message
-			)
-			call.respond(error = error)
-		}
-		exception<NotImplementedException> {
-			val error = ErrorMessage(
-				code = HttpStatusCode.NotImplemented,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = it.message
-			)
-			call.respond(error = error)
-		}
-		status(HttpStatusCode.NotFound) {
-			val error = ErrorMessage(
-				code = HttpStatusCode.NotFound,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = "Unable to Find Endpoint"
-			)
-			call.respond(error = error)
-		}
-		status(HttpStatusCode.NotAcceptable) {
-			val error = ErrorMessage(
-				code = HttpStatusCode.NotAcceptable,
-				request = "${call.request.httpMethod.value} ${call.request.local.uri}",
-				message = "Invalid Accept Header"
-			)
-			call.respond(error = error)
-		}
 	}
 	install(Routing) {
 		intercept(ApplicationCallPipeline.Setup) {
@@ -168,29 +121,98 @@ fun Application.module() {
 			application.log.trace(it.buildText())
 		}
 		route(path = "/api") {
+			@KtorExperimentalAPI
+			fun getGame(): Game {
+				CONFIG.game.gameId ?: throw NotFoundException()
+				return GameTable.select(gameId = CONFIG.game.gameId!!) ?: throw NotFoundException()
+			}
+
 			route(path = "/game") {
-				GameRouter.getGame(route = this)
-				GameRouter.updateGame(route = this)
+				GameRouter.routing(this)
 			}
 			route(path = "/players") {
-				PlayerRouter.getPlayers(route = this)
+				get {
+					call.respond(
+						message = PlayerRouter.getPlayers(game = getGame()).map { it.toJson() },
+						status = HttpStatusCode.OK
+					)
+				}
 				route(path = "/{alias}") {
-					PlayerRouter.getPlayer(route = this)
-					PlayerRouter.updatePlayer(route = this)
-					route(path = "/cycles") {
-						CycleRouter.getCycles(route = this)
-						route(path = "/{cycle}") {
-							CycleRouter.getCycle(route = this)
+					@KtorExperimentalAPI
+					fun ApplicationCall.getAlias() = parameters["alias"] ?: throw BadRequestException("Invalid Alias")
+
+					get {
+						call.respond(
+							message = PlayerRouter.getPlayer(game = getGame(), alias = call.getAlias()).toJson(),
+							status = HttpStatusCode.OK
+						)
+					}
+					put {
+						call.respond(
+							message = PlayerRouter.updatePlayer(
+								game = getGame(),
+								alias = call.getAlias(),
+								update = call.receiveOrNull()
+							).toJson(),
+							status = HttpStatusCode.OK
+						)
+					}
+					route(path = "/ticks") {
+						get {
+							call.respond(
+								message = TickRouter.getTicks(
+									game = getGame(),
+									alias = call.getAlias()
+								).map { it.toJson() },
+								status = HttpStatusCode.OK
+							)
+						}
+						route(path = "/{tick}") {
+							@KtorExperimentalAPI
+							fun ApplicationCall.getTick() =
+								parameters["tick"]?.toIntOrNull() ?: throw BadRequestException("Invalid Tick")
+
+							get {
+								call.respond(
+									message = TickRouter.getTick(
+										game = getGame(),
+										alias = call.getAlias(),
+										tick = call.getTick()
+									).toJson(),
+									status = HttpStatusCode.OK
+								)
+							}
 						}
 					}
 				}
 			}
 			route(path = "/teams") {
-				TeamRouter.getTeams(route = this)
-				TeamRouter.addTeam(route = this)
+				get {
+					call.respond(
+						message = TeamRouter.getTeams(game = getGame()).map { it.toJson() },
+						status = HttpStatusCode.OK
+					)
+				}
 				route(path = "/{name}") {
-					TeamRouter.getTeam(route = this)
-					TeamRouter.updateTeam(route = this)
+					@KtorExperimentalAPI
+					fun ApplicationCall.getName() = parameters["name"] ?: throw BadRequestException("Invalid Name")
+
+					get {
+						call.respond(
+							message = TeamRouter.getTeam(game = getGame(), name = call.getName()).toJson(),
+							status = HttpStatusCode.OK
+						)
+					}
+					put {
+						call.respond(
+							message = TeamRouter.updateTeam(
+								game = getGame(),
+								name = call.getName(),
+								update = call.receiveOrNull()
+							).toJson(),
+							status = HttpStatusCode.OK
+						)
+					}
 				}
 			}
 			route("/contributors") {
@@ -221,12 +243,6 @@ fun Application.module() {
 				}
 			}
 		}
-		/*route(path = "/players/{alias}") {
-			PlayerRouter.displayPlayer(route = this)
-		}
-		route(path = "/teams/{name}") {
-			TeamRouter.displayTeam(route = this)
-		}*/
 		static {
 			defaultResource(resource = "/static/index.html")
 			resources(resourcePackage = "static/images")

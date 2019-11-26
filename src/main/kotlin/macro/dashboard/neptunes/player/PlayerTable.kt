@@ -1,36 +1,34 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.GeneralException
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.ProteusPlayer
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.team.TeamTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
-import org.slf4j.LoggerFactory
+import java.util.*
 
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-internal object PlayerTable : IntIdTable(name = "Player") {
+internal object PlayerTable : Table(name = "Player") {
 	val gameCol = reference(
-		name = "gameID",
+		name = "gameId",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
+	val aliasCol = text(name = "alias")
 	val teamCol = reference(
-		name = "teamID",
+		name = "teamId",
 		foreign = TeamTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
-	val aliasCol = text(name = "alias")
 	val nameCol = text(name = "name").nullable()
 
-	private val LOGGER = LoggerFactory.getLogger(PlayerTable::class.java)
+	private val LOGGER = LogManager.getLogger(PlayerTable::class.java)
 
 	init {
 		Util.query(description = "Create Player table") {
@@ -39,34 +37,33 @@ internal object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun count(): Int = Util.query(description = "Count # of Players") {
-		selectAll().count()
-	}
-
-	fun select(ID: Int): Player? = Util.query(description = "Select Player by ID: $ID") {
-		select {
-			id eq ID
-		}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).limit(n = 1)
-			.firstOrNull()?.parse()
-	}
-
-	fun search(team: String = "%", name: String = "%", alias: String = "%"): List<Player> =
-		Util.query(description = "Search for Players by Team => $team by Alias => $alias") {
-			(PlayerTable innerJoin TeamTable).select {
-				TeamTable.nameCol like team and (aliasCol like alias)
-			}.orderBy(teamCol to SortOrder.ASC, aliasCol to SortOrder.ASC).map {
-				it.parse()
-			}
+	fun select(gameId: Long, alias: String): Player? =
+		Util.query(description = "Select Player by GameId: $gameId, Alias: $alias") {
+			select {
+				gameCol eq gameId and (aliasCol eq alias)
+			}.limit(1).firstOrNull()?.parse()
 		}
 
-	fun insert(gameID: Long, update: ProteusPlayer): Boolean = Util.query(description = "Insert Proteus Player") {
-		val teamID = TeamTable.search(name = "Free For All").firstOrNull()?.ID
-			?: throw GeneralException("Unable to Find Team => Free For All")
+	fun search(gameId: Long, teamId: UUID): List<Player> =
+		Util.query(description = "Search Players in Game: $gameId, from Team $teamId") {
+			select {
+				gameCol eq gameId and (teamCol eq teamId.toString())
+			}.map { it.parse() }
+		}
+
+	fun search(gameId: Long): List<Player> = Util.query(description = "Search Players in Game: $gameId") {
+		select {
+			gameCol eq gameId
+		}.map { it.parse() }
+	}
+
+	fun insert(item: Player): Boolean = Util.query(description = "Insert Player") {
 		try {
 			insert {
-				it[gameCol] = EntityID(id = gameID, table = GameTable)
-				it[aliasCol] = update.alias
-				it[teamCol] = EntityID(id = teamID, table = TeamTable)
+				it[gameCol] = EntityID(item.gameId, GameTable)
+				it[aliasCol] = item.alias
+				it[teamCol] = EntityID(item.teamId.toString(), TeamTable)
+				it[nameCol] = item.name
 			}
 			true
 		} catch (esqle: ExposedSQLException) {
@@ -74,21 +71,31 @@ internal object PlayerTable : IntIdTable(name = "Player") {
 		}
 	}
 
-	fun update(ID: Int, teamID: Int, name: String?) = Util.query(description = "Update Player") {
+	fun update(item: Player): Boolean = Util.query(description = "Update Player") {
 		try {
-			update({ id eq ID }) {
-				it[teamCol] = EntityID(id = teamID, table = TeamTable)
-				it[nameCol] = name
+			update({ gameCol eq item.gameId and (aliasCol eq item.alias) }) {
+				it[teamCol] = EntityID(item.teamId.toString(), TeamTable)
+				it[nameCol] = item.name
 			}
+			true
 		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun delete(item: Player): Boolean = Util.query(description = "Delete Player") {
+		try {
+			deleteWhere { gameCol eq item.gameId and (aliasCol eq item.alias) }
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
 		}
 	}
 
 	private fun ResultRow.parse(): Player = Player(
-		ID = this[id].value,
-		gameID = this[gameCol].value,
-		teamID = this[teamCol].value,
-		name = this[nameCol],
-		alias = this[aliasCol]
+		gameId = this[gameCol].value,
+		alias = this[aliasCol],
+		teamId = UUID.fromString(this[teamCol].value),
+		name = this[nameCol]
 	)
 }

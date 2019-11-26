@@ -1,10 +1,14 @@
 package macro.dashboard.neptunes.game
 
+import io.ktor.util.KtorExperimentalAPI
+import macro.dashboard.neptunes.IEntry
 import macro.dashboard.neptunes.ISendable
-import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
+import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
 import java.time.LocalDateTime
 
 /**
@@ -33,31 +37,21 @@ data class Game(
 	var turnTimeout: LocalDateTime,
 	val fleetPrice: Int? = null,
 	val gameType: String = "Triton"
-) : ISendable {
+) : ISendable, IEntry {
+	@KtorExperimentalAPI
 	override fun toJson(full: Boolean): Map<String, Any?> {
 		val output = mutableMapOf<String, Any?>(
-			"Name" to name
-		)
-		if (full) {
-			output["ID"] to ID
-		}
-		return output.toSortedMap()
-	}
-
-	fun toMap(): Map<String, Any?> {
-		return mapOf(
-			"ID" to ID,
-			"gameType" to gameType,
+			"id" to ID,
+			"fleetSpeed" to fleetSpeed,
 			"isPaused" to isPaused,
 			"productions" to productions,
-			"fleetPrice" to fleetSpeed,
 			"tickFragment" to tickFragment,
 			"tickRate" to tickRate,
 			"productionRate" to productionRate,
 			"victoryStars" to victoryStars,
 			"isGameOver" to isGameOver,
 			"isStarted" to isStarted,
-			"startTime" to startTime.format(Util.JAVA_FORMATTER),
+			"startTime" to startTime,
 			"totalStars" to totalStars,
 			"productionCounter" to productionCounter,
 			"isTradeScanned" to isTradeScanned,
@@ -66,14 +60,36 @@ data class Game(
 			"name" to name,
 			"isTurnBased" to isTurnBased,
 			"war" to war,
-			"cycleTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
-//			"cycles" to tick / CONFIG.game.cycle,
-			"playerCount" to PlayerTable.count(),
-			"teamCount" to TeamTable.count()
-		).toSortedMap()
+			"turnTimeout" to turnTimeout,
+			"fleetPrice" to fleetPrice,
+			"gameType" to gameType
+		)
+		if (full) {
+			output["players"] = getPlayers().map { it.toJson(full = false) }
+			output["teams"] = getTeams().map { it.toJson(full = false) }
+		}
+		return output.toSortedMap()
 	}
 
+	override fun insert(): Game {
+		GameTable.insert(item = this)
+		return this
+	}
+
+	override fun update(): Game {
+		GameTable.update(item = this)
+		return this
+	}
+
+	override fun delete() {
+		GameTable.delete(item = this)
+	}
+
+	fun getPlayers(): List<Player> = PlayerTable.search(gameId = ID)
+
+	fun getTeams(): List<Team> = TeamTable.search(gameId = ID)
+
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Game::class.java)
+		private val LOGGER = LogManager.getLogger(Game::class.java)
 	}
 }

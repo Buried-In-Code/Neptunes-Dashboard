@@ -1,48 +1,57 @@
 package macro.dashboard.neptunes.team
 
+import io.ktor.features.NotFoundException
+import io.ktor.util.KtorExperimentalAPI
+import macro.dashboard.neptunes.IEntry
+import macro.dashboard.neptunes.ISendable
+import macro.dashboard.neptunes.game.Game
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
+import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
 data class Team(
-	val ID: Int,
-	val gameID: Long,
+	val uuid: UUID = UUID.randomUUID(),
+	val gameId: Long,
 	var name: String
-) {
-	val players by lazy {
-		PlayerTable.search(team = name)
+) : ISendable, IEntry {
+	@KtorExperimentalAPI
+	override fun toJson(full: Boolean): Map<String, Any?> {
+		val output = mutableMapOf<String, Any?>(
+			"uuid" to uuid,
+			"name" to name
+		)
+		if (full) {
+			output["game"] = getGame().toJson(full = false)
+			output["players"] = getPlayers().map { it.toJson(full = false) }
+		}
+		return output.toSortedMap()
 	}
 
-	fun toMap(showPlayers: Boolean = true, showLatestCycle: Boolean = false): Map<String, Any?> {
-		return mapOf(
-			"ID" to ID,
-			"name" to name,
-			"players" to (if (showPlayers) players.map { it.toMap(showLatestCycle = showLatestCycle) } else players.map { it.ID }),
-			"cycles" to mapOf(
-				"cycle" to players.maxBy { it.latestCycle?.cycle ?: 0 },
-				"stars" to players.sumBy { it.latestCycle?.stars ?: 0 },
-				"ships" to players.sumBy { it.latestCycle?.ships ?: 0 },
-				"economy" to players.sumBy { it.latestCycle?.economy ?: 0 },
-				"economyPerCycle" to players.sumBy { it.latestCycle?.economyPerCycle ?: 0 },
-				"industry" to players.sumBy { it.latestCycle?.industry ?: 0 },
-				"industryPerCycle" to players.sumBy { it.latestCycle?.industryPerCycle ?: 0 },
-				"science" to players.sumBy { it.latestCycle?.science ?: 0 },
-				"sciencePerCycle" to players.sumBy { it.latestCycle?.sciencePerCycle ?: 0 },
-				"tech" to mapOf(
-					"scanning" to players.sumBy { it.latestCycle?.scanning ?: 0 },
-					"range" to players.sumBy { it.latestCycle?.range ?: 0 },
-					"experimentation" to players.sumBy { it.latestCycle?.experimentation ?: 0 },
-					"weapons" to players.sumBy { it.latestCycle?.weapons ?: 0 },
-					"banking" to players.sumBy { it.latestCycle?.banking ?: 0 },
-					"manufacturing" to players.sumBy { it.latestCycle?.manufacturing ?: 0 }
-				).toSortedMap()
-			).toSortedMap()
-		).toSortedMap()
+	override fun insert(): Team {
+		TeamTable.insert(item = this)
+		return this
 	}
+
+	override fun update(): Team {
+		TeamTable.update(item = this)
+		return this
+	}
+
+	override fun delete() {
+		TeamTable.delete(item = this)
+	}
+
+	@KtorExperimentalAPI
+	fun getGame(): Game = GameTable.select(gameId = gameId) ?: throw NotFoundException()
+
+	fun getPlayers(): List<Player> = PlayerTable.search(gameId = gameId, teamId = uuid)
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Team::class.java)
+		private val LOGGER = LogManager.getLogger(Team::class.java)
 	}
 }

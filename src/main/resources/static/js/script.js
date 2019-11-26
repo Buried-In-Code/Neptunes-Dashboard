@@ -52,7 +52,7 @@ function update() {
 	});
 }
 
-function getAllTeamStars(totalStars) {
+function getAllTeamStars() {
 	$.ajax({
 		url: "/api/teams",
 		type: 'GET',
@@ -63,7 +63,7 @@ function getAllTeamStars(totalStars) {
 		dataType: 'json',
 		success: function (data) {
 			if (data.length <= 1) {
-				getAllPlayerStars(totalStars, data[0].players)
+				getAllPlayerStars()
 			} else {
 				let teamLabels = [];
 				let teamData = [];
@@ -71,7 +71,7 @@ function getAllTeamStars(totalStars) {
 					teamLabels.push(element.name);
 					let teamStars = 0;
 					element.players.forEach(function (element) {
-						teamStars += element.cycles[0].stars;
+						teamStars += element.ticks.stars;
 					});
 					teamData.push(teamStars);
 				});
@@ -84,15 +84,28 @@ function getAllTeamStars(totalStars) {
 	});
 }
 
-function getAllPlayerStars(totalStars, data) {
-	let playerLabels = [];
-	let playerData = [];
-	for (let count = 0; count < data.length; count++) {
-		let player = data[count];
-		playerLabels.push(player.alias + (!player.name ? '' : ` (${player.name})`));
-		playerData.push(player.cycles[0].stars);
-	}
-	createPieGraph(playerLabels, playerData);
+function getAllPlayerStars() {
+	$.ajax({
+		url: "/api/players",
+		type: 'GET',
+		headers: {
+			accept: 'application/json',
+			contentType: 'application/json'
+		},
+		dataType: 'json',
+		success: function (data) {
+			let playerLabels = [];
+			let playerData = [];
+			data.forEach(function (element) {
+				playerLabels.push(element.alias + (!element.name ? '' : ` (${element.name})`));
+				playerData.push(element.ticks[element.ticks.length - 1].stars);
+			});
+			createPieGraph(playerLabels, playerData);
+		},
+		error: function (xhr, status, error) {
+			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+		}
+	});
 }
 
 function createPlayerStatsLine(alias) {
@@ -105,14 +118,14 @@ function createPlayerStatsLine(alias) {
 		},
 		dataType: 'json',
 		success: function (data) {
-			let cycleLabels = ["Cycle 0"];
-			let starData = [0];
-			let economyData = [0];
-			let industryData = [0];
-			let scienceData = [0];
-			let cycles = data.cycles.reverse();
-			cycles.forEach(function (element) {
-				cycleLabels.push("Cycle " + element.cycle);
+			let tickLabels = [];
+			let starData = [];
+			let economyData = [];
+			let industryData = [];
+			let scienceData = [];
+			let ticks = data.ticks;
+			ticks.forEach(function (element) {
+				tickLabels.push("Tick " + element.tick);
 				starData.push(element.stars);
 				economyData.push(element.economy);
 				industryData.push(element.industry);
@@ -147,7 +160,7 @@ function createPlayerStatsLine(alias) {
 				data: scienceData,
 				steppedLine: false
 			}];
-			createGraph("statsLine", cycleLabels, dataset);
+			createGraph("statsLine", tickLabels, dataset);
 		},
 		error: function (xhr, status, error) {
 			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -165,7 +178,7 @@ function createTeamStatLines(name) {
 		},
 		dataType: 'json',
 		success: function (data) {
-			let cycleLabels = ["Cycle 0"];
+			let tickLabels = ["Tick 0"];
 			let starSet = [];
 			let shipSet = [];
 			let economySet = [];
@@ -178,9 +191,9 @@ function createTeamStatLines(name) {
 				let economyData = [0];
 				let industryData = [0];
 				let scienceData = [0];
-				player.cycles.reverse().forEach(function (element) {
+				player.ticks.reverse().forEach(function (element) {
 					if (count === 0) {
-						cycleLabels.push("Cycle " + element.cycle);
+						tickLabels.push("Tick " + element.tick);
 					}
 					starData.push(element.stars);
 					shipData.push(element.ships);
@@ -230,11 +243,11 @@ function createTeamStatLines(name) {
 					steppedLine: false
 				});
 			}
-			createGraph("starLine", cycleLabels, starSet);
-			createGraph("shipLine", cycleLabels, shipSet);
-			createGraph("economyLine", cycleLabels, economySet);
-			createGraph("industryLine", cycleLabels, industrySet);
-			createGraph("scienceLine", cycleLabels, scienceSet);
+			createGraph("starLine", tickLabels, starSet);
+			createGraph("shipLine", tickLabels, shipSet);
+			createGraph("economyLine", tickLabels, economySet);
+			createGraph("industryLine", tickLabels, industrySet);
+			createGraph("scienceLine", tickLabels, scienceSet);
 		},
 		error: function (xhr, status, error) {
 			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -392,15 +405,15 @@ function loadInfoGrid() {
 			document.getElementById('info-grid').appendChild(typeColumn);
 			let startedColumn = infoToHTML('Started', data.isStarted ? data.startTime : 'False');
 			document.getElementById('info-grid').appendChild(startedColumn);
-			let playerColumn = infoToHTML('# of Players', data.playerCount);
+			let playerColumn = infoToHTML('# of Players', data.players.length);
 			document.getElementById('info-grid').appendChild(playerColumn);
-			let teamColumn = infoToHTML('# of Teams', data.teamCount);
+			let teamColumn = infoToHTML('# of Teams', data.teams.length);
 			document.getElementById('info-grid').appendChild(teamColumn);
 			let starsColumn = infoToHTML('Stars to Win', `${data.victoryStars}/${data.totalStars}`);
 			document.getElementById('info-grid').appendChild(starsColumn);
-			let cyclesColumn = infoToHTML('Cycles', data.cycles);
-			document.getElementById('info-grid').appendChild(cyclesColumn);
-			let stateColumn = infoToHTML('Next Cycle', data.isPaused ? "Paused" : data.isGameOver ? "Game Ended" : data.cycleTimeout);
+			let ticksColumn = infoToHTML('Ticks', data.tick);
+			document.getElementById('info-grid').appendChild(ticksColumn);
+			let stateColumn = infoToHTML('Next Tick', data.isPaused ? "Paused" : data.isGameOver ? "Game Ended" : data.tickTimeout);
 			document.getElementById('info-grid').appendChild(stateColumn);
 
 			addGraph('Stars', 'winPie', 'info-grid', 600, 600);
@@ -454,35 +467,37 @@ function loadPlayers() {
 }
 
 function playerStatsToRow(item) {
+	let latest = item.ticks.length - 1;
 	let row = document.createElement('tr');
 	row.onclick = () => window.location = `/players/${item.alias}`;
 	row.innerHTML = `<td>${item.alias}</td>` +
 		`<td>${!item.name ? '' : item.name}</td>` +
 		`<td>${item.team}</td>` +
-		`<td>${item.cycles.stars}</td>` +
-		`<td>${item.cycles.ships}</td>` +
-		`<td>${item.cycles.economy}</td>` +
-		`<td>${item.cycles.economyPerCycle}</td>` +
-		`<td>${item.cycles.industry}</td>` +
-		`<td>${item.cycles.industryPerCycle}</td>` +
-		`<td>${item.cycles.science}</td>` +
-		`<td>${item.cycles.sciencePerCycle}</td>`;
+		`<td>${item.ticks[latest].stars}</td>` +
+		`<td>${item.ticks[latest].ships}</td>` +
+		`<td>${item.ticks[latest].economy}</td>` +
+		`<td>${item.ticks[latest].economyPerTick}</td>` +
+		`<td>${item.ticks[latest].industry}</td>` +
+		`<td>${item.ticks[latest].industryPerTick}</td>` +
+		`<td>${item.ticks[latest].science}</td>` +
+		`<td>${item.ticks[latest].sciencePerTick}</td>`;
 	return row
 }
 
 function playerTechToRow(item) {
+	let latest = item.ticks.length - 1;
 	let row = document.createElement('tr');
 	row.onclick = () => window.location = `/players/${item.alias}`;
 	row.innerHTML = `<td>${item.alias}</td>` +
 		`<td>${!item.name ? '' : item.name}</td>` +
 		`<td>${item.team}</td>` +
-		`<td>${item.cycles.tech.scanning}</td>` +
-		`<td>${item.cycles.tech.range}</td>` +
-		`<td>${item.cycles.tech.terraforming}</td>` +
-		`<td>${item.cycles.tech.experimentation}</td>` +
-		`<td>${item.cycles.tech.weapons}</td>` +
-		`<td>${item.cycles.tech.banking}</td>` +
-		`<td>${item.cycles.tech.manufacturing}</td>`;
+		`<td>${item.ticks[latest].research.scanning}</td>` +
+		`<td>${item.ticks[latest].research.hyperspaceRange}</td>` +
+		`<td>${item.ticks[latest].research.terraforming}</td>` +
+		`<td>${item.ticks[latest].research.experimentation}</td>` +
+		`<td>${item.ticks[latest].research.weapons}</td>` +
+		`<td>${item.ticks[latest].research.banking}</td>` +
+		`<td>${item.ticks[latest].research.manufacturing}</td>`;
 	return row
 }
 
@@ -512,14 +527,14 @@ function teamStatsToRow(item) {
 	let row = document.createElement('tr');
 	row.onclick = () => window.location = `/teams/${item.name}`;
 	row.innerHTML = `<td>${item.name}</td>` +
-		`<td>${item.cycles.stars}</td>` +
-		`<td>${item.cycles.ships}</td>` +
-		`<td>${item.cycles.economy}</td>` +
-		`<td>${item.cycles.economyPerCycle}</td>` +
-		`<td>${item.cycles.industry}</td>` +
-		`<td>${item.cycles.industryPerCycle}</td>` +
-		`<td>${item.cycles.science}</td>` +
-		`<td>${item.cycles.sciencePerCycle}</td>`;
+		`<td>${item.ticks.stars}</td>` +
+		`<td>${item.ticks.ships}</td>` +
+		`<td>${item.ticks.economy}</td>` +
+		`<td>${item.ticks.economyPerTick}</td>` +
+		`<td>${item.ticks.industry}</td>` +
+		`<td>${item.ticks.industryPerTick}</td>` +
+		`<td>${item.ticks.science}</td>` +
+		`<td>${item.ticks.sciencePerTick}</td>`;
 	return row
 }
 
@@ -542,36 +557,37 @@ function loadPlayer() {
 			let teamColumn = playerInfoToBox('Team', !data.team ? '' : data.team, 3);
 			document.getElementById('player-info-grid').appendChild(teamColumn);
 
-			let starsColumn = playerInfoToBox('Stars', data.cycles[0].stars, 4);
+			let latest = data.ticks.length - 1;
+			let starsColumn = playerInfoToBox('Stars', data.ticks[latest].stars, 4);
 			document.getElementById('player-stats-grid').appendChild(starsColumn);
-			let shipsColumn = playerInfoToBox('Ships', data.cycles[0].ships, 4);
+			let shipsColumn = playerInfoToBox('Ships', data.ticks[latest].ships, 4);
 			document.getElementById('player-stats-grid').appendChild(shipsColumn);
-			let economyColumn = playerInfoToBox('Economy', data.cycles[0].economy, 4);
+			let economyColumn = playerInfoToBox('Economy', data.ticks[latest].economy, 4);
 			document.getElementById('player-stats-grid').appendChild(economyColumn);
-			let economyCycleColumn = playerInfoToBox('$ Per Cycle', data.cycles[0].economyPerCycle, 4);
-			document.getElementById('player-stats-grid').appendChild(economyCycleColumn);
-			let industryColumn = playerInfoToBox('Industry', data.cycles[0].industry, 4);
+			let economyTickColumn = playerInfoToBox('$ Per Tick', data.ticks[latest].economyPerTick, 4);
+			document.getElementById('player-stats-grid').appendChild(economyTickColumn);
+			let industryColumn = playerInfoToBox('Industry', data.ticks[latest].industry, 4);
 			document.getElementById('player-stats-grid').appendChild(industryColumn);
-			let industryCycleColumn = playerInfoToBox('Ships Per Cycle', data.cycles[0].industryPerCycle, 4);
-			document.getElementById('player-stats-grid').appendChild(industryCycleColumn);
-			let scienceColumn = playerInfoToBox('Science', data.cycles[0].science, 4);
+			let industryTickColumn = playerInfoToBox('Ships Per Tick', data.ticks[latest].industryPerTick, 4);
+			document.getElementById('player-stats-grid').appendChild(industryTickColumn);
+			let scienceColumn = playerInfoToBox('Science', data.ticks[latest].science, 4);
 			document.getElementById('player-stats-grid').appendChild(scienceColumn);
-			let scienceCycleColumn = playerInfoToBox('Science Per Cycle', data.cycles[0].sciencePerCycle, 4);
-			document.getElementById('player-stats-grid').appendChild(scienceCycleColumn);
+			let scienceTickColumn = playerInfoToBox('Science Per Tick', data.ticks[latest].sciencePerTick, 4);
+			document.getElementById('player-stats-grid').appendChild(scienceTickColumn);
 
-			let scanningColumn = playerInfoToBox('Scanning', data.cycles[0].tech.scanning, 4);
+			let scanningColumn = playerInfoToBox('Scanning', data.ticks[latest].research.scanning, 4);
 			document.getElementById('player-tech-grid').appendChild(scanningColumn);
-			let rangeColumn = playerInfoToBox('Hyperspace Range', data.cycles[0].tech.range, 4);
+			let rangeColumn = playerInfoToBox('Hyperspace Range', data.ticks[latest].research.hyperspaceRange, 4);
 			document.getElementById('player-tech-grid').appendChild(rangeColumn);
-			let terraformingColumn = playerInfoToBox('Terraforming', data.cycles[0].tech.terraforming, 4);
+			let terraformingColumn = playerInfoToBox('Terraforming', data.ticks[latest].research.terraforming, 4);
 			document.getElementById('player-tech-grid').appendChild(terraformingColumn);
-			let experimentationColumn = playerInfoToBox('Experimentation', data.cycles[0].tech.experimentation, 4);
+			let experimentationColumn = playerInfoToBox('Experimentation', data.ticks[latest].research.experimentation, 4);
 			document.getElementById('player-tech-grid').appendChild(experimentationColumn);
-			let weaponsColumn = playerInfoToBox('Weapons', data.cycles[0].tech.weapons, 4);
+			let weaponsColumn = playerInfoToBox('Weapons', data.ticks[latest].research.weapons, 4);
 			document.getElementById('player-tech-grid').appendChild(weaponsColumn);
-			let bankingColumn = playerInfoToBox('Banking', data.cycles[0].tech.banking, 4);
+			let bankingColumn = playerInfoToBox('Banking', data.ticks[latest].research.banking, 4);
 			document.getElementById('player-tech-grid').appendChild(bankingColumn);
-			let manufacturingColumn = playerInfoToBox('Manufacturing', data.cycles[0].tech.manufacturing, 4);
+			let manufacturingColumn = playerInfoToBox('Manufacturing', data.ticks[latest].research.manufacturing, 4);
 			document.getElementById('player-tech-grid').appendChild(manufacturingColumn);
 
 			addGraph('Stats', 'statsLine', 'player-stats-grid');
@@ -631,15 +647,15 @@ function loadTeam() {
 		success: function (data) {
 			document.getElementById('team-label').textContent = data.name;
 
-			let starsColumn = teamInfoToCard('Total Stars', data.cycles.stars, data.cycles.stars / data.players.length, 3);
+			let starsColumn = teamInfoToCard('Total Stars', data.ticks.stars, data.ticks.stars / data.players.length, 3);
 			document.getElementById('team-stats-grid').appendChild(starsColumn);
-			let shipsColumn = teamInfoToCard('Total Ships', data.cycles.ships, data.cycles.ships / data.players.length, 3);
+			let shipsColumn = teamInfoToCard('Total Ships', data.ticks.ships, data.ticks.ships / data.players.length, 3);
 			document.getElementById('team-stats-grid').appendChild(shipsColumn);
-			let economyColumn = teamInfoToCard('Total Economy', data.cycles.economy, data.cycles.economy / data.players.length, 3);
+			let economyColumn = teamInfoToCard('Total Economy', data.ticks.economy, data.ticks.economy / data.players.length, 3);
 			document.getElementById('team-stats-grid').appendChild(economyColumn);
-			let industryColumn = teamInfoToCard('Total Industry', data.cycles.industry, data.cycles.industry / data.players.length, 3);
+			let industryColumn = teamInfoToCard('Total Industry', data.ticks.industry, data.ticks.industry / data.players.length, 3);
 			document.getElementById('team-stats-grid').appendChild(industryColumn);
-			let scienceColumn = teamInfoToCard('Total Science', data.cycles.science, data.cycles.science / data.players.length, 3);
+			let scienceColumn = teamInfoToCard('Total Science', data.ticks.science, data.ticks.science / data.players.length, 3);
 			document.getElementById('team-stats-grid').appendChild(scienceColumn);
 
 			addGraph('Stars', 'starLine', 'team-stats-grid');

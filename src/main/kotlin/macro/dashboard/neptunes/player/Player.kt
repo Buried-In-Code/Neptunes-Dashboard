@@ -1,41 +1,64 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.cycle.CycleTable
+import io.ktor.features.NotFoundException
+import io.ktor.util.KtorExperimentalAPI
+import macro.dashboard.neptunes.IEntry
+import macro.dashboard.neptunes.ISendable
+import macro.dashboard.neptunes.tick.Tick
+import macro.dashboard.neptunes.tick.TickTable
+import macro.dashboard.neptunes.game.Game
+import macro.dashboard.neptunes.game.GameTable
+import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.LogManager
+import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
 data class Player(
-	val ID: Int,
-	val gameID: Long,
-	var teamID: Int,
+	val gameId: Long,
 	val alias: String,
+	var teamId: UUID,
 	var name: String? = null
-) {
-	val team by lazy {
-		TeamTable.select(ID = teamID)
-	}
-	val cycles by lazy {
-		CycleTable.searchByPlayer(playerID = ID)
-	}
-	val latestCycle by lazy {
-		CycleTable.selectLatest(playerID = ID)
+) : ISendable, IEntry {
+	@KtorExperimentalAPI
+	override fun toJson(full: Boolean): Map<String, Any?> {
+		val output = mutableMapOf<String, Any?>(
+			"alias" to alias,
+			"name" to name
+		)
+		if (full) {
+			output["game"] = getGame().toJson(full = false)
+			output["team"] = getTeam().toJson(full = false)
+			output["ticks"] = getTicks().map { it.toJson(full = false) }
+		}
+		return output.toSortedMap()
 	}
 
-	fun toMap(showLatestCycle: Boolean = false): Map<String, Any?> {
-		return mapOf(
-			"ID" to ID,
-			"name" to name,
-			"alias" to alias,
-			"team" to (team?.name ?: ""),
-			"cycles" to (if (showLatestCycle) latestCycle?.toMap()
-				?: emptyMap<String, Any?>() else cycles.map { it.toMap() })
-		).toSortedMap()
+	override fun insert(): Player {
+		PlayerTable.insert(item = this)
+		return this
 	}
+
+	override fun update(): Player {
+		PlayerTable.update(item = this)
+		return this
+	}
+
+	override fun delete() {
+		PlayerTable.delete(item = this)
+	}
+
+	@KtorExperimentalAPI
+	fun getGame(): Game = GameTable.select(gameId = gameId) ?: throw NotFoundException()
+
+	@KtorExperimentalAPI
+	fun getTeam(): Team = TeamTable.select(uuid = teamId) ?: throw NotFoundException()
+
+	fun getTicks(): List<Tick> = TickTable.search(gameId = gameId, playerId = alias)
 
 	companion object {
-		private val LOGGER = LoggerFactory.getLogger(Player::class.java)
+		private val LOGGER = LogManager.getLogger(Player::class.java)
 	}
 }

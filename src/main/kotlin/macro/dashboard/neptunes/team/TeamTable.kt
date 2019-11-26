@@ -1,27 +1,28 @@
 package macro.dashboard.neptunes.team
 
+import macro.dashboard.neptunes.StringIdTable
 import macro.dashboard.neptunes.Util
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
 import macro.dashboard.neptunes.game.GameTable
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.UUIDTable
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
-import org.slf4j.LoggerFactory
+import java.util.*
 
 /**
  * Created by Macro303 on 2019-Feb-11.
  */
-object TeamTable : IntIdTable(name = "Team") {
+object TeamTable : StringIdTable(name = "Team") {
 	val gameCol = reference(
-		name = "gameID",
+		name = "gameId",
 		foreign = GameTable,
 		onUpdate = ReferenceOption.CASCADE,
 		onDelete = ReferenceOption.CASCADE
 	)
 	val nameCol = text(name = "name")
 
-	private val LOGGER = LoggerFactory.getLogger(TeamTable::class.java)
+	private val LOGGER = LogManager.getLogger(TeamTable::class.java)
 
 	init {
 		Util.query(description = "Create Team table") {
@@ -30,30 +31,31 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 	}
 
-	fun count(): Int = Util.query(description = "Count # of Teams") {
-		selectAll().count()
-	}
-
-	fun select(ID: Int): Team? = Util.query(description = "Select Team by ID") {
+	fun select(uuid: UUID): Team? = Util.query(description = "Select Team by UUID: $uuid") {
 		select {
-			id eq ID
-		}.orderBy(nameCol to SortOrder.ASC).limit(n = 1).firstOrNull()?.parse()
+			id eq uuid.toString()
+		}.limit(1).firstOrNull()?.parse()
 	}
 
-	fun search(name: String = "%"): List<Team> = Util.query(description = "Search for Teams by Name => $name") {
-		TeamTable.select {
-			nameCol like name
-		}.orderBy(nameCol to SortOrder.ASC).map {
-			it.parse()
+	fun select(gameId: Long, name: String): Team? =
+		Util.query(description = "Select Team by GameId: $gameId, Name: $name") {
+			select {
+				gameCol eq gameId and (nameCol eq name)
+			}.limit(1).firstOrNull()?.parse()
 		}
+
+	fun search(gameId: Long): List<Team> = Util.query(description = "Search Teams in Game: $gameId") {
+		select {
+			gameCol eq gameId
+		}.map { it.parse() }
 	}
 
-	fun insert(gameID: Long?, name: String): Boolean = Util.query(description = "Insert Team") {
-		val temp = gameID ?: CONFIG.game.id
+	fun insert(item: Team): Boolean = Util.query(description = "Insert Team") {
 		try {
 			insert {
-				it[gameCol] = EntityID(temp, GameTable)
-				it[nameCol] = name
+				it[id] = EntityID(item.uuid.toString(), TeamTable)
+				it[gameCol] = EntityID(item.gameId, GameTable)
+				it[nameCol] = item.name
 			}
 			true
 		} catch (esqle: ExposedSQLException) {
@@ -61,11 +63,20 @@ object TeamTable : IntIdTable(name = "Team") {
 		}
 	}
 
-	fun update(ID: Int, name: String): Boolean = Util.query(description = "Update Team") {
+	fun update(item: Team): Boolean = Util.query(description = "Update Team") {
 		try {
-			update({ id eq ID }) {
-				it[nameCol] = name
+			update({ id eq item.uuid.toString() }) {
+				it[nameCol] = item.name
 			}
+			true
+		} catch (esqle: ExposedSQLException) {
+			false
+		}
+	}
+
+	fun delete(item: Team): Boolean = Util.query(description = "Delete Team") {
+		try {
+			deleteWhere { id eq item.uuid.toString() }
 			true
 		} catch (esqle: ExposedSQLException) {
 			false
@@ -73,8 +84,8 @@ object TeamTable : IntIdTable(name = "Team") {
 	}
 
 	private fun ResultRow.parse(): Team = Team(
-		ID = this[id].value,
-		gameID = this[gameCol].value,
+		uuid = UUID.fromString(this[id].value),
+		gameId = this[gameCol].value,
 		name = this[nameCol]
 	)
 }

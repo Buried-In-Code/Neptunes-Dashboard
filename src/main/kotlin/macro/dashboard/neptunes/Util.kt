@@ -65,12 +65,12 @@ object Util {
 	internal fun LocalDateTime.toJodaDateTime(): DateTime =
 		DateTime.parse(this.format(JAVA_FORMATTER), JODA_FORMATTER)
 
-	internal fun postRequest(url: String, gameID: Long, code: String): JsonNode? {
+	internal fun postRequest(url: String, gameId: Long, code: String): JsonNode? {
 		val boundary = "===${System.currentTimeMillis()}==="
 		val request = Unirest.post(url)
 			.header("content-type", "multipart/form-data; boundary=$boundary")
 			.header("User-Agent", "Neptune's Dashboard")
-			.body("--$boundary\r\nContent-Disposition: form-data; name=\"api_version\"\r\n\r\n0.1\r\n--$boundary\r\nContent-Disposition: form-data; name=\"game_number\"\r\n\r\n$gameID\r\n--$boundary\r\nContent-Disposition: form-data; name=\"code\"\r\n\r\n$code\r\n--$boundary--")
+			.body("--$boundary\r\nContent-Disposition: form-data; name=\"api_version\"\r\n\r\n0.1\r\n--$boundary\r\nContent-Disposition: form-data; name=\"game_number\"\r\n\r\n$gameId\r\n--$boundary\r\nContent-Disposition: form-data; name=\"code\"\r\n\r\n$code\r\n--$boundary--")
 		LOGGER.debug("GET : >>> - ${request.url}")
 		val response: HttpResponse<JsonNode>
 		try {
