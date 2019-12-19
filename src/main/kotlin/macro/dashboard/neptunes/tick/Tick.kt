@@ -1,38 +1,41 @@
 package macro.dashboard.neptunes.tick
 
-import io.ktor.features.NotFoundException
-import io.ktor.util.KtorExperimentalAPI
-import macro.dashboard.neptunes.IEntry
 import macro.dashboard.neptunes.ISendable
 import macro.dashboard.neptunes.game.Game
-import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.Player
-import macro.dashboard.neptunes.player.PlayerTable
-import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.dao.*
+import java.util.*
 
 /**
  * Created by Macro303 on 2019-Mar-04.
  */
-data class Tick(
-	val gameId: Long,
-	val playerId: String,
-	val tick: Int,
-	var economy: Int,
-	var industry: Int,
-	var science: Int,
-	var stars: Int,
-	var fleets: Int,
-	var ships: Int,
-	var isActive: Boolean,
-	var scanning: Int,
-	var propulsion: Int,
-	var terraforming: Int,
-	var research: Int,
-	var weapons: Int,
-	var banking: Int,
-	var manufacturing: Int
-) : ISendable, IEntry {
-	@KtorExperimentalAPI
+class Tick(id: EntityID<Long>) : LongEntity(id), ISendable {
+	companion object : LongEntityClass<Tick>(TickTable)
+
+	var game by Game referencedOn TickTable.gameCol
+	var player by Player referencedOn TickTable.playerCol
+	var tick by TickTable.tickCol
+	var economy by TickTable.economyCol
+	var industry by TickTable.industryCol
+	var science by TickTable.scienceCol
+	var stars by TickTable.starsCol
+	var fleets by TickTable.fleetsCol
+	var ships by TickTable.shipsCol
+	var isActive by TickTable.isActiveCol
+	var scanning by TickTable.scienceCol
+	var propulsion by TickTable.propulsionCol
+	var terraforming by TickTable.terraformingCol
+	var research by TickTable.researchCol
+	var weapons by TickTable.weaponsCol
+	var banking by TickTable.bankingCol
+	var manufacturing by TickTable.manufacturingCol
+
+	fun calcEconomy(): Double = economy * 10.0 + banking * 75.0
+
+	fun calcIndustry(): Double = industry * (manufacturing + 5.0) / 2.0
+
+	fun calcScience(): Double = science * 1.0
+
 	override fun toJson(full: Boolean): Map<String, Any?> {
 		val output = mutableMapOf<String, Any?>(
 			"tick" to tick,
@@ -57,39 +60,9 @@ data class Tick(
 			).toSortedMap()
 		)
 		if (full) {
-			output["game"] = getGame().toJson(full = false)
-			output["player"] = getPlayer().toJson(full = false)
+			output["game"] = game.toJson(full = false)
+			output["player"] = player.toJson(full = false)
 		}
 		return output.toSortedMap()
-	}
-
-	override fun insert(): Tick {
-		TickTable.insert(item = this)
-		return this
-	}
-
-	override fun update(): Tick {
-		TickTable.update(item = this)
-		return this
-	}
-
-	override fun delete() {
-		TickTable.delete(item = this)
-	}
-
-	@KtorExperimentalAPI
-	fun getGame(): Game = GameTable.select(gameId = gameId) ?: throw NotFoundException()
-
-	@KtorExperimentalAPI
-	fun getPlayer(): Player = PlayerTable.select(gameId = gameId, alias = playerId) ?: throw NotFoundException()
-
-	fun calcEconomy(): Double = economy * 10.0 + banking * 75.0
-
-	fun calcIndustry(): Double = industry * (manufacturing + 5.0) / 2.0
-
-	fun calcScience(): Double = science * 1.0
-
-	companion object {
-		private val LOGGER = LogManager.getLogger(Tick::class.java)
 	}
 }

@@ -13,15 +13,18 @@ _Currently only supports **Proteus**_
 ## Built Using
  - JDK: 11
  - [Gradle: 6.0.1](https://gradle.org/)
- - [kotlin-stdlib-jdk8: 1.3.60](https://kotlinlang.org/)
+ - [kotlin-stdlib-jdk8: 1.3.61](https://kotlinlang.org/)
  - [snakeyaml: 1.25](https://bitbucket.org/asomov/snakeyaml)
- - [unirest-java: 3.1.04](https://github.com/Kong/unirest-java)
- - [ktor-server-netty: 1.3.0-beta-1](https://ktor.io/)
- - [ktor-gson: 1.3.0-beta-1](https://ktor.io/)
- - [ktor-freemarker: 1.3.0-beta-1](https://ktor.io/)
- - [exposed: 0.17.7](https://github.com/JetBrains/Exposed)
- - [log4j-api: 2.12.1](https://logging.apache.org/log4j/2.x/)
- - [log4j-slf4j-impl: 2.12.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
+ - [unirest-java: 3.3.00](https://github.com/Kong/unirest-java)
+ - [ktor-server-netty: 1.3.0-rc](https://ktor.io/)
+ - [ktor-gson: 1.3.0-rc](https://ktor.io/)
+ - [ktor-freemarker: 1.3.0-rc](https://ktor.io/)
+ - [exposed-core: 0.18.1](https://github.com/JetBrains/Exposed)
+ - [exposed-dao: 0.18.1](https://github.com/JetBrains/Exposed)
+ - [exposed-jdbc: 0.18.1](https://github.com/JetBrains/Exposed)
+ - [exposed-java-time: 0.18.1](https://github.com/JetBrains/Exposed)
+ - [log4j-api: 2.13.0](https://logging.apache.org/log4j/2.x/)
+ - [log4j-slf4j-impl: 2.13.0 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.28.0 (Runtime)](https://github.com/xerial/sqlite-jdbc)
  
 ## Running

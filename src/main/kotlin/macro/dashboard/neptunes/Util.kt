@@ -12,11 +12,8 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
 import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import java.sql.Connection
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 /**
@@ -24,15 +21,12 @@ import java.time.temporal.ChronoUnit
  */
 object Util {
 	private val LOGGER = LogManager.getLogger(Util::class.java)
-	const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 	internal const val SQLITE_DATABASE = "Neptunes-Dashboard.sqlite"
 	private val database = Database.connect(url = "jdbc:sqlite:$SQLITE_DATABASE", driver = "org.sqlite.JDBC")
 	internal val GSON = GsonBuilder()
 		.serializeNulls()
 		.disableHtmlEscaping()
 		.create()
-	internal val JAVA_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT)
-	internal val JODA_FORMATTER = DateTimeFormat.forPattern(DATE_FORMAT)
 	internal val HEADERS = mapOf(
 		"Accept" to "application/json; charset=UTF-8",
 		"Content-Type" to "application/json; charset=UTF-8",
@@ -58,12 +52,6 @@ object Util {
 		LOGGER.debug("Took ${ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())}ms to $description")
 		return transaction
 	}
-
-	internal fun DateTime.toJavaDateTime(): LocalDateTime =
-		LocalDateTime.parse(this.toString(JODA_FORMATTER), JAVA_FORMATTER)
-
-	internal fun LocalDateTime.toJodaDateTime(): DateTime =
-		DateTime.parse(this.format(JAVA_FORMATTER), JODA_FORMATTER)
 
 	internal fun postRequest(url: String, gameId: Long, code: String): JsonNode? {
 		val boundary = "===${System.currentTimeMillis()}==="

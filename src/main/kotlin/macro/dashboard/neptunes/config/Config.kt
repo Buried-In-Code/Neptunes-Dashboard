@@ -13,10 +13,9 @@ import java.nio.file.Paths
 class Config {
 	var server: Connection = Connection("localhost", 5505)
 	var proxy: Connection = Connection()
-	var game: GameSettings = GameSettings()
 
 	fun saveConfig(): Config {
-		Files.newBufferedWriter(Paths.get("config.yaml")).use {
+		Files.newBufferedWriter(Paths.get(filename)).use {
 			it.write(YAML.dumpAsMap(this))
 		}
 		return this
@@ -24,19 +23,24 @@ class Config {
 
 	companion object {
 		private val LOGGER = LogManager.getLogger(Config::class.java)
+		private const val filename = "config.yaml"
 		private val YAML: Yaml by lazy {
 			val options = DumperOptions()
 			options.defaultFlowStyle = DumperOptions.FlowStyle.FLOW
 			options.isPrettyFlow = true
 			Yaml(options)
 		}
-		var CONFIG: Config = loadConfig()
+		@JvmStatic
+		val CONFIG: Config by lazy {
+			loadConfig()
+		}
 
+		@JvmStatic
 		fun loadConfig(): Config {
-			val temp = File("config.yaml")
+			val temp = File(filename)
 			if (!temp.exists())
 				Config().saveConfig()
-			return Files.newBufferedReader(Paths.get("config.yaml")).use {
+			return Files.newBufferedReader(Paths.get(filename)).use {
 				YAML.loadAs(it, Config::class.java)
 			}.saveConfig()
 		}
