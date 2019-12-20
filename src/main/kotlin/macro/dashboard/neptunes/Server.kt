@@ -28,11 +28,8 @@ import macro.dashboard.neptunes.team.TeamTable
 import macro.dashboard.neptunes.tick.Tick
 import macro.dashboard.neptunes.tick.TickTable
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.sql.Connection
 
 object Server {
 	private val LOGGER = LogManager.getLogger(Server::class.java)
@@ -40,8 +37,6 @@ object Server {
 	init {
 		LOGGER.info("Initializing Neptune's Dashboard")
 		checkLogLevels()
-		Database.connect(url = "jdbc:sqlite:${Util.SQLITE_DATABASE}", driver = "org.sqlite.JDBC")
-		TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
 	}
 
 	private fun checkLogLevels() {
@@ -114,7 +109,7 @@ fun Application.module() {
 		route(path = "/api") {
 			route(path = "/games") {
 				get {
-					newSuspendedTransaction {
+					newSuspendedTransaction(db = Util.database) {
 						call.respond(Game.all().map {
 							it.toJson(full = true)
 						})
@@ -128,7 +123,7 @@ fun Application.module() {
 					}
 
 					get {
-						newSuspendedTransaction {
+						newSuspendedTransaction(db = Util.database) {
 							call.respond(call.getGame().toJson(full = true))
 						}
 					}
@@ -137,7 +132,7 @@ fun Application.module() {
 							?: throw BadRequestException("Invalid New Game Request")
 						val newId = request.gameID ?: throw BadRequestException("Invalid Game ID")
 						val newCode = request.code ?: throw BadRequestException("Invalid Game Code")
-						newSuspendedTransaction {
+						newSuspendedTransaction(db = Util.database) {
 							var game = Game.findById(newId)
 							if (game != null) {
 								call.respond(
@@ -156,7 +151,7 @@ fun Application.module() {
 					}
 					route(path = "/players") {
 						get {
-							newSuspendedTransaction {
+							newSuspendedTransaction(db = Util.database) {
 								call.respond(call.getGame().players.map { it.toJson(full = true) })
 							}
 						}
@@ -172,13 +167,13 @@ fun Application.module() {
 							}
 
 							get {
-								newSuspendedTransaction {
+								newSuspendedTransaction(db = Util.database) {
 									call.respond(call.getPlayer().toJson(full = true))
 								}
 							}
 							route(path = "/ticks") {
 								get {
-									newSuspendedTransaction {
+									newSuspendedTransaction(db = Util.database) {
 										call.respond(call.getPlayer().ticks.map { it.toJson(full = true) })
 									}
 								}
@@ -197,7 +192,7 @@ fun Application.module() {
 									}
 
 									get {
-										newSuspendedTransaction {
+										newSuspendedTransaction(db = Util.database) {
 											call.respond(call.getTick().toJson(full = true))
 										}
 									}
@@ -207,7 +202,7 @@ fun Application.module() {
 					}
 					route(path = "/teams") {
 						get {
-							newSuspendedTransaction {
+							newSuspendedTransaction(db = Util.database) {
 								call.respond(call.getGame().teams.map { it.toJson(full = true) })
 							}
 						}
@@ -223,7 +218,7 @@ fun Application.module() {
 							}
 
 							get {
-								newSuspendedTransaction {
+								newSuspendedTransaction(db = Util.database) {
 									call.respond(call.getTeam().toJson(full = true))
 								}
 							}

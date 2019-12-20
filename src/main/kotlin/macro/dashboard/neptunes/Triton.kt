@@ -19,20 +19,18 @@ import java.time.ZoneId
  * Created by Macro303 on 2019-Nov-25
  */
 object Triton {
-	private val LOGGER = LogManager.getLogger(this::class.java)
+	private val LOGGER = LogManager.getLogger(Triton::class.java)
 	private val URL = "https://np.ironhelmet.com/api"
 
 	@Suppress("UNCHECKED_CAST")
 	fun getGame(gameId: Long, code: String) {
 		val request = Util.postRequest(url = URL, gameId = gameId, code = code) ?: return
 		val response = request.`object`.getJSONObject("scanning_data")
-		transaction {
-			val game = parseGame(gameId, code, response)
-			parsePlayers(game, response.getJSONObject("players"))
-		}
+		val game = parseGame(gameId, code, response)
+		parsePlayers(game, response.getJSONObject("players"))
 	}
 
-	private fun parseGame(gameId: Long, gameCode: String, json: JSONObject): Game {
+	private fun parseGame(gameId: Long, gameCode: String, json: JSONObject): Game = transaction(db = Util.database) {
 		val game = Game.findById(gameId) ?: Game.new(gameId) {
 			code = gameCode
 			fleetSpeed = json.getDouble("fleet_speed")
@@ -63,51 +61,53 @@ object Triton {
 			ZoneId.of("Pacific/Auckland")
 		)
 
-		return game
+		return@transaction game
 	}
 
 	private fun parsePlayers(game: Game, json: JSONObject) {
 		json.keySet().forEach {
-			val playerObj = json.getJSONObject(it)
-			val alias = playerObj.getString("alias")
-			if (alias.isNullOrEmpty())
-				return@forEach
-			val team = Team.find {
-				TeamTable.gameCol eq game.id and (TeamTable.nameCol eq "Free For All")
-			}.limit(1).firstOrNull() ?: Team.new {
-				this.game = game
-				name = "Free For All"
-			}
-			val player = Player.find {
-				PlayerTable.gameCol eq game.id and (PlayerTable.aliasCol eq alias)
-			}.limit(1).firstOrNull() ?: Player.new {
-				this.game = game
-				this.alias = alias
-				this.team = team
-			}
+			transaction(db = Util.database) {
+				val playerObj = json.getJSONObject(it)
+				val alias = playerObj.getString("alias")
+				if (alias.isNullOrEmpty())
+					return@transaction
+				val team = Team.find {
+					TeamTable.gameCol eq game.id and (TeamTable.nameCol eq "Free For All")
+				}.limit(1).firstOrNull() ?: Team.new {
+					this.game = game
+					name = "Free For All"
+				}
+				val player = Player.find {
+					PlayerTable.gameCol eq game.id and (PlayerTable.aliasCol eq alias)
+				}.limit(1).firstOrNull() ?: Player.new {
+					this.game = game
+					this.alias = alias
+					this.team = team
+				}
 
-			val cycle = Tick.find {
-				TickTable.gameCol eq game.id and (TickTable.playerCol eq player.id) and (TickTable.tickCol eq game.tick)
-			}.limit(1).firstOrNull() ?: Tick.new {
-				this.game = game
-				this.player = player
-				tick = game.tick
+				val cycle = Tick.find {
+					TickTable.gameCol eq game.id and (TickTable.playerCol eq player.id) and (TickTable.tickCol eq game.tick)
+				}.limit(1).firstOrNull() ?: Tick.new {
+					this.game = game
+					this.player = player
+					tick = game.tick
+				}
+				cycle.industry = playerObj.getInt("total_industry")
+				cycle.science = playerObj.getInt("total_science")
+				cycle.stars = playerObj.getInt("total_stars")
+				cycle.fleets = playerObj.getInt("total_fleets")
+				cycle.ships = playerObj.getInt("total_strength")
+				cycle.isActive = playerObj.getInt("conceded") == 0
+				cycle.economy = playerObj.getInt("total_economy")
+				val techObj = playerObj.getJSONObject("tech")
+				cycle.scanning = techObj.getJSONObject("scanning").getInt("level")
+				cycle.propulsion = techObj.getJSONObject("propulsion").getInt("level")
+				cycle.terraforming = techObj.getJSONObject("terraforming").getInt("level")
+				cycle.research = techObj.getJSONObject("research").getInt("level")
+				cycle.weapons = techObj.getJSONObject("weapons").getInt("level")
+				cycle.banking = techObj.getJSONObject("banking").getInt("level")
+				cycle.manufacturing = techObj.getJSONObject("manufacturing").getInt("level")
 			}
-			cycle.industry = playerObj.getInt("total_industry")
-			cycle.science = playerObj.getInt("total_science")
-			cycle.stars = playerObj.getInt("total_stars")
-			cycle.fleets = playerObj.getInt("total_fleets")
-			cycle.ships = playerObj.getInt("total_strength")
-			cycle.isActive = playerObj.getInt("conceded") == 0
-			cycle.economy = playerObj.getInt("total_economy")
-			val techObj = playerObj.getJSONObject("tech")
-			cycle.scanning = techObj.getJSONObject("scanning").getInt("level")
-			cycle.propulsion = techObj.getJSONObject("propulsion").getInt("level")
-			cycle.terraforming = techObj.getJSONObject("terraforming").getInt("level")
-			cycle.research = techObj.getJSONObject("research").getInt("level")
-			cycle.weapons = techObj.getJSONObject("weapons").getInt("level")
-			cycle.banking = techObj.getJSONObject("banking").getInt("level")
-			cycle.manufacturing = techObj.getJSONObject("manufacturing").getInt("level")
 		}
 	}
 }

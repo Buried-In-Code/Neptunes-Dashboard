@@ -1,10 +1,10 @@
 package macro.dashboard.neptunes.tick
 
+import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
 import macro.dashboard.neptunes.player.PlayerTable
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.dao.LongIdTable
-import org.jetbrains.exposed.dao.UUIDTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
@@ -47,8 +47,7 @@ internal object TickTable : LongIdTable(name = "Tick") {
 
 	init {
 		if (!exists())
-			transaction {
-				uniqueIndex(gameCol, playerCol, tickCol)
+			transaction(db = Util.database) {
 				SchemaUtils.create(this@TickTable)
 			}
 	}

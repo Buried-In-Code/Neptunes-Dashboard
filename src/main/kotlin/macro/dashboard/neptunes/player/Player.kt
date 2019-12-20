@@ -5,8 +5,9 @@ import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.tick.Tick
 import macro.dashboard.neptunes.tick.TickTable
-import org.jetbrains.exposed.dao.*
-import java.util.*
+import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
 
 /**
  * Created by Macro303 on 2018-Nov-08.

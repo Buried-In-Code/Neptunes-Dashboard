@@ -3,8 +3,9 @@ package macro.dashboard.neptunes.tick
 import macro.dashboard.neptunes.ISendable
 import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.player.Player
-import org.jetbrains.exposed.dao.*
-import java.util.*
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 /**
  * Created by Macro303 on 2019-Mar-04.
@@ -22,7 +23,7 @@ class Tick(id: EntityID<Long>) : LongEntity(id), ISendable {
 	var fleets by TickTable.fleetsCol
 	var ships by TickTable.shipsCol
 	var isActive by TickTable.isActiveCol
-	var scanning by TickTable.scienceCol
+	var scanning by TickTable.scanningCol
 	var propulsion by TickTable.propulsionCol
 	var terraforming by TickTable.terraformingCol
 	var research by TickTable.researchCol
@@ -30,11 +31,11 @@ class Tick(id: EntityID<Long>) : LongEntity(id), ISendable {
 	var banking by TickTable.bankingCol
 	var manufacturing by TickTable.manufacturingCol
 
-	fun calcEconomy(): Double = economy * 10.0 + banking * 75.0
+	private fun calcEconomy(): Double = economy * 10.0 + banking * 75.0
 
-	fun calcIndustry(): Double = industry * (manufacturing + 5.0) / 2.0
+	private fun calcIndustry(): Double = industry * (manufacturing + 5.0) / 2.0
 
-	fun calcScience(): Double = science * 1.0
+	private fun calcScience(): Double = science * 1.0
 
 	override fun toJson(full: Boolean): Map<String, Any?> {
 		val output = mutableMapOf<String, Any?>(

@@ -1,9 +1,10 @@
 package macro.dashboard.neptunes.game
 
+import macro.dashboard.neptunes.Util
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.dao.LongIdTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.datetime
+import org.jetbrains.exposed.sql.`java-time`.datetime
 import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -40,7 +41,7 @@ internal object GameTable : LongIdTable(name = "Game") {
 
 	init {
 		if (!exists())
-			transaction {
+			transaction(db = Util.database) {
 				SchemaUtils.create(this@GameTable)
 			}
 	}

@@ -4,8 +4,9 @@ import macro.dashboard.neptunes.ISendable
 import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
-import org.jetbrains.exposed.dao.*
-import java.util.*
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 /**
  * Created by Macro303 on 2018-Nov-08.

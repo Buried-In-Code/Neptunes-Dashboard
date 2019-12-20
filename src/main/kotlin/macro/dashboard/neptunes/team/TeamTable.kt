@@ -1,9 +1,9 @@
 package macro.dashboard.neptunes.team
 
+import macro.dashboard.neptunes.Util
 import macro.dashboard.neptunes.game.GameTable
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.dao.LongIdTable
-import org.jetbrains.exposed.dao.UUIDTable
+import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.exists
@@ -25,8 +25,7 @@ internal object TeamTable : LongIdTable(name = "Team") {
 
 	init {
 		if (!exists())
-			transaction {
-				uniqueIndex(gameCol, nameCol)
+			transaction(db = Util.database) {
 				SchemaUtils.create(this@TeamTable)
 			}
 	}

@@ -5,9 +5,10 @@ import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
 import macro.dashboard.neptunes.team.Team
 import macro.dashboard.neptunes.team.TeamTable
-import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
+import java.time.format.DateTimeFormatter
 
 /**
  * Created by Macro303 on 2018-Nov-08.
@@ -53,7 +54,7 @@ class Game(id: EntityID<Long>) : LongEntity(id), ISendable {
 			"victoryStars" to victoryStars,
 			"isGameOver" to isGameOver,
 			"isStarted" to isStarted,
-			"startTime" to startTime,
+			"startTime" to startTime.format(DateTimeFormatter.ISO_DATE_TIME),
 			"totalStars" to totalStars,
 			"productionCounter" to productionCounter,
 			"isTradeScanned" to isTradeScanned,
@@ -62,7 +63,7 @@ class Game(id: EntityID<Long>) : LongEntity(id), ISendable {
 			"name" to name,
 			"isTurnBased" to isTurnBased,
 			"war" to war,
-			"turnTimeout" to turnTimeout,
+			"turnTimeout" to turnTimeout.format(DateTimeFormatter.ISO_DATE_TIME),
 			"fleetPrice" to fleetPrice,
 			"gameType" to gameType
 		)
