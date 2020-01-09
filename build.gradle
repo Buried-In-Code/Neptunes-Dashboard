@@ -13,24 +13,30 @@ repositories {
 }
 
 mainClassName = 'macro.dashboard.neptunes.ServerKt'
+def ktorVersion = '1.3.0-rc2'
+def exposedVersion = '0.20.2'
 def loggerVersion = '2.13.0'
-def ktorVersion = '1.3.0-rc'
-def exposedVersion = '0.19.3'
+def jacksonVersion = '2.10.2'
+def unirestVersion = '3.3.00'
 
 dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
+	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
+	implementation group: 'io.ktor', name: 'ktor-jackson', version: "$ktorVersion"
+	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktorVersion"
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "$jacksonVersion"
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: "$jacksonVersion"
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: "$jacksonVersion"
+	implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: "$jacksonVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-core', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-dao', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-java-time', version: "$exposedVersion"
-	implementation group: 'org.yaml', name: 'snakeyaml', version: "1.25"
-	implementation group: 'com.konghq', name: 'unirest-java', version: "3.3.00"
-	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
-	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktorVersion"
-	implementation group: 'io.ktor', name: 'ktor-freemarker', version: "$ktorVersion"
+	implementation group: 'com.konghq', name: 'unirest-java', version: "$unirestVersion"
+	implementation group: 'com.konghq', name: 'unirest-objectmapper-jackson', version: "$unirestVersion"
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "$loggerVersion"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "$loggerVersion"
-	runtimeOnly group: 'org.xerial', name: 'sqlite-jdbc', version: "3.28.0"
+	runtimeOnly group: 'org.xerial', name: 'sqlite-jdbc', version: "3.30.1"
 }
 
 compileKotlin {
@@ -63,4 +69,35 @@ jar {
 
 run {
 	standardInput = System.in
+}
+
+def isNonStable = { String version ->
+	def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+	def regex = /^[0-9,.v-]+(-r)?$/
+	return !stableKeyword && !(version ==~ regex)
+}
+
+dependencyUpdates {
+	checkForGradleUpdate = false
+
+	// Example 1: reject all non stable versions
+	rejectVersionIf {
+		isNonStable(candidate.version)
+	}
+
+	// Example 2: disallow release candidates as upgradable versions from stable versions
+	rejectVersionIf {
+		isNonStable(candidate.version) && !isNonStable(currentVersion)
+	}
+
+	// Example 3: using the full syntax
+	resolutionStrategy {
+		componentSelection {
+			all {
+				if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
+					reject('Release candidate')
+				}
+			}
+		}
+	}
 }

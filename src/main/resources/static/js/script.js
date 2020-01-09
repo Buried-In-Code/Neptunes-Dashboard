@@ -391,7 +391,7 @@ function loadInfoGrid() {
 	var gameStars = 700;
 	$.ajax({
 		async: false,
-		url: '/api/game',
+		url: '/api/games',
 		type: 'GET',
 		headers: {
 			accept: 'application/json',
@@ -399,26 +399,27 @@ function loadInfoGrid() {
 		},
 		dataType: 'json',
 		success: function (data) {
-			let nameColumn = infoToHTML('Name', `<a href="https://np.ironhelmet.com/game/${data.ID}">${data.name}</a>`);
+			let game = data[0];
+			let nameColumn = infoToHTML('Name', `<a href="https://np.ironhelmet.com/game/${game.ID}">${game.name}</a>`);
 			document.getElementById('info-grid').appendChild(nameColumn);
-			let typeColumn = infoToHTML('Type', data.gameType);
+			let typeColumn = infoToHTML('Type', game.gameType);
 			document.getElementById('info-grid').appendChild(typeColumn);
-			let startedColumn = infoToHTML('Started', data.isStarted ? data.startTime : 'False');
+			let startedColumn = infoToHTML('Started', game.isStarted ? game.startTime : 'False');
 			document.getElementById('info-grid').appendChild(startedColumn);
-			let playerColumn = infoToHTML('# of Players', data.players.length);
+			let playerColumn = infoToHTML('# of Players', game.players.length);
 			document.getElementById('info-grid').appendChild(playerColumn);
-			let teamColumn = infoToHTML('# of Teams', data.teams.length);
+			let teamColumn = infoToHTML('# of Teams', game.teams.length);
 			document.getElementById('info-grid').appendChild(teamColumn);
-			let starsColumn = infoToHTML('Stars to Win', `${data.victoryStars}/${data.totalStars}`);
+			let starsColumn = infoToHTML('Stars to Win', `${game.victoryStars}/${game.totalStars}`);
 			document.getElementById('info-grid').appendChild(starsColumn);
-			let ticksColumn = infoToHTML('Ticks', data.tick);
+			let ticksColumn = infoToHTML('Ticks', game.tick);
 			document.getElementById('info-grid').appendChild(ticksColumn);
-			let stateColumn = infoToHTML('Next Tick', data.isPaused ? "Paused" : data.isGameOver ? "Game Ended" : data.tickTimeout);
+			let stateColumn = infoToHTML('Next Tick', game.isPaused ? "Paused" : game.isGameOver ? "Game Ended" : game.tickTimeout);
 			document.getElementById('info-grid').appendChild(stateColumn);
 
 			addGraph('Stars', 'winPie', 'info-grid', 600, 600);
 
-			getAllTeamStars(data.totalStars)
+			getAllTeamStars(game.totalStars)
 		},
 		error: function (xhr, status, error) {
 			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);

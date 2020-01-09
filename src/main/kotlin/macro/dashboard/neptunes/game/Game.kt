@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-class Game(id: EntityID<Long>) : LongEntity(id), ISendable {
+class Game(id: EntityID<Long>) : LongEntity(id), ISendable, Comparable<Game> {
 	companion object : LongEntityClass<Game>(GameTable)
 
 	var code by GameTable.codeCol
@@ -73,4 +73,10 @@ class Game(id: EntityID<Long>) : LongEntity(id), ISendable {
 		}
 		return output.toSortedMap()
 	}
+
+	override fun compareTo(other: Game): Int =
+		compareBy<Game>{ it.startTime }
+			.thenBy { it.name }
+			.thenBy { it.id }
+			.compare(this, other)
 }

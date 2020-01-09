@@ -1,15 +1,19 @@
 package macro.dashboard.neptunes
 
+import com.fasterxml.jackson.core.util.DefaultIndenter
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import freemarker.cache.ClassTemplateLoader
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.freemarker.FreeMarker
-import io.ktor.gson.gson
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.*
 import io.ktor.http.withCharset
+import io.ktor.jackson.jackson
 import io.ktor.request.*
 import io.ktor.response.respond
 import io.ktor.routing.Routing
@@ -19,7 +23,7 @@ import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.KtorExperimentalAPI
-import macro.dashboard.neptunes.config.Config.Companion.CONFIG
+import macro.dashboard.neptunes.config.Config
 import macro.dashboard.neptunes.game.Game
 import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
@@ -52,8 +56,8 @@ object Server {
 	fun main(args: Array<String>) {
 		embeddedServer(
 			Netty,
-			port = CONFIG.server.port ?: 5505,
-			host = CONFIG.server.hostName ?: "localhost",
+			port = Config.INSTANCE.server.port ?: 5505,
+			host = Config.INSTANCE.server.hostName ?: "localhost",
 			module = Application::module
 		).apply { start(wait = true) }
 	}
@@ -62,10 +66,13 @@ object Server {
 @KtorExperimentalAPI
 fun Application.module() {
 	install(ContentNegotiation) {
-		gson {
-			setPrettyPrinting()
-			disableHtmlEscaping()
-			serializeNulls()
+		jackson {
+			configure(SerializationFeature.INDENT_OUTPUT, true)
+			setDefaultPrettyPrinter(DefaultPrettyPrinter().apply {
+				indentArraysWith(DefaultPrettyPrinter.FixedSpaceIndenter.instance)
+				indentObjectsWith(DefaultIndenter("  ", "\n"))
+			})
+			registerModule(JavaTimeModule())
 		}
 	}
 	install(DefaultHeaders) {
@@ -110,7 +117,7 @@ fun Application.module() {
 			route(path = "/games") {
 				get {
 					newSuspendedTransaction(db = Util.database) {
-						call.respond(Game.all().map {
+						call.respond(Game.all().sorted().map {
 							it.toJson(full = true)
 						})
 					}
