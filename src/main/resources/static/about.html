@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta content="Macro303" name="author">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>Neptune's Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="/style.css" rel="stylesheet"/>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
-<body class="has-navbar-fixed-top">
-<nav class="navbar is-dark is-fixed-top" id="navbar"></nav>
-<section class="section is-medium">
-    <div class="container has-text-centered">
-        <h3 class="title is-3">Contributors</h3>
-        <div class="columns is-centered is-multiline" id="contributor-grid"></div>
-        <p>You can also contribute by creating issues, submitting feature requests or pull requests in the <a
-                href="https://github.com/Macro303/Neptunes-Dashboard">GitHub Repo</a></p>
-    </div>
-</section>
-<footer class="footer">
-    <div class="content has-text-centered">
-        <a href="https://bulma.io">
-            <img alt="Made with Bulma" height="24" src="https://bulma.io/images/made-with-bulma--dark.png" width="128">
-        </a>
-    </div>
-</footer>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="/script.js"></script>
+<body>
+<div id="navbar"></div>
+<div class="container">
+    <h1 class="display-2 text-center">Contributors</h1>
+    <div class="row row-cols-3" id="contributor-row"></div>
+    <small class="text-center text-light">You can also contribute by creating issues, submitting feature requests or
+        pull requests in the <a class="text-light" href="https://github.com/Macro303/Neptunes-Dashboard">GitHub Repo</a></small>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="/script.js" type="text/javascript"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#navbar").load("/navbar.html");

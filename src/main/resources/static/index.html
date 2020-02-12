@@ -3,73 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta content="Macro303" name="author">
-    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
     <title>Neptune's Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" rel="stylesheet">
     <link href="/style.css" rel="stylesheet"/>
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </head>
 <body>
-<section class="hero is-dark">
-    <div class="hero-head">
-        <nav class="navbar">
-            <div class="container">
-                <div class="navbar-brand">
-					<span class="navbar-burger burger" data-target="navbarMenuHero">
-						<span></span>
-						<span></span>
-						<span></span>
-					</span>
-                </div>
-                <div class="navbar-menu" id="navbarMenuHero">
-                    <div class="navbar-end">
-                        <a class="navbar-item" href="/">
-							<span class="icon">
-								<i class="fas fa-home"></i>
-							</span>
-                            <span>Home</span>
-                        </a>
-                        <a class="navbar-item" href="/players">
-							<span class="icon">
-								<i class="fas fa-user"></i>
-							</span>
-                            <span>Players</span>
-                        </a>
-                        <a class="navbar-item" download href="/Neptunes-Dashboard.yaml">
-							<span class="icon">
-								<i class="fas fa-book"></i>
-							</span>
-                            <span>Documentation</span>
-                        </a>
-                        <a class="navbar-item" href="/about">
-							<span class="icon">
-								<i class="fas fa-info-circle"></i>
-							</span>
-                            <span>About</span>
-                        </a>
-                        <div class="navbar-item">
-                            <button class="button is-info is-rounded is-outlined" id="updateButton"
-                                    onclick="update();">
-                                Refresh
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-    <div class="hero-body">
-        <div class="container has-text-centered">
-            <h1 class="title is-1">
-                <img alt="" src="/logo.png">
-                Neptune's Dashboard
-            </h1>
-            <h3 class="subtitle is-3">
-                Pulls basic game information from Neptune's Pride, now with REST endpoints.
-            </h3>
-        </div>
-    </div>
-</section>
+<div id="navbar"></div>
 <section class="section is-medium">
     <div class="container has-text-centered">
         <div class="columns is-centered is-multiline" id="info-grid"></div>
@@ -88,10 +29,7 @@
 <script src="/script.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".navbar-burger").click(function () {
-            $(".navbar-burger").toggleClass("is-active");
-            $(".navbar-menu").toggleClass("is-active");
-        });
+        $("#navbar").load("/navbar.html");
         loadInfoGrid();
     });
 </script>

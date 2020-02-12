@@ -1,7 +1,4 @@
-html, body, .footer {
+body {
     background-color: grey;
-}
-
-.card, .box {
-    box-shadow: none;
+    padding-top: 5rem;
 }

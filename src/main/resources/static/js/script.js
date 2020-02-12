@@ -228,7 +228,7 @@ function loadContributors() {
         success: function (data) {
             for (let contributor of data) {
                 let column = contributorToHTML(contributor);
-                document.getElementById('contributor-grid').appendChild(column);
+                document.getElementById('contributor-row').appendChild(column);
             }
         },
         error: function (xhr, status, error) {
@@ -239,18 +239,16 @@ function loadContributors() {
 
 function contributorToHTML(item) {
     let column = document.createElement('div');
-    column.className = 'column is-one-third';
-    column.innerHTML = '<div class="card">' +
-        '<div class="card-content">' +
-        '<div class="media">' +
-        '<div class="media-left">' +
-        '<figure class="image is-128x128">' +
-        `<img alt="${item.Title} Avatar" class="is-rounded" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${item.Title}&size=512&bold=true&background=4682B4&color=FFF'" src="/avatar-${item.Image}">` +
-        '</figure>' +
+    column.className = 'col align-self-center';
+    column.innerHTML = '<div class="card mb-3 text-light bg-dark">' +
+        '<div class="row no-gutters">' +
+        '<div class="col-md-4">' +
+        `<img alt="${item.Title} Avatar" class="card-img-top" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${item.Title}&size=512&bold=true&background=4682B4&color=FFF'" src="/avatar-${item.Image}">` +
         '</div>' +
-        '<div class="media-content">' +
-        `<p class="title is-4">${item.Title}</p>` +
-        `<p class="subtitle is-6">${item.Role}</p>` +
+        '<div class="col-md-8">' +
+        '<div class="card-body">' +
+        `<h5 class="card-title">${item.Title}</h5>` +
+        `<p class="card-text"><small class="text-muted">${item.Role}</small></p>` +
         '</div>' +
         '</div>' +
         '</div>' +
