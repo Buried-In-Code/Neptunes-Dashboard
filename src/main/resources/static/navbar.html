@@ -1,61 +1,55 @@
 <div class="container">
-	<div class="navbar-brand">
+    <div class="navbar-brand">
 			<span class="navbar-item">
 				<img alt="" src="/logo.png">
 				Neptune's Dashboard
 			</span>
-		<span class="navbar-burger burger" data-target="navbarMenuHero">
+        <span class="navbar-burger burger" data-target="navbarMenuHero">
 				<span></span>
 				<span></span>
 				<span></span>
 			</span>
-	</div>
-	<div class="navbar-menu" id="navbarMenuHero">
-		<div class="navbar-end">
-			<a class="navbar-item" href="/">
+    </div>
+    <div class="navbar-menu" id="navbarMenuHero">
+        <div class="navbar-end">
+            <a class="navbar-item" href="/">
 					<span class="icon">
 						<i class="fas fa-home"></i>
 					</span>
-				<span>Home</span>
-			</a>
-			<a class="navbar-item" href="/players">
+                <span>Home</span>
+            </a>
+            <a class="navbar-item" href="/players">
 					<span class="icon">
 						<i class="fas fa-user"></i>
 					</span>
-				<span>Players</span>
-			</a>
-			<a class="navbar-item" href="/teams">
-					<span class="icon">
-						<i class="fas fa-users"></i>
-					</span>
-				<span>Teams</span>
-			</a>
-			<a class="navbar-item" download href="/Neptunes-Dashboard.yaml">
+                <span>Players</span>
+            </a>
+            <a class="navbar-item" download href="/Neptunes-Dashboard.yaml">
 					<span class="icon">
 						<i class="fas fa-book"></i>
 					</span>
-				<span>Documentation</span>
-			</a>
-			<a class="navbar-item" href="/about">
+                <span>Documentation</span>
+            </a>
+            <a class="navbar-item" href="/about">
 					<span class="icon">
 						<i class="fas fa-info-circle"></i>
 					</span>
-				<span>About</span>
-			</a>
-			<div class="navbar-item">
-				<button class="button is-info is-rounded is-outlined" id="updateButton"
-				        onclick="update();">
-					Refresh
-				</button>
-			</div>
-		</div>
-	</div>
+                <span>About</span>
+            </a>
+            <div class="navbar-item">
+                <button class="button is-info is-rounded is-outlined" id="updateButton"
+                        onclick="update();">
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
-	$(document).ready(function () {
-		$(".navbar-burger").click(function () {
-			$(".navbar-burger").toggleClass("is-active");
-			$(".navbar-menu").toggleClass("is-active");
-		});
-	});
+    $(document).ready(function () {
+        $(".navbar-burger").click(function () {
+            $(".navbar-burger").toggleClass("is-active");
+            $(".navbar-menu").toggleClass("is-active");
+        });
+    });
 </script>
