@@ -52,34 +52,6 @@ function update() {
     });
 }
 
-function getAllPlayerStars(totalStars) {
-    $.ajax({
-        url: `/api/games/latest/players`,
-        type: 'GET',
-        headers: {
-            accept: 'application/json',
-            contentType: 'application/json'
-        },
-        dataType: 'json',
-        success: function (data) {
-            let playerLabels = [];
-            let playerData = [];
-            let claimedStars = 0;
-            data.forEach(function (player) {
-                playerLabels.push(player.alias + (!player.name ? '' : ` (${player.name})`));
-                playerData.push(player.ticks[player.ticks.length - 1].stars);
-                claimedStars = player.ticks[player.ticks.length - 1].stars;
-            });
-            playerLabels.push("Unclaimed");
-            playerData.push(totalStars - claimedStars);
-            createPieGraph(playerLabels, playerData);
-        },
-        error: function (xhr, status, error) {
-            alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
-        }
-    });
-}
-
 function createPlayerStatsLine(data) {
     let tickLabels = [];
     let starData = [];
@@ -124,6 +96,82 @@ function createPlayerStatsLine(data) {
         steppedLine: false
     }];
     createGraph("statsLine", tickLabels, dataset);
+}
+
+function loadInfo() {
+    $.ajax({
+        async: false,
+        url: '/api/games/latest',
+        type: 'GET',
+        headers: {
+            accept: 'application/json',
+            contentType: 'application/json'
+        },
+        dataType: 'json',
+        success: function (data) {
+            document.getElementById('name').innerHTML = `<u class="text-light"><a class="text-light" href="https://np.ironhelmet.com/game/${data.id}">${data.name}</a></u>`;
+            document.getElementById('gameType').innerHTML = data.gameType;
+            document.getElementById('start').innerHTML = data.isStarted ? new Date(`${data.startTime}Z`).toLocaleString() : false;
+            document.getElementById('playerCount').innerHTML = data.players.length;
+            document.getElementById('starCount').innerHTML = `${data.victoryStars}/${data.totalStars}`;
+            document.getElementById('ticks').innerHTML = data.tick;
+            document.getElementById('next').innerHTML = data.isPaused ? 'Paused' : data.isGameOver ? 'Game Ended' : data.tickTimeout;
+
+            getAllPlayerStars(data.totalStars)
+        },
+        error: function (xhr, status, error) {
+            alert("#ERROR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+        }
+    });
+}
+
+function getAllPlayerStars(totalStars) {
+    $.ajax({
+        url: `/api/games/latest/players`,
+        type: 'GET',
+        headers: {
+            accept: 'application/json',
+            contentType: 'application/json'
+        },
+        dataType: 'json',
+        success: function (data) {
+            let playerLabels = [];
+            let playerData = [];
+            let claimedStars = 0;
+            data.forEach(function (player) {
+                playerLabels.push(player.alias + (!player.name ? '' : ` (${player.name})`));
+                playerData.push(player.ticks[player.ticks.length - 1].stars);
+                claimedStars = player.ticks[player.ticks.length - 1].stars;
+            });
+            playerLabels.push("Unclaimed");
+            playerData.push(totalStars - claimedStars);
+            createPieGraph(playerLabels, playerData);
+
+            let tickLabels = [];
+            let graphData = [];
+            data.forEach(function (player) {
+                let stars = [];
+                player.ticks.forEach(function (tick) {
+                    if (graphData.length === 0)
+                        tickLabels.push("Tick " + tick.tick);
+                    stars.push(tick.stars)
+                });
+                let entry = {
+                    label: player.alias + (!player.name ? '' : ` (${player.name})`),
+                    fill: false,
+                    backgroundColor: getBackgroundColour(graphData.length),
+                    borderColor: getBorderColour(graphData.length),
+                    data: stars,
+                    steppedLine: false
+                };
+                graphData.push(entry);
+            });
+            createGraph("gameProgression", tickLabels, graphData);
+        },
+        error: function (xhr, status, error) {
+            alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
+        }
+    });
 }
 
 function createPieGraph(labels, data) {
@@ -189,9 +237,9 @@ function createPieGraph(labels, data) {
             'rgba(128,128,128,1)',
             'rgba(160,82,45,1)'
         ],
-        borderWidth: 2
+        borderWidth: 3
     }];
-    createGraph('winPie', labels, dataset, 'pie');
+    createGraph('starDistribution', labels, dataset, 'pie');
 }
 
 function createGraph(name, labels, dataset, type = 'line') {
@@ -205,7 +253,7 @@ function createGraph(name, labels, dataset, type = 'line') {
         options: {
             legend: {
                 labels: {
-                    fontColor: "black",
+                    fontColor: '#D0D0D0',
                     fontSize: 14
                 }
             },
@@ -215,101 +263,7 @@ function createGraph(name, labels, dataset, type = 'line') {
     });
 }
 
-function loadContributors() {
-    $.ajax({
-        async: false,
-        url: '/api/contributors',
-        type: 'GET',
-        headers: {
-            accept: 'application/json',
-            contentType: 'application/json'
-        },
-        dataType: 'json',
-        success: function (data) {
-            for (let contributor of data) {
-                let column = contributorToHTML(contributor);
-                document.getElementById('contributor-row').appendChild(column);
-            }
-        },
-        error: function (xhr, status, error) {
-            alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
-        }
-    });
-}
-
-function contributorToHTML(item) {
-    let column = document.createElement('div');
-    column.className = 'col align-self-center';
-    column.innerHTML = '<div class="card mb-3 text-light bg-dark">' +
-        '<div class="row no-gutters">' +
-        '<div class="col-md-4">' +
-        `<img alt="${item.Title} Avatar" class="card-img-top" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${item.Title}&size=512&bold=true&background=4682B4&color=FFF'" src="/avatar-${item.Image}">` +
-        '</div>' +
-        '<div class="col-md-8">' +
-        '<div class="card-body">' +
-        `<h5 class="card-title">${item.Title}</h5>` +
-        `<p class="card-text"><small class="text-muted">${item.Role}</small></p>` +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>';
-    return column
-}
-
-function loadInfoGrid() {
-    var gameStars = 700;
-    $.ajax({
-        async: false,
-        url: '/api/games/latest',
-        type: 'GET',
-        headers: {
-            accept: 'application/json',
-            contentType: 'application/json'
-        },
-        dataType: 'json',
-        success: function (data) {
-            let nameColumn = infoToHTML('Name', `<a href="https://np.ironhelmet.com/game/${data.id}">${data.name}</a>`);
-            document.getElementById('info-grid').appendChild(nameColumn);
-            let typeColumn = infoToHTML('Type', data.gameType);
-            document.getElementById('info-grid').appendChild(typeColumn);
-            let startedColumn = infoToHTML('Started', data.isStarted ? data.startTime : 'False');
-            document.getElementById('info-grid').appendChild(startedColumn);
-            let playerColumn = infoToHTML('# of Players', data.players.length);
-            document.getElementById('info-grid').appendChild(playerColumn);
-            let starsColumn = infoToHTML('Stars to Win', `${data.victoryStars}/${data.totalStars}`);
-            document.getElementById('info-grid').appendChild(starsColumn);
-            let ticksColumn = infoToHTML('Ticks', data.tick);
-            document.getElementById('info-grid').appendChild(ticksColumn);
-            let stateColumn = infoToHTML('Next Tick', data.isPaused ? "Paused" : data.isGameOver ? "Game Ended" : data.tickTimeout);
-            document.getElementById('info-grid').appendChild(stateColumn);
-
-            addGraph('Stars', 'winPie', 'info-grid', 400, 400);
-
-            getAllPlayerStars(data.totalStars)
-        },
-        error: function (xhr, status, error) {
-            alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
-        }
-    });
-    return gameStars;
-}
-
-function infoToHTML(title, info) {
-    let column = document.createElement('div');
-    column.className = 'column is-one-quarter';
-    column.innerHTML = '<div class="box">' +
-        '<article class="media">' +
-        '<div class="media-content">' +
-        '<div class="content">' +
-        `<p><strong>${title}</strong><br>${info}</p>` +
-        '</div>' +
-        '</div>' +
-        '</article>' +
-        '</div>';
-    return column
-}
-
-function loadPlayers() {
+function loadPlayerTables() {
     $.ajax({
         async: false,
         url: '/api/games/latest/players',
@@ -321,10 +275,10 @@ function loadPlayers() {
         dataType: 'json',
         success: function (data) {
             for (let player of data) {
-                let statsRow = playerStatsToRow(player);
-                document.getElementById('player-stats-table').appendChild(statsRow);
-                let techRow = playerTechToRow(player);
-                document.getElementById('player-tech-table').appendChild(techRow);
+                let statsRow = parseStatsTableRow(player);
+                document.getElementById('stats-table-data').appendChild(statsRow);
+                let techRow = parseTechTableRow(player);
+                document.getElementById('tech-table-data').appendChild(techRow);
             }
         },
         error: function (xhr, status, error) {
@@ -333,38 +287,38 @@ function loadPlayers() {
     });
 }
 
-function playerStatsToRow(item) {
-    let latest = item.ticks.length - 1;
+function parseStatsTableRow(player) {
+    let latest = player.ticks.length - 1;
     let row = document.createElement('tr');
-    row.onclick = () => window.location = `/players/${item.alias}`;
-    row.innerHTML = `<td>${item.alias}</td>` +
-        `<td>${!item.name ? '' : item.name}</td>` +
-        `<td>${!item.team ? '' : item.team}</td>` +
-        `<td>${item.ticks[latest].stars}</td>` +
-        `<td>${item.ticks[latest].ships}</td>` +
-        `<td>${item.ticks[latest].economy}</td>` +
-        `<td>${item.ticks[latest].economyPerTick}</td>` +
-        `<td>${item.ticks[latest].industry}</td>` +
-        `<td>${item.ticks[latest].industryPerTick}</td>` +
-        `<td>${item.ticks[latest].science}</td>` +
-        `<td>${item.ticks[latest].sciencePerTick}</td>`;
+    row.onclick = () => window.location = `/players/${player.alias}`;
+    row.innerHTML = `<td>${player.alias}</td>` +
+        `<td>${!player.name ? '' : player.name}</td>` +
+        `<td>${!player.team ? '' : player.team}</td>` +
+        `<td>${player.ticks[latest].stars}</td>` +
+        `<td>${player.ticks[latest].ships}</td>` +
+        `<td>${player.ticks[latest].economy}</td>` +
+        `<td>${player.ticks[latest].economyPerTick}</td>` +
+        `<td>${player.ticks[latest].industry}</td>` +
+        `<td>${player.ticks[latest].industryPerTick}</td>` +
+        `<td>${player.ticks[latest].science}</td>` +
+        `<td>${player.ticks[latest].sciencePerTick}</td>`;
     return row
 }
 
-function playerTechToRow(item) {
-    let latest = item.ticks.length - 1;
+function parseTechTableRow(player) {
+    let latest = player.ticks.length - 1;
     let row = document.createElement('tr');
-    row.onclick = () => window.location = `/players/${item.alias}`;
-    row.innerHTML = `<td>${item.alias}</td>` +
-        `<td>${!item.name ? '' : item.name}</td>` +
-        `<td>${!item.team ? '' : item.team}</td>` +
-        `<td>${item.ticks[latest].research.scanning}</td>` +
-        `<td>${item.ticks[latest].research.hyperspaceRange}</td>` +
-        `<td>${item.ticks[latest].research.terraforming}</td>` +
-        `<td>${item.ticks[latest].research.experimentation}</td>` +
-        `<td>${item.ticks[latest].research.weapons}</td>` +
-        `<td>${item.ticks[latest].research.banking}</td>` +
-        `<td>${item.ticks[latest].research.manufacturing}</td>`;
+    row.onclick = () => window.location = `/players/${player.alias}`;
+    row.innerHTML = `<td>${player.alias}</td>` +
+        `<td>${!player.name ? '' : player.name}</td>` +
+        `<td>${!player.team ? '' : player.team}</td>` +
+        `<td>${player.ticks[latest].research.scanning}</td>` +
+        `<td>${player.ticks[latest].research.hyperspaceRange}</td>` +
+        `<td>${player.ticks[latest].research.terraforming}</td>` +
+        `<td>${player.ticks[latest].research.experimentation}</td>` +
+        `<td>${player.ticks[latest].research.weapons}</td>` +
+        `<td>${player.ticks[latest].research.banking}</td>` +
+        `<td>${player.ticks[latest].research.manufacturing}</td>`;
     return row
 }
 

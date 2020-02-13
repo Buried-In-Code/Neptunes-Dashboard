@@ -10,20 +10,91 @@
 </head>
 <body>
 <div id="navbar"></div>
-<div class="container">
-    <h1 class="display-2 text-center">Contributors</h1>
-    <div class="row row-cols-3" id="contributor-row"></div>
-    <small class="text-center text-light">You can also contribute by creating issues, submitting feature requests or
-        pull requests in the <a class="text-light" href="https://github.com/Macro303/Neptunes-Dashboard">GitHub Repo</a></small>
+<div class="container-fluid">
+    <h1 class="display-1 text-center">Contributors</h1>
+    <div class="row row-cols-5 justify-content-center" id="content">
+        <div class="col">
+            <div class="card mb-3 text-light bg-dark">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img alt="Macro303 Avatar" class="card-img-top"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Macro303&size=512&bold=true&background=4682B4&color=FFF'"
+                             src="/avatar-macro303.png">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Macro303</h5>
+                            <p class="card-text"><small class="text-light">Creator and Maintainer</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-3 text-light bg-dark">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img alt="Miss. T Avatar" class="card-img-top"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Miss.T&size=512&bold=true&background=4682B4&color=FFF'"
+                             src="/avatar-misst.jpg">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Miss. T</h5>
+                            <p class="card-text"><small class="text-light">Supporter and Loving Fiancée</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-3 text-light bg-dark">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img alt="Rocky Avatar" class="card-img-top"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Rocky&size=512&bold=true&background=4682B4&color=FFF'"
+                             src="/avatar-rocky.png">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Rocky</h5>
+                            <p class="card-text"><small class="text-light">Quality Tester</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card mb-3 text-light bg-dark">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img alt="Img Bot Avatar" class="card-img-top"
+                             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=ImgBot&size=512&bold=true&background=4682B4&color=FFF'"
+                             src="/avatar-imgbotapp.png">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Img Bot</h5>
+                            <p class="card-text"><small class="text-light">Image Processor</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="text-center text-light">You can also contribute by creating issues, submitting feature requests or pull
+        requests in the <u class="text-light">
+            <a class="text-light" href="https://github.com/Macro303/Neptunes-Dashboard">GitHub Repo</a>
+        </u>
+    </p>
 </div>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" type="text/javascript"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" type="text/javascript"></script>
 <script src="/script.js" type="text/javascript"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#navbar").load("/navbar.html");
-        loadContributors()
     });
 </script>
 </body>
