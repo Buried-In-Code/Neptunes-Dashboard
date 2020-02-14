@@ -10,62 +10,62 @@
 </head>
 <body>
 <div id="navbar"></div>
-<div class="container-fluid">
-    <h1 class="display-1 text-center">Neptune's Dashboard</h1>
-    <div class="row row-cols-7 justify-content-center" id="content">
+<div class="container">
+    <h1 class="display-1 text-center text-light">Neptune's Dashboard</h1>
+    <div class="row row-cols-4 justify-content-center" id="content">
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title">Name</h4>
-                    <p class="card-text"><small class="text-light" id="name">{Name}</small></p>
+                    <h4 class="card-title text-info">Name</h4>
+                    <p class="card-text text-light" id="name">{{Name}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title">Game Type</h4>
-                    <p class="card-text"><small class="text-light" id="gameType">{Game Type}</small></p>
+                    <h4 class="card-title text-info">Game Type</h4>
+                    <p class="card-text text-light" id="gameType">{{Game Type}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title">Start</h4>
-                    <p class="card-text"><small class="text-light" id="start">{Start}</small></p>
+                    <h4 class="card-title text-info">Start</h4>
+                    <p class="card-text text-light" id="start">{{Start}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title"># of Players</h4>
-                    <p class="card-text"><small class="text-light" id="playerCount">{Player Count}</small></p>
+                    <h4 class="card-title text-info"># of Players</h4>
+                    <p class="card-text text-light" id="playerCount">{{Player Count}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title"># of Stars to Win</h4>
-                    <p class="card-text"><small class="text-light" id="starCount">{Stars}/{Total}</small></p>
+                    <h4 class="card-title text-info"># of Stars to Win</h4>
+                    <p class="card-text text-light" id="starCount">{{Stars}}/{{Total}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title">Ticks</h4>
-                    <p class="card-text"><small class="text-light" id="ticks">{Ticks}</small></p>
+                    <h4 class="card-title text-info">Ticks</h4>
+                    <p class="card-text text-light" id="ticks">{{Ticks}}</p>
                 </div>
             </div>
         </div>
         <div class="col">
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
-                    <h4 class="card-title">Next Cycle</h4>
-                    <p class="card-text"><small class="text-light" id="next">{Next}</small></p>
+                    <h4 class="card-title text-info">Next Cycle</h4>
+                    <p class="card-text text-light" id="next">{{Next}}</p>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
                     <div class="chart-container">
-                        <canvas height="500" id="starDistribution" width="500"></canvas>
+                        <canvas height="250" id="gameProgression" width="500"></canvas>
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
             <div class="card mb-3 text-light bg-dark">
                 <div class="card-body">
                     <div class="chart-container">
-                        <canvas height="500" id="gameProgression" width="500"></canvas>
+                        <canvas height="500" id="starDistribution" width="500"></canvas>
                     </div>
                 </div>
             </div>

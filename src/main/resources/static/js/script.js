@@ -52,52 +52,6 @@ function update() {
     });
 }
 
-function createPlayerStatsLine(data) {
-    let tickLabels = [];
-    let starData = [];
-    let economyData = [];
-    let industryData = [];
-    let scienceData = [];
-    let ticks = data.ticks;
-    ticks.forEach(function (element) {
-        tickLabels.push("Tick " + element.tick);
-        starData.push(element.stars);
-        economyData.push(element.economy);
-        industryData.push(element.industry);
-        scienceData.push(element.science);
-    });
-    let dataset = [{
-        label: 'Stars',
-        fill: false,
-        backgroundColor: getBackgroundColour(0),
-        borderColor: getBorderColour(0),
-        data: starData,
-        steppedLine: false
-    }, {
-        label: 'Economy',
-        fill: false,
-        backgroundColor: getBackgroundColour(1),
-        borderColor: getBorderColour(1),
-        data: economyData,
-        steppedLine: false
-    }, {
-        label: 'Industry',
-        fill: false,
-        backgroundColor: getBackgroundColour(2),
-        borderColor: getBorderColour(2),
-        data: industryData,
-        steppedLine: false
-    }, {
-        label: 'Science',
-        fill: false,
-        backgroundColor: getBackgroundColour(3),
-        borderColor: getBorderColour(3),
-        data: scienceData,
-        steppedLine: false
-    }];
-    createGraph("statsLine", tickLabels, dataset);
-}
-
 function loadInfo() {
     $.ajax({
         async: false,
@@ -297,11 +251,8 @@ function parseStatsTableRow(player) {
         `<td>${player.ticks[latest].stars}</td>` +
         `<td>${player.ticks[latest].ships}</td>` +
         `<td>${player.ticks[latest].economy}</td>` +
-        `<td>${player.ticks[latest].economyPerTick}</td>` +
         `<td>${player.ticks[latest].industry}</td>` +
-        `<td>${player.ticks[latest].industryPerTick}</td>` +
-        `<td>${player.ticks[latest].science}</td>` +
-        `<td>${player.ticks[latest].sciencePerTick}</td>`;
+        `<td>${player.ticks[latest].science}</td>`;
     return row
 }
 
@@ -334,49 +285,33 @@ function loadPlayer() {
         },
         dataType: 'json',
         success: function (data) {
-            let aliasColumn = playerInfoToBox('Alias', data.alias, 3);
-            document.getElementById('player-info-grid').appendChild(aliasColumn);
-            let nameColumn = playerInfoToBox('Name', !data.name ? '' : data.name, 3);
-            document.getElementById('player-info-grid').appendChild(nameColumn);
-            let teamColumn = playerInfoToBox('Team', !data.team ? '' : data.team, 3);
-            document.getElementById('player-info-grid').appendChild(teamColumn);
+			document.getElementById('player').innerHTML = data.alias + (data.name ? ` (${data.name})` : '') + (data.team ? ` [${data.team}]` : '');
+			
+            let latest = data.ticks[data.ticks.length - 1];
+			document.getElementById('stars').innerHTML = latest.stars;
+			document.getElementById('ships').innerHTML = latest.ships;
+			document.getElementById('fleets').innerHTML = latest.fleets;
+			
+			document.getElementById('economy').innerHTML = latest.economy;
+			document.getElementById('economy-per-cycle').innerHTML = ` (${latest.economyPerTick} per Cycle)`;
+			
+			document.getElementById('industry').innerHTML = latest.industry;
+			document.getElementById('industry-per-cycle').innerHTML = ` (${latest.industryPerTick} per Cycle)`;
+			
+			document.getElementById('science').innerHTML = latest.science;
+			document.getElementById('science-per-cycle').innerHTML = ` (${latest.sciencePerTick} per Cycle)`;
+			
+			let research = latest.research;
+			document.getElementById('scanning').innerHTML = research.scanning;
+			document.getElementById('hyperspace-range').innerHTML = research.hyperspaceRange;
+			document.getElementById('terraforming').innerHTML = research.terraforming;
+			document.getElementById('experimentation').innerHTML = research.experimentation;
+			document.getElementById('weapons').innerHTML = research.weapons;
+			document.getElementById('banking').innerHTML = research.banking;
+			document.getElementById('manufacturing').innerHTML = research.manufacturing;
 
-            let latest = data.ticks.length - 1;
-            let starsColumn = playerInfoToBox('Stars', data.ticks[latest].stars, 4);
-            document.getElementById('player-stats-grid').appendChild(starsColumn);
-            let shipsColumn = playerInfoToBox('Ships', data.ticks[latest].ships, 4);
-            document.getElementById('player-stats-grid').appendChild(shipsColumn);
-            let economyColumn = playerInfoToBox('Economy', data.ticks[latest].economy, 4);
-            document.getElementById('player-stats-grid').appendChild(economyColumn);
-            let economyTickColumn = playerInfoToBox('$ Per Tick', data.ticks[latest].economyPerTick, 4);
-            document.getElementById('player-stats-grid').appendChild(economyTickColumn);
-            let industryColumn = playerInfoToBox('Industry', data.ticks[latest].industry, 4);
-            document.getElementById('player-stats-grid').appendChild(industryColumn);
-            let industryTickColumn = playerInfoToBox('Ships Per Tick', data.ticks[latest].industryPerTick, 4);
-            document.getElementById('player-stats-grid').appendChild(industryTickColumn);
-            let scienceColumn = playerInfoToBox('Science', data.ticks[latest].science, 4);
-            document.getElementById('player-stats-grid').appendChild(scienceColumn);
-            let scienceTickColumn = playerInfoToBox('Science Per Tick', data.ticks[latest].sciencePerTick, 4);
-            document.getElementById('player-stats-grid').appendChild(scienceTickColumn);
-
-            let scanningColumn = playerInfoToBox('Scanning', data.ticks[latest].research.scanning, 4);
-            document.getElementById('player-tech-grid').appendChild(scanningColumn);
-            let rangeColumn = playerInfoToBox('Hyperspace Range', data.ticks[latest].research.hyperspaceRange, 4);
-            document.getElementById('player-tech-grid').appendChild(rangeColumn);
-            let terraformingColumn = playerInfoToBox('Terraforming', data.ticks[latest].research.terraforming, 4);
-            document.getElementById('player-tech-grid').appendChild(terraformingColumn);
-            let experimentationColumn = playerInfoToBox('Experimentation', data.ticks[latest].research.experimentation, 4);
-            document.getElementById('player-tech-grid').appendChild(experimentationColumn);
-            let weaponsColumn = playerInfoToBox('Weapons', data.ticks[latest].research.weapons, 4);
-            document.getElementById('player-tech-grid').appendChild(weaponsColumn);
-            let bankingColumn = playerInfoToBox('Banking', data.ticks[latest].research.banking, 4);
-            document.getElementById('player-tech-grid').appendChild(bankingColumn);
-            let manufacturingColumn = playerInfoToBox('Manufacturing', data.ticks[latest].research.manufacturing, 4);
-            document.getElementById('player-tech-grid').appendChild(manufacturingColumn);
-
-            addGraph('Stats', 'statsLine', 'player-stats-grid');
-
-            createPlayerStatsLine(data);
+            createStatsGraph(data);
+			createResearchGraph(data);
         },
         error: function (xhr, status, error) {
             alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -384,35 +319,135 @@ function loadPlayer() {
     });
 }
 
-function addGraph(title, id, element, height = 200, width = 400) {
-    let graphColumn = document.createElement('div');
-    graphColumn.className = 'column is-half';
-    graphColumn.innerHTML = '<div class="box">' +
-        '<article class="media">' +
-        '<div class="media-content">' +
-        '<div class="content">' +
-        `<h3 class="title is-3 has-text-centered">${title}</h3>` +
-        '<div class="chart-container">' +
-        `<canvas height="${height}" width="${width}" id="${id}"></canvas>` +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</article>' +
-        '</div>';
-    document.getElementById(element).appendChild(graphColumn);
+function createStatsGraph(data) {
+    let tickLabels = [];
+    let starData = [];
+    let shipsData = [];
+    let fleetsData = [];
+    let economyData = [];
+    let industryData = [];
+    let scienceData = [];
+    data.ticks.forEach(function (element) {
+        tickLabels.push("Tick " + element.tick);
+        starData.push(element.stars);
+        economyData.push(element.economy);
+        industryData.push(element.industry);
+        scienceData.push(element.science);
+    });
+    let dataset = [{
+        label: 'Stars',
+        fill: false,
+        backgroundColor: getBackgroundColour(0),
+        borderColor: getBorderColour(0),
+        data: starData,
+        steppedLine: false
+    }, {
+        label: 'Ships',
+        fill: false,
+        backgroundColor: getBackgroundColour(1),
+        borderColor: getBorderColour(1),
+        data: shipsData,
+        steppedLine: false
+    }, {
+        label: 'Fleets',
+        fill: false,
+        backgroundColor: getBackgroundColour(2),
+        borderColor: getBorderColour(2),
+        data: fleetsData,
+        steppedLine: false
+    }, {
+        label: 'Economy',
+        fill: false,
+        backgroundColor: getBackgroundColour(3),
+        borderColor: getBorderColour(3),
+        data: economyData,
+        steppedLine: false
+    }, {
+        label: 'Industry',
+        fill: false,
+        backgroundColor: getBackgroundColour(4),
+        borderColor: getBorderColour(4),
+        data: industryData,
+        steppedLine: false
+    }, {
+        label: 'Science',
+        fill: false,
+        backgroundColor: getBackgroundColour(5),
+        borderColor: getBorderColour(5),
+        data: scienceData,
+        steppedLine: false
+    }];
+    createGraph("stats-graph", tickLabels, dataset);
 }
 
-function playerInfoToBox(title, info, columns) {
-    let column = document.createElement('div');
-    column.className = columns === 3 ? 'column is-one-third' : columns === 4 ? 'column is-one-quarter' : 'column is-one-fifth';
-    column.innerHTML = '<div class="box">' +
-        '<article class="media">' +
-        '<div class="media-content">' +
-        '<div class="content">' +
-        `<p><strong>${title}</strong><br>${info}</p>` +
-        '</div>' +
-        '</div>' +
-        '</article>' +
-        '</div>';
-    return column
+function createResearchGraph(data) {
+    let tickLabels = [];
+    let scanningData = [];
+    let hyperspaceRangeData = [];
+    let terraformingData = [];
+    let experimentationData = [];
+    let weaponsData = [];
+    let bankingData = [];
+    let manufacturingData = [];
+    data.ticks.forEach(function (cycle) {
+        tickLabels.push("Tick " + cycle.tick);
+        scanningData.push(cycle.research.scanning);
+        hyperspaceRangeData.push(cycle.research.hyperspaceRange);
+        terraformingData.push(cycle.research.terraforming);
+        experimentationData.push(cycle.research.experimentation);
+        weaponsData.push(cycle.research.weapons);
+        bankingData.push(cycle.research.banking);
+        manufacturingData.push(cycle.research.manufacturing);
+    });
+    let dataset = [{
+        label: 'Scanning',
+        fill: false,
+        backgroundColor: getBackgroundColour(0),
+        borderColor: getBorderColour(0),
+        data: scanningData,
+        steppedLine: false
+    }, {
+        label: 'Hyperspace Range',
+        fill: false,
+        backgroundColor: getBackgroundColour(1),
+        borderColor: getBorderColour(1),
+        data: hyperspaceRangeData,
+        steppedLine: false
+    }, {
+        label: 'Terraforming',
+        fill: false,
+        backgroundColor: getBackgroundColour(2),
+        borderColor: getBorderColour(2),
+        data: terraformingData,
+        steppedLine: false
+    }, {
+        label: 'Experimentation',
+        fill: false,
+        backgroundColor: getBackgroundColour(3),
+        borderColor: getBorderColour(3),
+        data: experimentationData,
+        steppedLine: false
+    }, {
+        label: 'Weapons',
+        fill: false,
+        backgroundColor: getBackgroundColour(4),
+        borderColor: getBorderColour(4),
+        data: weaponsData,
+        steppedLine: false
+    }, {
+        label: 'Banking',
+        fill: false,
+        backgroundColor: getBackgroundColour(5),
+        borderColor: getBorderColour(5),
+        data: bankingData,
+        steppedLine: false
+    }, {
+        label: 'Manufacturing',
+        fill: false,
+        backgroundColor: getBackgroundColour(6),
+        borderColor: getBorderColour(6),
+        data: manufacturingData,
+        steppedLine: false
+    }];
+    createGraph("research-graph", tickLabels, dataset);
 }

@@ -28,6 +28,9 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
+/**
+ * Created by Macro303 on 2018-Nov-08.
+ */
 object Server {
     private val LOGGER = LogManager.getLogger(Server::class.java)
 
