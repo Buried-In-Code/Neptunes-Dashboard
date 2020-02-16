@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="Macro303" name="author">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <title>Neptune's Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet"/>
+    <link href="/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div id="navbar"></div>
+<div class="container">
+    <h1 class="display-1 text-center text-light" id="player">{{Alias}} ({{Name}}) [{{Team}}]</h1>
+    <div id="content">
+        <div class="row row-cols-4 justify-content-center">
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Stars</h4>
+                        <p class="card-text text-light" id="stars">{{Stars}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Ships</h4>
+                        <p class="card-text text-light" id="ships">{{Ships}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Fleets</h4>
+                        <p class="card-text text-light" id="fleets">{{Fleets}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Economy</h4>
+                        <p class="card-text text-light">
+                            <span id="economy">{{Economy}}</span>
+                            <small id="economy-per-cycle"> ({{Economy Per Cycle}})</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Industry</h4>
+                        <p class="card-text text-light">
+                            <span id="industry">{{Industry}}</span>
+                            <small id="industry-per-cycle"> ({{Industry Per Cycle}})</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Science</h4>
+                        <p class="card-text text-light">
+                            <span id="science">{{Science}}</span>
+                            <small id="science-per-cycle"> ({{Science Per Cycle}})</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row row-cols-4 justify-content-center">
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Scanning</h4>
+                        <p class="card-text text-light" id="scanning">{{Scanning}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Hyperspace Range</h4>
+                        <p class="card-text text-light" id="hyperspace-range">{{Hyperspace Range}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Terraforming</h4>
+                        <p class="card-text text-light" id="terraforming">{{Terraforming}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Experimentation</h4>
+                        <p class="card-text text-light" id="experimentation">{{Experimentation}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Weapons</h4>
+                        <p class="card-text text-light" id="weapons">{{Weapons}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Banking</h4>
+                        <p class="card-text text-light" id="banking">{{Banking}}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <h4 class="card-title text-info">Manufacturing</h4>
+                        <p class="card-text text-light" id="manufacturing">{{Manufacturing}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas height="250" id="stats-graph" width="500"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card mb-3 text-light bg-dark">
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas height="250" id="research-graph" width="500"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/patternomaly@1.3.2/dist/patternomaly.min.js" type="text/javascript"></script>
+<script src="/script.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#navbar").load("/navbar.html");
+        loadPlayer();
+    });
+</script>
+</body>
+</html>

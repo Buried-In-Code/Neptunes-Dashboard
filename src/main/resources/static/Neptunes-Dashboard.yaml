@@ -3,22 +3,21 @@ info:
   title: Neptune's Dashboard
   contact:
     email: JonahJ@datacom.co.nz
-  version: "2.1"
+  version: "4.0.0"
 servers:
+  - url: localhost:5505
   - url: https://neptunes-dashboard.bitcloud.nz
 tags:
   - name: Game
     description: Game Information
   - name: Player
     description: Player Information
-  - name: Team
-    description: Team Information
 paths:
   /api/games:
     get:
       tags:
         - Game
-      summary: Get All Games
+      summary: Get all monitored games
       parameters:
         - name: Accept
           in: header
@@ -35,17 +34,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Game'
-        404:
-          description: No Games Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/games/latest:
     get:
       tags:
         - Game
-      summary: Get Latest Game by Start Time
+      summary: Get the latest Game by start time
       responses:
         200:
           description: Success
@@ -53,21 +46,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
-        404:
-          description: No Games Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /api/games/{gameID}:
     get:
       tags:
         - Game
-      summary: Get Game by ID
+      summary: Get a game by its ID
       parameters:
         - name: gameID
           in: path
-          description: ID of Game
+          description: ID of the Game
           required: true
           schema:
             type: number
@@ -78,20 +65,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
-        404:
-          description: No Game Found with that ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
     put:
       tags:
         - Game
-      summary: Update Game
+      summary: Update game data
       parameters:
         - name: gameID
           in: path
-          description: ID of Game
+          description: ID of the Game
           required: true
           schema:
             type: number
@@ -102,29 +83,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
-        401:
-          description: Not Authentication
+    post:
+      tags:
+        - Game
+      summary: Create game entry
+      parameters:
+        - name: gameID
+          in: path
+          description: ID of the Game
+          required: true
+          schema:
+            type: number
+        - name: code
+          in: query
+          description: API Game code
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        404:
-          description: No Game Found with that ID
+                $ref: '#/components/schemas/Game'
+  /api/latest/players:
+    get:
+      tags:
+        - Player
+      summary: Gets all players from the latest game
+      responses:
+        200:
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
   /api/{gameID}/players:
     get:
       tags:
         - Player
-      summary: Gets All Players from Game with ID
+      summary: Gets all players from the given game
       parameters:
         - name: gameID
           in: path
-          description: ID of Game to get Players from
+          description: ID of the Game
           required: true
           schema:
             type: number
@@ -137,24 +142,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Player'
-        404:
-          description: No Players Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/players/{playerID}:
+  /api/latest/players/{alias}:
     get:
       tags:
         - Player
-      summary: Get Player by ID
+      summary: Gets the player with the given alias from the latest game
       parameters:
-        - name: playerID
+        - name: alias
           in: path
-          description: ID of Player
+          description: Alias of the Player
           required: true
           schema:
-            type: number
+            type: string
       responses:
         200:
           description: Success
@@ -162,63 +161,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Player'
-        404:
-          description: No Player Found with that ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
-      tags:
-        - Player
-      summary: Update Player
-      parameters:
-        - name: playerID
-          in: path
-          description: ID of Player
-          required: true
-          schema:
-            type: number
-      requestBody:
-        description: "Name and team of player"
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PlayerRequest'
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Player'
-        401:
-          description: Not Authentication
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        404:
-          description: No Player Found with that ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
-  /api/{gameID}/teams:
+  /api/{gameID}/players/{alias}:
     get:
       tags:
-        - Team
-      summary: Gets All Teams from Game with ID or latest Game
-      operationId: getTeams
+        - Player
+      summary: Gets the player with the given alias from the given game
       parameters:
         - name: gameID
           in: path
-          description: ID of Game to get Teams from
+          description: ID of the Game
           required: true
           schema:
             type: number
+        - name: alias
+          in: path
+          description: Alias of the Player
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+  /api/latest/players/{alias}/ticks:
+    get:
+      tags:
+        - Player
+      summary: Gets all the ticks of the player with the given alias from the latest game
+      parameters:
+        - name: alias
+          in: path
+          description: Alias of the Player
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: Success
@@ -227,232 +206,193 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Team'
-        404:
-          description: No Teams Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/teams/{ID}:
+                  $ref: '#/components/schemas/Tick'
+  /api/{gameID}/players/{alias}/ticks:
     get:
       tags:
-        - Team
-      summary: Get Team by ID
-      operationId: getTeamByID
+        - Player
+      summary: Gets all the ticks of the player with the given alias from the given game
       parameters:
-        - name: ID
+        - name: gameID
           in: path
-          description: ID of Team to return
+          description: ID of Game
           required: true
           schema:
             type: number
+        - name: alias
+          in: path
+          description: Alias of the Player
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
-        404:
-          description: No Team Found with that ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    put:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tick'
+  /api/latest/players/{alias}/ticks/{tickID}:
+    get:
       tags:
-        - Team
-      summary: Update Team
-      operationId: updateTeam
+        - Player
+      summary: Gets the tick of the player with the given alias from the latest game
       parameters:
-        - name: ID
+        - name: alias
           in: path
-          description: ID of Team to update
+          description: Alias of the Player
+          required: true
+          schema:
+            type: string
+        - name: tickID
+          in: path
+          description: ID of the Tick
           required: true
           schema:
             type: number
-      requestBody:
-        description: "Name of Team"
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TeamRequest'
       responses:
         200:
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
-        401:
-          description: Not Authentication
+                $ref: '#/components/schemas/Tick'
+  /api/{gameID}/players/{alias}/ticks/{tickID}:
+    get:
+      tags:
+        - Player
+      summary: Gets all the ticks of the player with the given alias from the given game
+      parameters:
+        - name: gameID
+          in: path
+          description: ID of the Game
+          required: true
+          schema:
+            type: number
+        - name: alias
+          in: path
+          description: Alias of the Player
+          required: true
+          schema:
+            type: string
+        - name: tickID
+          in: path
+          description: ID of the Tick
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
-        404:
-          description: No Team Found with that ID
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-      security:
-        - BasicAuth: []
+                $ref: '#/components/schemas/Tick'
 components:
   schemas:
     Game:
       type: object
       properties:
-        ID:
+        id:
           type: number
-        name:
-          type: string
-        totalStars:
-          type: integer
-        victoryStars:
-          type: integer
-        productionRate:
-          type: integer
-        startTime:
-          type: string
-          format: date-time
-        isGameOver:
-          type: boolean
+        fleetSpeed:
+          type: number
         isPaused:
+          type: boolean
+        productions:
+          type: number
+        tickFragment:
+          type: number
+        tickRate:
+          type: number
+        productionRate:
+          type: number
+        victoryStars:
+          type: number
+        isGameOver:
           type: boolean
         isStarted:
           type: boolean
+        startTime:
+          type: string
+          format: date-time
+        totalStars:
+          type: number
+        productionCounter:
+          type: number
+        isTradeScanned:
+          type: boolean
         tick:
-          type: integer
-        players:
-          type: integer
-        teams:
-          type: integer
+          type: number
+        tradeCost:
+          type: number
+        name:
+          type: string
+        isTurnBased:
+          type: boolean
+        war:
+          type: number
+        turnTimeout:
+          type: string
+          format: date-time
+        fleetPrice:
+          type: number
+        gameType:
+          type: string
     Player:
       type: object
       properties:
-        ID:
-          type: integer
+        id:
+          type: number
         alias:
           type: string
         name:
           type: string
           nullable: true
-        game:
-          type: number
         team:
           type: string
-        turns:
-          type: array
-          items:
-            $ref: '#/components/schemas/Turn'
-    Turn:
+          nullable: true
+    Tick:
       type: object
       properties:
         tick:
-          type: integer
-        player:
-          type: integer
-        economy:
-          type: integer
-        industry:
-          type: integer
-        science:
-          type: integer
+          type: number
         stars:
-          type: integer
-        fleet:
-          type: integer
+          type: number
+        fleets:
+          type: number
         ships:
-          type: integer
+          type: number
         isActive:
           type: boolean
-        economyPerTurn:
+        economy:
           type: number
-        industryPerTurn:
+        economyPerTick:
           type: number
-        tech:
+        industry:
+          type: number
+        industryPerTick:
+          type: number
+        science:
+          type: number
+        sciencePerTick:
+          type: number
+        research:
           type: object
           properties:
             scanning:
-              type: integer
-            hyperspace:
-              type: integer
+              type: number
+            hyperspaceRange:
+              type: number
             terraforming:
-              type: integer
+              type: number
             experimentation:
-              type: integer
+              type: number
             weapons:
-              type: integer
+              type: number
             banking:
-              type: integer
+              type: number
             manufacturing:
-              type: integer
-    Team:
-      type: object
-      properties:
-        ID:
-          type: integer
-        name:
-          type: string
-        game:
-          type: number
-        players:
-          type: array
-          items:
-            type: integer
-        totalEconomy:
-          type: integer
-        totalEconomyPerTurn:
-          type: number
-        totalIndustry:
-          type: integer
-        totalIndustryPerTurn:
-          type: number
-        totalScience:
-          type: integer
-        totalStars:
-          type: integer
-        totalFleet:
-          type: integer
-        totalShips:
-          type: integer
-    PlayerRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        team:
-          type: string
-      required:
-        - name
-    TeamRequest:
-      type: object
-      properties:
-        name:
-          type: string
-      required:
-        - name
-    Error:
-      type: object
-      properties:
-        request:
-          type: string
-        message:
-          type: string
-        code:
-          type: object
-          properties:
-            value:
-              type: integer
-            description:
-              type: string
-        cause:
-          type: array
-          items:
-            type: string
-  securitySchemes:
-    BasicAuth:
-      type: http
-      scheme: basic
+              type: number

@@ -1,0 +1,17 @@
+body {
+    background-color: grey;
+    padding-top: 4rem;
+}
+
+#content {
+    padding-top: 2rem;
+}
+
+table th {
+    text-align: center;
+}
+
+.table {
+    margin: auto;
+    width: 50% !important;
+}

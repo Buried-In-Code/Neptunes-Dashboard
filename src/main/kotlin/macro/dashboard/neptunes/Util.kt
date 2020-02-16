@@ -1,54 +1,66 @@
 package macro.dashboard.neptunes
 
 import com.google.gson.GsonBuilder
-import macro.dashboard.neptunes.Config.Companion.CONFIG
+import kong.unirest.HttpResponse
+import kong.unirest.JsonNode
+import kong.unirest.Unirest
+import kong.unirest.UnirestException
+import macro.dashboard.neptunes.config.Config
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import org.slf4j.LoggerFactory
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.sql.Connection
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 /**
  * Created by Macro303 on 2018-Nov-12.
  */
 object Util {
-	private val LOGGER = LoggerFactory.getLogger(this::class.java)
-	private const val DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
-	private val database = Database.connect(url = "jdbc:sqlite:${CONFIG.databaseFile}", driver = "org.sqlite.JDBC")
-	internal val GSON = GsonBuilder()
-		.serializeNulls()
-		.disableHtmlEscaping()
-		.create()
-	val JAVA_FORMATTER: java.time.format.DateTimeFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
-	val JODA_FORMATTER: org.joda.time.format.DateTimeFormatter = DateTimeFormat.forPattern(DATE_FORMAT)
+    private val LOGGER = LogManager.getLogger(Util::class.java)
+    internal val database = Database.connect(url = "jdbc:sqlite:Neptunes-Dashboard.sqlite", driver = "org.sqlite.JDBC")
+    internal val HEADERS = mapOf(
+        "Accept" to "application/json; charset=UTF-8",
+        "Content-Type" to "application/json; charset=UTF-8",
+        "User-Agent" to "Neptune's Dashboard"
+    )
+    internal val GSON = GsonBuilder()
+        .setPrettyPrinting()
+        .serializeNulls()
+        .disableHtmlEscaping()
+        .create()
 
-	internal fun <T> query(description: String, block: () -> T): T {
-		val startTime = LocalDateTime.now()
-		val transaction = transaction(
-			transactionIsolation = Connection.TRANSACTION_SERIALIZABLE,
-			repetitionAttempts = 1,
-			db = database
-		) {
-			addLogger(Slf4jSqlDebugLogger)
-			block()
-		}
-		LOGGER.debug("Took ${ChronoUnit.MILLIS.between(startTime, LocalDateTime.now())}ms to $description")
-		return transaction
-	}
+    init {
+        TransactionManager.manager.defaultIsolationLevel = Connection.TRANSACTION_SERIALIZABLE
+        Unirest.config().enableCookieManagement(false)
+        if (Config.INSTANCE.proxy.hostName != null && Config.INSTANCE.proxy.port != null)
+            Unirest.config().proxy(Config.INSTANCE.proxy.hostName, Config.INSTANCE.proxy.port!!)
+    }
 
-	internal fun DateTime.toJavaDateTime(): LocalDateTime {
-		val jodaString = this.toString(JODA_FORMATTER)
-		return LocalDateTime.parse(jodaString, JAVA_FORMATTER)
-	}
+    internal fun postRequest(url: String, gameId: Long, code: String): JsonNode? {
+        val boundary = "===${System.currentTimeMillis()}==="
+        val request = Unirest.post(url)
+            .header("content-type", "multipart/form-data; boundary=$boundary")
+            .header("User-Agent", "Neptune's Dashboard")
+            .body("--$boundary\r\nContent-Disposition: form-data; name=\"api_version\"\r\n\r\n0.1\r\n--$boundary\r\nContent-Disposition: form-data; name=\"game_number\"\r\n\r\n$gameId\r\n--$boundary\r\nContent-Disposition: form-data; name=\"code\"\r\n\r\n$code\r\n--$boundary--")
+        LOGGER.debug("GET : >>> - ${request.url}")
+        val response: HttpResponse<JsonNode>
+        try {
+            response = request.asJson()
+        } catch (ue: UnirestException) {
+            LOGGER.error("Unable to load URL: $ue")
+            return null
+        }
 
-	internal fun LocalDateTime.toJodaDateTime(): DateTime {
-		val javaString = this.format(JAVA_FORMATTER)
-		return DateTime.parse(javaString, JODA_FORMATTER)
-	}
+        var level = Level.ERROR
+        when {
+            response.status < 100 -> level = Level.ERROR
+            response.status < 200 -> level = Level.INFO
+            response.status < 300 -> level = Level.INFO
+            response.status < 400 -> level = Level.WARN
+            response.status < 500 -> level = Level.WARN
+        }
+        LOGGER.log(level, "GET: ${response.status} ${response.statusText} - ${request.url}")
+        LOGGER.debug("Response: ${response.body}")
+        return if (response.status != 200) null else response.body
+    }
 }

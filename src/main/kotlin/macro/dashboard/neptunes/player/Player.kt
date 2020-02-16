@@ -1,54 +1,37 @@
 package macro.dashboard.neptunes.player
 
-import macro.dashboard.neptunes.GeneralException
+import macro.dashboard.neptunes.ISendable
 import macro.dashboard.neptunes.game.Game
-import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.team.Team
-import macro.dashboard.neptunes.team.TeamTable
-import org.slf4j.LoggerFactory
+import macro.dashboard.neptunes.tick.Tick
+import macro.dashboard.neptunes.tick.TickTable
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-data class Player(
-	val ID: Int,
-	val gameID: Long,
-	var teamID: Int,
-	val alias: String,
-	var name: String? = null
-) {
-	val game: Game by lazy {
-		GameTable.select()
-	}
-	val team: Team by lazy {
-		TeamTable.select(ID = teamID) ?: throw GeneralException()
-	}
-	val turns: List<Turn> by lazy {
-		TurnTable.searchByPlayer(playerID = ID)
-	}
-	val latestTurn: Turn by lazy {
-		TurnTable.selectLatest(playerID = ID) ?: throw GeneralException()
-	}
+class Player(id: EntityID<Long>) : LongEntity(id), ISendable {
+    companion object : LongEntityClass<Player>(PlayerTable)
 
-	fun toOutput(showGame: Boolean, showTeam: Boolean, showTurns: Boolean = true): Map<String, Any?> {
-		val output = mapOf(
-			"ID" to ID,
-			"alias" to alias,
-			"name" to name,
-			"game" to gameID,
-			"team" to team.name,
-			"turns" to latestTurn.toOutput()
-		).toMutableMap()
-		if (showGame)
-			output["game"] = game.toOutput()
-		if (showTeam)
-			output["team"] = team.toOutput(showGame = false, showPlayers = false)
-		if (showTurns)
-			output["turns"] = turns.map { it.toOutput() }
-		return output.toSortedMap()
-	}
+    var game by Game referencedOn PlayerTable.gameCol
+    var alias by PlayerTable.aliasCol
+    var team by PlayerTable.teamCol
+    var name by PlayerTable.nameCol
 
-	companion object {
-		private val LOGGER = LoggerFactory.getLogger(this::class.java)
-	}
+    val ticks by Tick referrersOn TickTable.playerCol
+
+    override fun toJson(full: Boolean): Map<String, Any?> {
+        val output = mutableMapOf<String, Any?>(
+            "id" to id.value,
+            "alias" to alias,
+            "name" to name,
+            "team" to team
+        )
+        if (full) {
+            output["game"] = game.toJson(full = false)
+            output["ticks"] = ticks.map { it.toJson(full = false) }
+        }
+        return output.toSortedMap()
+    }
 }

@@ -1,60 +1,78 @@
 package macro.dashboard.neptunes.game
 
-import macro.dashboard.neptunes.Config.Companion.CONFIG
-import macro.dashboard.neptunes.Util
+import macro.dashboard.neptunes.ISendable
+import macro.dashboard.neptunes.player.Player
 import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.team.TeamTable
-import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
+import org.jetbrains.exposed.dao.LongEntity
+import org.jetbrains.exposed.dao.LongEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
+import java.time.format.DateTimeFormatter
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
-data class Game(
-	val ID: Long,
-	val gameType: String,
-	val fleetSpeed: Double,
-	var isPaused: Boolean,
-	var productions: Int,
-	val fleetPrice: Int?,
-	var tickFragment: Int,
-	val tickRate: Int,
-	val productionRate: Int,
-	val victoryStars: Int,
-	var isGameOver: Boolean,
-	var isStarted: Boolean,
-	var startTime: LocalDateTime,
-	val totalStars: Int,
-	var productionCounter: Int,
-	val isTradeScanned: Boolean,
-	var tick: Int,
-	val tradeCost: Int,
-	val name: String,
-	val isTurnBased: Boolean,
-	var war: Int,
-	var turnTimeout: LocalDateTime
-) {
-	fun toOutput(): Map<String, Any?> {
-		val output = mapOf(
-			"ID" to ID,
-			"gameType" to gameType,
-			"name" to name,
-			"totalStars" to totalStars,
-			"victoryStars" to victoryStars,
-			"productionRate" to productionRate,
-			"startTime" to startTime.format(Util.JAVA_FORMATTER),
-			"isGameOver" to isGameOver,
-			"isPaused" to isPaused,
-			"isStarted" to isStarted,
-			"cycles" to tick / CONFIG.gameCycle,
-			"turnTimeout" to turnTimeout.format(Util.JAVA_FORMATTER),
-			"playerCount" to PlayerTable.search().size,
-			"teamCount" to TeamTable.search().filterNot { it.players.isEmpty() }.size
-		).toMutableMap()
-		return output.toSortedMap()
-	}
+class Game(id: EntityID<Long>) : LongEntity(id), ISendable, Comparable<Game> {
+    companion object : LongEntityClass<Game>(GameTable)
 
-	companion object {
-		private val LOGGER = LoggerFactory.getLogger(this::class.java)
-	}
+    var code by GameTable.codeCol
+    var fleetSpeed by GameTable.fleetSpeedCol
+    var isPaused by GameTable.isPausedCol
+    var productions by GameTable.productionsCol
+    var tickFragment by GameTable.tickFragmentCol
+    var tickRate by GameTable.tickRateCol
+    var productionRate by GameTable.productionRateCol
+    var victoryStars by GameTable.victoryStarsCol
+    var isGameOver by GameTable.isGameOverCol
+    var isStarted by GameTable.isStartedCol
+    var startTime by GameTable.startTimeCol
+    var totalStars by GameTable.totalStarsCol
+    var productionCounter by GameTable.productionCounterCol
+    var isTradeScanned by GameTable.isTradeScannedCol
+    var tick by GameTable.tickCol
+    var tradeCost by GameTable.tradeCostCol
+    var name by GameTable.nameCol
+    var isTurnBased by GameTable.isTurnBasedCol
+    var war by GameTable.warCol
+    var turnTimeout by GameTable.turnTimeoutCol
+    var fleetPrice by GameTable.fleetPriceCol
+    var gameType by GameTable.gameTypeCol
+
+    val players by Player referrersOn PlayerTable.gameCol
+
+    override fun toJson(full: Boolean): Map<String, Any?> {
+        val output = mutableMapOf<String, Any?>(
+            "id" to id.value,
+            "fleetSpeed" to fleetSpeed,
+            "isPaused" to isPaused,
+            "productions" to productions,
+            "tickFragment" to tickFragment,
+            "tickRate" to tickRate,
+            "productionRate" to productionRate,
+            "victoryStars" to victoryStars,
+            "isGameOver" to isGameOver,
+            "isStarted" to isStarted,
+            "startTime" to startTime.format(DateTimeFormatter.ISO_DATE_TIME),
+            "totalStars" to totalStars,
+            "productionCounter" to productionCounter,
+            "isTradeScanned" to isTradeScanned,
+            "tick" to tick,
+            "tradeCost" to tradeCost,
+            "name" to name,
+            "isTurnBased" to isTurnBased,
+            "war" to war,
+            "turnTimeout" to turnTimeout.format(DateTimeFormatter.ISO_DATE_TIME),
+            "fleetPrice" to fleetPrice,
+            "gameType" to gameType
+        )
+        if (full) {
+            output["players"] = players.map { it.toJson(full = false) }
+        }
+        return output.toSortedMap()
+    }
+
+    override fun compareTo(other: Game): Int =
+        compareBy<Game> { it.startTime }
+            .thenBy { it.name }
+            .thenBy { it.id }
+            .compare(this, other)
 }
