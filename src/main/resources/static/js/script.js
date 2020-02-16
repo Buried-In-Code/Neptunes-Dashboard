@@ -31,7 +31,6 @@ function getBorderColour(index) {
 }
 
 function update() {
-    document.getElementById("updateButton").className = "button is-info is-rounded is-outlined is-loading";
     $.ajax({
         async: true,
         url: '/api/games/latest',
@@ -42,11 +41,9 @@ function update() {
         },
         dataType: 'json',
         success: function () {
-            document.getElementById("updateButton").className = "button is-info is-rounded is-outlined";
             location.reload();
         },
         error: function (xhr, status, error) {
-            document.getElementById("updateButton").className = "button is-info is-rounded is-outlined";
             alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
         }
     });

@@ -11,26 +11,21 @@ Pulls game information for Neptune's Pride and attempts to display it in a simpl
 _Currently only supports **Proteus**_
 
 ## Built Using
- - [AdoptOpenJDK: 11](https://adoptopenjdk.net/)
+ - [AdoptOpenJDK: 8](https://adoptopenjdk.net/)
  - [Gradle: 6.0.1](https://gradle.org/)
  - [kotlin-stdlib-jdk8: 1.3.61](https://kotlinlang.org/)
- - [ktor-server-netty: 1.3.0-rc2](https://github.com/ktorio/ktor)
- - [ktor-jackson: 1.3.0-rc2](https://github.com/ktorio/ktor)
- - [ktor-freemarker: 1.3.0-rc](https://ktor.io/)
- - [jackson-databind: 2.10.2](https://github.com/FasterXML/jackson)
- - [jackson-dataformat-yaml: 2.10.2](https://github.com/FasterXML/jackson-dataformats-text)
- - [jackson-datatype-jdk8: 2.10.2](https://github.com/FasterXML/jackson-modules-java8)
- - [jackson-datatype-jsr310: 2.10.2](https://github.com/FasterXML/jackson-modules-java8)
- - [exposed-core: 0.20.2](https://github.com/JetBrains/Exposed)
- - [exposed-dao: 0.20.2](https://github.com/JetBrains/Exposed)
- - [exposed-jdbc: 0.20.2](https://github.com/JetBrains/Exposed)
- - [exposed-java-time: 0.20.2](https://github.com/JetBrains/Exposed)
- - [unirest-java: 3.3.00](https://github.com/Kong/unirest-java)
- - [unirest-objectmapper-jackson: 3.3.00](https://github.com/Kong/unirest-java)
+ - [ktor-server-netty: 1.3.1](https://github.com/ktorio/ktor)
+ - [ktor-gson: 1.3.1](https://github.com/ktorio/ktor)
+ - [snakeyaml: 1.25](http://www.snakeyaml.org)
+ - [exposed-core: 0.21.1](https://github.com/JetBrains/Exposed)
+ - [exposed-dao: 0.21.1](https://github.com/JetBrains/Exposed)
+ - [exposed-jdbc: 0.21.1](https://github.com/JetBrains/Exposed)
+ - [exposed-java-time: 0.21.1](https://github.com/JetBrains/Exposed)
+ - [unirest-java: 3.5.00](https://github.com/Kong/unirest-java)
  - [log4j-api: 2.13.0](https://logging.apache.org/log4j/2.x/)
  - [log4j-slf4j-impl: 2.13.0 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.30.1 (Runtime)](https://github.com/xerial/sqlite-jdbc)
- - [bulma: 0.8.0 (CSS Framework)](https://bulma.io)
+ - [bootstrap: 4.4.1 (CSS Framework)](https://getbootstrap.com/)
  
 ## Running
 **To run from source:**

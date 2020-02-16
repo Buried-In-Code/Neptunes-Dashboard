@@ -7,10 +7,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.respond
-import io.ktor.routing.Routing
-import io.ktor.routing.get
-import io.ktor.routing.post
-import io.ktor.routing.route
+import io.ktor.routing.*
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.KtorExperimentalAPI
@@ -122,25 +119,36 @@ fun Application.module() {
                         }
                     }
                     post {
-                        val request = call.receiveOrNull<NewGameRequest>()
-                            ?: throw BadRequestException("Invalid New Game Request")
-                        val newId = request.gameID ?: throw BadRequestException("Invalid Game ID")
-                        val newCode = request.code ?: throw BadRequestException("Invalid Game Code")
+                        val gameId = call.parameters["gameID"]?.toLongOrNull()
+                            ?: throw BadRequestException("Invalid Game ID")
+                        val gameCode = call.request.queryParameters["code"]
+                            ?: throw BadRequestException("Invalid Game Code")
                         newSuspendedTransaction(db = Util.database) {
-                            var game = Game.findById(newId)
+                            var game = Game.findById(gameId)
                             if (game != null) {
                                 call.respond(
                                     message = "Game with ID already Exists",
                                     status = HttpStatusCode.Conflict
                                 )
                             } else {
-                                Triton.getGame(gameId = newId, code = newCode)
-                                game = Game.findById(newId) ?: throw NotFoundException("Unable to find Game")
+                                Triton.getGame(gameId = gameId, code = gameCode)
+                                game = Game.findById(gameId) ?: throw NotFoundException("Unable to find Game")
                                 call.respond(
                                     message = game.toJson(full = true),
                                     status = HttpStatusCode.Created
                                 )
                             }
+                        }
+                    }
+                    put {
+                        newSuspendedTransaction(db = Util.database) {
+                            var game = call.getGame()
+                            Triton.getGame(gameId = game.id.value, code = game.code)
+                            game = Game.findById(game.id) ?: throw NotFoundException("Unable to find Game")
+                            call.respond(
+                                message = game.toJson(full = true),
+                                status = HttpStatusCode.OK
+                            )
                         }
                     }
                     route(path = "/players") {
@@ -149,10 +157,10 @@ fun Application.module() {
                                 call.respond(call.getGame().players.map { it.toJson(full = true) })
                             }
                         }
-                        route(path = "/{playerAlias}") {
+                        route(path = "/{alias}") {
                             fun ApplicationCall.getPlayer(): Player {
                                 val gameId = getGame().id
-                                val playerAlias = parameters["playerAlias"]
+                                val playerAlias = parameters["alias"]
                                     ?: throw BadRequestException("Invalid Player Alias")
                                 return Player.find {
                                     PlayerTable.aliasCol eq playerAlias and (PlayerTable.gameCol eq gameId)
