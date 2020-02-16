@@ -6,9 +6,9 @@
 [![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Dashboard.svg?label=contributors)](https://github.com/Macro303/Neptunes-Dashboard/graphs/contributors)
 [![License](https://img.shields.io/github/license/Macro303/Neptunes-Dashboard.svg?=label=license)](https://raw.githubusercontent.com/Macro303/Neptunes-Dashboard/master/LICENSE)
 
-Pulls game information for Neptune's Pride and attempts to display it in a simple web interface and REST endpoints.
+Pulls game information for Neptune's Pride and attempts to display it in a simple Web Interface with REST endpoints.
 
-_Currently only supports **Proteus**_
+_Currently only supports **Triton** games_
 
 ## Built Using
  - [AdoptOpenJDK: 8](https://adoptopenjdk.net/)
