@@ -1,10 +1,10 @@
 <img src="https://github.com/Macro303/Neptunes-Dashboard/blob/master/logo.png" align="left" width="128" height="128" alt="Neptune's Dashboard Logo"/>
 
 # Neptune's Dashboard
-[![Version](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=version)](https://github.com/Macro303/Neptunes-Dashboard/releases)
-[![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Dashboard.svg?label=issues)](https://github.com/Macro303/Neptunes-Dashboard/issues)
-[![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Dashboard.svg?label=contributors)](https://github.com/Macro303/Neptunes-Dashboard/graphs/contributors)
-[![License](https://img.shields.io/github/license/Macro303/Neptunes-Dashboard.svg?=label=license)](https://raw.githubusercontent.com/Macro303/Neptunes-Dashboard/master/LICENSE)
+[![Version](https://img.shields.io/github/tag-pre/Macro303/Neptunes-Dashboard.svg?label=version&style=flat-square)](https://github.com/Macro303/Neptunes-Dashboard/releases)
+[![Issues](https://img.shields.io/github/issues/Macro303/Neptunes-Dashboard.svg?style=flat-square)](https://github.com/Macro303/Neptunes-Dashboard/issues)
+[![Contributors](https://img.shields.io/github/contributors/Macro303/Neptunes-Dashboard.svg?style=flat-square)](https://github.com/Macro303/Neptunes-Dashboard/graphs/contributors)
+[![License](https://img.shields.io/github/license/Macro303/Neptunes-Dashboard.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 Pulls game information for Neptune's Pride and attempts to display it in a simple Web Interface with REST endpoints.
 
