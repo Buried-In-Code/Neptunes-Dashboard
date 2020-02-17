@@ -27,9 +27,19 @@ _Currently only supports **Triton** games_
  - [sqlite-jdbc: 3.30.1 (Runtime)](https://github.com/xerial/sqlite-jdbc)
  - [bootstrap: 4.4.1 (CSS Framework)](https://getbootstrap.com/)
  
-## Running
-**To run from source:**
+## Execution
+ - You can change basic proxy settings and server settings in the generated **config.yaml**
+ - The default address is [localhost:5505](http://localhost:5505)
+ - To create a game you need to do a **POST** request `/api/games/{gameID}?code={gameCode}`
+   - The `gameID` can be found in the Neptune's Pride URL
+   - The `gameCode` is generated in the options menu of the game
+ - Currently the information doesn't auto refresh and requires the **Update** button to be clicked to request an update from NP  
+ 
+### Running from source
 ```bash
 $ gradle clean run
 ```
-_You can change basic proxy settings and server settings in the generated `config.yaml`_
+_or_
+```bash
+$ gradlew clean run
+```
