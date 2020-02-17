@@ -31,6 +31,7 @@ function getBorderColour(index) {
 }
 
 function update() {
+    document.getElementById('updateButton').disabled = true;
     $.ajax({
         async: true,
         url: '/api/games/latest',
@@ -41,9 +42,11 @@ function update() {
         },
         dataType: 'json',
         success: function () {
+            document.getElementById('updateButton').disabled = false;
             location.reload();
         },
         error: function (xhr, status, error) {
+            document.getElementById('updateButton').disabled = false;
             alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
         }
     });
