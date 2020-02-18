@@ -12,7 +12,7 @@ import java.nio.file.Paths
  */
 class Config {
     var proxy: Connection = Connection()
-    var server: Connection = Connection("localhost", 5505)
+    var server: Connection = Connection("localhost", 6790)
 
     fun save(): Config {
         Files.newBufferedWriter(Paths.get(filename)).use {

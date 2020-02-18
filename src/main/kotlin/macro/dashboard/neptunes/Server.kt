@@ -47,7 +47,7 @@ object Server {
     fun main(args: Array<String>) {
         embeddedServer(
             Netty,
-            port = Config.INSTANCE.server.port ?: 5505,
+            port = Config.INSTANCE.server.port ?: 6790,
             host = Config.INSTANCE.server.hostName ?: "localhost",
             module = Application::module
         ).apply { start(wait = true) }

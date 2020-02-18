@@ -29,7 +29,7 @@ _Currently only supports **Triton** games_
  
 ## Execution
  - You can change basic proxy settings and server settings in the generated **config.yaml**
- - The default address is [localhost:5505](http://localhost:5505)
+ - The default address is [localhost:6790](http://localhost:6790)
  - To create a game you need to do a **POST** request `/api/games/{gameID}?code={gameCode}`
    - The `gameID` can be found in the Neptune's Pride URL
    - The `gameCode` is generated in the options menu of the game
