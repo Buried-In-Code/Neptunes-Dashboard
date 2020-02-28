@@ -21,7 +21,7 @@ dependencies {
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
 	implementation group: 'io.ktor', name: 'ktor-server-netty', version: "$ktorVersion"
 	implementation group: 'io.ktor', name: 'ktor-gson', version: "$ktorVersion"
-	implementation group: 'org.yaml', name: 'snakeyaml', version: "1.25"
+	implementation group: 'org.yaml', name: 'snakeyaml', version: "1.26"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-core', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-dao', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: "$exposedVersion"
