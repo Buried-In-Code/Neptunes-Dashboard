@@ -5,7 +5,7 @@ info:
     email: JonahJ@datacom.co.nz
   version: "4.0.0"
 servers:
-  - url: localhost:5505
+  - url: localhost:6790
   - url: https://neptunes-dashboard.bitcloud.nz
 tags:
   - name: Game
