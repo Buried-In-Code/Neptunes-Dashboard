@@ -8,6 +8,8 @@ servers:
   - url: localhost:6790
   - url: https://neptunes-dashboard.bitcloud.nz
 tags:
+  - name: Contributor
+    description: Contributor Information
   - name: Game
     description: Game Information
   - name: Player
@@ -15,6 +17,20 @@ tags:
   - name: Tick
     description: Tick Information
 paths:
+  /api/contributors:
+    get:
+      tags:
+        - Contributor
+      summary: Contributor List
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contributor'
   /api/games:
     get:
       tags:
@@ -172,6 +188,13 @@ components:
         type: number
       description: ID of the Tick
   schemas:
+    Contributor:
+      type: object
+      properties:
+        title:
+          type: string
+        role:
+          type: string
     Game:
       type: object
       properties:

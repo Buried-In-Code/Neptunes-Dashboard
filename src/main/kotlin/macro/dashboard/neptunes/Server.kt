@@ -219,23 +219,23 @@ fun Application.module() {
 					val contributors = listOf(
 						mapOf<String, Any?>(
 							"Title" to "Macro303",
-							"Image" to "macro303.png",
 							"Role" to "Creator and Maintainer"
 						).toSortedMap(),
 						mapOf<String, Any?>(
 							"Title" to "Miss. T",
-							"Image" to "misst.jpg",
-							"Role" to "Supporter and Loving Fiance"
+							"Role" to "Supporter and Loving Fiancée"
 						).toSortedMap(),
 						mapOf<String, Any?>(
 							"Title" to "Rocky",
-							"Image" to "rocky.png",
 							"Role" to "Quality Tester"
 						).toSortedMap(),
 						mapOf<String, Any?>(
 							"Title" to "Img Bot App",
-							"Image" to "imgbotapp.png",
 							"Role" to "Image Processor"
+						).toSortedMap(),
+						mapOf<String, Any?>(
+							"Title" to "Dependabot App",
+							"Role" to "Automated dependency updates"
 						).toSortedMap()
 					)
 					call.respond(contributors)
