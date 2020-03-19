@@ -1,0 +1,418 @@
+{
+  "info": {
+	"_postman_id": "c6ceaf36-beaa-43d8-bd67-318adcb2576b",
+	"name": "Neptune's Dashboard",
+	"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+	{
+	  "name": "API",
+	  "item": [
+		{
+		  "name": "Games",
+		  "item": [
+			{
+			  "name": "{Game ID}",
+			  "item": [
+				{
+				  "name": "Players",
+				  "item": [
+					{
+					  "name": "{Player Alias}",
+					  "item": [
+						{
+						  "name": "Ticks",
+						  "item": [
+							{
+							  "name": "{Tick ID}",
+							  "item": [
+								{
+								  "name": "Get Player Tick",
+								  "request": {
+									"method": "GET",
+									"header": [],
+									"url": {
+									  "raw": "{{Server}}/api/games/:gameID/players/:alias/ticks/:tickID",
+									  "host": [
+										"{{Server}}"
+									  ],
+									  "path": [
+										"api",
+										"games",
+										":gameID",
+										"players",
+										":alias",
+										"ticks",
+										":tickID"
+									  ],
+									  "variable": [
+										{
+										  "key": "gameID",
+										  "value": "{{Game ID}}",
+										  "type": "string"
+										},
+										{
+										  "key": "alias",
+										  "value": "{{Player Alias}}",
+										  "type": "string"
+										},
+										{
+										  "key": "tickID",
+										  "value": "{{Tick ID}}",
+										  "type": "string"
+										}
+									  ]
+									}
+								  },
+								  "response": []
+								}
+							  ],
+							  "protocolProfileBehavior": {},
+							  "_postman_isSubFolder": true
+							},
+							{
+							  "name": "Get All Player Ticks",
+							  "request": {
+								"auth": {
+								  "type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+								  "raw": "{{Server}}/api/games/:gameID/players/:alias/ticks",
+								  "host": [
+									"{{Server}}"
+								  ],
+								  "path": [
+									"api",
+									"games",
+									":gameID",
+									"players",
+									":alias",
+									"ticks"
+								  ],
+								  "variable": [
+									{
+									  "key": "gameID",
+									  "value": "{{Game ID}}",
+									  "type": "string"
+									},
+									{
+									  "key": "alias",
+									  "value": "{{Player Alias}}",
+									  "type": "string"
+									}
+								  ]
+								}
+							  },
+							  "response": []
+							}
+						  ],
+						  "protocolProfileBehavior": {},
+						  "_postman_isSubFolder": true
+						},
+						{
+						  "name": "Get Player",
+						  "request": {
+							"auth": {
+							  "type": "noauth"
+							},
+							"method": "GET",
+							"header": [],
+							"url": {
+							  "raw": "{{Server}}/api/games/:gameID/players/:alias",
+							  "host": [
+								"{{Server}}"
+							  ],
+							  "path": [
+								"api",
+								"games",
+								":gameID",
+								"players",
+								":alias"
+							  ],
+							  "variable": [
+								{
+								  "key": "gameID",
+								  "value": "{{Game ID}}",
+								  "type": "string"
+								},
+								{
+								  "key": "alias",
+								  "value": "{{Player Alias}}",
+								  "type": "string"
+								}
+							  ]
+							}
+						  },
+						  "response": []
+						},
+						{
+						  "name": "Update Player",
+						  "request": {
+							"auth": {
+							  "type": "noauth"
+							},
+							"method": "PUT",
+							"header": [
+							  {
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							  }
+							],
+							"body": {
+							  "mode": "raw",
+							  "raw": "{\n\t\"name\": {{Player Name}},\n\t\"team\": {{Player Team}}\n}",
+							  "options": {
+								"raw": {
+								  "language": "json"
+								}
+							  }
+							},
+							"url": {
+							  "raw": "{{Server}}/api/games/:gameID/players/:alias",
+							  "host": [
+								"{{Server}}"
+							  ],
+							  "path": [
+								"api",
+								"games",
+								":gameID",
+								"players",
+								":alias"
+							  ],
+							  "variable": [
+								{
+								  "key": "gameID",
+								  "value": "{{Game ID}}",
+								  "type": "string"
+								},
+								{
+								  "key": "alias",
+								  "value": "{{Player Alias}}",
+								  "type": "string"
+								}
+							  ]
+							}
+						  },
+						  "response": []
+						}
+					  ],
+					  "protocolProfileBehavior": {},
+					  "_postman_isSubFolder": true
+					},
+					{
+					  "name": "Get All Players",
+					  "request": {
+						"auth": {
+						  "type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+						  "raw": "{{Server}}/api/games/:gameID/players",
+						  "host": [
+							"{{Server}}"
+						  ],
+						  "path": [
+							"api",
+							"games",
+							":gameID",
+							"players"
+						  ],
+						  "variable": [
+							{
+							  "key": "gameID",
+							  "value": "{{Game ID}}",
+							  "type": "string"
+							}
+						  ]
+						}
+					  },
+					  "response": []
+					}
+				  ],
+				  "protocolProfileBehavior": {},
+				  "_postman_isSubFolder": true
+				},
+				{
+				  "name": "Get Game",
+				  "request": {
+					"auth": {
+					  "type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					  "raw": "{{Server}}/api/games/:gameID",
+					  "host": [
+						"{{Server}}"
+					  ],
+					  "path": [
+						"api",
+						"games",
+						":gameID"
+					  ],
+					  "variable": [
+						{
+						  "key": "gameID",
+						  "value": "{{Game ID}}",
+						  "type": "string"
+						}
+					  ]
+					}
+				  },
+				  "response": []
+				},
+				{
+				  "name": "Add Game",
+				  "request": {
+					"auth": {
+					  "type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"url": {
+					  "raw": "{{Server}}/api/games/:gameID?code={{Game Code}}",
+					  "host": [
+						"{{Server}}"
+					  ],
+					  "path": [
+						"api",
+						"games",
+						":gameID"
+					  ],
+					  "query": [
+						{
+						  "key": "code",
+						  "value": "{{Game Code}}"
+						}
+					  ],
+					  "variable": [
+						{
+						  "key": "gameID",
+						  "value": "{{Game ID}}",
+						  "type": "string"
+						}
+					  ]
+					}
+				  },
+				  "response": []
+				},
+				{
+				  "name": "Update Game",
+				  "request": {
+					"auth": {
+					  "type": "noauth"
+					},
+					"method": "PUT",
+					"header": [],
+					"url": {
+					  "raw": "{{Server}}/api/games/:gameID",
+					  "host": [
+						"{{Server}}"
+					  ],
+					  "path": [
+						"api",
+						"games",
+						":gameID"
+					  ],
+					  "variable": [
+						{
+						  "key": "gameID",
+						  "value": "{{Game ID}}",
+						  "type": "string"
+						}
+					  ]
+					}
+				  },
+				  "response": []
+				}
+			  ],
+			  "protocolProfileBehavior": {},
+			  "_postman_isSubFolder": true
+			},
+			{
+			  "name": "Get All Games",
+			  "request": {
+				"auth": {
+				  "type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+				  "raw": "{{Server}}/api/games",
+				  "host": [
+					"{{Server}}"
+				  ],
+				  "path": [
+					"api",
+					"games"
+				  ]
+				}
+			  },
+			  "response": []
+			}
+		  ],
+		  "protocolProfileBehavior": {},
+		  "_postman_isSubFolder": true
+		}
+	  ],
+	  "event": [
+		{
+		  "listen": "prerequest",
+		  "script": {
+			"id": "88d742ac-94eb-4912-8577-311fcb8503c8",
+			"type": "text/javascript",
+			"exec": [
+			  ""
+			]
+		  }
+		},
+		{
+		  "listen": "test",
+		  "script": {
+			"id": "abb5fe6e-ebe4-4aff-a045-c0db7c8ba699",
+			"type": "text/javascript",
+			"exec": [
+			  ""
+			]
+		  }
+		}
+	  ],
+	  "protocolProfileBehavior": {}
+	}
+  ],
+  "event": [
+	{
+	  "listen": "prerequest",
+	  "script": {
+		"id": "529c4347-e38d-4734-a25c-59206b456ad5",
+		"type": "text/javascript",
+		"exec": [
+		  ""
+		]
+	  }
+	},
+	{
+	  "listen": "test",
+	  "script": {
+		"id": "b4d7b386-2546-45e0-8bd5-dcb8dc280a31",
+		"type": "text/javascript",
+		"exec": [
+		  "pm.test(\"Response Json Content-Type\", function(){",
+		  "   pm.response.to.have.header(\"Content-Type\");",
+		  "   pm.response.to.have.header(\"Content-Type\", \"application/json; charset=UTF-8\");",
+		  "});",
+		  "",
+		  "pm.test(\"Response Body not empty\", function(){",
+		  "    var jsonData = pm.response.json();",
+		  "    pm.expect(jsonData.length).to.not.eq(0);",
+		  "});"
+		]
+	  }
+	}
+  ],
+  "protocolProfileBehavior": {}
+}

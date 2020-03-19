@@ -147,7 +147,7 @@ fun Application.module() {
 							game = Game.findById(game.id) ?: throw NotFoundException("Unable to find Game")
 							call.respond(
 								message = game.toJson(full = true),
-								status = HttpStatusCode.OK
+								status = HttpStatusCode.Accepted
 							)
 						}
 					}
@@ -170,6 +170,19 @@ fun Application.module() {
 							get {
 								newSuspendedTransaction(db = Util.database) {
 									call.respond(call.getPlayer().toJson(full = true))
+								}
+							}
+							put {
+								newSuspendedTransaction(db = Util.database) {
+									val player = call.getPlayer()
+									val request = call.receiveOrNull<PlayerRequest>()
+										?: throw BadRequestException("Invalid Player Data")
+									player.name = request.name
+									player.team = request.team
+									call.respond(
+										message = player.toJson(full = true),
+										status = HttpStatusCode.Accepted
+									)
 								}
 							}
 							route(path = "/ticks") {
@@ -241,8 +254,14 @@ fun Application.module() {
 			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
 		}
 		intercept(ApplicationCallPipeline.Fallback) {
-			if (call.response.status() != null)
-				application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+			if (call.response.status() != null) {
+				when(call.response.status()) {
+					HttpStatusCode.OK -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+					HttpStatusCode.Accepted -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+					HttpStatusCode.Created -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+					HttpStatusCode.Conflict -> application.log.warn("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
+				}
+			}
 		}
 	}
 }
@@ -250,3 +269,5 @@ fun Application.module() {
 fun Parameters.lowerCase(): Map<String, String?> = this.toMap()
 	.mapKeys { it.key.toLowerCase() }
 	.mapValues { it.value.firstOrNull() }
+
+data class PlayerRequest(val name: String?, val team: String?)

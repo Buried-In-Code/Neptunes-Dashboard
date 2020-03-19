@@ -3,7 +3,7 @@ info:
   title: Neptune's Dashboard
   contact:
     email: JonahJ@datacom.co.nz
-  version: "4.0.0"
+  version: "3.2.0"
 servers:
   - url: localhost:6790
   - url: https://neptunes-dashboard.bitcloud.nz
@@ -12,19 +12,14 @@ tags:
     description: Game Information
   - name: Player
     description: Player Information
+  - name: Tick
+    description: Tick Information
 paths:
   /api/games:
     get:
       tags:
         - Game
       summary: Get all monitored games
-      parameters:
-        - name: Accept
-          in: header
-          description: Accept Header
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: Success
@@ -34,30 +29,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Game'
-  /api/games/latest:
-    get:
-      tags:
-        - Game
-      summary: Get the latest Game by start time
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Game'
   /api/games/{gameID}:
+    parameters:
+      - $ref: '#/components/parameters/gameParam'
     get:
       tags:
         - Game
       summary: Get a game by its ID
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
       responses:
         200:
           description: Success
@@ -69,16 +47,9 @@ paths:
       tags:
         - Game
       summary: Update game data
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
       responses:
-        200:
-          description: Success
+        202:
+          description: Updated
           content:
             application/json:
               schema:
@@ -88,12 +59,6 @@ paths:
         - Game
       summary: Create game entry
       parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
         - name: code
           in: query
           description: API Game code
@@ -107,32 +72,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
-  /api/latest/players:
-    get:
-      tags:
-        - Player
-      summary: Gets all players from the latest game
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Player'
-  /api/{gameID}/players:
+  /api/games/{gameID}/players:
+    parameters:
+      - $ref: '#/components/parameters/gameParam'
     get:
       tags:
         - Player
       summary: Gets all players from the given game
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
       responses:
         200:
           description: Success
@@ -142,43 +88,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Player'
-  /api/latest/players/{alias}:
-    get:
-      tags:
-        - Player
-      summary: Gets the player with the given alias from the latest game
-      parameters:
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Player'
-  /api/{gameID}/players/{alias}:
+  /api/games/{gameID}/players/{alias}:
+    parameters:
+      - $ref: '#/components/parameters/gameParam'
+      - $ref: '#/components/parameters/playerParam'
     get:
       tags:
         - Player
       summary: Gets the player with the given alias from the given game
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: Success
@@ -186,18 +103,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Player'
-  /api/latest/players/{alias}/ticks:
-    get:
+    put:
       tags:
         - Player
-      summary: Gets all the ticks of the player with the given alias from the latest game
-      parameters:
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
+      summary: Update player data
+      responses:
+        202:
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+  /api/games/{gameID}/players/{alias}/ticks:
+    parameters:
+      - $ref: '#/components/parameters/gameParam'
+      - $ref: '#/components/parameters/playerParam'
+    get:
+      tags:
+        - Tick
+      summary: Gets all the ticks of the player with the given alias from the given game
       responses:
         200:
           description: Success
@@ -207,82 +131,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Tick'
-  /api/{gameID}/players/{alias}/ticks:
+  /api/games/{gameID}/players/{alias}/ticks/{tickID}:
+    parameters:
+      - $ref: '#/components/parameters/gameParam'
+      - $ref: '#/components/parameters/playerParam'
+      - $ref: '#/components/parameters/tickParam'
     get:
       tags:
-        - Player
+        - Tick
       summary: Gets all the ticks of the player with the given alias from the given game
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of Game
-          required: true
-          schema:
-            type: number
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Tick'
-  /api/latest/players/{alias}/ticks/{tickID}:
-    get:
-      tags:
-        - Player
-      summary: Gets the tick of the player with the given alias from the latest game
-      parameters:
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
-        - name: tickID
-          in: path
-          description: ID of the Tick
-          required: true
-          schema:
-            type: number
-      responses:
-        200:
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tick'
-  /api/{gameID}/players/{alias}/ticks/{tickID}:
-    get:
-      tags:
-        - Player
-      summary: Gets all the ticks of the player with the given alias from the given game
-      parameters:
-        - name: gameID
-          in: path
-          description: ID of the Game
-          required: true
-          schema:
-            type: number
-        - name: alias
-          in: path
-          description: Alias of the Player
-          required: true
-          schema:
-            type: string
-        - name: tickID
-          in: path
-          description: ID of the Tick
-          required: true
-          schema:
-            type: number
       responses:
         200:
           description: Success
@@ -291,6 +148,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/Tick'
 components:
+  parameters:
+    gameParam:
+      in: path
+      name: gameID
+      required: false
+      schema:
+        type: number
+        default: latest
+      description: ID of the Game
+    playerParam:
+      in: path
+      name: alias
+      required: true
+      schema:
+        type: string
+      description: Alias of the Player
+    tickParam:
+      in: path
+      name: tickID
+      required: true
+      schema:
+        type: number
+      description: ID of the Tick
   schemas:
     Game:
       type: object
@@ -357,6 +237,8 @@ components:
     Tick:
       type: object
       properties:
+        id:
+          type: number
         tick:
           type: number
         stars:
