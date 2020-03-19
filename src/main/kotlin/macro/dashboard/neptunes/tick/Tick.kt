@@ -39,6 +39,7 @@ class Tick(id: EntityID<Long>) : LongEntity(id), ISendable {
 
 	override fun toJson(full: Boolean): Map<String, Any?> {
 		val output = mutableMapOf<String, Any?>(
+			"id" to id.value,
 			"tick" to tick,
 			"stars" to stars,
 			"fleets" to fleets,
