@@ -71,7 +71,7 @@ class Game(id: EntityID<Long>) : LongEntity(id), ISendable, Comparable<Game> {
 	}
 
 	override fun compareTo(other: Game): Int =
-		compareBy<Game> { it.startTime }
+		compareByDescending<Game> { it.startTime }
 			.thenBy { it.name }
 			.thenBy { it.id }
 			.compare(this, other)
