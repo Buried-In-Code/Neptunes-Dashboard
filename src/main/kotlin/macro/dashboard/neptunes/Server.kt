@@ -106,7 +106,7 @@ fun Application.module() {
 				route(path = "/{gameID}") {
 					fun ApplicationCall.getGame(): Game {
 						if (parameters["gameID"].equals("latest"))
-							return Game.all().orderBy(GameTable.startTimeCol to SortOrder.ASC).limit(1).firstOrNull()
+							return Game.all().orderBy(GameTable.startTimeCol to SortOrder.DESC).limit(1).firstOrNull()
 								?: throw NotFoundException("Unable to find Game")
 						val gameId = parameters["gameID"]?.toLongOrNull()
 							?: throw BadRequestException("Invalid Game ID")
