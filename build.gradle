@@ -2,8 +2,7 @@ plugins {
 	id 'application'
 	id 'idea'
 	id 'maven'
-	id 'org.jetbrains.kotlin.jvm' version '1.3.70'
-	id 'com.github.ben-manes.versions' version '0.28.0'
+	id 'org.jetbrains.kotlin.jvm' version '1.3.71'
 	id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
@@ -27,7 +26,7 @@ dependencies {
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-dao', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-jdbc', version: "$exposedVersion"
 	implementation group: 'org.jetbrains.exposed', name: 'exposed-java-time', version: "$exposedVersion"
-	implementation group: 'com.konghq', name: 'unirest-java', version: "3.6.01"
+	implementation group: 'com.konghq', name: 'unirest-java', version: "3.7.00"
 	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "$loggerVersion"
 	runtimeOnly group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: "$loggerVersion"
 	runtimeOnly group: 'org.xerial', name: 'sqlite-jdbc', version: "3.30.1"
@@ -70,35 +69,4 @@ shadowJar {
 
 run {
 	standardInput = System.in
-}
-
-def isNonStable = { String version ->
-	def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
-	def regex = /^[0-9,.v-]+(-r)?$/
-	return !stableKeyword && !(version ==~ regex)
-}
-
-dependencyUpdates {
-	checkForGradleUpdate = false
-
-	// Example 1: reject all non stable versions
-	rejectVersionIf {
-		isNonStable(candidate.version)
-	}
-
-	// Example 2: disallow release candidates as upgradable versions from stable versions
-	rejectVersionIf {
-		isNonStable(candidate.version) && !isNonStable(currentVersion)
-	}
-
-	// Example 3: using the full syntax
-	resolutionStrategy {
-		componentSelection {
-			all {
-				if (isNonStable(candidate.version) && !isNonStable(currentVersion)) {
-					reject('Release candidate')
-				}
-			}
-		}
-	}
 }

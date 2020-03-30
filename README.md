@@ -12,8 +12,8 @@ _Currently only supports **Triton** games_
 
 ## Built Using
  - [AdoptOpenJDK: 8](https://adoptopenjdk.net/)
- - [Gradle: 6.2.2](https://gradle.org/)
- - [kotlin-stdlib-jdk8: 1.3.70](https://kotlinlang.org/)
+ - [Gradle: 6.3](https://gradle.org/)
+ - [kotlin-stdlib-jdk8: 1.3.71](https://kotlinlang.org/)
  - [ktor-server-netty: 1.3.2](https://github.com/ktorio/ktor)
  - [ktor-gson: 1.3.2](https://github.com/ktorio/ktor)
  - [snakeyaml: 1.26](http://www.snakeyaml.org)
@@ -21,7 +21,7 @@ _Currently only supports **Triton** games_
  - [exposed-dao: 0.22.1](https://github.com/JetBrains/Exposed)
  - [exposed-jdbc: 0.22.1](https://github.com/JetBrains/Exposed)
  - [exposed-java-time: 0.22.1](https://github.com/JetBrains/Exposed)
- - [unirest-java: 3.6.01](https://github.com/Kong/unirest-java)
+ - [unirest-java: 3.7.00](https://github.com/Kong/unirest-java)
  - [log4j-api: 2.13.1](https://logging.apache.org/log4j/2.x/)
  - [log4j-slf4j-impl: 2.13.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.30.1 (Runtime)](https://github.com/xerial/sqlite-jdbc)
@@ -47,9 +47,10 @@ _Currently only supports **Triton** games_
  
 ### Running from source
 ```bash
-$ gradle clean run
-```
-_or_
-```bash
 $ gradlew clean run
+```
+
+### Running from Jar
+```bash
+$ java -jar Neptunes-Dashboard.jar
 ```
