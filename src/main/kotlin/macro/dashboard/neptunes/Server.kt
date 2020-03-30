@@ -69,20 +69,21 @@ fun Application.module() {
 	install(AutoHeadResponse)
 	install(StatusPages) {
 		exception<Throwable> {
-			application.log.error(it.localizedMessage)
+			application.log.error(it.message)
 			call.respond(
 				TextContent(
-					"Message: ${it.localizedMessage}",
-					ContentType.Text.Plain.withCharset(Charsets.UTF_8)
+					text = "Message: ${it.message}",
+					contentType = ContentType.Text.Plain.withCharset(Charsets.UTF_8),
+					status = HttpStatusCode.BadRequest
 				)
 			)
 		}
 		status(HttpStatusCode.NotFound) {
 			call.respond(
 				TextContent(
-					"${it.value} ${it.description}",
-					ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-					it
+					text = "${it.value} ${it.description}",
+					contentType = ContentType.Text.Plain.withCharset(Charsets.UTF_8),
+					status = HttpStatusCode.NotFound
 				)
 			)
 		}
@@ -255,7 +256,7 @@ fun Application.module() {
 		}
 		intercept(ApplicationCallPipeline.Fallback) {
 			if (call.response.status() != null) {
-				when(call.response.status()) {
+				when (call.response.status()) {
 					HttpStatusCode.OK -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
 					HttpStatusCode.Accepted -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
 					HttpStatusCode.Created -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
