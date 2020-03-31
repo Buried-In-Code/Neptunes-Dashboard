@@ -224,7 +224,7 @@ fun Application.module() {
 						).toSortedMap(),
 						mapOf<String, Any?>(
 							"Title" to "Miss. T",
-							"Role" to "Supporter and Loving Fiancée"
+							"Role" to "Supporter and Loving Wife"
 						).toSortedMap(),
 						mapOf<String, Any?>(
 							"Title" to "Rocky",
