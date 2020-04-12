@@ -95,7 +95,7 @@ function getAllPlayerStars(totalStars) {
 			data.forEach(function (player) {
 				playerLabels.push(player.alias + (!player.name ? '' : ` (${player.name})`));
 				playerData.push(player.ticks[player.ticks.length - 1].stars);
-				claimedStars = player.ticks[player.ticks.length - 1].stars;
+				claimedStars += player.ticks[player.ticks.length - 1].stars;
 			});
 			playerLabels.push("Unclaimed");
 			playerData.push(totalStars - claimedStars);
