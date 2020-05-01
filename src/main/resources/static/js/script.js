@@ -69,7 +69,7 @@ function loadInfo() {
 			document.getElementById('playerCount').innerHTML = data.players.length;
 			document.getElementById('starCount').innerHTML = `${data.victoryStars}/${data.totalStars}`;
 			document.getElementById('ticks').innerHTML = data.tick;
-			document.getElementById('next').innerHTML = data.isPaused ? 'Paused' : data.isGameOver ? 'Game Ended' : data.tickTimeout;
+			document.getElementById('next').innerHTML = data.isPaused ? 'Paused' : data.isGameOver ? 'Game Ended' : data.turnTimeout;
 
 			getAllPlayerStars(data.totalStars)
 		},
