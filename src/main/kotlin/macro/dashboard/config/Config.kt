@@ -1,4 +1,4 @@
-package macro.dashboard.neptunes.config
+package macro.dashboard.config
 
 import org.apache.logging.log4j.LogManager
 import org.yaml.snakeyaml.DumperOptions

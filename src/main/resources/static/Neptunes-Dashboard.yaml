@@ -14,10 +14,10 @@ tags:
     description: Game Information
   - name: Player
     description: Player Information
-  - name: Tick
-    description: Tick Information
+  - name: Turn
+    description: Turn Information
 paths:
-  /api/contributors:
+  /api/v2/contributors:
     get:
       tags:
         - Contributor
@@ -31,7 +31,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Contributor'
-  /api/games:
+  /api/v2/games:
     get:
       tags:
         - Game
@@ -45,7 +45,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Game'
-  /api/games/{gameID}:
+  /api/v2/games/{GameID}:
     parameters:
       - $ref: '#/components/parameters/gameParam'
     get:
@@ -74,13 +74,6 @@ paths:
       tags:
         - Game
       summary: Create game entry
-      parameters:
-        - name: code
-          in: query
-          description: API Game code
-          required: true
-          schema:
-            type: string
       responses:
         201:
           description: Created
@@ -88,7 +81,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Game'
-  /api/games/{gameID}/players:
+  /api/v2/games/{GameID}/players:
     parameters:
       - $ref: '#/components/parameters/gameParam'
     get:
@@ -104,14 +97,14 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Player'
-  /api/games/{gameID}/players/{alias}:
+  /api/v2/games/{GameID}/players/{Username}:
     parameters:
       - $ref: '#/components/parameters/gameParam'
       - $ref: '#/components/parameters/playerParam'
     get:
       tags:
         - Player
-      summary: Gets the player with the given alias from the given game
+      summary: Gets the player with the given username from the given game
       responses:
         200:
           description: Success
@@ -119,7 +112,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Player'
-    put:
+    patch:
       tags:
         - Player
       summary: Update player data
@@ -130,14 +123,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Player'
-  /api/games/{gameID}/players/{alias}/ticks:
+  /api/v2/games/{GameID}/players/{Username}/turns:
     parameters:
       - $ref: '#/components/parameters/gameParam'
       - $ref: '#/components/parameters/playerParam'
     get:
       tags:
-        - Tick
-      summary: Gets all the ticks of the player with the given alias from the given game
+        - Turn
+      summary: Gets all the turn of the player with the given username from the given game
       responses:
         200:
           description: Success
@@ -146,28 +139,28 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Tick'
-  /api/games/{gameID}/players/{alias}/ticks/{tickID}:
+                  $ref: '#/components/schemas/Turn'
+  /api/v2/games/{GameID}/players/{Username}/turns/{Turn}:
     parameters:
       - $ref: '#/components/parameters/gameParam'
       - $ref: '#/components/parameters/playerParam'
-      - $ref: '#/components/parameters/tickParam'
+      - $ref: '#/components/parameters/turnParam'
     get:
       tags:
-        - Tick
-      summary: Gets all the ticks of the player with the given alias from the given game
+        - Turn
+      summary: Gets all the turns of the player with the given username from the given game
       responses:
         200:
           description: Success
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Tick'
+                $ref: '#/components/schemas/Turn'
 components:
   parameters:
     gameParam:
       in: path
-      name: gameID
+      name: GameID
       required: false
       schema:
         type: number
@@ -175,18 +168,18 @@ components:
       description: ID of the Game
     playerParam:
       in: path
-      name: alias
+      name: Username
       required: true
       schema:
         type: string
-      description: Alias of the Player
-    tickParam:
+      description: Username of the Player
+    turnParam:
       in: path
-      name: tickID
+      name: Turn
       required: true
       schema:
         type: number
-      description: ID of the Tick
+      description: Turn number
   schemas:
     Contributor:
       type: object
@@ -200,20 +193,20 @@ components:
       properties:
         id:
           type: number
-        fleetSpeed:
-          type: number
-        isPaused:
-          type: boolean
-        productions:
-          type: number
-        tickFragment:
-          type: number
-        tickRate:
-          type: number
-        productionRate:
-          type: number
+        title:
+          type: string
+        type:
+          type: string
         victoryStars:
           type: number
+        totalStars:
+          type: number
+        isTradeScanOnly:
+          type: boolean
+        isTurnBased:
+          type: boolean
+        isPaused:
+          type: boolean
         isGameOver:
           type: boolean
         isStarted:
@@ -221,70 +214,56 @@ components:
         startTime:
           type: string
           format: date-time
-        totalStars:
+        turn:
           type: number
-        productionCounter:
-          type: number
-        isTradeScanned:
-          type: boolean
-        tick:
-          type: number
-        tradeCost:
-          type: number
-        name:
-          type: string
-        isTurnBased:
-          type: boolean
-        war:
-          type: number
-        turnTimeout:
+        nextTurn:
           type: string
           format: date-time
-        fleetPrice:
-          type: number
-        gameType:
-          type: string
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
     Player:
       type: object
       properties:
-        id:
-          type: number
-        alias:
+        username:
           type: string
-        name:
-          type: string
-          nullable: true
         team:
           type: string
           nullable: true
-    Tick:
+        turns:
+          type: array
+          items:
+            $ref: '#/components/schemas/Turn'
+    Turn:
       type: object
       properties:
-        id:
-          type: number
-        tick:
+        turn:
           type: number
         stars:
           type: number
-        fleets:
+        carriers:
           type: number
         ships:
           type: number
         isActive:
           type: boolean
-        economy:
-          type: number
-        economyPerTick:
-          type: number
-        industry:
-          type: number
-        industryPerTick:
-          type: number
-        science:
-          type: number
-        sciencePerTick:
-          type: number
-        research:
+        infrastructure:
+          type: object
+          properties:
+            economy:
+              type: number
+            economyPerHr:
+              type: number
+            industry:
+              type: number
+            industryPerHr:
+              type: number
+            science:
+              type: number
+            sciencePerHr:
+              type: number
+        technology:
           type: object
           properties:
             scanning:

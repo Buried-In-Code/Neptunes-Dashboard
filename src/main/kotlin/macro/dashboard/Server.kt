@@ -1,35 +1,34 @@
-package macro.dashboard.neptunes
+package macro.dashboard
 
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.GsonConverter
-import io.ktor.http.*
-import io.ktor.http.content.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.defaultResource
+import io.ktor.http.content.resource
+import io.ktor.http.content.resources
+import io.ktor.http.content.static
 import io.ktor.request.*
 import io.ktor.response.respond
-import io.ktor.routing.*
+import io.ktor.routing.Routing
+import io.ktor.routing.accept
+import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.KtorExperimentalAPI
-import io.ktor.util.toMap
-import macro.dashboard.neptunes.config.Config
-import macro.dashboard.neptunes.game.Game
-import macro.dashboard.neptunes.game.GameTable
-import macro.dashboard.neptunes.player.Player
-import macro.dashboard.neptunes.player.PlayerTable
-import macro.dashboard.neptunes.tick.Tick
-import macro.dashboard.neptunes.tick.TickTable
+import macro.dashboard.Server.LOGGER
+import macro.dashboard.config.Config
+import macro.dashboard.v2.Endpoints.v2Routes
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 /**
  * Created by Macro303 on 2018-Nov-08.
  */
 object Server {
-	private val LOGGER = LogManager.getLogger(Server::class.java)
+	val LOGGER = LogManager.getLogger(Server::class.java)
 
 	init {
 		checkLogLevels()
@@ -57,7 +56,7 @@ object Server {
 @KtorExperimentalAPI
 fun Application.module() {
 	install(ContentNegotiation) {
-		register(contentType = ContentType.Application.Json, converter = GsonConverter(gson = Util.GSON))
+		register(contentType = ContentType.Application.Json, converter = GsonConverter(gson = Utils.GSON))
 	}
 	install(DefaultHeaders) {
 		header(name = "Developer", value = "Macro303")
@@ -67,26 +66,84 @@ fun Application.module() {
 	}
 	install(ConditionalHeaders)
 	install(AutoHeadResponse)
+	install(Compression)
+	install(XForwardedHeaderSupport)
 	install(StatusPages) {
 		exception<Throwable> {
-			application.log.error(it.message)
+			it.printStackTrace()
 			call.respond(
-				TextContent(
-					text = "Message: ${it.message}",
-					contentType = ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-					status = HttpStatusCode.BadRequest
-				)
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.InternalServerError.description
+				),
+				status = HttpStatusCode.InternalServerError
 			)
+
+			callLog(ctx = call, status = HttpStatusCode.InternalServerError)
+		}
+		exception<UnsupportedMediaTypeException> {
+			call.respond(
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.UnsupportedMediaType.description
+				),
+				status = HttpStatusCode.UnsupportedMediaType
+			)
+			callLog(ctx = call, status = HttpStatusCode.UnsupportedMediaType)
+		}
+		exception<NotFoundException> {
+			call.respond(
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.NotFound.description
+				),
+				status = HttpStatusCode.NotFound
+			)
+			callLog(ctx = call, status = HttpStatusCode.NotFound)
+		}
+		exception<BadRequestException> {
+			call.respond(
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.BadRequest.description
+				),
+				status = HttpStatusCode.BadRequest
+			)
+			callLog(ctx = call, status = HttpStatusCode.BadRequest)
+		}
+		exception<NotImplementedException> {
+			call.respond(
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.NotImplemented.description
+				),
+				status = HttpStatusCode.NotImplemented
+			)
+			callLog(ctx = call, status = HttpStatusCode.NotImplemented)
+		}
+		exception<ConflictException> {
+			call.respond(
+				message = sortedMapOf<String, Any?>(
+					"value" to it.localizedMessage,
+					"error" to HttpStatusCode.Conflict.description
+				),
+				status = HttpStatusCode.Conflict
+			)
+			callLog(ctx = call, status = HttpStatusCode.Conflict)
 		}
 		status(HttpStatusCode.NotFound) {
 			call.respond(
-				TextContent(
-					text = "${it.value} ${it.description}",
-					contentType = ContentType.Text.Plain.withCharset(Charsets.UTF_8),
-					status = HttpStatusCode.NotFound
-				)
+				message = sortedMapOf<String, Any?>(
+					"value" to "Unable to find resource",
+					"error" to HttpStatusCode.NotFound.description
+				),
+				status = HttpStatusCode.NotFound
 			)
+			callLog(ctx = call, status = HttpStatusCode.NotFound)
 		}
+	}
+	intercept(ApplicationCallPipeline.Monitoring) {
+		application.log.debug(">> ${call.request.httpVersion} ${call.request.httpMethod.value} ${call.request.uri}, Accept: ${call.request.accept()}, Content-Type: ${call.request.contentType()}, User-Agent: ${call.request.userAgent()}, Host: ${call.request.origin.remoteHost}:${call.request.port()}")
 	}
 	install(Routing) {
 		intercept(ApplicationCallPipeline.Setup) {
@@ -95,12 +152,17 @@ fun Application.module() {
 		trace {
 			application.log.trace(it.buildText())
 		}
-		route(path = "/api") {
+		accept(ContentType.Application.Json) {
+			route(path = "/api") {
+				v2Routes()
+			}
+		}
+		/*route(path = "/api") {
 			route(path = "/games") {
 				get {
-					newSuspendedTransaction(db = Util.database) {
+					newSuspendedTransaction(db = Utils.database) {
 						call.respond(Game.all().sorted().map {
-							it.toJson(full = true)
+							it.toJson(filterKeys = true)
 						})
 					}
 				}
@@ -115,8 +177,8 @@ fun Application.module() {
 					}
 
 					get {
-						newSuspendedTransaction(db = Util.database) {
-							call.respond(call.getGame().toJson(full = true))
+						newSuspendedTransaction(db = Utils.database) {
+							call.respond(call.getGame().toJson(filterKeys = true))
 						}
 					}
 					post {
@@ -124,7 +186,7 @@ fun Application.module() {
 							?: throw BadRequestException("Invalid Game ID")
 						val gameCode = call.request.queryParameters["code"]
 							?: throw BadRequestException("Invalid Game Code")
-						newSuspendedTransaction(db = Util.database) {
+						newSuspendedTransaction(db = Utils.database) {
 							var game = Game.findById(gameId)
 							if (game != null) {
 								call.respond(
@@ -135,27 +197,27 @@ fun Application.module() {
 								Triton.getGame(gameId = gameId, code = gameCode)
 								game = Game.findById(gameId) ?: throw NotFoundException("Unable to find Game")
 								call.respond(
-									message = game.toJson(full = true),
+									message = game.toJson(filterKeys = true),
 									status = HttpStatusCode.Created
 								)
 							}
 						}
 					}
 					put {
-						newSuspendedTransaction(db = Util.database) {
+						newSuspendedTransaction(db = Utils.database) {
 							var game = call.getGame()
 							Triton.getGame(gameId = game.id.value, code = game.code)
 							game = Game.findById(game.id) ?: throw NotFoundException("Unable to find Game")
 							call.respond(
-								message = game.toJson(full = true),
+								message = game.toJson(filterKeys = true),
 								status = HttpStatusCode.Accepted
 							)
 						}
 					}
 					route(path = "/players") {
 						get {
-							newSuspendedTransaction(db = Util.database) {
-								call.respond(call.getGame().players.map { it.toJson(full = true) })
+							newSuspendedTransaction(db = Utils.database) {
+								call.respond(call.getGame().players.map { it.toJson(filterKeys = true) })
 							}
 						}
 						route(path = "/{alias}") {
@@ -169,44 +231,44 @@ fun Application.module() {
 							}
 
 							get {
-								newSuspendedTransaction(db = Util.database) {
-									call.respond(call.getPlayer().toJson(full = true))
+								newSuspendedTransaction(db = Utils.database) {
+									call.respond(call.getPlayer().toJson(filterKeys = true))
 								}
 							}
 							put {
-								newSuspendedTransaction(db = Util.database) {
+								newSuspendedTransaction(db = Utils.database) {
 									val player = call.getPlayer()
 									val request = call.receiveOrNull<PlayerRequest>()
 										?: throw BadRequestException("Invalid Player Data")
 									player.name = request.name
 									player.team = request.team
 									call.respond(
-										message = player.toJson(full = true),
+										message = player.toJson(filterKeys = true),
 										status = HttpStatusCode.Accepted
 									)
 								}
 							}
 							route(path = "/ticks") {
 								get {
-									newSuspendedTransaction(db = Util.database) {
-										call.respond(call.getPlayer().ticks.map { it.toJson(full = true) })
+									newSuspendedTransaction(db = Utils.database) {
+										call.respond(call.getPlayer().ticks.map { it.toJson(filterKeys = true) })
 									}
 								}
 
 								route(path = "/{tickID}") {
-									fun ApplicationCall.getTick(): Tick {
+									fun ApplicationCall.getTick(): Turn {
 										val gameId = getGame().id
 										val playerId = getPlayer().id
 										val tickId = parameters["tickID"]?.toLongOrNull()
-											?: throw BadRequestException("Invalid Tick ID")
-										return Tick.find {
-											TickTable.id eq tickId and (TickTable.playerCol eq playerId) and (TickTable.gameCol eq gameId)
-										}.limit(1).firstOrNull() ?: throw NotFoundException("Unable to find Tick")
+											?: throw BadRequestException("Invalid Turn ID")
+										return Turn.find {
+											TurnTable.id eq tickId and (TurnTable.playerCol eq playerId) and (TurnTable.gameCol eq gameId)
+										}.limit(1).firstOrNull() ?: throw NotFoundException("Unable to find Turn")
 									}
 
 									get {
-										newSuspendedTransaction(db = Util.database) {
-											call.respond(call.getTick().toJson(full = true))
+										newSuspendedTransaction(db = Utils.database) {
+											call.respond(call.getTick().toJson(filterKeys = true))
 										}
 									}
 								}
@@ -242,7 +304,7 @@ fun Application.module() {
 					call.respond(contributors)
 				}
 			}
-		}
+		}*/
 		static {
 			defaultResource(resource = "/static/index.html")
 			resources(resourcePackage = "static/images")
@@ -255,20 +317,20 @@ fun Application.module() {
 			resource(remotePath = "/Neptunes-Dashboard.yaml", resource = "static/Neptunes-Dashboard.yaml")
 		}
 		intercept(ApplicationCallPipeline.Fallback) {
-			if (call.response.status() != null) {
-				when (call.response.status()) {
-					HttpStatusCode.OK -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
-					HttpStatusCode.Accepted -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
-					HttpStatusCode.Created -> application.log.info("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
-					HttpStatusCode.Conflict -> application.log.warn("${call.request.httpMethod.value.padEnd(4)}: ${call.response.status()} - ${call.request.uri}")
-				}
-			}
+			callLog(ctx = call, status = call.response.status())
 		}
 	}
 }
 
-fun Parameters.lowerCase(): Map<String, String?> = this.toMap()
-	.mapKeys { it.key.toLowerCase() }
-	.mapValues { it.value.firstOrNull() }
+fun callLog(ctx: ApplicationCall, status: HttpStatusCode? = null) {
+	when (status?.value) {
+		in 100..199 -> LOGGER.warn("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+		in 200..299 -> LOGGER.info("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+		in 300..399 -> LOGGER.info("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+		in 400..499 -> LOGGER.warn("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+		in 500..599 -> LOGGER.error("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+		else -> LOGGER.error("${ctx.request.httpMethod.value.padEnd(4)}: $status - ${ctx.request.uri}")
+	}
+}
 
 data class PlayerRequest(val name: String?, val team: String?)

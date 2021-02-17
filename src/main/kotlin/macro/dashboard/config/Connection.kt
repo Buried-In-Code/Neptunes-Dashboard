@@ -1,4 +1,4 @@
-package macro.dashboard.neptunes.config
+package macro.dashboard.config
 
 /**
  * Created by Macro303 on 2019-Sep-09

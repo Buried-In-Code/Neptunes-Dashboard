@@ -34,7 +34,7 @@ function update() {
 	document.getElementById('updateButton').disabled = true;
 	$.ajax({
 		async: true,
-		url: '/api/games/latest',
+		url: '/api/v2/games/latest',
 		type: 'PUT',
 		headers: {
 			accept: 'application/json',
@@ -55,7 +55,7 @@ function update() {
 function loadInfo() {
 	$.ajax({
 		async: false,
-		url: '/api/games/latest',
+		url: '/api/v2/games/latest',
 		type: 'GET',
 		headers: {
 			accept: 'application/json',
@@ -63,13 +63,13 @@ function loadInfo() {
 		},
 		dataType: 'json',
 		success: function (data) {
-			document.getElementById('name').innerHTML = `<u class="text-light"><a class="text-light" href="https://np.ironhelmet.com/game/${data.id}">${data.name}</a></u>`;
-			document.getElementById('gameType').innerHTML = data.gameType;
-			document.getElementById('start').innerHTML = data.isStarted ? new Date(`${data.startTime}Z`).toLocaleString() : false;
-			document.getElementById('playerCount').innerHTML = data.players.length;
-			document.getElementById('starCount').innerHTML = `${data.victoryStars}/${data.totalStars}`;
-			document.getElementById('ticks').innerHTML = data.tick;
-			document.getElementById('next').innerHTML = data.isPaused ? 'Paused' : data.isGameOver ? 'Game Ended' : data.turnTimeout;
+			document.getElementById('name').innerHTML = `<u class="text-light"><a class="text-light" href="https://np.ironhelmet.com/game/${data.id}">${data.title}</a></u>`;
+			document.getElementById('type').innerHTML = data.type;
+			document.getElementById('start').innerHTML = data.isStarted ? data.startTime : false;
+			document.getElementById('playerCount').innerHTML = data.players.length.toLocaleString();
+			document.getElementById('starCount').innerHTML = `${data.victoryStars.toLocaleString()}/${data.totalStars.toLocaleString()}`;
+			document.getElementById('turn').innerHTML = data.turn.toLocaleString();
+			document.getElementById('next').innerHTML = data.isPaused ? 'Paused' : data.isGameOver ? 'Game Ended' : data.nextTurn;
 
 			getAllPlayerStars(data.totalStars)
 		},
@@ -81,7 +81,7 @@ function loadInfo() {
 
 function getAllPlayerStars(totalStars) {
 	$.ajax({
-		url: `/api/games/latest/players`,
+		url: `/api/v2/games/latest/players`,
 		type: 'GET',
 		headers: {
 			accept: 'application/json',
@@ -93,25 +93,25 @@ function getAllPlayerStars(totalStars) {
 			let playerData = [];
 			let claimedStars = 0;
 			data.forEach(function (player) {
-				playerLabels.push(player.alias + (!player.name ? '' : ` (${player.name})`));
-				playerData.push(player.ticks[player.ticks.length - 1].stars);
-				claimedStars += player.ticks[player.ticks.length - 1].stars;
+				playerLabels.push(player.username);
+				playerData.push(player.turns[player.turns.length - 1].stars);
+				claimedStars += player.turns[player.turns.length - 1].stars;
 			});
 			playerLabels.push("Unclaimed");
 			playerData.push(totalStars - claimedStars);
 			createPieGraph(playerLabels, playerData);
 
-			let tickLabels = [];
+			let turnLabels = [];
 			let graphData = [];
 			data.forEach(function (player) {
 				let stars = [];
-				player.ticks.forEach(function (tick) {
+				player.turns.forEach(function (turn) {
 					if (graphData.length === 0)
-						tickLabels.push("Tick " + tick.tick);
-					stars.push(tick.stars)
+						turnLabels.push("Turn " + turn.turn);
+					stars.push(turn.stars)
 				});
 				let entry = {
-					label: player.alias + (!player.name ? '' : ` (${player.name})`),
+					label: player.username,
 					fill: false,
 					backgroundColor: getBackgroundColour(graphData.length),
 					borderColor: getBorderColour(graphData.length),
@@ -120,7 +120,7 @@ function getAllPlayerStars(totalStars) {
 				};
 				graphData.push(entry);
 			});
-			createGraph("gameProgression", tickLabels, graphData);
+			createGraph("gameProgression", turnLabels, graphData);
 		},
 		error: function (xhr, status, error) {
 			alert("#ERR: xhr.status=" + xhr.status + ", xhr.statusText=" + xhr.statusText + "\nstatus=" + status + ", error=" + error);
@@ -220,7 +220,7 @@ function createGraph(name, labels, dataset, type = 'line') {
 function loadPlayerTables() {
 	$.ajax({
 		async: false,
-		url: '/api/games/latest/players',
+		url: '/api/v2/games/latest/players',
 		type: 'GET',
 		headers: {
 			accept: 'application/json',
@@ -242,34 +242,32 @@ function loadPlayerTables() {
 }
 
 function parseStatsTableRow(player) {
-	let latest = player.ticks.length - 1;
+	let latest = player.turns.length - 1;
 	let row = document.createElement('tr');
-	row.onclick = () => window.location = `/players/${player.alias}`;
-	row.innerHTML = `<td>${player.alias}</td>` +
-		`<td>${!player.name ? '' : player.name}</td>` +
+	row.onclick = () => window.location = `/players/${player.username}`;
+	row.innerHTML = `<td>${player.username}</td>` +
 		`<td>${!player.team ? '' : player.team}</td>` +
-		`<td>${player.ticks[latest].stars}</td>` +
-		`<td>${player.ticks[latest].ships}</td>` +
-		`<td>${player.ticks[latest].economy}</td>` +
-		`<td>${player.ticks[latest].industry}</td>` +
-		`<td>${player.ticks[latest].science}</td>`;
+		`<td>${player.turns[latest].stars.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].ships.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].infrastructure.economy.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].infrastructure.industry.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].infrastructure.science.toLocaleString()}</td>`;
 	return row
 }
 
 function parseTechTableRow(player) {
-	let latest = player.ticks.length - 1;
+	let latest = player.turns.length - 1;
 	let row = document.createElement('tr');
-	row.onclick = () => window.location = `/players/${player.alias}`;
-	row.innerHTML = `<td>${player.alias}</td>` +
-		`<td>${!player.name ? '' : player.name}</td>` +
+	row.onclick = () => window.location = `/players/${player.username}`;
+	row.innerHTML = `<td>${player.username}</td>` +
 		`<td>${!player.team ? '' : player.team}</td>` +
-		`<td>${player.ticks[latest].research.scanning}</td>` +
-		`<td>${player.ticks[latest].research.hyperspaceRange}</td>` +
-		`<td>${player.ticks[latest].research.terraforming}</td>` +
-		`<td>${player.ticks[latest].research.experimentation}</td>` +
-		`<td>${player.ticks[latest].research.weapons}</td>` +
-		`<td>${player.ticks[latest].research.banking}</td>` +
-		`<td>${player.ticks[latest].research.manufacturing}</td>`;
+		`<td>${player.turns[latest].technology.scanning.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.hyperspaceRange.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.terraforming.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.experimentation.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.weapons.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.banking.toLocaleString()}</td>` +
+		`<td>${player.turns[latest].technology.manufacturing.toLocaleString()}</td>`;
 	return row
 }
 
@@ -277,7 +275,7 @@ function loadPlayer() {
 	let urlParams = window.location.pathname.split('/');
 	$.ajax({
 		async: false,
-		url: `/api/games/latest/players/${urlParams[urlParams.length - 1]}`,
+		url: `/api/v2/games/latest/players/${urlParams[urlParams.length - 1]}`,
 		type: 'GET',
 		headers: {
 			accept: 'application/json',
@@ -285,30 +283,29 @@ function loadPlayer() {
 		},
 		dataType: 'json',
 		success: function (data) {
-			document.getElementById('player').innerHTML = data.alias + (data.name ? ` (${data.name})` : '') + (data.team ? ` [${data.team}]` : '');
+			document.getElementById('player').innerHTML = data.username + (data.team ? ` [${data.team}]` : '');
 
-			let latest = data.ticks[data.ticks.length - 1];
-			document.getElementById('stars').innerHTML = latest.stars;
-			document.getElementById('ships').innerHTML = latest.ships;
-			document.getElementById('fleets').innerHTML = latest.fleets;
+			let latest = data.turns[data.turns.length - 1];
+			document.getElementById('stars').innerHTML = latest.stars.toLocaleString();
+			document.getElementById('ships').innerHTML = latest.ships.toLocaleString();
+			document.getElementById('carriers').innerHTML = latest.carriers.toLocaleString();
 
-			document.getElementById('economy').innerHTML = latest.economy;
-			document.getElementById('economy-per-cycle').innerHTML = ` (${latest.economyPerTick} per Cycle)`;
+			document.getElementById('economy').innerHTML = latest.infrastructure.economy.toLocaleString();
+			document.getElementById('economy-per-hour').innerHTML = ` (${latest.infrastructure.economyPerHr.toLocaleString()} per Hour)`;
 
-			document.getElementById('industry').innerHTML = latest.industry;
-			document.getElementById('industry-per-cycle').innerHTML = ` (${latest.industryPerTick} per Cycle)`;
+			document.getElementById('industry').innerHTML = latest.infrastructure.industry.toLocaleString();
+			document.getElementById('industry-per-hour').innerHTML = ` (${latest.infrastructure.industryPerHr.toLocaleString()} per Hour)`;
 
-			document.getElementById('science').innerHTML = latest.science;
-			document.getElementById('science-per-cycle').innerHTML = ` (${latest.sciencePerTick} per Cycle)`;
+			document.getElementById('science').innerHTML = latest.infrastructure.science.toLocaleString();
+			document.getElementById('science-per-hour').innerHTML = ` (${latest.infrastructure.sciencePerHr.toLocaleString()} per Hour)`;
 
-			let research = latest.research;
-			document.getElementById('scanning').innerHTML = research.scanning;
-			document.getElementById('hyperspace-range').innerHTML = research.hyperspaceRange;
-			document.getElementById('terraforming').innerHTML = research.terraforming;
-			document.getElementById('experimentation').innerHTML = research.experimentation;
-			document.getElementById('weapons').innerHTML = research.weapons;
-			document.getElementById('banking').innerHTML = research.banking;
-			document.getElementById('manufacturing').innerHTML = research.manufacturing;
+			document.getElementById('scanning').innerHTML = latest.technology.scanning.toLocaleString();
+			document.getElementById('hyperspace-range').innerHTML = latest.technology.hyperspaceRange.toLocaleString();
+			document.getElementById('terraforming').innerHTML = latest.technology.terraforming.toLocaleString();
+			document.getElementById('experimentation').innerHTML = latest.technology.experimentation.toLocaleString();
+			document.getElementById('weapons').innerHTML = latest.technology.weapons.toLocaleString();
+			document.getElementById('banking').innerHTML = latest.technology.banking.toLocaleString();
+			document.getElementById('manufacturing').innerHTML = latest.technology.manufacturing.toLocaleString();
 
 			createStatsGraph(data);
 			createResearchGraph(data);
@@ -323,16 +320,16 @@ function createStatsGraph(data) {
 	let tickLabels = [];
 	let starData = [];
 	let shipsData = [];
-	let fleetsData = [];
+	let carriersData = [];
 	let economyData = [];
 	let industryData = [];
 	let scienceData = [];
-	data.ticks.forEach(function (element) {
-		tickLabels.push("Tick " + element.tick);
-		starData.push(element.stars);
-		economyData.push(element.economy);
-		industryData.push(element.industry);
-		scienceData.push(element.science);
+	data.turns.forEach(function (turn) {
+		tickLabels.push("Turn " + turn.turn);
+		starData.push(turn.stars);
+		economyData.push(turn.infrastructure.economy);
+		industryData.push(turn.infrastructure.industry);
+		scienceData.push(turn.infrastructure.science);
 	});
 	let dataset = [{
 		label: 'Stars',
@@ -349,11 +346,11 @@ function createStatsGraph(data) {
 		data: shipsData,
 		steppedLine: false
 	}, {
-		label: 'Fleets',
+		label: 'Carriers',
 		fill: false,
 		backgroundColor: getBackgroundColour(2),
 		borderColor: getBorderColour(2),
-		data: fleetsData,
+		data: carriersData,
 		steppedLine: false
 	}, {
 		label: 'Economy',
@@ -381,7 +378,7 @@ function createStatsGraph(data) {
 }
 
 function createResearchGraph(data) {
-	let tickLabels = [];
+	let turnLabels = [];
 	let scanningData = [];
 	let hyperspaceRangeData = [];
 	let terraformingData = [];
@@ -389,15 +386,15 @@ function createResearchGraph(data) {
 	let weaponsData = [];
 	let bankingData = [];
 	let manufacturingData = [];
-	data.ticks.forEach(function (cycle) {
-		tickLabels.push("Tick " + cycle.tick);
-		scanningData.push(cycle.research.scanning);
-		hyperspaceRangeData.push(cycle.research.hyperspaceRange);
-		terraformingData.push(cycle.research.terraforming);
-		experimentationData.push(cycle.research.experimentation);
-		weaponsData.push(cycle.research.weapons);
-		bankingData.push(cycle.research.banking);
-		manufacturingData.push(cycle.research.manufacturing);
+	data.turns.forEach(function (turn) {
+		turnLabels.push("Turn " + turn.turn);
+		scanningData.push(turn.technology.scanning);
+		hyperspaceRangeData.push(turn.technology.hyperspaceRange);
+		terraformingData.push(turn.technology.terraforming);
+		experimentationData.push(turn.technology.experimentation);
+		weaponsData.push(turn.technology.weapons);
+		bankingData.push(turn.technology.banking);
+		manufacturingData.push(turn.technology.manufacturing);
 	});
 	let dataset = [{
 		label: 'Scanning',
@@ -449,5 +446,5 @@ function createResearchGraph(data) {
 		data: manufacturingData,
 		steppedLine: false
 	}];
-	createGraph("research-graph", tickLabels, dataset);
+	createGraph("research-graph", turnLabels, dataset);
 }

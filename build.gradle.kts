@@ -39,7 +39,7 @@ dependencies {
 }
 
 application {
-	mainClass.set("macro.dashboard.neptunes.Server")
+	mainClass.set("macro.dashboard.Server")
 	mainClassName = mainClass.get()
 	applicationName = "Neptunes-Dashboard"
 }
