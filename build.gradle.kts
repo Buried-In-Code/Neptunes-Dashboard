@@ -3,8 +3,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	id("application")
-	kotlin("jvm") version "1.4.30"
-	id("com.github.ben-manes.versions") version "0.36.0"
+	kotlin("jvm") version "1.4.32"
+	id("com.github.ben-manes.versions") version "0.38.0"
 	id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
@@ -16,12 +16,12 @@ repositories {
 
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation(group = "org.yaml", name="snakeyaml", version="1.27")
+	implementation(group = "org.yaml", name="snakeyaml", version="1.28")
 	implementation(group = "com.konghq", name="unirest-java", version="3.11.11")
 	runtimeOnly(group = "org.xerial", name="sqlite-jdbc", version="3.34.0")
 
 	//Ktor
-	val ktorVersion = "1.5.1"
+	val ktorVersion = "1.5.2"
 	implementation(group = "io.ktor", name="ktor-server-netty", version=ktorVersion)
 	implementation(group = "io.ktor", name="ktor-gson", version=ktorVersion)
 
@@ -33,7 +33,7 @@ dependencies {
 	implementation(group = "org.jetbrains.exposed", name = "exposed-java-time", version = exposedVersion)
 
 	//Log4j
-	val logVersion = "2.14.0"
+	val logVersion = "2.14.1"
 	implementation(group = "org.apache.logging.log4j", name = "log4j-api", version = logVersion)
 	runtimeOnly(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = logVersion)
 }

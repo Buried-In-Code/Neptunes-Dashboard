@@ -12,18 +12,18 @@ _Currently only supports **Triton** games_
 
 ## Built Using
  - [AdoptOpenJDK: 8](https://adoptopenjdk.net/)
- - [Gradle: 6.8](https://gradle.org/)
- - [kotlin-stdlib-jdk8: 1.4.30](https://kotlinlang.org/)
- - [ktor-server-netty: 1.5.1](https://github.com/ktorio/ktor)
- - [ktor-gson: 1.5.1](https://github.com/ktorio/ktor)
- - [snakeyaml: 1.27](http://www.snakeyaml.org)
+ - [Gradle: 6.8.3](https://gradle.org/)
+ - [kotlin-stdlib-jdk8: 1.4.32](https://kotlinlang.org/)
+ - [ktor-server-netty: 1.5.2](https://github.com/ktorio/ktor)
+ - [ktor-gson: 1.5.2](https://github.com/ktorio/ktor)
+ - [snakeyaml: 1.28](http://www.snakeyaml.org)
  - [exposed-core: 0.29.1](https://github.com/JetBrains/Exposed)
  - [exposed-dao: 0.29.1](https://github.com/JetBrains/Exposed)
  - [exposed-jdbc: 0.29.1](https://github.com/JetBrains/Exposed)
  - [exposed-java-time: 0.29.1](https://github.com/JetBrains/Exposed)
  - [unirest-java: 3.11.11](https://github.com/Kong/unirest-java)
- - [log4j-api: 2.14.0](https://logging.apache.org/log4j/2.x/)
- - [log4j-slf4j-impl: 2.14.0 (Runtime)](https://logging.apache.org/log4j/2.x/)
+ - [log4j-api: 2.14.1](https://logging.apache.org/log4j/2.x/)
+ - [log4j-slf4j-impl: 2.14.1 (Runtime)](https://logging.apache.org/log4j/2.x/)
  - [sqlite-jdbc: 3.34.0 (Runtime)](https://github.com/xerial/sqlite-jdbc)
  - [bootstrap: 4.4.1 (CSS Framework)](https://getbootstrap.com/)
  
@@ -54,3 +54,6 @@ $ gradlew clean run
 ```bash
 $ java -jar Neptunes-Dashboard.jar
 ```
+
+## Socials
+[![Discord | The DEV Environment](https://invidget.switchblade.xyz/618581423070117932)](https://discord.gg/nqGMeGg)
