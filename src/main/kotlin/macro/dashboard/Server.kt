@@ -41,7 +41,6 @@ object Server {
 		}
 	}
 
-	@KtorExperimentalAPI
 	@JvmStatic
 	fun main(args: Array<String>) {
 		embeddedServer(
@@ -53,7 +52,6 @@ object Server {
 	}
 }
 
-@KtorExperimentalAPI
 fun Application.module() {
 	install(ContentNegotiation) {
 		register(contentType = ContentType.Application.Json, converter = GsonConverter(gson = Utils.GSON))

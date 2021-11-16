@@ -10,12 +10,8 @@ out/
 
 # =====Files=====
 *.iml
-*.sqlite
-*.db
-*.yaml
-*.old
-*.json
-*.csv
+.classpath
+.project
 
 # =====Project=====
 !Neptunes-Dashboard.yaml

@@ -3,9 +3,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	id("application")
-	kotlin("jvm") version "1.4.32"
-	id("com.github.ben-manes.versions") version "0.38.0"
-	id("com.github.johnrengelman.shadow") version "6.1.0"
+	kotlin("jvm") version "1.6.0"
+	id("com.github.ben-manes.versions") version "0.39.0"
+	id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 repositories {
@@ -16,17 +16,17 @@ repositories {
 
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation(group = "org.yaml", name="snakeyaml", version="1.28")
-	implementation(group = "com.konghq", name="unirest-java", version="3.11.11")
-	runtimeOnly(group = "org.xerial", name="sqlite-jdbc", version="3.34.0")
+	implementation(group = "org.yaml", name="snakeyaml", version="1.29")
+	implementation(group = "com.konghq", name="unirest-java", version="3.13.3")
+	runtimeOnly(group = "org.xerial", name="sqlite-jdbc", version="3.36.0.3")
 
 	//Ktor
-	val ktorVersion = "1.5.2"
+	val ktorVersion = "1.6.5"
 	implementation(group = "io.ktor", name="ktor-server-netty", version=ktorVersion)
 	implementation(group = "io.ktor", name="ktor-gson", version=ktorVersion)
 
 	//Exposed
-	val exposedVersion = "0.29.1"
+	val exposedVersion = "0.36.2"
 	implementation(group = "org.jetbrains.exposed", name = "exposed-core", version = exposedVersion)
 	implementation(group = "org.jetbrains.exposed", name = "exposed-dao", version = exposedVersion)
 	implementation(group = "org.jetbrains.exposed", name = "exposed-jdbc", version = exposedVersion)
