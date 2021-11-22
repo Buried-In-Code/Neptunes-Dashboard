@@ -17,7 +17,7 @@ repositories {
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation(group = "org.yaml", name="snakeyaml", version="1.29")
-	implementation(group = "com.konghq", name="unirest-java", version="3.13.3")
+	implementation(group = "com.konghq", name="unirest-java", version="3.13.4")
 	runtimeOnly(group = "org.xerial", name="sqlite-jdbc", version="3.36.0.3")
 
 	//Ktor
