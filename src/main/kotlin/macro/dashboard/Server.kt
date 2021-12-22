@@ -17,7 +17,6 @@ import io.ktor.routing.accept
 import io.ktor.routing.route
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.util.KtorExperimentalAPI
 import macro.dashboard.Server.LOGGER
 import macro.dashboard.config.Config
 import macro.dashboard.v2.Endpoints.v2Routes

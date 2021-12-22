@@ -12,7 +12,9 @@ out/
 *.iml
 .classpath
 .project
+*.sqlite
 
 # =====Project=====
 !Neptunes-Dashboard.yaml
 !Postman/*
+config.yaml
