@@ -17,6 +17,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.nio.charset.Charset
 import java.sql.Connection
+import java.util.*
 
 /**
  * Created by Macro303 on 2018-Nov-12.
@@ -70,14 +71,14 @@ object Utils {
 	}
 
 	fun Parameters.lowerCase(): Map<String, String?> = this.toMap()
-		.mapKeys { it.key.toLowerCase() }
+		.mapKeys { it.key.lowercase() }
 		.mapValues { it.value.firstOrNull() }
 
 	fun Enum<*>.cleanName(): String = this.name
 		.replace("_", " ")
-		.toLowerCase()
+		.lowercase()
 		.split(" ")
-		.joinToString(" ") { it.capitalize() }
+		.joinToString(" ") { it.replaceFirstChar(Char::titlecase) }
 
 	fun toType(value: Any): Type = Type.valueOf(value as String)
 	fun fromType(value: Type): Any = value.name

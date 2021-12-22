@@ -3,25 +3,24 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
 	id("application")
-	kotlin("jvm") version "1.6.0"
+	kotlin("jvm") version "1.6.10"
 	id("com.github.ben-manes.versions") version "0.39.0"
-	id("com.github.johnrengelman.shadow") version "7.1.0"
+	id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 repositories {
 	mavenCentral()
 	mavenLocal()
-	jcenter()
 }
 
 dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation(group = "org.yaml", name="snakeyaml", version="1.29")
-	implementation(group = "com.konghq", name="unirest-java", version="3.13.3")
+	implementation(group = "org.yaml", name="snakeyaml", version="1.30")
+	implementation(group = "com.konghq", name="unirest-java", version="3.13.4")
 	runtimeOnly(group = "org.xerial", name="sqlite-jdbc", version="3.36.0.3")
 
 	//Ktor
-	val ktorVersion = "1.6.5"
+	val ktorVersion = "1.6.7"
 	implementation(group = "io.ktor", name="ktor-server-netty", version=ktorVersion)
 	implementation(group = "io.ktor", name="ktor-gson", version=ktorVersion)
 
@@ -33,7 +32,7 @@ dependencies {
 	implementation(group = "org.jetbrains.exposed", name = "exposed-java-time", version = exposedVersion)
 
 	//Log4j
-	val logVersion = "2.14.1"
+	val logVersion = "2.17.0"
 	implementation(group = "org.apache.logging.log4j", name = "log4j-api", version = logVersion)
 	runtimeOnly(group = "org.apache.logging.log4j", name = "log4j-slf4j-impl", version = logVersion)
 }
@@ -58,8 +57,8 @@ tasks.compileKotlin {
 	targetCompatibility = JavaVersion.VERSION_1_8.toString()
 
 	kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
-	kotlinOptions.apiVersion = "1.4"
-	kotlinOptions.languageVersion = "1.4"
+	kotlinOptions.apiVersion = "1.6"
+	kotlinOptions.languageVersion = "1.6"
 }
 
 tasks {
