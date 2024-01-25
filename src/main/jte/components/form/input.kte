@@ -1,0 +1,19 @@
+@param label: String
+@param name: String
+@param value: String? = null
+@param icon: String? = null
+@param disabled: Boolean = false
+@param hidden: Boolean = false
+
+<div class="field" hidden="${hidden}">
+    <label class="label has-text-info" for="${name}">${label}</label>
+    <div class="control is-expanded@if(icon != null) has-icons-left@endif">
+        <input class="input" disabled="${disabled}" id="${name}" name="${name}" placeholder="${label}" type="text" value="${value}">
+        @if(icon != null)
+            <div class="icon is-left">
+                <i class="${icon}"></i>
+            </div>
+        @endif
+    </div>
+    <p class="help is-danger" id="${name}-error"></p>
+</div>

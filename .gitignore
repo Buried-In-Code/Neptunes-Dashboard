@@ -1,0 +1,8 @@
+### Folders ###
+.gradle/
+.idea/
+build/
+jte-classes/
+logs/
+
+### Files ###
