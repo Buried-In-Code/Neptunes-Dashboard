@@ -33,7 +33,7 @@ object Utils : Logging {
         Paths.get(it)
     } ?: (HOME_ROOT / ".local" / "share")
 
-    internal const val VERSION = "2.0.0"
+    internal const val VERSION = "4.0.0"
     internal val CACHE_ROOT = XDG_CACHE / "neptunes-dashboard"
     internal val CONFIG_ROOT = XDG_CONFIG / "neptunes-dashboard"
     internal val DATA_ROOT = XDG_DATA / "neptunes-dashboard"

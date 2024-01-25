@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "github.buriedincode"
-version = "2.0.0"
+version = "4.0.0"
 
 println("Kotlin v${KotlinVersion.CURRENT}")
 println("Java v${System.getProperty("java.version")}")

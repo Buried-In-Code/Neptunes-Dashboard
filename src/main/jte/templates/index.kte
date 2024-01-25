@@ -22,21 +22,25 @@
         <header class="block has-text-centered">
             <h1 class="title is-1">Neptune's Dashboard</h1>
         </header>
-        <form id="add-game-form" onsubmit="return false;">
-            <div class="box">
-                @template.components.form.input_long(label = "Game Id", name = "game-id", icon = "fa-solid fa-gamepad", min = 0L)
-                @template.components.form.input(label = "API Key", name = "api-key", icon = "fa-solid fa-key")
-                @template.components.form.select.game_type(options = GameType.entries.toList())
-                <div class="buttons is-multiline is-centered">
-                    <button class="button is-success" id="add-game-button" onclick="addGame()" type="submit">
-                        <span class="icon">
-                            <i class="fa-solid fa-add"></i>
-                        </span>
-                        <span>Add Game</span>
-                    </button>
-                </div>
+        <div class="columns is-multiline is-centered is-desktop">
+            <div class="column is-half-desktop">
+                <form id="add-game-form" onsubmit="return false;">
+                    <div class="box">
+                        @template.components.form.input_long(label = "Game Id", name = "game-id", icon = "fa-solid fa-gamepad", min = 0L)
+                        @template.components.form.input(label = "API Key", name = "api-key", icon = "fa-solid fa-key")
+                        @template.components.form.select.game_type(options = GameType.entries.toList())
+                        <div class="buttons is-multiline is-centered">
+                            <button class="button is-success" id="add-game-button" onclick="addGame()" type="submit">
+                                <span class="icon">
+                                    <i class="fa-solid fa-add"></i>
+                                </span>
+                                <span>Add Game</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </main>
 @template.components.footer()

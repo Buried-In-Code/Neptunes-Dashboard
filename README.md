@@ -4,7 +4,7 @@
 
 ![Java Version](https://img.shields.io/badge/Temurin-17-green?style=flat-square&logo=eclipse-adoptium)
 ![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9.22-green?style=flat-square&logo=kotlin)
-![Status](https://img.shields.io/badge/Status-Alpha-yellow?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
 
 [![Gradle](https://img.shields.io/badge/Gradle-8.5-informational?style=flat-square&logo=gradle)](https://github.com/gradle/gradle)
 [![Ktlint](https://img.shields.io/badge/Ktlint-1.1.0-informational?style=flat-square)](https://github.com/pinterest/ktlint)
