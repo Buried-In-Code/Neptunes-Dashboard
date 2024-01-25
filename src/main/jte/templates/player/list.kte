@@ -1,0 +1,118 @@
+@import github.buriedincode.dashboard.models.Game
+@import github.buriedincode.dashboard.models.Player
+@import kotlin.collections.List
+@import kotlin.collections.Map
+@param games: List<Game>
+@param game: Game
+@param resources: List<Player>
+@param maxStats: Map<String, Int>
+@param maxTechnology: Map<String, Int>
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Neptune's Dashboard</title>
+    <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
+    <link disabled href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" id="light-theme" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.9.4/villain/vegeta.min.css" id="dark-theme" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bulma.min.css" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
+</head>
+<body class="has-navbar-fixed-top">
+@template.components.navbar(games = games.filterNot { it.isGameOver })
+<main class="section">
+    <div class="container is-fluid">
+        <header class="block has-text-centered">
+            <h1 class="title is-1">${game.name} Players</h1>
+        </header>
+        <div class="box has-text-centered">
+            <h4 class="title is-4">Stats</h4>
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable" id="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Stars</th>
+                            <th>Economy</th>
+                            <th>Industry</th>
+                            <th>Science</th>
+                            <th>Ships</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for(entry in resources.sortedBy{ it.turns.first().stars })
+                            <tr onclick="window.location='/games/${game.id.value}/players/${entry.id.value}'">
+                                <td>${entry.username}</td>
+                                <td>${entry.turns.first().stars}</td>
+                                <td>${entry.turns.first().economy}</td>
+                                <td>${entry.turns.first().industry}</td>
+                                <td>${entry.turns.first().science}</td>
+                                <td>${entry.turns.first().ships}</td>
+                            </tr>
+                        @endfor
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="box has-text-centered">
+            <h4 class="title is-4">Technology</h4>
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable" id="technology-table">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Banking</th>
+                        <th>Manufacturing</th>
+                        <th>Propulsion</th>
+                        <th>Research</th>
+                        <th>Scanning</th>
+                        <th>Terraforming</th>
+                        <th>Weapons</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for(entry in resources.sortedBy{ it.turns.first().stars })
+                        <tr onclick="window.location='/games/${game.id.value}/players/${entry.id.value}'">
+                            <td>${entry.username}</td>
+                            <td>${entry.turns.first().banking}</td>
+                            <td>${entry.turns.first().manufacturing}</td>
+                            <td>${entry.turns.first().propulsion}</td>
+                            <td>${entry.turns.first().research}</td>
+                            <td>${entry.turns.first().scanning}</td>
+                            <td>${entry.turns.first().terraforming}</td>
+                            <td>${entry.turns.first().weapons}</td>
+                        </tr>
+                    @endfor
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</main>
+@template.components.footer()
+<script src="/static/js/scripts.js" type="text/javascript"></script>
+<script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.7" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bulma.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+  ready(() => {
+    $("#stats-table").DataTable({
+      paging: false,
+      info: false,
+      searching: false,
+      order: [[1, "desc"]],
+    });
+    $("#technology-table").DataTable({
+      paging: false,
+      info: false,
+      searching: false,
+      order: [[7, "desc"]],
+    });
+  });
+</script>
+</body>
+</html>

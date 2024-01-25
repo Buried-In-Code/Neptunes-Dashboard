@@ -8,6 +8,7 @@ import github.buriedincode.dashboard.models.Player
 import github.buriedincode.dashboard.models.Turn
 import github.buriedincode.dashboard.services.Triton
 import github.buriedincode.dashboard.tables.PlayerTable
+import github.buriedincode.dashboard.tables.TurnTable
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.ConflictResponse
 import io.javalin.http.Context
@@ -55,7 +56,7 @@ object GameApiRouter : BaseApiRouter<Game>(entity = Game), Logging {
                 this.turn = response.turn
                 this.nextTurn = response.nextTurn
             }
-            response.players.forEach { (_, data) ->
+            response.players.filterNot { it.value.username.isBlank() }.forEach { (_, data) ->
                 val player = Player.new {
                     this.game = resource
                     this.playerId = data.uid
@@ -84,10 +85,6 @@ object GameApiRouter : BaseApiRouter<Game>(entity = Game), Logging {
         }
     }
 
-    override fun getEndpoint(ctx: Context) {
-        TODO("Incomplete endpoint")
-    }
-
     override fun updateEndpoint(ctx: Context) {
         Utils.query {
             val resource = ctx.getResource()
@@ -97,16 +94,13 @@ object GameApiRouter : BaseApiRouter<Game>(entity = Game), Logging {
             } else {
                 TODO("Type not yet supported")
             }
-            if (resource.turn == response.turn) {
-                throw HttpResponseException(status = HttpStatus.NOT_MODIFIED)
-            }
             resource.isPaused = response.isPaused
             resource.isGameOver = response.isGameOver
             resource.isStarted = response.isStarted
             resource.startTime = response.startTime
             resource.turn = response.turn
             resource.nextTurn = response.nextTurn
-            response.players.forEach { (_, data) ->
+            response.players.filterNot { it.value.username.isBlank() }.forEach { (_, data) ->
                 val player = Player.find {
                     (PlayerTable.gameCol eq resource.id) and (PlayerTable.playerIdCol eq data.uid)
                 }.firstOrNull() ?: Player.new {
@@ -115,7 +109,9 @@ object GameApiRouter : BaseApiRouter<Game>(entity = Game), Logging {
                 }
                 player.isActive = data.isActive
                 player.username = data.username
-                Turn.new {
+                Turn.find {
+                    (TurnTable.playerCol eq player.id) and (TurnTable.turnCol eq resource.turn)
+                }.firstOrNull() ?: Turn.new {
                     this.player = player
                     this.turn = resource.turn
                     this.industry = data.totalIndustry
@@ -132,10 +128,8 @@ object GameApiRouter : BaseApiRouter<Game>(entity = Game), Logging {
                     this.manufacturing = data.tech["manufacturing"]!!.level
                 }
             }
-        }
-    }
 
-    override fun deleteEndpoint(ctx: Context) {
-        TODO("Incomplete endpoint")
+            ctx.json(resource.toJson(showAll = true))
+        }
     }
 }

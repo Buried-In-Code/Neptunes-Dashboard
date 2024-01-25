@@ -17,41 +17,30 @@
     <div class="navbar-menu" id="navMenu">
         <div class="navbar-start">
             @for(game in games)
-              <div class="navbar-item has-dropdown is-hoverable">
-                  <a class="navbar-link">
-                      <span class="icon">
-                          <i class="fa-solid fa-gamepad"></i>
-                      </span>
-                      <span>${ game.name }</span>
-                  </a>
-                  <div class="navbar-dropdown">
-                      <a class="navbar-item" href="/games/${ game.id.value }">
-                          <span class="icon">
-                              <i class="fa-solid fa-chart-line"></i>
-                          </span>
-                          <span>Dashboard</span>
-                      </a>
-                      <a class="navbar-item" href="/games/${ game.id.value }/players">
-                          <span class="icon">
-                              <i class="fa-solid fa-user"></i>
-                          </span>
-                          <span>Players</span>
-                      </a>
-                  </div>
-              </div>
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </span>
+                        <span>${ game.name }</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/games/${ game.id.value }">
+                            <span class="icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a class="navbar-item" href="/games/${ game.id.value }/players">
+                            <span class="icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+                            <span>Players</span>
+                        </a>
+                    </div>
+                </div>
             @endfor
         </div>
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <div class="buttons">
-                    <button class="button is-success" id="sync-button" onclick="sync()" type="button">
-                        <span class="icon">
-                            <i class="fa-solid fa-rotate"></i>
-                        </span>
-                        <span>Sync</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+        <div class="navbar-end"></div>
     </div>
 </nav>

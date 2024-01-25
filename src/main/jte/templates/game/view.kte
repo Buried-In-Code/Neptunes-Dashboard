@@ -19,13 +19,24 @@
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
 <body class="has-navbar-fixed-top">
-@template.components.navbar(games = games)
+@template.components.navbar(games = games.filterNot { it.isGameOver })
 <main class="section">
     <div class="container is-fluid">
         <header class="block has-text-centered">
             <h1 class="title is-1">${ resource.name }</h1>
             <h3 class="subtitle is-3">${ resource.type.titlecase() }</h3>
         </header>
+        <nav class="level is-mobile">
+            <div class="level-left"></div>
+            <div class="level-right">
+                <button class="button is-info" id="manual-refresh-button" onclick="manualRefresh();">
+                    <span class="icon">
+                        <i class="fa-solid fa-rotate"></i>
+                    </span>
+                    <span>Manual refresh</span>
+                </button>
+            </div>
+        </nav>
         <div class="box">
             <nav class="level is-mobile has-text-centered">
                 <div class="level-item">
@@ -121,6 +132,15 @@
     const data = [@for(player in resource.players.filter { it.isActive }.sortedBy { it.turns.first().stars })${player.turns.first().stars}, @endfor${resource.totalStars - resource.players.sumOf{ it.turns.first().stars }}];
     createPieChart("star-distribution", labels, data);
   });
+  async function manualRefresh() {
+    const caller = "manual-refresh-button";
+    addLoading(caller);
+
+    const response = await submitRequest("/api/games/${resource.id.value}", "PUT");
+    if (response !== null)
+      window.location.reload();
+    removeLoading(caller);
+}
 </script>
 </body>
 </html>

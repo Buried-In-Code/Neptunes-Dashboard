@@ -1,7 +1,7 @@
 @import github.buriedincode.dashboard.models.Game
 @import github.buriedincode.dashboard.models.GameType
 @import kotlin.collections.List
-@param games: List<Game>
+@param resources: List<Game>
 
 <!DOCTYPE html>
 <html lang="en-GB">
@@ -16,16 +16,17 @@
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
 <body class="has-navbar-fixed-top">
-@template.components.navbar(games = games)
+@template.components.navbar(games = resources.filterNot { it.isGameOver })
 <main class="section">
     <div class="container is-fluid">
         <header class="block has-text-centered">
             <h1 class="title is-1">Neptune's Dashboard</h1>
         </header>
-        <div class="columns is-multiline is-centered is-desktop">
-            <div class="column is-half-desktop">
-                <form id="add-game-form" onsubmit="return false;">
-                    <div class="box">
+        <div class="columns is-multiline is-centered">
+            <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-fullhd">
+                <div class="box">
+                    <h4 class="title is-4">Add Game</h4>
+                    <form id="add-game-form" onsubmit="return false;">
                         @template.components.form.input_long(label = "Game Id", name = "game-id", icon = "fa-solid fa-gamepad", min = 0L)
                         @template.components.form.input(label = "API Key", name = "api-key", icon = "fa-solid fa-key")
                         @template.components.form.select.game_type(options = GameType.entries.toList())
@@ -34,11 +35,20 @@
                                 <span class="icon">
                                     <i class="fa-solid fa-add"></i>
                                 </span>
-                                <span>Add Game</span>
+                                <span>Add</span>
                             </button>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+            </div>
+            <div class="column">
+                <div class="columns is-multiline is-centered">
+                    @for(entry in resources.sorted())
+                        <div class="column is-full-tablet is-half-widescreen">
+                            @template.components.view.game(entry = entry)
+                        </div>
+                    @endfor
+                </div>
             </div>
         </div>
     </div>
@@ -47,6 +57,6 @@
 <script src="/static/js/scripts.js" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script src="/static/js/validation.js" type="text/javascript"></script>
-<script src="/static/js/index.js" type="text/javascript"></script>
+<script src="/static/js/game.js" type="text/javascript"></script>
 </body>
 </html>

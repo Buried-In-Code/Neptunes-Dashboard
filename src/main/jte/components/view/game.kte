@@ -1,0 +1,40 @@
+@import github.buriedincode.dashboard.models.Game
+@import github.buriedincode.dashboard.Utils.titlecase
+@import github.buriedincode.dashboard.Utils.toHumanReadable
+@param entry: Game
+
+<a class="box has-text-centered" href="/games/${entry.id.value}">
+    <nav class="level is-mobile">
+        <div class="level-left">
+            <h4 class="title is-4 is-spaced">${entry.name}</h4>
+        </div>
+        <div class="level-right">
+            <p>${entry.type.titlecase()}</p>
+        </div>
+    </nav>
+    <nav class="level is-mobile">
+        <div class="level-item">
+            <div>
+                <p class="heading has-text-info">Players</p>
+                <p class="title">${entry.players.count()}</p>
+            </div>
+        </div>
+        <div class="level-item">
+            <div>
+                @if(entry.isGameOver)
+                    <p class="heading has-text-info">State</p>
+                    <p class="title">Finished</p>
+                @elseif(entry.isPaused)
+                    <p class="heading has-text-info">State</p>
+                    <p class="title">Paused</p>
+                @elseif(entry.isStarted)
+                    <p class="heading has-text-info">Next Turn</p>
+                    <p class="title">${entry.nextTurn.toHumanReadable()}</p>
+                @else
+                    <p class="heading has-text-info">State</p>
+                    <p class="title">Not Started</p>
+                @endif
+            </div>
+        </div>
+    </nav>
+</a>
