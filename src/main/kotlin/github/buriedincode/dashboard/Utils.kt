@@ -14,6 +14,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.sql.Connection
+import java.text.NumberFormat
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -149,4 +150,8 @@ object Utils : Logging {
     fun LocalDateTime.toString(pattern: String): String {
         return this.format(DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH))
     }
+
+    fun Int.localeString(): String = NumberFormat.getNumberInstance().format(this)
+
+    fun Long.localeString(): String = NumberFormat.getNumberInstance().format(this)
 }

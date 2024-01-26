@@ -1,8 +1,8 @@
 package github.buriedincode.dashboard.routers.html
 
 import github.buriedincode.dashboard.Utils
-import github.buriedincode.dashboard.models.Player
 import github.buriedincode.dashboard.models.Game
+import github.buriedincode.dashboard.models.Player
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.Context
 import io.javalin.http.NotFoundResponse
@@ -42,6 +42,18 @@ object PlayerHtmlRouter : BaseHtmlRouter<Player>(entity = Player), Logging {
                     "resources" to game.players.toList(),
                     "maxStats" to maxStats,
                     "maxTechnology" to maxTechnology,
+                ),
+            )
+        }
+    }
+
+    override fun viewEndpoint(ctx: Context) {
+        Utils.query {
+            ctx.render(
+                filePath = "templates/$name/view.kte",
+                model = mapOf(
+                    "games" to Game.all().toList(),
+                    "resource" to ctx.getResource(),
                 ),
             )
         }

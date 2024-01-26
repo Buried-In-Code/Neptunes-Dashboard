@@ -2,6 +2,7 @@
 @import github.buriedincode.dashboard.models.Game
 @import github.buriedincode.dashboard.Utils.titlecase
 @import github.buriedincode.dashboard.Utils.toHumanReadable
+@import github.buriedincode.dashboard.Utils.localeString
 @import kotlin.collections.List
 @param games: List<Game>
 @param resource: Game
@@ -37,8 +38,8 @@
                 </button>
             </div>
         </nav>
-        <div class="box">
-            <nav class="level is-mobile has-text-centered">
+        <div class="box has-text-centered">
+            <nav class="level is-mobile">
                 <div class="level-item">
                     <div>
                         <p class="heading">Started At</p>
@@ -50,7 +51,7 @@
                     </div>
                 </div>
             </nav>
-            <nav class="level is-mobile has-text-centered">
+            <nav class="level is-mobile">
                 <div class="level-item">
                     <div>
                         <p class="heading"># of Players</p>
@@ -60,15 +61,15 @@
                 <div class="level-item">
                     <div>
                         <p class="heading"># of Stars to Win</p>
-                        <p class="title">${ resource.starsForVictory } / ${ resource.totalStars }</p>
+                        <p class="title">${ resource.starsForVictory.localeString() } / ${ resource.totalStars.localeString() }</p>
                     </div>
                 </div>
             </nav>
-            <nav class="level is-mobile has-text-centered">
+            <nav class="level is-mobile">
                 <div class="level-item">
                     <div>
                         <p class="heading">Turn #</p>
-                        <p class="title">${ resource.turn }</p>
+                        <p class="title">${ resource.turn.localeString() }</p>
                     </div>
                 </div>
                 <div class="level-item">
@@ -85,8 +86,8 @@
                 </div>
             </nav>
         </div>
-        <div class="columns is-multiline is-centered is-desktop">
-            <div class="column is-half-desktop">
+        <div class="columns is-multiline is-centered is-widescreen">
+            <div class="column is-half-widescreen">
                 <div class="box has-text-centered">
                     <h3 class="title is-3 has-text-centered">Game Progress</h3>
                     <div class="chart-container" hidden>
@@ -97,7 +98,7 @@
                     </div>
                 </div>
             </div>
-            <div class="column is-half-desktop">
+            <div class="column is-half-widescreen">
                 <div class="box has-text-centered">
                     <h3 class="title is-3 has-text-centered">Star Distribution</h3>
                     <div class="chart-container" hidden>
@@ -120,16 +121,16 @@
 <script src="/static/js/charts.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(() => {
-    const labels = [@for(turn in 0..resource.turn)"Turn ${turn}"@endfor];
+    const labels = [@for(turn in 0..resource.turn)"Turn ${turn.localeString()}"@endfor];
     const datasets = [];
     @for(loop in ForSupport.of(resource.players.filter { it.isActive }.sortedBy { it.turns.first().stars }))
-      datasets.push(createDataset(${loop.index}, [@for(turn in loop.get().turns.sorted())${turn.stars},@endfor], "${loop.get().username}", "line"));
+      datasets.push(createDataset(${loop.index}, [@for(turn in loop.get().turns.sorted())${turn.stars.localeString()},@endfor], "${loop.get().username}", "line"));
     @endfor
     createChart("game-progression", labels, datasets);
   });
   ready(() => {
     const labels = [@for(player in resource.players.filter { it.isActive }.sortedBy { it.turns.first().stars })"${player.username}", @endfor"Unclaimed"];
-    const data = [@for(player in resource.players.filter { it.isActive }.sortedBy { it.turns.first().stars })${player.turns.first().stars}, @endfor${resource.totalStars - resource.players.sumOf{ it.turns.first().stars }}];
+    const data = [@for(player in resource.players.filter { it.isActive }.sortedBy { it.turns.first().stars })${player.turns.first().stars.localeString()}, @endfor${(resource.totalStars - resource.players.sumOf{ it.turns.first().stars }).localeString()}];
     createPieChart("star-distribution", labels, data);
   });
   async function manualRefresh() {

@@ -2,15 +2,14 @@ package github.buriedincode.dashboard
 
 import gg.jte.TemplateEngine
 import gg.jte.resolve.DirectoryCodeResolver
-import github.buriedincode.dashboard.models.Game
 import github.buriedincode.dashboard.routers.api.GameApiRouter
 import github.buriedincode.dashboard.routers.html.GameHtmlRouter
 import github.buriedincode.dashboard.routers.html.PlayerHtmlRouter
 import io.javalin.Javalin
-import io.javalin.apibuilder.ApiBuilder.put
 import io.javalin.apibuilder.ApiBuilder.get
 import io.javalin.apibuilder.ApiBuilder.path
 import io.javalin.apibuilder.ApiBuilder.post
+import io.javalin.apibuilder.ApiBuilder.put
 import io.javalin.http.ContentType
 import io.javalin.rendering.template.JavalinJte
 import org.apache.logging.log4j.Level
@@ -70,7 +69,7 @@ object App : Logging {
                     get(GameHtmlRouter::viewEndpoint)
                     path("players") {
                         get(PlayerHtmlRouter::listEndpoint)
-                        get("{player-id}") {
+                        path("{player-id}") {
                             get(PlayerHtmlRouter::viewEndpoint)
                         }
                     }

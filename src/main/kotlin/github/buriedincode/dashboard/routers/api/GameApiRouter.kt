@@ -12,7 +12,6 @@ import github.buriedincode.dashboard.tables.TurnTable
 import io.javalin.http.BadRequestResponse
 import io.javalin.http.ConflictResponse
 import io.javalin.http.Context
-import io.javalin.http.HttpResponseException
 import io.javalin.http.HttpStatus
 import io.javalin.http.bodyAsClass
 import org.apache.logging.log4j.kotlin.Logging

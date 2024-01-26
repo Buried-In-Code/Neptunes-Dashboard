@@ -1,5 +1,6 @@
 @import github.buriedincode.dashboard.models.Game
 @import github.buriedincode.dashboard.models.Player
+@import github.buriedincode.dashboard.Utils.localeString
 @import kotlin.collections.List
 @import kotlin.collections.Map
 @param games: List<Game>
@@ -46,11 +47,11 @@
                         @for(entry in resources.sortedBy{ it.turns.first().stars })
                             <tr onclick="window.location='/games/${game.id.value}/players/${entry.id.value}'">
                                 <td>${entry.username}</td>
-                                <td>${entry.turns.first().stars}</td>
-                                <td>${entry.turns.first().economy}</td>
-                                <td>${entry.turns.first().industry}</td>
-                                <td>${entry.turns.first().science}</td>
-                                <td>${entry.turns.first().ships}</td>
+                                <td>${entry.turns.first().stars.localeString()}</td>
+                                <td>${entry.turns.first().economy.localeString()}</td>
+                                <td>${entry.turns.first().industry.localeString()}</td>
+                                <td>${entry.turns.first().science.localeString()}</td>
+                                <td>${entry.turns.first().ships.localeString()}</td>
                             </tr>
                         @endfor
                     </tbody>
@@ -77,13 +78,13 @@
                     @for(entry in resources.sortedBy{ it.turns.first().stars })
                         <tr onclick="window.location='/games/${game.id.value}/players/${entry.id.value}'">
                             <td>${entry.username}</td>
-                            <td>${entry.turns.first().banking}</td>
-                            <td>${entry.turns.first().manufacturing}</td>
-                            <td>${entry.turns.first().propulsion}</td>
-                            <td>${entry.turns.first().research}</td>
-                            <td>${entry.turns.first().scanning}</td>
-                            <td>${entry.turns.first().terraforming}</td>
-                            <td>${entry.turns.first().weapons}</td>
+                            <td>${entry.turns.first().banking.localeString()}</td>
+                            <td>${entry.turns.first().manufacturing.localeString()}</td>
+                            <td>${entry.turns.first().propulsion.localeString()}</td>
+                            <td>${entry.turns.first().research.localeString()}</td>
+                            <td>${entry.turns.first().scanning.localeString()}</td>
+                            <td>${entry.turns.first().terraforming.localeString()}</td>
+                            <td>${entry.turns.first().weapons.localeString()}</td>
                         </tr>
                     @endfor
                     </tbody>
