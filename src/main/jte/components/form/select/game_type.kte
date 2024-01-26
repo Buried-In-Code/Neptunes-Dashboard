@@ -1,0 +1,25 @@
+@import github.buriedincode.dashboard.models.GameType
+@import github.buriedincode.dashboard.Utils.titlecase
+@import kotlin.collections.List
+@param label: String = "Game Type"
+@param name: String = "type"
+@param options: List<GameType>
+@param selected: GameType? = null
+
+<div class="field">
+    <label class="label has-text-info" for="${name}">${label}</label>
+    <div class="control is-expanded has-icons-left">
+        <div class="select is-fullwidth">
+            <select class="input" id="${name}" name="${name}">
+                <option selected="${selected == null}" value="">Select Game Type</option>
+                @for(entry in options)
+                    <option selected="${entry == selected}" value="${entry.name}">${entry.titlecase()}</option>
+                @endfor
+            </select>
+        </div>
+        <div class="icon is-left">
+            <i class="fa-solid fa-dice"></i>
+        </div>
+    </div>
+    <p class="help is-danger" id="${name}-error"></p>
+</div>

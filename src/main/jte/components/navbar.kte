@@ -1,0 +1,46 @@
+@import github.buriedincode.dashboard.models.Game
+@import kotlin.collections.List
+@param games: List<Game> = emptyList()
+
+<nav aria-label="main navigation" class="navbar is-fixed-top is-primary" role="navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/">
+            <img src="/static/img/logo.png" alt="Neptune's Dashboard Logo">
+            Neptune's Dashboard
+        </a>
+        <span class="navbar-burger burger" data-target="navMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+    </div>
+    <div class="navbar-menu" id="navMenu">
+        <div class="navbar-start">
+            @for(game in games)
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        <span class="icon">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </span>
+                        <span>${ game.name }</span>
+                    </a>
+                    <div class="navbar-dropdown">
+                        <a class="navbar-item" href="/games/${ game.id.value }">
+                            <span class="icon">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a class="navbar-item" href="/games/${ game.id.value }/players">
+                            <span class="icon">
+                                <i class="fa-solid fa-users"></i>
+                            </span>
+                            <span>Players</span>
+                        </a>
+                    </div>
+                </div>
+            @endfor
+        </div>
+        <div class="navbar-end"></div>
+    </div>
+</nav>

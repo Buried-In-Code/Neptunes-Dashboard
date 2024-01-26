@@ -1,0 +1,25 @@
+@param label: String
+@param name: String
+@param value: Long? = null
+@param min: Long = Long.MIN_VALUE
+@param max: Long = Long.MAX_VALUE
+@param icon: String? = null
+@param disabled: Boolean = false
+@param hidden: Boolean = false
+
+<div class="field" hidden="${hidden}">
+    <label class="label has-text-info" for="${name}">${label}</label>
+    <div class="control is-expanded@if(icon != null) has-icons-left@endif">
+        @if(value != null)
+            <input class="input" id="${name}" max="${max}" min="${min}" name="${name}" placeholder="${label}" type="number" value="${value}">
+        @else
+            <input class="input" id="${name}" max="${max}" min="${min}" name="${name}" placeholder="${label}" type="number">
+        @endif
+        @if(icon != null)
+            <div class="icon is-left">
+                <i class="${icon}"></i>
+            </div>
+        @endif
+    </div>
+    <p class="help is-danger" id="${name}-error"></p>
+</div>

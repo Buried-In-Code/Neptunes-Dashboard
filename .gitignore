@@ -1,20 +1,8 @@
-# =====Folders=====
+### Folders ###
 .gradle/
 .idea/
-.settings/
-.vscode/
-bin/
 build/
+jte-classes/
 logs/
-out/
 
-# =====Files=====
-*.iml
-.classpath
-.project
-*.sqlite
-
-# =====Project=====
-!Neptunes-Dashboard.yaml
-!Postman/*
-config.yaml
+### Files ###
