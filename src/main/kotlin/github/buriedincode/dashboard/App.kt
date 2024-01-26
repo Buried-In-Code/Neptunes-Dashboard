@@ -15,7 +15,6 @@ import io.javalin.rendering.template.JavalinJte
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.kotlin.Logging
 import java.nio.file.Path
-import java.util.TimeZone
 import kotlin.io.path.Path
 import kotlin.io.path.div
 import gg.jte.ContentType as JteType
@@ -93,10 +92,6 @@ object App : Logging {
 fun main(
     @Suppress("UNUSED_PARAMETER") vararg args: String,
 ) {
-    println(TimeZone.getDefault())
-    TimeZone.setDefault(TimeZone.getTimeZone("Pacific/Auckland"))
-    println(TimeZone.getDefault())
-
     println("Neptunes Dashboard v${Utils.VERSION}")
     println("Kotlin v${KotlinVersion.CURRENT}")
     println("Java v${System.getProperty("java.version")}")
