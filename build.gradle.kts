@@ -3,7 +3,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
     kotlin("jvm") version "1.9.23"
     application
-    kotlin("plugin.serialization") version "1.9.23"
+    kotlin("plugin.serialization") version "2.0.0"
     id("gg.jte.gradle") version "3.1.9"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
     id("com.github.ben-manes.versions") version "0.51.0"
