@@ -8,7 +8,7 @@
 @param hidden: Boolean = false
 
 <div class="field" hidden="${hidden}">
-    <label class="label has-text-info" for="${name}">${label}</label>
+    <label class="label has-text-info-bold" for="${name}">${label}</label>
     <div class="control is-expanded@if(icon != null) has-icons-left@endif">
         @if(value != null)
             <input class="input" id="${name}" max="${max}" min="${min}" name="${name}" placeholder="${label}" type="number" value="${value}">

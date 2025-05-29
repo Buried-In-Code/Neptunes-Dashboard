@@ -1,5 +1,5 @@
-@import github.buriedincode.dashboard.models.GameType
-@import github.buriedincode.dashboard.Utils.titlecase
+@import github.buriedincode.models.GameType
+@import github.buriedincode.Utils.titlecase
 @import kotlin.collections.List
 @param label: String = "Game Type"
 @param name: String = "type"
@@ -7,7 +7,7 @@
 @param selected: GameType? = null
 
 <div class="field">
-    <label class="label has-text-info" for="${name}">${label}</label>
+    <label class="label has-text-info-bold" for="${name}">${label}</label>
     <div class="control is-expanded has-icons-left">
         <div class="select is-fullwidth">
             <select class="input" id="${name}" name="${name}">
