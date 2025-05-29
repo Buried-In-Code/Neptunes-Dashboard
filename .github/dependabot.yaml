@@ -4,7 +4,16 @@ updates:
     directory: /
     schedule:
       interval: daily
+    groups:
+      github_actions:
+        patterns:
+          - "*"
+
   - package-ecosystem: gradle
     directory: /
     schedule:
       interval: daily
+    groups:
+      gradle:
+        patterns:
+          - "*"

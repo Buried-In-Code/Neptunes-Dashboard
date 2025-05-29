@@ -2,14 +2,14 @@
 
 # Budget
 
-![Java Version](https://img.shields.io/badge/Temurin-17-green?style=flat-square&logo=eclipse-adoptium)
-![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9.22-green?style=flat-square&logo=kotlin)
+![Java Version](https://img.shields.io/badge/Temurin-21-green?style=flat-square&logo=eclipse-adoptium)
+![Kotlin Version](https://img.shields.io/badge/Kotlin-2.1.21-green?style=flat-square&logo=kotlin)
 ![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
 
-[![Gradle](https://img.shields.io/badge/Gradle-8.5-informational?style=flat-square&logo=gradle)](https://github.com/gradle/gradle)
-[![Ktlint](https://img.shields.io/badge/Ktlint-1.1.0-informational?style=flat-square)](https://github.com/pinterest/ktlint)
-[![Javalin](https://img.shields.io/badge/Javalin-5.6.3-informational?style=flat-square)](https://github.com/javalin/javalin)
-[![Bulma](https://img.shields.io/badge/Bulma-0.9.4-informational?style=flat-square)](https://github.com/jgthms/bulma)
+[![Gradle](https://img.shields.io/badge/Gradle-8.14.1-informational?style=flat-square&logo=gradle)](https://github.com/gradle/gradle)
+[![Spotless](https://img.shields.io/badge/Spotless-7.0.4-informational?style=flat-square)](https://github.com/diffplug/spotless)
+[![Javalin](https://img.shields.io/badge/Javalin-6.6.0-informational?style=flat-square)](https://github.com/javalin/javalin)
+[![Bulma](https://img.shields.io/badge/Bulma-1.0.4-informational?style=flat-square)](https://github.com/jgthms/bulma)
 
 [![Github - Version](https://img.shields.io/github/v/tag/Buried-In-Code/Neptunes-Dashboard?logo=Github&label=Version&style=flat-square)](https://github.com/Buried-In-Code/Neptunes-Dashboard/tags)
 [![Github - License](https://img.shields.io/github/license/Buried-In-Code/Neptunes-Dashboard?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)

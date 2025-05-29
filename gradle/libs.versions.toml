@@ -1,0 +1,41 @@
+[versions]
+exposed = "0.61.0"
+jackson = "2.19.0"
+javalin = "6.6.0"
+jte = "3.2.1"
+kotlin = "2.1.21"
+
+[plugins]
+jte = { id = "gg.jte.gradle", version.ref = "jte" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+spotless = { id = "com.diffplug.spotless", version = "7.0.4" }
+versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
+
+[libraries]
+exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
+exposed-dao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed" }
+exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
+exposed-kotlin-time = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
+hoplite-core = { group = "com.sksamuel.hoplite", name = "hoplite-core", version = "2.9.0" }
+jackson-databind = { group = "com.fasterxml.jackson.core", name = "jackson-databind", version.ref = "jackson" }
+jackson-kotlin = { group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version.ref = "jackson" }
+jackson-datatype-jdk8 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jdk8", version.ref = "jackson" }
+jackson-datatype-jsr310 = { group = "com.fasterxml.jackson.datatype", name = "jackson-datatype-jsr310", version.ref = "jackson" }
+javalin-core = { group = "io.javalin", name = "javalin", version.ref = "javalin" }
+javalin-rendering = { group = "io.javalin", name = "javalin-rendering", version.ref = "javalin" }
+jte-core = { group = "gg.jte", name = "jte", version.ref = "jte" }
+jte-kotlin = { group = "gg.jte", name = "jte-kotlin", version.ref = "jte" }
+kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version = "7.0.7" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.6.2" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.8.1" }
+log4j2-slf4j2 = { group = "org.apache.logging.log4j", name = "log4j-slf4j2-impl", version = "2.24.3" }
+sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version = "3.49.1.0" }
+
+[bundles]
+exposed = ["exposed-core", "exposed-dao", "exposed-jdbc", "exposed-kotlin-time"]
+hoplite = ["hoplite-core"]
+jackson = ["jackson-databind", "jackson-kotlin", "jackson-datatype-jdk8", "jackson-datatype-jsr310"]
+javalin = ["javalin-core", "javalin-rendering"]
+jte = ["jte-core", "jte-kotlin"]

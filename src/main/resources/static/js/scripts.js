@@ -16,7 +16,7 @@ function getCookie(cname) {
 
   for (const cookie of cookies) {
     let _cookie = cookie.trim();
-    if (_cookie.indexOf(name) == 0)
+    if (_cookie.indexOf(name) === 0)
       return _cookie.substring(name.length);
   }
   return "";
@@ -37,14 +37,8 @@ function resetForm(page) {
 }
 
 function setTheme() {
-  const darkCss = document.getElementById("dark-theme");
-  const lightCss = document.getElementById("light-theme");
   const theme = getCookie("neptunes-dashboard_theme");
-
-  if (darkCss !== null && lightCss !== null) {
-    darkCss.disabled = theme == "dark";
-    lightCss.disabled = theme == "light";
-  }
+  document.documentElement.setAttribute("data-theme", theme === "dark" ? "light" : "dark");
 }
 
 function toggleTheme() {
@@ -56,7 +50,7 @@ function toggleTheme() {
 }
 
 ready(() => {
-    setTheme();
+  setTheme();
 });
 
 async function submitRequest(endpoint, method, body = {}) {

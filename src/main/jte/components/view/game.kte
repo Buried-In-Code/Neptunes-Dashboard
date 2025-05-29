@@ -1,6 +1,6 @@
-@import github.buriedincode.dashboard.models.Game
-@import github.buriedincode.dashboard.Utils.titlecase
-@import github.buriedincode.dashboard.Utils.toHumanReadable
+@import github.buriedincode.models.Game
+@import github.buriedincode.Utils.titlecase
+@import github.buriedincode.Utils.toHumanReadable
 @param entry: Game
 
 <a class="box has-text-centered" href="/games/${entry.id.value}">
