@@ -9,7 +9,7 @@ RUN gradle build
 FROM --platform=$TARGETPLATFORM eclipse-temurin:21-jre
 
 WORKDIR /app
-COPY --from=builder /data/app/build/libs/app-4.1.0-all.jar /app/Neptunes-Dashboard.jar
+COPY --from=builder /data/app/build/libs/Neptunes-Dashboard-4.1.0-all.jar /app/Neptunes-Dashboard.jar
 ENV XDG_CACHE_HOME=/app/cache \
     XDG_CONFIG_HOME=/app/config \
     XDG_DATA_HOME=/app/data
