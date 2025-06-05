@@ -1,6 +1,6 @@
-<img src="./src/main/resources/static/img/logo.png" align="left" width="128" height="128" alt="Budget Logo"/>
+<img src="./src/main/resources/static/img/logo.png" align="left" width="128" height="128" alt="Neptune's Dashboard Logo"/>
 
-# Budget
+# Neptune's Dashboard
 
 ![Java Version](https://img.shields.io/badge/Temurin-21-green?style=flat-square&logo=eclipse-adoptium)
 ![Kotlin Version](https://img.shields.io/badge/Kotlin-2.1.21-green?style=flat-square&logo=kotlin)
@@ -26,7 +26,7 @@ _Currently only supports **Triton** games_
 1. Make sure you have a supported version of [Java](https://adoptium.net/en-GB/temurin/releases/) installed: `java --version`
 2. Clone the repo: `git clone https://github.com/Buried-In-Code/Neptunes-Dashboard`
 3. Build using: `./gradlew build`
-4. Run using: `java -jar /app/build/libs/Neptunes-Dashboard-fatJar.jar`
+4. Run using: `java -jar build/libs/Neptunes-Dashboard-4.1.0-all.jar`
 
 ### via Gradle
 
