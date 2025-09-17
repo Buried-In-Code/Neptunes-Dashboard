@@ -6,7 +6,7 @@ RUN gradle build
 
 
 
-FROM --platform=$TARGETPLATFORM eclipse-temurin:21-jre
+FROM --platform=$TARGETPLATFORM eclipse-temurin:21.0.7_6-jre
 
 WORKDIR /app
 COPY --from=builder /data/build/libs/Neptunes-Dashboard-4.1.0-all.jar /app/Neptunes-Dashboard.jar
