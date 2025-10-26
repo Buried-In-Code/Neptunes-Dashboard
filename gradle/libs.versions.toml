@@ -3,7 +3,7 @@ exposed = "0.61.0"
 jackson = "2.20.0"
 javalin = "6.7.0"
 jte = "3.2.1"
-kotlin = "2.2.20"
+kotlin = "2.2.21"
 
 [plugins]
 jte = { id = "gg.jte.gradle", version.ref = "jte" }
